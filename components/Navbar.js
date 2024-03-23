@@ -1,14 +1,20 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import logoImg from "../assets/Logo_T.png";
 
 export default function Navbar() {
+  const [nav,setNav] = useState(false)
+
+  const handleNav = () => {
+    setNav(!nav)
+  }
+
   return (
     <View style={styles.navbar}>
       <Image source={logoImg} style={styles.logo} />
-      <TouchableOpacity onPress={() => navigation.openDrawer()} style={styles.menuButton}>
-        <Icon name="menu" size={30} color="black" />
+      <TouchableOpacity onPress={handleNav} style={styles.menuButton}>
+        <Icon name={nav ? "close" : "menu"} size={30} color="black" />
       </TouchableOpacity>
     </View>
   );
