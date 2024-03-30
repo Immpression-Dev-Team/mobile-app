@@ -1,15 +1,29 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer } from '@react-navigation/native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Navbar from './components/Navbar';
+import HomeScreen from './screens/Home';
+import StatisticsScreen from './screens/Statistics';
+import GalleryScreen from './screens/Gallery';
+import SettingsScreen from './screens/Settings';
+
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
+    <GestureHandlerRootView>
+    <NavigationContainer>
       <Navbar />
-      <View style={styles.content}>
-        <Text>Welcome to Immpression</Text>
-      </View>
-    </View>
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="Statistics" component={StatisticsScreen} />
+        <Stack.Screen name="Gallery" component={GalleryScreen} />
+        <Stack.Screen name="Settings" component={SettingsScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }
 

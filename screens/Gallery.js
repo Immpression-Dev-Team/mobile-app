@@ -1,9 +1,11 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import NavBar from '../components/Navbar'
 
 const GalleryScreen = () => {
   return (
     <View style={styles.container}>
+      <NavBar />
       <Text>My Gallery</Text>
     </View>
   );

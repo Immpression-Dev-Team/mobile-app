@@ -1,10 +1,12 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import NavBar from '../components/Navbar'
 
 const HomeScreen = () => {
   return (
     <View style={styles.container}>
-      <Text>Home Screen</Text>
+      <NavBar />
+      <Text>I am At Home</Text>
     </View>
   );
 };
