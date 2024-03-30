@@ -3,6 +3,11 @@ import { View, Image, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import logoImg from "../assets/Logo_T.png";
 
+import HomeScreen from '../screens/Home';
+import StatisticsScreen from '../screens/Statistics';
+import GalleryScreen from '../screens/Gallery';
+import SettingsScreen from '../screens/Settings';
+
 export default function Navbar() {
   const [nav, setNav] = useState(false);
 
