@@ -6,7 +6,7 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <NavBar />
-      <Text>I am At Home</Text>
+      <Text>Welcome to Immpression LLC</Text>
     </View>
   );
 };
