@@ -11,18 +11,27 @@ import SettingsScreen from './screens/Settings';
 
 const Stack = createStackNavigator();
 
+const WelcomeScreen = () => {
+  return(
+    <View>
+    <Text>Welcome to Immpression</Text>
+  </View>
+  )
+}
+
 export default function App() {
   return (
     <GestureHandlerRootView>
-    <NavigationContainer>
-      <Navbar />
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Statistics" component={StatisticsScreen} />
-        <Stack.Screen name="Gallery" component={GalleryScreen} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Welcome" component={WelcomeScreen} />
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Statistics" component={StatisticsScreen} />
+          <Stack.Screen name="Gallery" component={GalleryScreen} />
+          <Stack.Screen name="Settings" component={SettingsScreen} />
+        </Stack.Navigator>
+        <Navbar />
+      </NavigationContainer>
     </GestureHandlerRootView>
   );
 }
