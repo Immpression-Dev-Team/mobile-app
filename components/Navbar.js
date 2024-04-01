@@ -47,6 +47,7 @@ export default function Navbar() {
     <View style={styles.container}>
       <View style={styles.navbar}>
         <Image source={logoImg} style={styles.logo} />
+        {/* <Text style={styles.title}>Immpression</Text> */}
         <TouchableOpacity onPress={handleNav} style={styles.menuButton}>
           <Icon name={nav ? "close" : "menu"} size={30} color="black" />
         </TouchableOpacity>
@@ -71,6 +72,9 @@ const styles = StyleSheet.create({
   logo: {
     width: 50,
     height: 50,
+  },
+  title: {
+    left: 0,
   },
   menuButton: {
     padding: 0,
