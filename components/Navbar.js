@@ -59,12 +59,13 @@ export default function Navbar() {
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
+    zIndex: 99,
   },
   navbar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 40,
+    paddingTop: 10,
     paddingHorizontal: 20,
   },
   logo: {
@@ -76,8 +77,9 @@ const styles = StyleSheet.create({
   },
   navItems: {
     position: 'absolute',
-    top: 100, // Adjust as needed
-    left: 20, // Adjust as needed
+    top: 0, // Adjust as needed
+    right: 50, // Adjust as needed
+    backgroundColor: 'white',
   },
   navItem: {
     fontSize: 18,
