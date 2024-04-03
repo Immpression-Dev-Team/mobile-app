@@ -2,32 +2,37 @@ import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import NavBar from '../components/Navbar';
 
+// Define an array of image paths
+const imagePaths = [
+  require('../assets/photos/forest.jpg'),
+  require('../assets/photos/flower.jpg'),
+  require('../assets/photos/trees.jpg'),
+  require('../assets/photos/monalisa.jpg'),
+  require('../assets/photos/vangogh.jpg'),
+  require('../assets/photos/pearl.jpg'),
+  // Add more image paths as needed
+];
+
 const HomeScreen = () => {
   return (
     <View style={styles.container}>
-      <NavBar style={styles.navbar}/>
+      <NavBar style={styles.navbar} />
       {/* <Text>Welcome to Immpression LLC</Text> */}
       <View style={styles.imageContainer}>
-        <Image 
-          source={require('../assets/photos/forest.jpg')} // Replace with your placeholder image
-          style={styles.image}
-        />
-        <Image 
-          source={require('../assets/photos/flower.jpg')} // Replace with your placeholder image
-          style={styles.image}
-        />
-                <Image 
-          source={require('../assets/photos/trees.jpg')} // Replace with your placeholder image
-          style={styles.image}
-        />
-        {/* Add more images as needed */}
+        {imagePaths.map((path, index) => (
+          <Image
+            key={index}
+            source={path}
+            style={styles.image}
+          />
+        ))}
       </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { 
+  container: {
 
   },
   imageContainer: {
@@ -35,7 +40,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between', // Adjusted to distribute space between images
     marginTop: 20,
-  },  
+  },
   image: {
     width: 110,
     height: 110,
