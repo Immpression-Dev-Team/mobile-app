@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import NavBar from '../components/Navbar';
 
 // Define an array of image paths
@@ -10,42 +10,84 @@ const imagePaths = [
   require('../assets/photos/monalisa.jpg'),
   require('../assets/photos/vangogh.jpg'),
   require('../assets/photos/pearl.jpg'),
+  require('../assets/photos/forest.jpg'),
+  require('../assets/photos/flower.jpg'),
+  require('../assets/photos/trees.jpg'),
+  require('../assets/photos/monalisa.jpg'),
+  require('../assets/photos/vangogh.jpg'),
+  require('../assets/photos/pearl.jpg'),
+  require('../assets/photos/forest.jpg'),
+  require('../assets/photos/flower.jpg'),
+  require('../assets/photos/trees.jpg'),
+  require('../assets/photos/monalisa.jpg'),
+  require('../assets/photos/vangogh.jpg'),
+  require('../assets/photos/pearl.jpg'),
   // Add more image paths as needed
 ];
 
+const chunkArray = (arr, chunkSize) => {
+  const chunks = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    chunks.push(arr.slice(i, i + chunkSize));
+  }
+  return chunks;
+};
+
 const HomeScreen = () => {
+  const imageRows = chunkArray(imagePaths, 3);
+
   return (
     <View style={styles.container}>
       <NavBar style={styles.navbar} />
       {/* <Text>Welcome to Immpression LLC</Text> */}
-      <View style={styles.imageContainer}>
-        {imagePaths.map((path, index) => (
-          <Image
-            key={index}
-            source={path}
-            style={styles.image}
-          />
-        ))}
-      </View>
+      <ScrollView horizontal>
+        <View style={styles.columnsContainer}>
+          {imageRows.map((row, rowIndex) => (
+            <View key={rowIndex} style={styles.column}>
+              {row.map((path, index) => (
+                <Image
+                  key={index}
+                  source={path}
+                  style={styles.image}
+                />
+              ))}
+            </View>
+          ))}
+          {/* Empty view to create space at the bottom */}
+          <View style={styles.bottomSpace} />
+        </View>
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-
+    flex: 1,
   },
-  imageContainer: {
+  columnsContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between', // Adjusted to distribute space between images
     marginTop: 20,
+    marginLeft: 10,
+  },
+  column: {
+    marginRight: 10, // Margin between columns
   },
   image: {
     width: 110,
     height: 110,
-    margin: 10,
+    marginBottom: 10, // Margin between images in a column
     borderRadius: 10,
+  },
+  navbar: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 1000, // Ensure the navbar is above the images
+  },
+  bottomSpace: {
+    height: 20, // Adjust the height as needed for space at the bottom
   },
 });
 
