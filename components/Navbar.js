@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
-import { View, Image, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import logoImg from "../assets/Logo_T.png";
 import { useNavigation } from '@react-navigation/native'; 
-import HomeScreen from '../screens/Home';
-import StatisticsScreen from '../screens/Statistics';
-import GalleryScreen from '../screens/Gallery';
-import SettingsScreen from '../screens/Settings';
 
 export default function Navbar() {
   const navigation = useNavigation();
@@ -16,26 +12,26 @@ export default function Navbar() {
     setNav(!nav);
   };
 
-  const navigateTo = (screens) => {
-    navigation.navigate(screens); // Function to navigate to a screen
-    setNav(false); // Close the navigation menu after navigating
+  const navigateTo = (screenName) => {
+    navigation.navigate(screenName);
+    setNav(false);
   };
 
   const renderNavItems = () => {
     if (nav) {
       return (
         <View style={styles.navItems}>
-          <TouchableOpacity onPress={() => navigateTo("Home")}>
-            <Text style={styles.navItem}>Home</Text>
+          <TouchableOpacity onPress={() => navigateTo("Home")} style={styles.navItem}>
+            <Icon name="home" size={24} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigateTo("Statistics")}>
-            <Text style={styles.navItem}>Statistics</Text>
+          <TouchableOpacity onPress={() => navigateTo("Statistics")} style={styles.navItem}>
+            <Icon name="equalizer" size={24} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigateTo("Gallery")}>
-            <Text style={styles.navItem}>My Gallery</Text>
+          <TouchableOpacity onPress={() => navigateTo("Gallery")} style={styles.navItem}>
+            <Icon name="photo-library" size={24} color="black" />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigateTo("Settings")}>
-            <Text style={styles.navItem}>Settings</Text>
+          <TouchableOpacity onPress={() => navigateTo("Settings")} style={styles.navItem}>
+            <Icon name="settings" size={24} color="black" />
           </TouchableOpacity>
         </View>
       );
@@ -47,12 +43,13 @@ export default function Navbar() {
     <View style={styles.container}>
       <View style={styles.navbar}>
         <Image source={logoImg} style={styles.logo} />
-        {/* <Text style={styles.title}>Immpression</Text> */}
+        <View style={styles.navItemsContainer}>
+          {renderNavItems()}
+        </View>
         <TouchableOpacity onPress={handleNav} style={styles.menuButton}>
           <Icon name={nav ? "close" : "menu"} size={30} color="black" />
         </TouchableOpacity>
       </View>
-      {renderNavItems()}
     </View>
   );
 }
@@ -73,20 +70,29 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
-  title: {
-    left: 0,
-  },
   menuButton: {
-    padding: 0,
+    padding: 10,
+  },
+  navItemsContainer: {
+    position: 'absolute',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    left: 50,
+    right: 30,
+    top: 10,
+    bottom: 0,
   },
   navItems: {
-    position: 'absolute',
-    top: 0, // Adjust as needed
-    right: 50, // Adjust as needed
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: 'white',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
   },
   navItem: {
-    fontSize: 18,
-    marginBottom: 10,
+    marginHorizontal: 10,
   },
 });
