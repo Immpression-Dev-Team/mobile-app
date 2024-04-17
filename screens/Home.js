@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Image } from 'react-native';
 import NavBar from '../components/Navbar';
+import SearchBar from '../components/SearchBar';
 
 // Define an array of image paths
 const imagePaths = [
@@ -39,6 +40,7 @@ const HomeScreen = () => {
   return (
     <View style={styles.container}>
       <NavBar style={styles.navbar} />
+      <SearchBar />
       {/* <Text>Welcome to Immpression LLC</Text> */}
       <ScrollView horizontal>
         <View style={styles.columnsContainer}>

@@ -42,7 +42,9 @@ export default function Navbar() {
   return (
     <View style={styles.container}>
       <View style={styles.navbar}>
+      <TouchableOpacity onPress={() => navigateTo("Home")}>
         <Image source={logoImg} style={styles.logo} />
+      </TouchableOpacity>
         <View style={styles.navItemsContainer}>
           {renderNavItems()}
         </View>
