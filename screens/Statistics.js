@@ -7,7 +7,7 @@ const StatisticsScreen = () => {
   return (
     <View style={styles.container}>
       <NavBar />
-      <SearchBar />
+      {/* <SearchBar /> */}
       <Text>Statistics</Text>
     </View>
   );

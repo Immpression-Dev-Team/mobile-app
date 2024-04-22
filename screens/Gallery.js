@@ -7,7 +7,7 @@ const GalleryScreen = () => {
   return (
     <View style={styles.container}>
       <NavBar />
-      <Text>Gallery</Text>
+      {/* <Text>Gallery</Text> */}
       <SlidersPractice />
     </View>
   );
