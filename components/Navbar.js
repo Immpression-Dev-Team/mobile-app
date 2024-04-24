@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Image, TouchableOpacity, StyleSheet, Animated, Modal, TouchableWithoutFeedback } from 'react-native';
+import { View, Image, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import logoImg from "../assets/Logo_T.png";
 import { useNavigation } from '@react-navigation/native';
@@ -7,50 +7,64 @@ import SearchBar from '../components/SearchBar';
 
 export default function Navbar() {
   const navigation = useNavigation();
-  const [nav, setNav] = useState(false);
-  const slideAnimation = useRef(new Animated.Value(0)).current; // Start with 0 (off screen)
-  const [displayNav, setDisplayNav] = useState('none');
-  const [showSearchBar, setShowSearchBar] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [showNavItems, setShowNavItems] = useState(false);
+  const slideAnimation = useRef(new Animated.Value(0)).current;
 
-  const handleNav = () => {
-    const newValue = !nav;
-    const toValue = newValue ? 1 : 0; // Slide in (1) or slide out (0)
-
+  const handleToggleNavItems = () => {
+    setShowNavItems(!showNavItems); // Toggle navigation items container
+    setShowSearch(false); // Hide search bar
     Animated.timing(slideAnimation, {
-      toValue,
+      toValue: showNavItems ? 0 : 1,
       duration: 300,
       useNativeDriver: false,
-    }).start(() => {
-      setNav(newValue);
-      setDisplayNav(newValue ? 'flex' : 'none');
-    });
+    }).start();
+  };
+
+  const handleOpenSearch = () => {
+    // setShowNavItems(!showNavItems);
+    
+    setShowSearch(true); // Open search bar
+        Animated.timing(slideAnimation, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
+
+  const handleCloseSearch = () => {
+    setShowSearch(false); // Close search bar
+    Animated.timing(slideAnimation, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
   };
 
   const navigateTo = (screenName) => {
+    handleCloseSearch(); // Close search bar if open
     navigation.navigate(screenName);
-    setNav(false);
   };
 
-  const handleSearch = () => {
-    setShowSearchBar(true);
-  };
-
-  const closeSearchBar = () => {
-    setShowSearchBar(false);
-  };
-
-  const renderNavItems = () => {
-    return (
+  return (
+    <View style={styles.container}>
+      <View style={styles.navbar}>
+        <TouchableOpacity onPress={() => navigateTo("Home")}>
+          <Image source={logoImg} style={styles.logo} />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleToggleNavItems} style={styles.menuButton}>
+          <Icon name={showNavItems ? "close" : "menu"} size={30} color="black" />
+        </TouchableOpacity>
+      </View>
       <Animated.View style={[styles.navItemsContainer, {
         transform: [
           {
             translateX: slideAnimation.interpolate({
               inputRange: [0, 1],
-              outputRange: [200, 0], // Slide from right (200) to left (0)
+              outputRange: [400, 0], // Slide in from right (300) to show
             }),
           },
         ],
-        display: displayNav, // Dynamically set display property
       }]}>
         <TouchableOpacity onPress={() => navigateTo("Home")} style={styles.navItem}>
           <Icon name="home" size={24} color="black" />
@@ -64,47 +78,30 @@ export default function Navbar() {
         <TouchableOpacity onPress={() => navigateTo("Settings")} style={styles.navItem}>
           <Icon name="settings" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleSearch} style={styles.navItem}>
+        <TouchableOpacity onPress={handleOpenSearch} style={styles.navItem}>
           <Icon name="search" size={24} color="black" />
         </TouchableOpacity>
       </Animated.View>
-    );
-  };
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.navbar}>
-        <TouchableOpacity onPress={() => navigateTo("Home")}>
-          <Image source={logoImg} style={styles.logo} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleNav} style={styles.menuButton}>
-          <Icon name={nav ? "close" : "menu"} size={30} color="black" />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.centerContainer}>
-        {renderNavItems()}
-        <Modal
-          visible={showSearchBar}
-          animationType="slide"
-          transparent={true}
-          onRequestClose={closeSearchBar}
-        >
-          <TouchableWithoutFeedback onPress={closeSearchBar}>
-            <View style={styles.overlay}>
-              <View style={styles.searchContainer}>
-                <SearchBar />
-              </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </Modal>
-      </View>
+      {showSearch && (
+        <Animated.View style={[styles.searchContainer, {
+          transform: [
+            {
+              translateX: slideAnimation.interpolate({
+                inputRange: [0, 1],
+                outputRange: [300, 0], // Slide in from right (300) to show
+              }),
+            },
+          ],
+        }]}>
+          <SearchBar onClose={handleCloseSearch} />
+        </Animated.View>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    position: 'relative',
     zIndex: 99,
   },
   navbar: {
@@ -123,40 +120,24 @@ const styles = StyleSheet.create({
   },
   navItemsContainer: {
     position: 'absolute',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    top: 2,
-    right: 70, // Start off screen (right)
+    top: 12,
+    right: 70,
     backgroundColor: 'white',
     paddingVertical: 11,
     paddingHorizontal: 10,
     borderRadius: 10,
-    display: 'none', // Initially hidden
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   navItem: {
     marginHorizontal: 10,
   },
-  centerContainer: {
-    position: 'absolute',
-    top: 10,
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 100,
-  },
-  overlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   searchContainer: {
-    backgroundColor: 'white',
-    padding: 20,
-    borderRadius: 10,
-    width: '80%',
-    alignItems: 'center',
+    position: 'absolute',
+    marginTop: -7,
+    marginLeft: 80,
+    marginRight: 0,
+    zIndex: 100,
   },
 });
