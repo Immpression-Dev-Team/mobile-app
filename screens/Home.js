@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, StyleSheet, ScrollView, Image, TouchableOpacity, Button } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import NavBar from '../components/Navbar';
 
 // Define an array of image paths
@@ -35,6 +36,12 @@ const chunkArray = (arr, chunkSize) => {
 
 const HomeScreen = () => {
   const imageRows = chunkArray(imagePaths, 3);
+  const navigation = useNavigation();
+
+  const navigateTo = (screenName) => {
+    handleCloseSearch(); // Close search bar if open
+    navigation.navigate(screenName);
+  };
 
   return (
     <View style={styles.container}>
@@ -57,6 +64,9 @@ const HomeScreen = () => {
           <View style={styles.bottomSpace} />
         </View>
       </ScrollView>
+      <TouchableOpacity onPress={() => navigateTo("Login")}>
+        <Button title="Login to Immpression"></Button>
+      </TouchableOpacity>
     </View>
   );
 };
