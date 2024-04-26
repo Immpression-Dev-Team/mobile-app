@@ -74,6 +74,7 @@ const StatisticsScreen = () => {
           93%
           <Text>Progress</Text>
         </Text>
+        <Button>MEMEBERS ONLY</Button>
       </View>
     </ScrollView>
   );
