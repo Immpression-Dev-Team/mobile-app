@@ -5,14 +5,14 @@ import NavBar from '../components/Navbar';
 
 // Define an array of image paths
 const imagePaths = [
-  require('../assets/photos/forest.jpg'),
-  require('../assets/photos/flower.jpg'),
-  require('../assets/photos/trees.jpg'),
-  require('../assets/photos/monalisa.jpg'),
-  require('../assets/photos/vangogh.jpg'),
-  require('../assets/photos/pearl.jpg'),
-  require('../assets/photos/scream.jpg'),
-  require('../assets/photos/purple.jpg'),
+  require('../assets/art/art1.jpg'),
+  require('../assets/art/art2.png'),
+  require('../assets/art/art3.png'),
+  require('../assets/art/art4.png'),
+  require('../assets/art/art5.png'),
+  require('../assets/art/art6.png'),
+  require('../assets/art/art7.png'),
+  require('../assets/art/art8.png'),
   require('../assets/photos/mountain.jpg'),
   require('../assets/photos/grass.jpg'),
   require('../assets/photos/building.jpg'),
