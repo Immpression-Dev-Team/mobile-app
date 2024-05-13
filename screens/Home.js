@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ScrollView, Image, TouchableOpacity, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import NavBar from '../components/Navbar';
+import LoginButton from '../components/LoginButton';
 
 // Define an array of image paths
 const imagePaths = [
@@ -64,9 +65,7 @@ const HomeScreen = () => {
           <View style={styles.bottomSpace} />
         </View>
       </ScrollView>
-      <TouchableOpacity onPress={() => navigateTo("Login")}>
-        <Button title="Login to Immpression"></Button>
-      </TouchableOpacity>
+      <LoginButton />
     </View>
   );
 };

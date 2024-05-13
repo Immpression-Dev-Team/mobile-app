@@ -4,6 +4,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import logoImg from "../assets/Logo_T.png";
 import { useNavigation } from '@react-navigation/native';
 import SearchBar from '../components/SearchBar';
+import LoginButton from './LoginButton';
 
 export default function Navbar() {
   const navigation = useNavigation();
