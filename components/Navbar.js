@@ -15,13 +15,11 @@ export default function Navbar() {
   const handleToggleNavItems = () => {
     setShowNavItems(!showNavItems); // Toggle navigation items container
     setShowSearch(false); // Hide search bar
-    if (showNavItems === false) {
-      Animated.timing(slideAnimation, {
-        toValue: showNavItems ? 0 : 1,
-        duration: 300,
-        useNativeDriver: false,
-      }).start();
-    }
+    Animated.timing(slideAnimation, {
+      toValue: showNavItems ? 0 : 1, // Use the updated state
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
   };
 
   const handleOpenSearch = () => {
