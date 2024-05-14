@@ -10,31 +10,23 @@ export default function Navbar() {
   const navigation = useNavigation();
   const [showSearch, setShowSearch] = useState(false);
   const [showNavItems, setShowNavItems] = useState(false);
-  const [shouldRefresh, setShouldRefresh] = useState(false)
   const slideAnimation = useRef(new Animated.Value(0)).current;
-
-
-  useEffect(() => {
-    setShouldRefresh(true)
-  }, [showNavItems])
 
   const handleToggleNavItems = () => {
     setShowNavItems(!showNavItems); // Toggle navigation items container
     setShowSearch(false); // Hide search bar
     if (showNavItems === false) {
-    Animated.timing(slideAnimation, {
-      toValue: showNavItems ? 0 : 1,
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
-  }
+      Animated.timing(slideAnimation, {
+        toValue: showNavItems ? 0 : 1,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    }
   };
 
   const handleOpenSearch = () => {
-    // setShowNavItems(!showNavItems);
-    
     setShowSearch(true); // Open search bar
-        Animated.timing(slideAnimation, {
+    Animated.timing(slideAnimation, {
       toValue: 1,
       duration: 300,
       useNativeDriver: false,
@@ -43,6 +35,7 @@ export default function Navbar() {
 
   const handleCloseSearch = () => {
     setShowSearch(false); // Close search bar
+    setShowNavItems(false); // Close navigation items
     Animated.timing(slideAnimation, {
       toValue: 0,
       duration: 300,
@@ -53,8 +46,6 @@ export default function Navbar() {
   const navigateTo = (screenName) => {
     handleCloseSearch(); // Close search bar if open
     navigation.navigate(screenName);
-    setShouldRefresh(true)
-    setShowNavItems(false)
   };
 
   return (
