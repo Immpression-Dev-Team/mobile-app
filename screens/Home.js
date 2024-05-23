@@ -25,7 +25,7 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
+    paddingBottom: 150,
     paddingHorizontal: 10,
   },
   navbar: {
