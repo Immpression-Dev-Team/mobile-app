@@ -102,6 +102,8 @@ export default function Navbar() {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop: 40,
+    marginBottom: 20,
     zIndex: 99,
   },
   navbar: {

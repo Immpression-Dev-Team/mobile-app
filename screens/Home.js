@@ -8,13 +8,15 @@ import UpcomingArtists from '../components/home_sections/UpcomingArtists';
 
 const HomeScreen = () => {
   return (
-    <View style={styles.container}>
+    <View>
       <NavBar style={styles.navbar} />
       <ScrollView>
+        <View style={styles.container}>
         <ArtForYou />
         <FeaturedArtists />
         <UpcomingArtists />
         <LoginButton />
+        </View>
       </ScrollView>
     </View>
   );
@@ -23,15 +25,11 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+
     paddingHorizontal: 10,
-    paddingTop: 20,
   },
   navbar: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
+
     zIndex: 1000,
   },
 });
