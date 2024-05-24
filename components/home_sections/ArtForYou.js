@@ -8,8 +8,8 @@ const imagePaths = [
   require('../../assets/art/art4.png'),
   require('../../assets/art/art5.png'),
   require('../../assets/art/art6.png'),
-  require('../../assets/art/art7.png'),
-  require('../../assets/art/art8.png'),
+//   require('../../assets/art/art7.png'),
+//   require('../../assets/art/art8.png'),
   require('../../assets/photos/mountain.jpg'),
   require('../../assets/photos/grass.jpg'),
   require('../../assets/photos/building.jpg'),
@@ -31,7 +31,7 @@ const chunkArray = (arr, chunkSize) => {
 };
 
 const ArtForYou = () => {
-  const imageChunks = chunkArray(imagePaths, 3); // Chunk into groups of 3 images
+  const imageChunks = chunkArray(imagePaths, 2); // Chunk into groups of 3 images
 
   return (
     <View style={styles.section}>
@@ -60,19 +60,24 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
+    color: 'white',
+    marginBottom: 5,
+    paddingVertical: 10,
+    paddingHorizontal: 30,
+    backgroundColor: '#007AFF',
+    borderBottomRightRadius: 100,
   },
   scrollView: {
     flexDirection: 'row',
   },
   column: {
-    marginRight: 10, // Margin between columns
+    marginRight: 5, // Margin between columns
   },
   image: {
     width: 110,
     height: 110,
-    marginBottom: 10, // Margin between images in a column
-    borderRadius: 10,
+    marginBottom: 5, // Margin between images in a column
+    borderRadius: 5,
   },
 });
 
