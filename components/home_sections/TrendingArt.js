@@ -29,13 +29,18 @@ const chunkArray = (arr, chunkSize) => {
     return chunks;
 };
 
-const UpcomingArtists = () => {
+const TrendingArt = () => {
     const imageChunks = chunkArray(imagePaths, 2); // Chunk into groups of 3 images
 
     return (
         <View style={styles.section}>
-            <View style={styles.headerContainer}>
-                <Text style={styles.header}>Trending Art</Text>
+          <View style={styles.headerContainer}>
+                <View style={styles.leftHeader}>
+                    <Text style={styles.header}>Trending Art</Text>
+                </View>
+                <View style={styles.rightHeader}>
+                    <Text style={styles.secondaryHeader}>More</Text>
+                </View>
             </View>
             <ScrollView horizontal style={styles.scrollView}>
                 {imageChunks.map((chunk, chunkIndex) => (
@@ -57,19 +62,40 @@ const UpcomingArtists = () => {
 const styles = StyleSheet.create({
     section: {
         marginBottom: 20,
+        marginTop: 20,
     },
     headerContainer: {
-        backgroundColor: '#007AFF',
-        borderRadius: 3,
-        paddingVertical: 5,
-        paddingHorizontal: 40,
+        flexDirection: 'row', // Align items side by side
+        alignItems: 'center', // Vertically center items
         marginBottom: 2,
         alignSelf: 'flex-start', // Make sure the container's width wraps around the text
+        // backgroundColor: '#007AFF',
+        // borderRadius: 3,
+        // paddingVertical: 5,
+        // paddingHorizontal: 10,
+    },
+    leftHeader: {
+        backgroundColor: 'black',
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        marginRight: 2,
+        borderTopLeftRadius: 10,
+    },
+    rightHeader: {
+        backgroundColor: '#B7C9E2',
+        paddingVertical: 10,
+        paddingHorizontal: 17,
+        borderTopRightRadius: 10,
     },
     header: {
         fontSize: 22,
         fontWeight: 'bold',
         color: 'white',
+        marginRight: 158, // Add some space between the titles
+    },
+    secondaryHeader: {
+        fontSize: 15,
+        color: 'black',
     },
     scrollView: {
         flexDirection: 'row',
@@ -85,4 +111,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default UpcomingArtists;
+export default TrendingArt;

@@ -18,8 +18,25 @@ const imagePaths = [
     require('../../assets/artists/artist14.png'),
     require('../../assets/artists/artist15.png'),
     require('../../assets/artists/artist16.png'),
-    //   require('../../assets/art/art7.png'),
-    //   require('../../assets/art/art8.png'),
+];
+
+const artistNames = [
+    'Emma Brown',
+    'Liam Johnson',
+    'Olivia Williams',
+    'Noah Jones',
+    'Sophia Davis',
+    'William Miller',
+    'Isabella Wilson',
+    'Ethan Moore',
+    'Ava Taylor',
+    'James Anderson',
+    'Amelia Thomas',
+    'Oliver Martinez',
+    'Mia Taylor',
+    'Benjamin Clark',
+    'Charlotte Rodriguez',
+    'Elijah Lee',
 ];
 
 const chunkArray = (arr, chunkSize) => {
@@ -31,22 +48,24 @@ const chunkArray = (arr, chunkSize) => {
 };
 
 const FeaturedArtists = () => {
-    const imageChunks = chunkArray(imagePaths, 2); // Chunk into groups of 3 images
+    const imageChunks = chunkArray(imagePaths, 1); // Chunk into groups of 1 image
 
     return (
         <View style={styles.section}>
             <View style={styles.headerContainer}>
-                <Text style={styles.header}>Featured Artists</Text>
+                <Text style={styles.header}>Discover Artists</Text>
             </View>
             <ScrollView horizontal style={styles.scrollView}>
                 {imageChunks.map((chunk, chunkIndex) => (
                     <View key={chunkIndex} style={styles.column}>
                         {chunk.map((path, index) => (
-                            <Image
-                                key={index}
-                                source={path}
-                                style={styles.image}
-                            />
+                            <View key={index} style={styles.artistContainer}>
+                                <Image
+                                    source={path}
+                                    style={styles.image}
+                                />
+                                <Text style={styles.artistName}>{artistNames[Math.floor(Math.random() * artistNames.length)]}</Text>
+                            </View>
                         ))}
                     </View>
                 ))}
@@ -60,29 +79,37 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     headerContainer: {
-        backgroundColor: '#007AFF',
         borderRadius: 3,
         paddingVertical: 5,
-        paddingHorizontal: 22,
-        marginBottom: 2,
+        paddingHorizontal: 8,
+        marginBottom: 10,
         alignSelf: 'flex-start', // Make sure the container's width wraps around the text
     },
     header: {
         fontSize: 22,
         fontWeight: 'bold',
-        color: 'white',
+        color: 'black',
     },
     scrollView: {
         flexDirection: 'row',
     },
     column: {
-        marginRight: 2, // Margin between columns
+        marginRight: 3, // Margin between columns
+    },
+    artistContainer: {
+        alignItems: 'center',
+        marginBottom: 5,
     },
     image: {
-        width: 110,
-        height: 110,
+        width: 100,
+        height: 100,
         marginBottom: 2, // Margin between images in a column
-        borderRadius: 0,
+        borderRadius: 50, // Half of width and height to make it circular
+    },
+    artistName: {
+        fontSize: 11,
+        marginTop: 5,
     },
 });
+
 export default FeaturedArtists;

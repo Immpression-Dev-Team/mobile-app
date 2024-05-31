@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
         // paddingHorizontal: 10,
     },
     leftHeader: {
-        backgroundColor: '#007AFF',
+        backgroundColor: 'black',
         paddingVertical: 5,
         paddingHorizontal: 10,
         marginRight: 2,
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     },
     largeImage: {
         width: 224, // Twice the width of normal images
-        height: 224, // Twice the height of normal images
+        height: 222, // Twice the height of normal images
     },
 });
 

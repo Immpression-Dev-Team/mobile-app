@@ -4,7 +4,7 @@ import NavBar from '../components/Navbar';
 import LoginButton from '../components/LoginButton';
 import ArtForYou from '../components/home_sections/ArtForYou';
 import FeaturedArtists from '../components/home_sections/FeaturedArtists';
-import UpcomingArtists from '../components/home_sections/UpcomingArtists';
+import UpcomingArtists from '../components/home_sections/TrendingArt';
 
 const HomeScreen = () => {
   return (
