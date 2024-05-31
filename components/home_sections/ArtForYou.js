@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import React, { useRef, useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableWithoutFeedback } from 'react-native';
 
 const imagePaths = [
   require('../../assets/art/art1.jpg'),
@@ -8,8 +8,6 @@ const imagePaths = [
   require('../../assets/art/art4.png'),
   require('../../assets/art/art5.png'),
   require('../../assets/art/art6.png'),
-//   require('../../assets/art/art7.png'),
-//   require('../../assets/art/art8.png'),
   require('../../assets/photos/mountain.jpg'),
   require('../../assets/photos/grass.jpg'),
   require('../../assets/photos/building.jpg'),
@@ -31,24 +29,64 @@ const chunkArray = (arr, chunkSize) => {
 };
 
 const ArtForYou = () => {
-  const imageChunks = chunkArray(imagePaths, 2); // Chunk into groups of 3 images
+  const scrollViewRef = useRef(null);
+  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const inactivityTimeoutRef = useRef(null);
+  
+  const imageChunks = chunkArray(imagePaths, 2); // Chunk into groups of 2 images
+
+  useEffect(() => {
+    let autoScrollInterval;
+
+    if (isAutoScrolling) {
+      autoScrollInterval = setInterval(() => {
+        setScrollPosition((prevPosition) => {
+          const newPosition = prevPosition + 1;
+          scrollViewRef.current.scrollTo({ x: newPosition, animated: true });
+          return newPosition;
+        });
+      }, 19); // Adjust the speed as needed
+    }
+
+    return () => clearInterval(autoScrollInterval);
+  }, [isAutoScrolling]);
+
+  const handleUserInteraction = () => {
+    setIsAutoScrolling(false);
+    if (inactivityTimeoutRef.current) {
+      clearTimeout(inactivityTimeoutRef.current);
+    }
+    inactivityTimeoutRef.current = setTimeout(() => {
+      setIsAutoScrolling(true);
+    }, 3000); // 5 seconds of inactivity
+  };
 
   return (
     <View style={styles.section}>
       <Text style={styles.header}>Art for you</Text>
-      <ScrollView horizontal style={styles.scrollView}>
-        {imageChunks.map((chunk, chunkIndex) => (
-          <View key={chunkIndex} style={styles.column}>
-            {chunk.map((path, index) => (
-              <Image
-                key={index}
-                source={path}
-                style={styles.image}
-              />
-            ))}
-          </View>
-        ))}
-      </ScrollView>
+      <TouchableWithoutFeedback onPressIn={handleUserInteraction}>
+        <ScrollView
+          horizontal
+          style={styles.scrollView}
+          ref={scrollViewRef}
+          scrollEventThrottle={16}
+          onScrollBeginDrag={handleUserInteraction}
+          onTouchStart={handleUserInteraction}
+        >
+          {imageChunks.map((chunk, chunkIndex) => (
+            <View key={chunkIndex} style={styles.column}>
+              {chunk.map((path, index) => (
+                <Image
+                  key={index}
+                  source={path}
+                  style={styles.image}
+                />
+              ))}
+            </View>
+          ))}
+        </ScrollView>
+      </TouchableWithoutFeedback>
     </View>
   );
 };
