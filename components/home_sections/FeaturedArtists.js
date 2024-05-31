@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
         borderRadius: 3,
         paddingVertical: 5,
         paddingHorizontal: 22,
-        marginBottom: 5,
+        marginBottom: 2,
         alignSelf: 'flex-start', // Make sure the container's width wraps around the text
     },
     header: {
@@ -76,12 +76,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     column: {
-        marginRight: 3, // Margin between columns
+        marginRight: 2, // Margin between columns
     },
     image: {
         width: 110,
         height: 110,
-        marginBottom: 3, // Margin between images in a column
+        marginBottom: 2, // Margin between images in a column
         borderRadius: 0,
     },
 });

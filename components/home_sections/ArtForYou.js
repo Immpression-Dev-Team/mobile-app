@@ -65,7 +65,12 @@ const ArtForYou = () => {
     return (
         <View style={styles.section}>
             <View style={styles.headerContainer}>
-                <Text style={styles.header}>Art For You</Text>
+                <View style={styles.leftHeader}>
+                    <Text style={styles.header}>Art For You</Text>
+                </View>
+                <View style={styles.rightHeader}>
+                    <Text style={styles.secondaryHeader}>Discover</Text>
+                </View>
             </View>
             <TouchableWithoutFeedback onPressIn={handleUserInteraction}>
                 <ScrollView
@@ -107,17 +112,37 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     headerContainer: {
-        backgroundColor: '#007AFF',
-        borderRadius: 3,
-        paddingVertical: 5,
-        paddingHorizontal: 50,
-        marginBottom: 5,
+        flexDirection: 'row', // Align items side by side
+        alignItems: 'center', // Vertically center items
+        marginBottom: 2,
         alignSelf: 'flex-start', // Make sure the container's width wraps around the text
+        // backgroundColor: '#007AFF',
+        // borderRadius: 3,
+        // paddingVertical: 5,
+        // paddingHorizontal: 10,
+    },
+    leftHeader: {
+        backgroundColor: '#007AFF',
+        paddingVertical: 5,
+        paddingHorizontal: 10,
+        marginRight: 2,
+        borderTopLeftRadius: 10,
+    },
+    rightHeader: {
+        backgroundColor: '#B7C9E2',
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        borderTopRightRadius: 10,
     },
     header: {
         fontSize: 22,
         fontWeight: 'bold',
         color: 'white',
+        marginRight: 158, // Add some space between the titles
+    },
+    secondaryHeader: {
+        fontSize: 15,
+        color: 'black',
     },
     scrollView: {
         flexDirection: 'row',
@@ -128,7 +153,7 @@ const styles = StyleSheet.create({
     image: {
         width: 110,
         height: 110,
-        marginBottom: 3, // Margin between images in a column
+        marginBottom: 2, // Margin between images in a column
         borderRadius: 0,
     },
     largeImageContainer: {
