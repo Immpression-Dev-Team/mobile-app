@@ -11,34 +11,50 @@ export default function Navbar() {
   const [showSearch, setShowSearch] = useState(false);
   const [showNavItems, setShowNavItems] = useState(false);
   const slideAnimation = useRef(new Animated.Value(0)).current;
+  const fadeAnimation = useRef(new Animated.Value(0)).current;
 
   const handleToggleNavItems = () => {
     setShowNavItems(!showNavItems); // Toggle navigation items container
     setShowSearch(false); // Hide search bar
     Animated.timing(slideAnimation, {
       toValue: showNavItems ? 0 : 1, // Use the updated state
-      duration: 300,
+      duration: 200,
       useNativeDriver: false,
     }).start();
   };
 
   const handleOpenSearch = () => {
     setShowSearch(true); // Open search bar
-    Animated.timing(slideAnimation, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
+    Animated.parallel([
+      Animated.timing(slideAnimation, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: false,
+      }),
+      Animated.timing(fadeAnimation, {
+        toValue: 1,
+        duration: 200,
+        useNativeDriver: true,
+      })
+    ]).start();
   };
 
   const handleCloseSearch = () => {
-    setShowSearch(false); // Close search bar
-    setShowNavItems(false); // Close navigation items
-    Animated.timing(slideAnimation, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: false,
-    }).start();
+    Animated.parallel([
+      Animated.timing(slideAnimation, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }),
+      Animated.timing(fadeAnimation, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      })
+    ]).start(() => {
+      setShowSearch(false); // Close search bar
+      setShowNavItems(false); // Close navigation items
+    });
   };
 
   const navigateTo = (screenName) => {
@@ -61,7 +77,7 @@ export default function Navbar() {
           {
             translateX: slideAnimation.interpolate({
               inputRange: [0, 1],
-              outputRange: [400, 0], // Slide in from right (300) to show
+              outputRange: [400, 0], // Slide in from right (400) to show
             }),
           },
         ],
@@ -84,14 +100,7 @@ export default function Navbar() {
       </Animated.View>
       {showSearch && (
         <Animated.View style={[styles.searchContainer, {
-          transform: [
-            {
-              translateX: slideAnimation.interpolate({
-                inputRange: [0, 1],
-                outputRange: [300, 0], // Slide in from right (300) to show
-              }),
-            },
-          ],
+          opacity: fadeAnimation, // Apply fade animation
         }]}>
           <SearchBar onClose={handleCloseSearch} />
         </Animated.View>
