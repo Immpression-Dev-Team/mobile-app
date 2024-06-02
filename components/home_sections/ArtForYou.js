@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableWithoutFeedback, Dimensions } from 'react-native';
 
 const imagePaths = [
     require('../../assets/art/art5.png'),
@@ -30,11 +30,12 @@ const chunkArray = (arr, chunkSize) => {
 
 const ArtForYou = () => {
     const scrollViewRef = useRef(null);
+    const [images, setImages] = useState([...imagePaths]);
     const [isAutoScrolling, setIsAutoScrolling] = useState(true);
     const [scrollPosition, setScrollPosition] = useState(0);
     const inactivityTimeoutRef = useRef(null);
 
-    const imageChunks = chunkArray(imagePaths, 2); // Chunk into groups of 2 images
+    const imageChunks = chunkArray(images, 2); // Chunk into groups of 2 images
 
     useEffect(() => {
         let autoScrollInterval;
@@ -51,6 +52,15 @@ const ArtForYou = () => {
 
         return () => clearInterval(autoScrollInterval);
     }, [isAutoScrolling]);
+
+    useEffect(() => {
+        const screenWidth = Dimensions.get('window').width;
+        const contentWidth = imageChunks.length * 112; // 112 is the width of one image column plus margin
+
+        if (scrollPosition >= contentWidth - screenWidth * 2) {
+            setImages((prevImages) => [...prevImages, ...imagePaths]);
+        }
+    }, [scrollPosition, imageChunks]);
 
     const handleUserInteraction = () => {
         setIsAutoScrolling(false);
@@ -80,11 +90,14 @@ const ArtForYou = () => {
                     scrollEventThrottle={16}
                     onScrollBeginDrag={handleUserInteraction}
                     onTouchStart={handleUserInteraction}
+                    onScroll={(event) => {
+                        setScrollPosition(event.nativeEvent.contentOffset.x);
+                    }}
                 >
                     {/* Render large image as its own component/section */}
                     <View style={styles.largeImageContainer}>
                         <Image
-                            source={imagePaths[0]} // Assuming first image is the large one
+                            source={images[0]} // Assuming first image is the large one
                             style={styles.largeImage}
                         />
                     </View>
@@ -116,10 +129,6 @@ const styles = StyleSheet.create({
         alignItems: 'center', // Vertically center items
         marginBottom: 2,
         alignSelf: 'flex-start', // Make sure the container's width wraps around the text
-        // backgroundColor: '#007AFF',
-        // borderRadius: 3,
-        // paddingVertical: 5,
-        // paddingHorizontal: 10,
     },
     leftHeader: {
         backgroundColor: 'black',
