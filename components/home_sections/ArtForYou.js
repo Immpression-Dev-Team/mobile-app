@@ -43,11 +43,12 @@ const ArtForYou = () => {
         if (isAutoScrolling) {
             autoScrollInterval = setInterval(() => {
                 setScrollPosition((prevPosition) => {
-                    const newPosition = prevPosition + 1;
+                    const screenWidth = Dimensions.get('window').width;
+                    const newPosition = prevPosition + screenWidth / 60; // Adjust the speed as needed
                     scrollViewRef.current.scrollTo({ x: newPosition, animated: true });
                     return newPosition;
                 });
-            }, 19); // Adjust the speed as needed
+            }, 100); // Adjust the speed as needed
         }
 
         return () => clearInterval(autoScrollInterval);
