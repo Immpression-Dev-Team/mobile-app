@@ -91,6 +91,7 @@ const ArtForYou = () => {
                     scrollEventThrottle={16}
                     onScrollBeginDrag={handleUserInteraction}
                     onTouchStart={handleUserInteraction}
+                    showsHorizontalScrollIndicator={false} // Disable horizontal scrollbar
                     onScroll={(event) => {
                         setScrollPosition(event.nativeEvent.contentOffset.x);
                     }}
