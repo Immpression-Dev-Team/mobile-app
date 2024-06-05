@@ -63,16 +63,6 @@ const ArtForYou = () => {
         }
     }, [scrollPosition, imageChunks]);
 
-    useEffect(() => {
-        const screenWidth = Dimensions.get('window').width;
-        const maxVisibleChunks = Math.ceil(screenWidth / 112) + 2; // Number of visible chunks plus buffer
-        const maxVisibleImages = maxVisibleChunks * 2; // Each chunk has 2 images
-
-        if (images.length > maxVisibleImages) {
-            setImages((prevImages) => prevImages.slice(-maxVisibleImages));
-        }
-    }, [scrollPosition]);
-
     const handleUserInteraction = () => {
         setIsAutoScrolling(false);
         if (inactivityTimeoutRef.current) {
