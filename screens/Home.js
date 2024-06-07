@@ -4,7 +4,7 @@ import NavBar from '../components/Navbar';
 import LoginButton from '../components/LoginButton';
 import ArtForYou from '../components/home_sections/ArtForYou';
 import FeaturedArtists from '../components/home_sections/FeaturedArtists';
-import UpcomingArtists from '../components/home_sections/TrendingArt';
+import ArtistsPick from '../components/home_sections/ArtistsPick';
 
 const HomeScreen = () => {
   return (
@@ -14,7 +14,7 @@ const HomeScreen = () => {
         <View style={styles.container}>
         <ArtForYou />
         <FeaturedArtists />
-        <UpcomingArtists />
+        <ArtistsPick />
         <LoginButton />
         </View>
       </ScrollView>
