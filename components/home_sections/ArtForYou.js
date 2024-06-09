@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableWithoutFeedback, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableWithoutFeedback, TouchableOpacity, Dimensions } from 'react-native';
 
 const imagePaths = [
     require('../../assets/art/art5.png'),
@@ -79,9 +79,14 @@ const ArtForYou = () => {
                 <View style={styles.leftHeader}>
                     <Text style={styles.header}>Art For You</Text>
                 </View>
-                <View style={styles.rightHeader}>
-                    <Text style={styles.secondaryHeader}>Discover</Text>
-                </View>
+                <TouchableOpacity
+                    style={styles.rightHeader}
+                    onPress={() => setIsAutoScrolling((prev) => !prev)}
+                >
+                    <Text style={styles.secondaryHeader}>
+                        {isAutoScrolling ? 'Discovering' : 'Discover'}
+                    </Text>
+                </TouchableOpacity>
             </View>
             <TouchableWithoutFeedback onPressIn={handleUserInteraction}>
                 <ScrollView
@@ -173,6 +178,18 @@ const styles = StyleSheet.create({
     largeImage: {
         width: 224, // Twice the width of normal images
         height: 222, // Twice the height of normal images
+    },
+    button: {
+        marginTop: 10,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        backgroundColor: '#000',
+        borderRadius: 5,
+        alignSelf: 'center',
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 16,
     },
 });
 
