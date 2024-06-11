@@ -20,6 +20,8 @@ const imagePaths = [
     require('../../assets/photos/deer.jpg'),
 ];
 
+const headerImage = require('../../assets/headers/Art_for_you.png'); // Import the header image
+
 const chunkArray = (arr, chunkSize) => {
     const chunks = [];
     for (let i = 0; i < arr.length; i += chunkSize) {
@@ -76,15 +78,13 @@ const ArtForYou = () => {
     return (
         <View style={styles.section}>
             <View style={styles.headerContainer}>
-                <View style={styles.leftHeader}>
-                    <Text style={styles.header}>Art For You</Text>
-                </View>
+                <Image source={headerImage} style={styles.headerImage} />
                 <TouchableOpacity
                     style={styles.rightHeader}
                     onPress={() => setIsAutoScrolling((prev) => !prev)}
                 >
                     <Text style={styles.secondaryHeader}>
-                        {isAutoScrolling ? 'Discovering' : 'Discover'}
+                        {isAutoScrolling ? 'Discover!' : 'Discover'}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -137,47 +137,44 @@ const styles = StyleSheet.create({
         marginBottom: 2,
         alignSelf: 'flex-start', // Make sure the container's width wraps around the text
     },
-    leftHeader: {
-        backgroundColor: 'black',
-        paddingVertical: 5,
-        paddingHorizontal: 10,
-        marginRight: 2,
-        borderTopLeftRadius: 10,
+    headerImage: {
+        width: 264, // Adjust width according to your image
+        height: 61, // Adjust height according to your image
+        resizeMode: 'contain',
     },
     rightHeader: {
-        backgroundColor: '#B7C9E2',
-        paddingVertical: 10,
-        paddingHorizontal: 10,
+        backgroundColor: '#FFF',
         borderTopRightRadius: 10,
-    },
-    header: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: 'white',
-        marginRight: 158, // Add some space between the titles
+        marginTop: 26,
+        marginLeft: 33,
     },
     secondaryHeader: {
         fontSize: 15,
         color: 'black',
+        fontWeight: 'bold',
+        marginTop: 3,
+        paddingVertical: 3,
+        paddingHorizontal: 8,
+
     },
     scrollView: {
         flexDirection: 'row',
     },
     column: {
-        marginRight: 2, // Margin between columns
+        marginRight: 4, // Margin between columns
     },
     image: {
-        width: 110,
-        height: 110,
-        marginBottom: 2, // Margin between images in a column
+        width: 130,
+        height: 130,
+        marginBottom: 4, // Margin between images in a column
         borderRadius: 0,
     },
     largeImageContainer: {
-        marginRight: 2, // Margin between large image and subsequent images
+        marginRight: 4, // Margin between large image and subsequent images
     },
     largeImage: {
-        width: 224, // Twice the width of normal images
-        height: 222, // Twice the height of normal images
+        width: 264, // Twice the width of normal images
+        height: 264, // Twice the height of normal images
     },
     button: {
         marginTop: 10,
