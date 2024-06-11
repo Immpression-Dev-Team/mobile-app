@@ -96,9 +96,9 @@ export default function Navbar() {
         <TouchableOpacity onPress={() => navigateTo("Settings")} style={styles.navItem}>
           <Icon name="settings" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleOpenSearch} style={styles.navItem}>
+        {/* <TouchableOpacity onPress={handleOpenSearch} style={styles.navItem}>
           <Icon name="search" size={24} color="black" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </Animated.View>
       {showSearch && (
         <Animated.View style={[styles.searchContainer, {
@@ -135,25 +135,25 @@ const styles = StyleSheet.create({
   navItemsContainer: {
     position: 'absolute',
     top: 12,
-    right: 70,
+    right: 60,
     backgroundColor: '#dae2f0',
     paddingVertical: 11,
-    paddingHorizontal: 10,
+    paddingHorizontal: 1,
     borderRadius: 10,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
   navItem: {
-    marginHorizontal: 10,
+    marginHorizontal: 8,
   },
-  searchContainer: {
-    position: 'absolute',
-    marginTop: -7,
-    marginLeft: 80,
-    marginRight: 0,
-    zIndex: 100,
-  },
+  // searchContainer: {
+  //   position: 'absolute',
+  //   marginTop: -7,
+  //   marginLeft: 80,
+  //   marginRight: 0,
+  //   zIndex: 100,
+  // },
   logoAndTitle: {
     flexDirection: 'row',
     alignItems: 'center', // Ensure items are centered vertically

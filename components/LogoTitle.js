@@ -11,7 +11,7 @@ const LogoTitle = () => {
 
 const styles = StyleSheet.create({
     title: {
-        width: 120, // Adjust width as needed
+        width: 100, // Adjust width as needed
         height: 40, // Adjust height as needed
         resizeMode: 'contain', // Adjust image resizing mode as needed
         marginLeft: 5,

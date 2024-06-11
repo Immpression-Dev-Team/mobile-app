@@ -81,9 +81,12 @@ const FeaturedArtists = () => {
 const styles = StyleSheet.create({
     section: {
         marginBottom: 20,
-        paddingLeft: 10,
+        // paddingLeft: 10,
+        marginHorizontal: 10,
         borderRadius: 10,
         overflow: 'hidden',
+        // borderWidth: 2,
+        // borderColor: '#dee0e3',
     },
     headerContainer: {
         borderRadius: 3,
