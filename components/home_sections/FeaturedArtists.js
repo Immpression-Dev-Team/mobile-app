@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 // Import the header image
-import discoverHeader from '../../assets/headers/Discover.png';
+import discoverHeader from '../../assets/headers/Discover_white.png';
 
 const imagePaths = [
     require('../../assets/artists/artist1.png'),
@@ -55,7 +55,7 @@ const FeaturedArtists = () => {
     const imageChunks = chunkArray(imagePaths, 1); // Chunk into groups of 1 image
 
     return (
-        <LinearGradient colors={['white', '#b5d1ff', 'white']} style={styles.section}>
+        <View style={styles.section}>
             <View style={styles.headerContainer}>
                 <Image source={discoverHeader} style={styles.headerImage} />
             </View>
@@ -74,29 +74,32 @@ const FeaturedArtists = () => {
                     </View>
                 ))}
             </ScrollView>
-        </LinearGradient>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     section: {
         marginBottom: 20,
+        paddingBottom: 40,
         // paddingLeft: 10,
-        marginHorizontal: 10,
-        borderRadius: 10,
+        // marginHorizontal: 10,
+        // borderRadius: 10,
         overflow: 'hidden',
+        backgroundColor: '#000',
         // borderWidth: 2,
         // borderColor: '#dee0e3',
     },
     headerContainer: {
         borderRadius: 3,
         paddingVertical: 0,
-        paddingHorizontal: 8,
+        paddingHorizontal: 15,
+        marginTop: 20,
         marginBottom: 10,
         alignSelf: 'flex-start',
     },
     headerImage: {
-        width: 250,
+        width: 200,
         height: 50,
         resizeMode: 'contain',
     },
@@ -119,14 +122,15 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         marginBottom: 2,
-        borderTopLeftRadius: 50,
-        borderTopRightRadius: 50,
-        borderBottomLeftRadius: 15,
-        borderBottomRightRadius: 15,
+        borderTopLeftRadius: 10,
+        borderTopRightRadius: 10,
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
     },
     artistName: {
         fontSize: 11,
         marginTop: 5,
+        color: 'white',
     },
 });
 

@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import ArtistsPickHeader from '../../assets/headers/Artists_pick.png'; // Import the header image
+import DiscoverButton from '../DiscoverButton';
 
 const imagePaths = [
     { path: require('../../assets/photos/path.jpg'), title: 'Path', artist: 'Artist 1', profilePic: require('../../assets/artists/artist5.png') },
@@ -24,11 +26,9 @@ const ArtistsPick = () => {
     return (
         <View style={styles.section}>
             <View style={styles.headerContainer}>
-                <View style={styles.leftHeader}>
-                    <Text style={styles.header}>Artist's Pick</Text>
-                </View>
+                <Image source={ArtistsPickHeader} style={styles.headerImage} />
                 <View style={styles.rightHeader}>
-                    <Text style={styles.secondaryHeader}>More</Text>
+                    <DiscoverButton />
                 </View>
             </View>
             <ScrollView horizontal style={styles.scrollView}>
@@ -61,29 +61,21 @@ const styles = StyleSheet.create({
         marginBottom: 2,
         alignSelf: 'flex-start',
     },
-    leftHeader: {
-        backgroundColor: 'black',
-        paddingVertical: 5,
-        paddingHorizontal: 10,
-        marginRight: 2,
-        borderTopLeftRadius: 10,
+    headerImage: {
+        width: 200, // Adjust width according to your image
+        height: 50, // Adjust height according to your image
+        resizeMode: 'contain',
     },
-    rightHeader: {
-        backgroundColor: '#B7C9E2',
-        paddingVertical: 10,
-        paddingHorizontal: 17,
-        borderTopRightRadius: 10,
-    },
-    header: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: 'white',
-        marginRight: 158,
-    },
-    secondaryHeader: {
-        fontSize: 15,
-        color: 'black',
-    },
+    // rightHeader: {
+    //     backgroundColor: '#B7C9E2',
+    //     paddingVertical: 10,
+    //     paddingHorizontal: 17,
+    //     borderTopRightRadius: 10,
+    // },
+    // secondaryHeader: {
+    //     fontSize: 15,
+    //     color: 'black',
+    // },
     scrollView: {
         flexDirection: 'row',
     },

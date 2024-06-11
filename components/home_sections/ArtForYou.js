@@ -123,7 +123,7 @@ const ArtForYou = () => {
                     ))}
                 </ScrollView>
             </TouchableWithoutFeedback>
-            <View style={styles.horizontalLine}></View>
+            {/* <View style={styles.horizontalLine}></View> */}
         </LinearGradient >
     );
 };

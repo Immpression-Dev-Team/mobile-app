@@ -5,6 +5,7 @@ import LoginButton from '../components/LoginButton';
 import ArtForYou from '../components/home_sections/ArtForYou';
 import FeaturedArtists from '../components/home_sections/FeaturedArtists';
 import ArtistsPick from '../components/home_sections/ArtistsPick';
+import ArtQuotes from '../components/home_sections/ArtQuotes';
 import LongSearchBar from '../components/LongSearchBar';
 
 const HomeScreen = () => {
@@ -15,6 +16,7 @@ const HomeScreen = () => {
       <ScrollView>
         <View style={styles.container}>
         <ArtForYou />
+        <ArtQuotes />
         <FeaturedArtists />
         <ArtistsPick />
         <LoginButton />
