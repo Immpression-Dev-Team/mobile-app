@@ -5,11 +5,13 @@ import LoginButton from '../components/LoginButton';
 import ArtForYou from '../components/home_sections/ArtForYou';
 import FeaturedArtists from '../components/home_sections/FeaturedArtists';
 import ArtistsPick from '../components/home_sections/ArtistsPick';
+import LongSearchBar from '../components/LongSearchBar';
 
 const HomeScreen = () => {
   return (
-    <View>
+    <View style={styles.everything}>
       <NavBar style={styles.navbar} />
+      <LongSearchBar />
       <ScrollView>
         <View style={styles.container}>
         <ArtForYou />
@@ -23,10 +25,13 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  everything: {
+    backgroundColor: 'white',
+  },
   container: {
     flex: 1,
     paddingBottom: 150,
-    paddingHorizontal: 10,
+    paddingHorizontal: 0,
   },
   navbar: {
 

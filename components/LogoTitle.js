@@ -1,31 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { View, Image, TouchableOpacity, StyleSheet, Text, Animated } from 'react-native';
-import { useFonts } from 'expo-font';
+import React from 'react';
+import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
 
 const LogoTitle = () => {
-    const [loaded] = useFonts({
-        BriemHandwriting: require('../assets/fonts/BriemHand-Regular.ttf'),
-    });
-
-      // Check if the font is loaded before rendering the component
-  if (!loaded) {
-    return null;
-  }
-
-    return(
+    return (
         <View>
-            <Text style={stylesss.title}>Immpression</Text>
+            <Image source={require('../assets/headers/Immpression.png')} style={styles.title} />
         </View>
-    )
-}
+    );
+};
 
-const stylesss = StyleSheet.create({
+const styles = StyleSheet.create({
     title: {
-        fontSize: 23,
-        fontWeight: 'bold',
+        width: 120, // Adjust width as needed
+        height: 40, // Adjust height as needed
+        resizeMode: 'contain', // Adjust image resizing mode as needed
         marginLeft: 5,
-        fontFamily: 'BriemHandwriting'
     },
 });
 
-export default LogoTitle
+export default LogoTitle;

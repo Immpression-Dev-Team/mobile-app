@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableWithoutFeedback, TouchableOpacity, Dimensions } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import DiscoverButton from '../DiscoverButton';
 
 const imagePaths = [
     require('../../assets/art/art5.png'),
@@ -76,16 +78,14 @@ const ArtForYou = () => {
     };
 
     return (
-        <View style={styles.section}>
+        <LinearGradient colors={['white', '#acb3bf', 'white']} style={styles.section}>
             <View style={styles.headerContainer}>
                 <Image source={headerImage} style={styles.headerImage} />
                 <TouchableOpacity
                     style={styles.rightHeader}
                     onPress={() => setIsAutoScrolling((prev) => !prev)}
                 >
-                    <Text style={styles.secondaryHeader}>
-                        {isAutoScrolling ? 'Discover!' : 'Discover'}
-                    </Text>
+                    <DiscoverButton onPress={() => setIsAutoScrolling((prev) => !prev)} isAutoScrolling={isAutoScrolling} />
                 </TouchableOpacity>
             </View>
             <TouchableWithoutFeedback onPressIn={handleUserInteraction}>
@@ -123,7 +123,8 @@ const ArtForYou = () => {
                     ))}
                 </ScrollView>
             </TouchableWithoutFeedback>
-        </View>
+            <View style={styles.horizontalLine}></View>
+        </LinearGradient >
     );
 };
 
@@ -136,6 +137,7 @@ const styles = StyleSheet.create({
         alignItems: 'center', // Vertically center items
         marginBottom: 2,
         alignSelf: 'flex-start', // Make sure the container's width wraps around the text
+        paddingHorizontal: 10,
     },
     headerImage: {
         width: 264, // Adjust width according to your image
@@ -143,21 +145,21 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
         // backgroundColor: '#000',
     },
-    rightHeader: {
-        backgroundColor: '#000',
-        borderTopRightRadius: 10,
-        marginTop: 26,
-        marginLeft: 33,
-    },
-    secondaryHeader: {
-        fontSize: 15,
-        color: 'white',
-        fontWeight: 'bold',
-        marginTop: 3,
-        paddingVertical: 3,
-        paddingHorizontal: 8,
+    // rightHeader: {
+    //     backgroundColor: '#000',
+    //     borderTopRightRadius: 10,
+    //     marginTop: 26,
+    //     marginLeft: 33,
+    // },
+    // secondaryHeader: {
+    //     fontSize: 15,
+    //     color: 'white',
+    //     fontWeight: 'bold',
+    //     marginTop: 3,
+    //     paddingVertical: 3,
+    //     paddingHorizontal: 8,
 
-    },
+    // },
     scrollView: {
         flexDirection: 'row',
     },
@@ -177,6 +179,15 @@ const styles = StyleSheet.create({
         width: 264, // Twice the width of normal images
         height: 264, // Twice the height of normal images
     },
+    horizontalLine: {
+        borderBottomColor: '#8a9ab5', // Match the middle color of the gradient
+        borderBottomWidth: 2,
+        marginTop: 10,
+        marginHorizontal: 20, // Adjust the horizontal margin as needed
+        borderRadius: 5, // Add some border radius for a nicer appearance
+    },
+    
+    
     button: {
         marginTop: 10,
         paddingVertical: 10,

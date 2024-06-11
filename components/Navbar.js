@@ -114,7 +114,7 @@ export default function Navbar() {
 const styles = StyleSheet.create({
   container: {
     marginTop: 50,
-    marginBottom: 20,
+    marginBottom: 10,
     zIndex: 99,
   },
   navbar: {
@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingTop: 10,
     paddingHorizontal: 20,
+    
   },
   logo: {
     width: 50,
@@ -135,7 +136,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 12,
     right: 70,
-    backgroundColor: 'white',
+    backgroundColor: '#dae2f0',
     paddingVertical: 11,
     paddingHorizontal: 10,
     borderRadius: 10,
