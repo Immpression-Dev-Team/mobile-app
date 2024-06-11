@@ -66,10 +66,10 @@ export default function Navbar() {
   return (
     <View style={styles.container}>
       <View style={styles.navbar}>
-        <TouchableOpacity onPress={() => navigateTo("Home")}>
-          <Image source={logoImg} style={styles.logo} />
-          <LogoTitle></LogoTitle>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigateTo("Home")} style={styles.logoAndTitle}>
+            <Image source={logoImg} style={styles.logo} />
+            <LogoTitle />
+          </TouchableOpacity>
         <TouchableOpacity onPress={handleToggleNavItems} style={styles.menuButton}>
           <Icon name={showNavItems ? "close" : "menu"} size={30} color="black" />
         </TouchableOpacity>
@@ -152,5 +152,9 @@ const styles = StyleSheet.create({
     marginLeft: 80,
     marginRight: 0,
     zIndex: 100,
+  },
+  logoAndTitle: {
+    flexDirection: 'row',
+    alignItems: 'center', // Ensure items are centered vertically
   },
 });

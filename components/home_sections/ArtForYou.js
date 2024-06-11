@@ -141,16 +141,17 @@ const styles = StyleSheet.create({
         width: 264, // Adjust width according to your image
         height: 61, // Adjust height according to your image
         resizeMode: 'contain',
+        // backgroundColor: '#000',
     },
     rightHeader: {
-        backgroundColor: '#FFF',
+        backgroundColor: '#000',
         borderTopRightRadius: 10,
         marginTop: 26,
         marginLeft: 33,
     },
     secondaryHeader: {
         fontSize: 15,
-        color: 'black',
+        color: 'white',
         fontWeight: 'bold',
         marginTop: 3,
         paddingVertical: 3,
