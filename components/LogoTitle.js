@@ -11,12 +11,11 @@ const LogoTitle = () => {
 
 const stylesss = StyleSheet.create({
     title: {
-        fontSize: 22,
+        fontSize: 23,
         fontWeight: 'bold',
         color: 'blue',
         fontStyle: 'italic',
         
-
     },
 });
 
