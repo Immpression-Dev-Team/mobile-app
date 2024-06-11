@@ -5,6 +5,7 @@ import logoImg from "../assets/Logo_T.png";
 import { useNavigation } from '@react-navigation/native';
 import SearchBar from '../components/SearchBar';
 import LoginButton from './LoginButton';
+import LogoTitle from './LogoTitle';
 
 export default function Navbar() {
   const navigation = useNavigation();
@@ -67,6 +68,7 @@ export default function Navbar() {
       <View style={styles.navbar}>
         <TouchableOpacity onPress={() => navigateTo("Home")}>
           <Image source={logoImg} style={styles.logo} />
+          <LogoTitle></LogoTitle>
         </TouchableOpacity>
         <TouchableOpacity onPress={handleToggleNavItems} style={styles.menuButton}>
           <Icon name={showNavItems ? "close" : "menu"} size={30} color="black" />
