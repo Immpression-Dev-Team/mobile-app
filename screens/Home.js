@@ -7,6 +7,7 @@ import FeaturedArtists from '../components/home_sections/FeaturedArtists';
 import ArtistsPick from '../components/home_sections/ArtistsPick';
 import ArtQuotes from '../components/home_sections/ArtQuotes';
 import LongSearchBar from '../components/LongSearchBar';
+import FillerMessage from '../components/home_sections/FillerMessage';
 
 const HomeScreen = () => {
   return (
@@ -15,11 +16,12 @@ const HomeScreen = () => {
       <LongSearchBar />
       <ScrollView>
         <View style={styles.container}>
-        <ArtForYou />
-        {/* <ArtQuotes /> */}
-        <FeaturedArtists />
-        <ArtistsPick />
-        <LoginButton />
+          <ArtForYou />
+          {/* <ArtQuotes /> */}
+          <FillerMessage />
+          <FeaturedArtists />
+          <ArtistsPick />
+          <LoginButton />
         </View>
       </ScrollView>
     </View>
@@ -31,6 +33,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   container: {
+    // backgroundColor: '#acb3bf',
     flex: 1,
     paddingBottom: 150,
     paddingHorizontal: 0,

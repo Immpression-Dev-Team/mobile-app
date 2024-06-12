@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 // Import the header images
-import discoverHeader from '../../assets/headers/Discover_white.png';
+import discoverHeader from '../../assets/headers/Discover.png';
 import stageLight from '../../assets/headers/StageLight.png';
 
 const imagePaths = [
@@ -36,7 +36,7 @@ const FeaturedArtists = () => {
     const imageChunks = chunkArray(imagePaths, 1); // Chunk into groups of 1 image
 
     return (
-        <View style={styles.section}>
+        <LinearGradient colors={['white', '#002d75', 'white']} style={styles.section}>
             <View style={styles.headerContainer}>
                 <Image source={discoverHeader} style={styles.headerImage} />
             </View>
@@ -56,17 +56,33 @@ const FeaturedArtists = () => {
                     </View>
                 ))}
             </ScrollView>
-        </View>
+        </LinearGradient>
     );
 };
 
 const styles = StyleSheet.create({
     section: {
+        width: '97%',
+        alignSelf: 'center',
+        borderWidth: 0,
+        borderColor: '#aebacf',
+        borderRadius: 0,
+        padding: 5,
+
         marginBottom: 20,
         paddingBottom: 40,
         overflow: 'hidden',
-        backgroundColor: '#000',
+        // backgroundColor: '#0076F7',
         position: 'relative',
+    },
+    allImageContainer: {
+        width: '97%',
+        alignSelf: 'center',
+        backgroundColor: 'white',
+        borderWidth: 0,
+        borderColor: '#aebacf',
+        borderRadius: 5,
+        padding: 5,
     },
     headerContainer: {
         borderRadius: 3,
@@ -104,12 +120,12 @@ const styles = StyleSheet.create({
         width: 120,
         height: 120,
         marginBottom: 2,
-        borderRadius: 4,
+        borderRadius: 2,
     },
     artistName: {
         fontSize: 11,
         marginTop: 5,
-        color: 'white',
+        color: 'black',
         fontWeight: 'bold',
     },
 });

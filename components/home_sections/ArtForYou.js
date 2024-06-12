@@ -89,46 +89,48 @@ const ArtForYou = () => {
                     <DiscoverButton onPress={() => setIsAutoScrolling((prev) => !prev)} isAutoScrolling={isAutoScrolling} />
                 </TouchableOpacity>
             </View>
-            <TouchableWithoutFeedback onPressIn={handleUserInteraction}>
-                <ScrollView
-                    horizontal
-                    style={styles.scrollView}
-                    ref={scrollViewRef}
-                    scrollEventThrottle={16}
-                    onScrollBeginDrag={handleUserInteraction}
-                    onTouchStart={handleUserInteraction}
-                    showsHorizontalScrollIndicator={false} // Disable horizontal scrollbar
-                    onScroll={(event) => {
-                        setScrollPosition(event.nativeEvent.contentOffset.x);
-                    }}
-                >
-                    <View style={styles.largeImageContainer}>
-                        <Image
-                            source={images[0].path} // Access the image path from the object
-                            style={styles.largeImage}
-                        />
-                        <Text style={styles.artistName}>{images[0].artistName}</Text>
-                    </View>
-
-
-                    {/* Render smaller images in subsequent sections */}
-                    {imageChunks.slice(1).map((chunk, chunkIndex) => (
-                        <View key={chunkIndex} style={styles.column}>
-                            {chunk.map((path, index) => (
-                                <View key={index}>
-                                    <Image
-                                        source={path.path}
-                                        style={styles.image}
-                                    />
-                                    <Text style={styles.artistName}>{path.artistName}</Text>
-                                </View>
-                            ))}
+            <View style={styles.allImageContainer}>
+                <TouchableWithoutFeedback onPressIn={handleUserInteraction}>
+                    <ScrollView
+                        horizontal
+                        style={styles.scrollView}
+                        ref={scrollViewRef}
+                        scrollEventThrottle={16}
+                        onScrollBeginDrag={handleUserInteraction}
+                        onTouchStart={handleUserInteraction}
+                        showsHorizontalScrollIndicator={false} // Disable horizontal scrollbar
+                        onScroll={(event) => {
+                            setScrollPosition(event.nativeEvent.contentOffset.x);
+                        }}
+                    >
+                        <View style={styles.largeImageContainer}>
+                            <Image
+                                source={images[0].path} // Access the image path from the object
+                                style={styles.largeImage}
+                            />
+                            <Text style={styles.artistName}>{images[0].artistName}</Text>
                         </View>
-                    ))}
 
-                </ScrollView>
-            </TouchableWithoutFeedback>
-            {/* <View style={styles.horizontalLine}></View> */}
+
+                        {/* Render smaller images in subsequent sections */}
+                        {imageChunks.slice(1).map((chunk, chunkIndex) => (
+                            <View key={chunkIndex} style={styles.column}>
+                                {chunk.map((path, index) => (
+                                    <View key={index}>
+                                        <Image
+                                            source={path.path}
+                                            style={styles.image}
+                                        />
+                                        <Text style={styles.artistName}>{path.artistName}</Text>
+                                    </View>
+                                ))}
+                            </View>
+                        ))}
+
+                    </ScrollView>
+                </TouchableWithoutFeedback>
+                {/* <View style={styles.horizontalLine}></View> */}
+            </View>
         </LinearGradient >
     );
 };
@@ -165,6 +167,15 @@ const styles = StyleSheet.create({
     //     paddingHorizontal: 8,
 
     // },
+    allImageContainer: {
+        width: '97%',
+        alignSelf: 'center',
+        // backgroundColor: 'white',
+        borderWidth: 0,
+        borderColor: '#aebacf',
+        borderRadius: 5,
+        padding: 5,
+    },
     scrollView: {
         flexDirection: 'row',
     },
