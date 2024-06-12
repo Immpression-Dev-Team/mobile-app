@@ -4,23 +4,24 @@ import { LinearGradient } from 'expo-linear-gradient';
 import DiscoverButton from '../DiscoverButton';
 
 const imagePaths = [
-    require('../../assets/art/art5.png'),
-    require('../../assets/art/art2.png'),
-    require('../../assets/art/art3.png'),
-    require('../../assets/art/art4.png'),
-    require('../../assets/art/art1.jpg'),
-    require('../../assets/art/art6.png'),
-    require('../../assets/photos/mountain.jpg'),
-    require('../../assets/photos/grass.jpg'),
-    require('../../assets/photos/building.jpg'),
-    require('../../assets/photos/man.jpg'),
-    require('../../assets/photos/hand.jpg'),
-    require('../../assets/photos/gray.jpg'),
-    require('../../assets/photos/path.jpg'),
-    require('../../assets/photos/animal.jpg'),
-    require('../../assets/photos/sunset.jpg'),
-    require('../../assets/photos/deer.jpg'),
+    { path: require('../../assets/art/art5.png'), artistName: '@Artist1' },
+    { path: require('../../assets/art/art2.png'), artistName: '@Artist2' },
+    { path: require('../../assets/art/art3.png'), artistName: '@Artist3' },
+    { path: require('../../assets/art/art4.png'), artistName: '@Artist4' },
+    { path: require('../../assets/art/art1.jpg'), artistName: '@Artist5' },
+    { path: require('../../assets/art/art6.png'), artistName: '@Artist6' },
+    { path: require('../../assets/photos/mountain.jpg'), artistName: '@Artist7' },
+    { path: require('../../assets/photos/grass.jpg'), artistName: '@Artist8' },
+    { path: require('../../assets/photos/building.jpg'), artistName: '@Artist9' },
+    { path: require('../../assets/photos/man.jpg'), artistName: '@Artist10' },
+    { path: require('../../assets/photos/hand.jpg'), artistName: '@Artist11' },
+    { path: require('../../assets/photos/gray.jpg'), artistName: '@Artist12' },
+    { path: require('../../assets/photos/path.jpg'), artistName: '@Artist13' },
+    { path: require('../../assets/photos/animal.jpg'), artistName: '@Artist14' },
+    { path: require('../../assets/photos/sunset.jpg'), artistName: '@Artist15' },
+    { path: require('../../assets/photos/deer.jpg'), artistName: '@Artist16' },
 ];
+
 
 const headerImage = require('../../assets/headers/Art_for_you.png'); // Import the header image
 
@@ -101,26 +102,30 @@ const ArtForYou = () => {
                         setScrollPosition(event.nativeEvent.contentOffset.x);
                     }}
                 >
-                    {/* Render large image as its own component/section */}
                     <View style={styles.largeImageContainer}>
                         <Image
-                            source={images[0]} // Assuming first image is the large one
+                            source={images[0].path} // Access the image path from the object
                             style={styles.largeImage}
                         />
+                        <Text style={styles.artistName}>{images[0].artistName}</Text>
                     </View>
+
 
                     {/* Render smaller images in subsequent sections */}
                     {imageChunks.slice(1).map((chunk, chunkIndex) => (
                         <View key={chunkIndex} style={styles.column}>
                             {chunk.map((path, index) => (
-                                <Image
-                                    key={index}
-                                    source={path}
-                                    style={styles.image}
-                                />
+                                <View key={index}>
+                                    <Image
+                                        source={path.path}
+                                        style={styles.image}
+                                    />
+                                    <Text style={styles.artistName}>{path.artistName}</Text>
+                                </View>
                             ))}
                         </View>
                     ))}
+
                 </ScrollView>
             </TouchableWithoutFeedback>
             {/* <View style={styles.horizontalLine}></View> */}
@@ -169,7 +174,7 @@ const styles = StyleSheet.create({
     image: {
         width: 130,
         height: 130,
-        marginBottom: 4, // Margin between images in a column
+        //marginBottom: 4, // Margin between images in a column
         borderRadius: 0,
     },
     largeImageContainer: {
@@ -186,8 +191,22 @@ const styles = StyleSheet.create({
         marginHorizontal: 20, // Adjust the horizontal margin as needed
         borderRadius: 5, // Add some border radius for a nicer appearance
     },
-    
-    
+
+    artistName: {
+        fontSize: 10,
+        marginLeft: 2,
+        bottom: 2,
+        position: 'absolute',
+        zIndex: 99,
+        fontWeight: 'bold',
+        color: 'white',
+        marginBottom: 0,
+        // paddingHorizontal: 7,
+        // borderTopRightRadius: 3,
+        // backgroundColor: '#000',
+    },
+
+
     button: {
         marginTop: 10,
         paddingVertical: 10,

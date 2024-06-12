@@ -16,7 +16,7 @@ const HomeScreen = () => {
       <ScrollView>
         <View style={styles.container}>
         <ArtForYou />
-        <ArtQuotes />
+        {/* <ArtQuotes /> */}
         <FeaturedArtists />
         <ArtistsPick />
         <LoginButton />

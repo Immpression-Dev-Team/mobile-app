@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     },
     profilePicContainer: {
         position: 'absolute',
-        bottom: -17,
+        bottom: -20,
         right: 15,
         width: 80,
         height: 50,

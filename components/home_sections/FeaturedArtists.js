@@ -6,41 +6,21 @@ import { LinearGradient } from 'expo-linear-gradient';
 import discoverHeader from '../../assets/headers/Discover_white.png';
 
 const imagePaths = [
-    require('../../assets/artists/artist1.png'),
-    require('../../assets/artists/artist2.png'),
-    require('../../assets/artists/artist9.png'),
-    require('../../assets/artists/artist3.png'),
-    require('../../assets/artists/artist12.png'),
-    require('../../assets/artists/artist6.png'),
-    require('../../assets/artists/artist4.png'),
-    require('../../assets/artists/artist7.png'),
-    require('../../assets/artists/artist8.png'),
-    require('../../assets/artists/artist10.png'),
-    require('../../assets/artists/artist5.png'),
-    require('../../assets/artists/artist11.png'),
-    require('../../assets/artists/artist13.png'),
-    require('../../assets/artists/artist14.png'),
-    require('../../assets/artists/artist15.png'),
-    require('../../assets/artists/artist16.png'),
-];
-
-const artistNames = [
-    'Emma Brown',
-    'Liam Johnson',
-    'Olivia Williams',
-    'Noah Jones',
-    'Sophia Davis',
-    'William Miller',
-    'Isabella Wilson',
-    'Ethan Moore',
-    'Ava Taylor',
-    'James Anderson',
-    'Amelia Thomas',
-    'Oliver Martinez',
-    'Mia Taylor',
-    'Benjamin Clark',
-    'Charlotte Rodriguez',
-    'Elijah Lee',
+    { path: require('../../assets/photos/path.jpg'), title: 'Path', artist: 'Artist 1', profilePic: require('../../assets/artists/artist5.png') },
+    { path: require('../../assets/photos/animal.jpg'), title: 'Animal', artist: 'Artist 2', profilePic: require('../../assets/artists/artist4.png') },
+    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Artist 3', profilePic: require('../../assets/artists/artist3.png') },
+    { path: require('../../assets/photos/deer.jpg'), title: 'Deer', artist: 'Artist 4', profilePic: require('../../assets/artists/artist1.png') },
+    { path: require('../../assets/art/art1.jpg'), title: 'Art 1', artist: 'Artist 5', profilePic: require('../../assets/artists/artist2.png') },
+    { path: require('../../assets/art/art2.png'), title: 'Art 2', artist: 'Artist 6', profilePic: require('../../assets/artists/artist6.png') },
+    { path: require('../../assets/art/art3.png'), title: 'Art 3', artist: 'Artist 7', profilePic: require('../../assets/artists/artist7.png') },
+    { path: require('../../assets/art/art4.png'), title: 'Art 4', artist: 'Artist 8', profilePic: require('../../assets/artists/artist8.png') },
+    { path: require('../../assets/art/art5.png'), title: 'Art 5', artist: 'Artist 9', profilePic: require('../../assets/artists/artist9.png') },
+    { path: require('../../assets/art/art6.png'), title: 'Art 6', artist: 'Artist 10', profilePic: require('../../assets/artists/artist10.png') },
+    { path: require('../../assets/photos/building.jpg'), title: 'Building', artist: 'Artist 11', profilePic: require('../../assets/artists/artist11.png') },
+    { path: require('../../assets/photos/man.jpg'), title: 'Man', artist: 'Artist 12', profilePic: require('../../assets/artists/artist12.png') },
+    { path: require('../../assets/photos/hand.jpg'), title: 'Hand', artist: 'Artist 13', profilePic: require('../../assets/artists/artist13.png') },
+    { path: require('../../assets/photos/gray.jpg'), title: 'Gray', artist: 'Artist 14', profilePic: require('../../assets/artists/artist14.png') },
+    // Add more images and profile pictures if needed
 ];
 
 const chunkArray = (arr, chunkSize) => {
@@ -62,13 +42,13 @@ const FeaturedArtists = () => {
             <ScrollView horizontal style={styles.scrollView}>
                 {imageChunks.map((chunk, chunkIndex) => (
                     <View key={chunkIndex} style={styles.column}>
-                        {chunk.map((path, index) => (
+                        {chunk.map((item, index) => (
                             <View key={index} style={styles.artistContainer}>
                                 <Image
-                                    source={path}
+                                    source={item.profilePic}
                                     style={styles.image}
                                 />
-                                <Text style={styles.artistName}>{artistNames[Math.floor(Math.random() * artistNames.length)]}</Text>
+                                <Text style={styles.artistName}>{item.artist}</Text>
                             </View>
                         ))}
                     </View>
@@ -82,13 +62,8 @@ const styles = StyleSheet.create({
     section: {
         marginBottom: 20,
         paddingBottom: 40,
-        // paddingLeft: 10,
-        // marginHorizontal: 10,
-        // borderRadius: 10,
         overflow: 'hidden',
         backgroundColor: '#000',
-        // borderWidth: 2,
-        // borderColor: '#dee0e3',
     },
     headerContainer: {
         borderRadius: 3,
@@ -112,10 +87,6 @@ const styles = StyleSheet.create({
     artistContainer: {
         alignItems: 'center',
         marginBottom: 5,
-        // shadowColor: '#000',
-        // shadowOffset: { width: 0, height: 2 },
-        // shadowOpacity: 0.8,
-        // shadowRadius: 2,
         elevation: 5,
     },
     image: {
