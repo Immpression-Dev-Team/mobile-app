@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
         width: 100, // Adjust width as needed
         height: 40, // Adjust height as needed
         resizeMode: 'contain', // Adjust image resizing mode as needed
-        marginLeft: 5,
+        marginLeft: 2.5,
     },
 });
 
