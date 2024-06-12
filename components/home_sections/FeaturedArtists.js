@@ -2,8 +2,9 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
-// Import the header image
+// Import the header images
 import discoverHeader from '../../assets/headers/Discover_white.png';
+import stageLight from '../../assets/headers/StageLight.png';
 
 const imagePaths = [
     { path: require('../../assets/photos/path.jpg'), title: 'Path', artist: 'Artist 1', profilePic: require('../../assets/artists/artist5.png') },
@@ -39,6 +40,7 @@ const FeaturedArtists = () => {
             <View style={styles.headerContainer}>
                 <Image source={discoverHeader} style={styles.headerImage} />
             </View>
+            <Image source={stageLight} style={styles.stageLight} />
             <ScrollView horizontal style={styles.scrollView}>
                 {imageChunks.map((chunk, chunkIndex) => (
                     <View key={chunkIndex} style={styles.column}>
@@ -64,6 +66,7 @@ const styles = StyleSheet.create({
         paddingBottom: 40,
         overflow: 'hidden',
         backgroundColor: '#000',
+        position: 'relative',
     },
     headerContainer: {
         borderRadius: 3,
@@ -78,6 +81,14 @@ const styles = StyleSheet.create({
         height: 50,
         resizeMode: 'contain',
     },
+    stageLight: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+        width: 400, // Adjust width as needed
+        height: 400, // Adjust height as needed
+        resizeMode: 'contain',
+    },
     scrollView: {
         flexDirection: 'row',
     },
@@ -90,18 +101,16 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     image: {
-        width: 100,
-        height: 100,
+        width: 120,
+        height: 120,
         marginBottom: 2,
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10,
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
+        borderRadius: 4,
     },
     artistName: {
         fontSize: 11,
         marginTop: 5,
         color: 'white',
+        fontWeight: 'bold',
     },
 });
 

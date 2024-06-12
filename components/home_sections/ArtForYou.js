@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
     image: {
         width: 130,
         height: 130,
-        //marginBottom: 4, // Margin between images in a column
+        marginBottom: 4, // Margin between images in a column
         borderRadius: 0,
     },
     largeImageContainer: {
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     artistName: {
         fontSize: 10,
         marginLeft: 2,
-        bottom: 2,
+        bottom: 4,
         position: 'absolute',
         zIndex: 99,
         fontWeight: 'bold',

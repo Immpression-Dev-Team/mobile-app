@@ -60,6 +60,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 2,
         alignSelf: 'flex-start',
+        paddingHorizontal: 14,
     },
     headerImage: {
         width: 200, // Adjust width according to your image
@@ -80,7 +81,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     imageContainer: {
-        marginRight: 3,
+        marginRight: 4,
         alignItems: 'flex-start',
     },
     imageWrapper: {
@@ -98,9 +99,9 @@ const styles = StyleSheet.create({
         right: 15,
         width: 80,
         height: 50,
-        borderRadius: 10,
+        borderRadius: 8,
         overflow: 'hidden',
-        borderWidth: 2,
+        borderWidth: 1,
         borderColor: 'white',
     },
     profilePic: {
@@ -111,6 +112,7 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginLeft: 7,
         textAlign: 'left',
+        fontWeight: 'bold',
     },
     artistName: {
         marginLeft: 7,
