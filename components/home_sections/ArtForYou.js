@@ -137,6 +137,7 @@ const ArtForYou = () => {
 
 const styles = StyleSheet.create({
     section: {
+        marginTop: 10,
         marginBottom: 20,
     },
     headerContainer: {

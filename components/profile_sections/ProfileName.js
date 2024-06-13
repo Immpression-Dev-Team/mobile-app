@@ -11,7 +11,8 @@ const styles = StyleSheet.create({
     profileName: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginTop: 10, // Adjust margin as needed
+        marginTop: 10,
+        marginBottom: 20,
         textAlign: 'center',
     },
 });

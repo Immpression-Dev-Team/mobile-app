@@ -3,7 +3,8 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 import Navbar from '../components/Navbar';
 import ProfilePic from '../components/profile_sections/ProfilePic';
 import ProfileName from '../components/profile_sections/ProfileName';
-import ProfileGallery from '../components/profile_sections/ProfileGallery'; // Adjust the path accordingly
+import ProfileGallery from '../components/profile_sections/ProfileGallery';
+import ProfileBanner from '../components/profile_sections/ProfileBanner';
 
 const Profile = () => {
     const profilePicSource = require('../assets/artists/artist1.png'); // Use require to import the local image
@@ -13,6 +14,7 @@ const Profile = () => {
         <ScrollView contentContainerStyle={styles.container}>
             <Navbar />
             <View style={styles.profileContainer}>
+                <ProfileBanner />
                 <ProfilePic source={profilePicSource} />
                 <ProfileName name={profileName} />
             </View>
@@ -30,12 +32,12 @@ const styles = StyleSheet.create({
     },
     profileContainer: {
         alignItems: 'center',
-        marginTop: 20, // Add some space below the Navbar
+        marginTop: 10, // Add some space below the Navbar
     },
     galleryContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 20,
+        marginTop: 24,
     },
 });
 

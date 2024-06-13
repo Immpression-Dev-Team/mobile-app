@@ -12,8 +12,10 @@ import FillerMessage from '../components/home_sections/FillerMessage';
 const HomeScreen = () => {
   return (
     <View style={styles.everything}>
-      <NavBar style={styles.navbar} />
-      <LongSearchBar />
+      <View style={styles.navbar}>
+        <NavBar />
+        <LongSearchBar />
+      </View>
       <ScrollView>
         <View style={styles.container}>
           <ArtForYou />
@@ -39,6 +41,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   navbar: {
+    // borderBottomWidth: 1,
+    // borderBottomLeftRadius: 10,
+    // borderBottomRightRadius: 10, 
+    // borderColor: '#ccc',
+    // paddingBottom: 2,
 
     zIndex: 1000,
   },
