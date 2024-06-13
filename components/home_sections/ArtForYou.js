@@ -79,7 +79,7 @@ const ArtForYou = () => {
     };
 
     return (
-        <LinearGradient colors={['white', '#acb3bf', 'white']} style={styles.section}>
+        <LinearGradient colors={['gold', '#acb3bf', 'white']} style={styles.section}>
             <View style={styles.headerContainer}>
                 <Image source={headerImage} style={styles.headerImage} />
                 <TouchableOpacity
