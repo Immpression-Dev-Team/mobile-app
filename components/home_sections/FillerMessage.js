@@ -12,10 +12,10 @@ const FillerMessage = () => {
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        borderLeftWidth: 16,
-        borderRightWidth: 16,
-        dualborderColor1: 'red',
-        dualborderColor2: 'blue',
+        borderLeftWidth: 20,
+        borderRightWidth: 20,
+        borderLeftColor: 'red',
+        borderRightColor: 'blue',
         borderRadius: 0,
         alignSelf: 'center',
         flex: 1,
