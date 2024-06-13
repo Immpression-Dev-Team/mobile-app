@@ -1,15 +1,15 @@
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import Navbar from '../components/Navbar';
+import ProfilePic from '../components/profile_sections/ProfilePic';
 
 const Profile = () => {
+    const profilePicUri = 'https://example.com/your-profile-picture.jpg'; // Replace with your profile picture URL
+
     return (
         <View style={styles.container}>
-            <Navbar />
-            <Image 
-                source={{ uri: 'https://example.com/your-profile-picture.jpg' }} // Replace with your profile picture URL
-                style={styles.profilePicture}
-            />
+            <NavBar />
+            <ProfilePic uri={profilePicUri} />
         </View>
     );
 };
