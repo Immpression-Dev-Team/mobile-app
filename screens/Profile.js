@@ -1,25 +1,41 @@
 import React from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, StyleSheet, ScrollView } from 'react-native';
 import Navbar from '../components/Navbar';
 import ProfilePic from '../components/profile_sections/ProfilePic';
+import ProfileName from '../components/profile_sections/ProfileName';
+import ProfileGallery from '../components/profile_sections/ProfileGallery'; // Adjust the path accordingly
 
 const Profile = () => {
-    const profilePicUri = 'https://example.com/your-profile-picture.jpg'; // Replace with your profile picture URL
+    const profilePicSource = require('../assets/artists/artist1.png'); // Use require to import the local image
+    const profileName = "John Doe"; // Replace with the actual profile name
 
     return (
-        <View style={styles.container}>
-            <NavBar />
-            <ProfilePic uri={profilePicUri} />
-        </View>
+        <ScrollView contentContainerStyle={styles.container}>
+            <Navbar />
+            <View style={styles.profileContainer}>
+                <ProfilePic source={profilePicSource} />
+                <ProfileName name={profileName} />
+            </View>
+            <View style={styles.galleryContainer}>
+                <ProfileGallery />
+            </View>
+        </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    profilePicture: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        marginTop: 20, // Space between the navbar and the profile picture
+    container: {
+        flexGrow: 1,
+        
+    },
+    profileContainer: {
+        alignItems: 'center',
+        marginTop: 20, // Add some space below the Navbar
+    },
+    galleryContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 20,
     },
 });
 

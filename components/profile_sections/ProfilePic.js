@@ -1,11 +1,11 @@
 import React from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, Image, } from 'react-native';
 
-const ProfilePic = ({ uri }) => {
+const ProfilePic = ({ source }) => {
     return (
-        <Image 
-            source={{ uri }} 
-            style={styles.profilePicture} 
+        <Image
+            source={source} // Use the source prop directly
+            style={styles.profilePicture}
         />
     );
 };
@@ -20,4 +20,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProfilePic;
-c
