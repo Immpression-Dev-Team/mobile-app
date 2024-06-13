@@ -90,7 +90,7 @@ export default function Navbar() {
         <TouchableOpacity onPress={() => navigateTo("Statistics")} style={styles.navItem}>
           <Icon name="equalizer" size={24} color="black" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo("Gallery")} style={styles.navItem}>
+        <TouchableOpacity onPress={() => navigateTo("Profile")} style={styles.navItem}>
           <Icon name="photo-library" size={24} color="black" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigateTo("Settings")} style={styles.navItem}>
