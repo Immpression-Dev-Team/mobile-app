@@ -12,8 +12,8 @@ const FillerMessage = () => {
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        borderLeftWidth: 20,
-        borderRightWidth: 20,
+        borderLeftWidth: 16,
+        borderRightWidth: 16,
         dualborderColor1: 'red',
         dualborderColor2: 'blue',
         borderRadius: 0,
@@ -21,13 +21,14 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 0,
+        padding: 1,
         marginBottom: 20,
     },
     quoteText: {
-        fontSize: 18,
-        color: 'black',
+        fontSize: 16,
+        color: 'purple',
         textAlign: 'left',
+        fontWeight: 'bold',
         // fontWeight: 'bold',
     },
 });
