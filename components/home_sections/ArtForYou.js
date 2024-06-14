@@ -20,7 +20,7 @@ const imagePaths = [
     { path: require('../../assets/photos/animal.jpg'), artistName: '@Artist14' },
     { path: require('../../assets/photos/sunset.jpg'), artistName: '@Artist15' },
     { path: require('../../assets/photos/deer.jpg'), artistName: '@Artist16' },
-    { path: require('../../assets/art/batman.png'), artistName: '@BruceWayne' }
+    { path: require('../../assets/art/superman.png'), artistName: '@Clark Kent' },
 ];
 
 
@@ -80,7 +80,7 @@ const ArtForYou = () => {
     };
 
     return (
-        <LinearGradient colors={['gold', '#acb3bf', 'white']} style={styles.section}>
+        <LinearGradient colors={['white', '#acb3bf', 'white']} style={styles.section}>
             <View style={styles.headerContainer}>
                 <Image source={headerImage} style={styles.headerImage} />
                 <TouchableOpacity
@@ -138,6 +138,7 @@ const ArtForYou = () => {
 
 const styles = StyleSheet.create({
     section: {
+        marginTop: 10,
         marginBottom: 20,
     },
     headerContainer: {
