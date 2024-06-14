@@ -21,6 +21,8 @@ const imagePaths = [
     { path: require('../../assets/photos/sunset.jpg'), artistName: '@Artist15' },
     { path: require('../../assets/photos/deer.jpg'), artistName: '@Artist16' },
     { path: require('../../assets/art/superman.png'), artistName: '@Clark Kent' },
+    { path: require('../../assets/art/batman.png'), artistName: '@BruceWayne' },
+    { path: require('../../assets/art/spiderman.png'), artistName: '@PeterParker' },
 ];
 
 
