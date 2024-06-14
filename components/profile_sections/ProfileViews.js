@@ -14,7 +14,8 @@ const styles = StyleSheet.create({
     card: {
         flexDirection: 'row', // Display label and count horizontally
         backgroundColor: '#acaeb0',
-        padding: 5,
+        paddingVertical: 5,
+        paddingHorizontal: 10,
         borderRadius: 10,
         marginTop: 10,
         alignItems: 'center',

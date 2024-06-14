@@ -6,7 +6,6 @@ const ProfileName = ({ name, views }) => {
     return (
         <View>
             <Text style={styles.profileName}>{name}</Text>
-            <ProfileViews views={views} />
         </View>
     );
 };
