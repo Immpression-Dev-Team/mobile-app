@@ -12,10 +12,13 @@ const ProfilePic = ({ source }) => {
 
 const styles = StyleSheet.create({
     profilePicture: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        marginTop: 20, // Adjust margin as needed
+        width: 110,
+        height: 110,
+        bottom: -110,
+        borderRadius: 60,
+        borderWidth: 3,
+        borderColor: 'white',
+        marginTop: 0, // Adjust margin as needed
     },
 });
 

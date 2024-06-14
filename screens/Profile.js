@@ -7,8 +7,9 @@ import ProfileGallery from '../components/profile_sections/ProfileGallery';
 import ProfileBanner from '../components/profile_sections/ProfileBanner';
 
 const Profile = () => {
-    const profilePicSource = require('../assets/artists/artist1.png'); // Use require to import the local image
-    const profileName = "John Doe"; // Replace with the actual profile name
+    const profilePicSource = require('../assets/artists/flight.png'); // Use require to import the local image
+    const profileName = "Kimani White"; // Replace with the actual profile name
+    const viewsCount = 394; // Example views count, replace with actual data
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -16,7 +17,7 @@ const Profile = () => {
             <View style={styles.profileContainer}>
                 <ProfileBanner />
                 <ProfilePic source={profilePicSource} />
-                <ProfileName name={profileName} />
+                <ProfileName name={profileName} views={viewsCount} />
             </View>
             <View style={styles.galleryContainer}>
                 <ProfileGallery />
@@ -28,11 +29,11 @@ const Profile = () => {
 const styles = StyleSheet.create({
     container: {
         flexGrow: 1,
-        
     },
     profileContainer: {
         alignItems: 'center',
-        marginTop: 10, // Add some space below the Navbar
+        marginTop: 10,
+        position: 'relative',
     },
     galleryContainer: {
         alignItems: 'center',

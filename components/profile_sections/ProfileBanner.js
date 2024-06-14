@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 
-const bannerImage = require('../../assets/art/art1.jpg'); // Replace with your banner image path
+const bannerImage = require('../../assets/banner/banner2.png'); // Replace with your banner image path
 
 const ProfileBanner = () => {
     return (

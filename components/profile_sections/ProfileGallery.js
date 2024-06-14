@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Image, StyleSheet, ScrollView } from 'react-native';
 
 const images = [
-    require('../../assets/art/art1.jpg'),
-    require('../../assets/art/art2.png'),
+    require('../../assets/art/sketch1.png'),
+    require('../../assets/art/photography1.png'),
     require('../../assets/art/art3.png'),
     require('../../assets/art/art4.png'),
     require('../../assets/art/art5.png'),
@@ -25,6 +25,8 @@ const styles = StyleSheet.create({
     all: {
         width: '100%',
         alignItems: 'center',
+        marginTop: 50,
+        bottom: -100,
     },
     galleryContainer: {
         width: '100%', // Adjust this width to control the gallery width
