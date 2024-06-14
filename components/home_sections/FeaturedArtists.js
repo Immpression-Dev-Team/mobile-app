@@ -36,11 +36,11 @@ const FeaturedArtists = () => {
     const imageChunks = chunkArray(imagePaths, 1); // Chunk into groups of 1 image
 
     return (
-        <LinearGradient colors={['white', '#002d75', 'white']} style={styles.section}>
+        <LinearGradient colors={['white', 'white', 'white']} style={styles.section}>
             <View style={styles.headerContainer}>
                 <Image source={discoverHeader} style={styles.headerImage} />
             </View>
-            <Image source={stageLight} style={styles.stageLight} />
+            {/* <Image source={stageLight} style={styles.stageLight} /> */}
             <ScrollView horizontal style={styles.scrollView}>
                 {imageChunks.map((chunk, chunkIndex) => (
                     <View key={chunkIndex} style={styles.column}>
