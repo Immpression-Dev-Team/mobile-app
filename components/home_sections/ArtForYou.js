@@ -6,6 +6,7 @@ import DiscoverButton from '../DiscoverButton';
 const imagePaths = [
     { path: require('../../assets/art/art5.png'), artistName: '@Artist1' },
     { path: require('../../assets/art/art2.png'), artistName: '@Artist2' },
+    { path: require('../../assets/art/batman.png'), artistName: '@BruceWayne' },
     { path: require('../../assets/art/art3.png'), artistName: '@Artist3' },
     { path: require('../../assets/art/art4.png'), artistName: '@Artist4' },
     { path: require('../../assets/art/art1.jpg'), artistName: '@Artist5' },
@@ -21,7 +22,6 @@ const imagePaths = [
     { path: require('../../assets/photos/sunset.jpg'), artistName: '@Artist15' },
     { path: require('../../assets/photos/deer.jpg'), artistName: '@Artist16' },
     { path: require('../../assets/art/superman.png'), artistName: '@Clark Kent' },
-    { path: require('../../assets/art/batman.png'), artistName: '@BruceWayne' },
     { path: require('../../assets/art/spiderman.png'), artistName: '@PeterParker' },
 ];
 
