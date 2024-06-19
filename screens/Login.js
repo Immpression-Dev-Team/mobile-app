@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpaci
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import NavBar from '../components/Navbar'
-import axios from 'axios'
+import axios from 'axios';
 
 const Login = () => {
   const [email, setEmail] = useState("")
