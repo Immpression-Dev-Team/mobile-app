@@ -2,12 +2,26 @@ import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpaci
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import NavBar from '../components/Navbar'
+import axios from 'axios'
 
 const Login = () => {
   const [email, setEmail] = useState("")
+  const [userName, setUserName] = useState("")
   const [password, setPassword] = useState("")
   
   const navigation = useNavigation();
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    axios.post('http://localhost:4000/login', {email, userName, password})
+    .then(result => {
+      console.log(result)
+      if(result.data === "success"){
+        back('/')
+      }
+    })
+    .catch(err => console.log(err))
+  }
 
   const navigateTo = (screenName) => {
       navigation.navigate(screenName);
@@ -20,11 +34,12 @@ const Login = () => {
         <KeyboardAvoidingView style={styles.keyboardAvoidingContainer} behavior="padding">
           <View style={styles.inputContainer}>
             <Text style={styles.title}>Welcome to Immpression</Text>
+            <TextInput placeholder="Username" value={userName} onChangeText={text => setUserName(text)} style={styles.input} />
             <TextInput placeholder="Email" value={email} onChangeText={text => setEmail(text)} style={styles.input} />
             <TextInput placeholder="Password" value={password} onChangeText={text => setPassword(text)} style={styles.input} secureTextEntry />
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={() => {}} style={styles.button}>
+            <TouchableOpacity onPress={() => {handleSubmit}} style={styles.button}>
                 <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigateTo("SignUp")} style={[styles.button, styles.buttonOutline]}>
