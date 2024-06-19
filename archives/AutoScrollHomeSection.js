@@ -34,7 +34,21 @@ const ArtForYou2 = () => {
     const [isAutoScrolling, setIsAutoScrolling] = useState(true);
     const [scrollPosition, setScrollPosition] = useState(0);
     const inactivityTimeoutRef = useRef(null);
-
+    useEffect(() => {
+        let interval;
+    
+        if (isAutoScrolling) {
+          interval = setInterval(() => {
+            scrollY.current += 500; // Adjust this value to change the scroll amount per interval
+            if (scrollViewRef.current) {
+              scrollViewRef.current.scrollTo({ y: scrollY.current, animated: true });
+            }
+          }, scrollSpeed); // Use the scrollSpeed state for interval duration
+        }
+    
+        return () => clearInterval(interval);
+      }, [isAutoScrolling, scrollSpeed]); // Depend on scrollSpeed
+    
     const imageChunks = chunkArray(images, 2); // Chunk into groups of 2 images
 
     useEffect(() => {
