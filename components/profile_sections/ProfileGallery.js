@@ -4,9 +4,10 @@ import { View, Image, StyleSheet, ScrollView } from 'react-native';
 const images = [
     require('../../assets/art/sketch1.png'),
     require('../../assets/art/photography1.png'),
-    require('../../assets/art/art3.png'),
-    require('../../assets/art/art4.png'),
-    require('../../assets/art/art5.png'),
+    require('../../assets/art/sketch2.png'),
+    require('../../assets/art/photography2.png'),
+    require('../../assets/art/sketch3.png'),
+    require('../../assets/art/photography3.png'),
 ];
 
 const ProfileGallery = () => {

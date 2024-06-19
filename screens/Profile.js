@@ -5,6 +5,7 @@ import ProfilePic from '../components/profile_sections/ProfilePic';
 import ProfileName from '../components/profile_sections/ProfileName';
 import ProfileGallery from '../components/profile_sections/ProfileGallery';
 import ProfileBanner from '../components/profile_sections/ProfileBanner';
+import ProfileViews from '../components/profile_sections/ProfileViews';
 
 const Profile = () => {
     const profilePicSource = require('../assets/artists/flight.png'); // Use require to import the local image
@@ -17,7 +18,8 @@ const Profile = () => {
             <View style={styles.profileContainer}>
                 <ProfileBanner />
                 <ProfilePic source={profilePicSource} />
-                <ProfileName name={profileName} views={viewsCount} />
+                <ProfileName name={profileName}/>
+                <ProfileViews views={viewsCount} />
             </View>
             <View style={styles.galleryContainer}>
                 <ProfileGallery />
@@ -38,7 +40,7 @@ const styles = StyleSheet.create({
     galleryContainer: {
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 24,
+        marginTop: 0,
     },
 });
 

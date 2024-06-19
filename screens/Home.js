@@ -8,6 +8,7 @@ import ArtistsPick from '../components/home_sections/ArtistsPick';
 import ArtQuotes from '../components/home_sections/ArtQuotes';
 import LongSearchBar from '../components/LongSearchBar';
 import FillerMessage from '../components/home_sections/FillerMessage';
+import Categories from '../components/home_sections/Categories';
 
 const HomeScreen = () => {
   return (
@@ -20,7 +21,8 @@ const HomeScreen = () => {
         <View style={styles.container}>
           <ArtForYou />
           {/* <ArtQuotes /> */}
-          <FillerMessage />
+          {/* <FillerMessage /> */}
+          <Categories />
           <FeaturedArtists />
           <ArtistsPick />
           <LoginButton />
