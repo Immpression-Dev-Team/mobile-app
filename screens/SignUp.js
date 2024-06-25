@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import NavBar from '../components/Navbar'
+import { API_URL } from '../config'; 
 
 const SignUp = () => {
   const [email, setEmail] = useState("")
@@ -10,7 +11,7 @@ const SignUp = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    axios.post('http://localhost:4000/signup', {email, userName, password, confirmpassword})
+    axios.post(`${API_URL}/signup`, {email, userName, password, confirmpassword})
     .then(result => {console.log(result)
       back('/')
     })
