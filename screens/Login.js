@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import NavBar from '../components/Navbar'
 import axios from 'axios';
+import { API_URL } from '../config';
 
 const Login = () => {
   const [email, setEmail] = useState("")
@@ -13,7 +14,7 @@ const Login = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    axios.post('http://localhost:4000/login', {email, userName, password})
+    axios.post(`${API_URL}/login`, {email, userName, password})
     .then(result => {
       console.log(result)
       if(result.data === "success"){
