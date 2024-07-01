@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableWithoutFeedback, TouchableOpacity, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import DiscoverButton from '../DiscoverButton';
+import DiscoverButton from '../DiscoverButton'; // Adjust the path as needed
+import { useNavigation } from '@react-navigation/native';
 
 const imagePaths = [
     { path: require('../../assets/art/art5.png'), artistName: '@Artist1' },
@@ -44,6 +45,7 @@ const ArtForYou = () => {
     const [isAutoScrolling, setIsAutoScrolling] = useState(true);
     const [scrollPosition, setScrollPosition] = useState(0);
     const inactivityTimeoutRef = useRef(null);
+    const navigation = useNavigation();
 
     const imageChunks = chunkArray(images, 2); // Chunk into groups of 2 images
 
@@ -83,6 +85,10 @@ const ArtForYou = () => {
         }, 5000); // 5 seconds of inactivity
     };
 
+    const handleImagePress = (image, artistName) => {
+        navigation.navigate('ImageScreen', { image, artistName });
+    };
+
     return (
         <LinearGradient colors={['white', '#acb3bf', 'white']} style={styles.section}>
             <View style={styles.headerContainer}>
@@ -109,34 +115,35 @@ const ArtForYou = () => {
                         }}
                     >
                         <View style={styles.largeImageContainer}>
-                            <Image
-                                source={images[0].path} // Access the image path from the object
-                                style={styles.largeImage}
-                            />
+                            <TouchableOpacity onPress={() => handleImagePress(images[0].path, images[0].artistName)}>
+                                <Image
+                                    source={images[0].path} // Access the image path from the object
+                                    style={styles.largeImage}
+                                />
+                            </TouchableOpacity>
                             <Text style={styles.artistName}>{images[0].artistName}</Text>
                         </View>
-
 
                         {/* Render smaller images in subsequent sections */}
                         {imageChunks.slice(1).map((chunk, chunkIndex) => (
                             <View key={chunkIndex} style={styles.column}>
                                 {chunk.map((path, index) => (
                                     <View key={index}>
-                                        <Image
-                                            source={path.path}
-                                            style={styles.image}
-                                        />
+                                        <TouchableOpacity onPress={() => handleImagePress(path.path, path.artistName)}>
+                                            <Image
+                                                source={path.path}
+                                                style={styles.image}
+                                            />
+                                        </TouchableOpacity>
                                         <Text style={styles.artistName}>{path.artistName}</Text>
                                     </View>
                                 ))}
                             </View>
                         ))}
-
                     </ScrollView>
                 </TouchableWithoutFeedback>
-                {/* <View style={styles.horizontalLine}></View> */}
             </View>
-        </LinearGradient >
+        </LinearGradient>
     );
 };
 
