@@ -20,13 +20,14 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:4000/login", {
-        email,
-        password,
-      });
+      const response = await axios.post(
+        "http://localhost:4000/login",
+        { email, password },
+        {
+          withCredentials: true,
+        }
+      );
       if (response.data.success) {
-        const authToken = response.data.authToken;
-        document.cookie = `authToken=${authToken}; Secure; SameSite=Strict`;
         navigation.navigate("Home");
       } else {
         console.log("Login failed");
