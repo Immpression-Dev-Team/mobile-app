@@ -10,6 +10,8 @@ import LongSearchBar from '../components/LongSearchBar';
 import FillerMessage from '../components/home_sections/FillerMessage';
 import Categories from '../components/home_sections/Categories';
 
+
+// TODO conditionally render if the user is logged in or not (remove the login button when logged in and show the the logout button instead)
 const HomeScreen = () => {
   return (
     <View style={styles.everything}>

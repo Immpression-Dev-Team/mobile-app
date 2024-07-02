@@ -1,59 +1,88 @@
-import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
-import { useNavigation } from '@react-navigation/native';
-import NavBar from '../components/Navbar'
-import axios from 'axios';
-import { API_URL } from '../config';
+import {
+  StyleSheet,
+  Text,
+  View,
+  KeyboardAvoidingView,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
+import React, { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import NavBar from "../components/Navbar";
+import axios from "axios";
 
 const Login = () => {
-  const [email, setEmail] = useState("")
-  const [userName, setUserName] = useState("")
-  const [password, setPassword] = useState("")
-  
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   const navigation = useNavigation();
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    axios.post(`${API_URL}/login`, {email, userName, password})
-    .then(result => {
-      console.log(result)
-      if(result.data === "success"){
-        back('/')
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:4000/login", {
+        email,
+        password,
+      });
+      if (response.data.success) {
+        const authToken = response.data.authToken;
+        document.cookie = `authToken=${authToken}; Secure; SameSite=Strict`;
+        navigation.navigate("Home");
+      } else {
+        console.log("Login failed");
       }
-    })
-    .catch(err => console.log(err))
-  }
+    } catch (err) {
+      console.log("Error during login:", err);
+    }
+  };
 
   const navigateTo = (screenName) => {
-      navigation.navigate(screenName);
+    navigation.navigate(screenName);
   };
-  
+
   return (
     <View style={styles.container}>
       <NavBar />
       <View style={styles.contentContainer}>
-        <KeyboardAvoidingView style={styles.keyboardAvoidingContainer} behavior="padding">
+        <KeyboardAvoidingView
+          style={styles.keyboardAvoidingContainer}
+          behavior="padding"
+        >
           <View style={styles.inputContainer}>
             <Text style={styles.title}>Welcome to Immpression</Text>
-            <TextInput placeholder="Username" value={userName} onChangeText={text => setUserName(text)} style={styles.input} />
-            <TextInput placeholder="Email" value={email} onChangeText={text => setEmail(text)} style={styles.input} />
-            <TextInput placeholder="Password" value={password} onChangeText={text => setPassword(text)} style={styles.input} secureTextEntry />
+            {/* <TextInput placeholder="Username" value={userName} onChangeText={text => setUserName(text)} style={styles.input} /> */}
+            <TextInput
+              placeholder="Email"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
+              style={styles.input}
+            />
+            <TextInput
+              placeholder="Password"
+              value={password}
+              onChangeText={(text) => setPassword(text)}
+              style={styles.input}
+              secureTextEntry
+            />
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={() => {handleSubmit}} style={styles.button}>
-                <Text style={styles.buttonText}>Login</Text>
+            <TouchableOpacity onPress={handleSubmit} style={styles.button}>
+              <Text style={styles.buttonText}>Login</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigateTo("SignUp")} style={[styles.button, styles.buttonOutline]}>
-                <Text style={styles.buttonOutlineText}>Sign Up</Text>
+            <TouchableOpacity
+              onPress={() => navigateTo("SignUp")}
+              style={[styles.button, styles.buttonOutline]}
+            >
+              <Text style={styles.buttonOutlineText}>Sign Up</Text>
             </TouchableOpacity>
           </View>
         </KeyboardAvoidingView>
       </View>
     </View>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
 
 const styles = StyleSheet.create({
   container: {
@@ -61,60 +90,60 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    justifyContent: 'flex-start', // Align items at the very top
-    alignItems: 'center',
+    justifyContent: "flex-start", // Align items at the very top
+    alignItems: "center",
     paddingTop: 20, // Adjust the top padding to create space between NavBar and Login content
   },
   keyboardAvoidingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
   title: {
     fontSize: 30,
     marginBottom: 30,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
   },
   inputContainer: {
-    width: '80%',
+    width: "80%",
   },
   input: {
-    backgroundColor: 'lightgray',
+    backgroundColor: "lightgray",
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 20,
   },
   buttonContainer: {
-    width: '80%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "80%",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 40,
   },
   button: {
-    backgroundColor: 'blue',
-    width: '100%',
+    backgroundColor: "blue",
+    width: "100%",
     padding: 10,
     borderRadius: 10,
     marginTop: 10,
   },
   buttonText: {
-    textAlign: 'center',
-    color: 'white',
-    fontWeight: 'bold',
+    textAlign: "center",
+    color: "white",
+    fontWeight: "bold",
     fontSize: 15,
   },
   buttonOutline: {
-    backgroundColor: 'red',
+    backgroundColor: "red",
     marginTop: 10,
     borderRadius: 10,
   },
   buttonOutlineText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     fontSize: 15,
-    textAlign: 'center',
+    textAlign: "center",
   },
-})
+});
