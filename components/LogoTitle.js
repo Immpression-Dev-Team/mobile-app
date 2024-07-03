@@ -4,7 +4,7 @@ import { View, Image, Pressable, StyleSheet } from 'react-native';
 const LogoTitle = () => {
     return (
         <View>
-            <Image source={require('../assets/headers/Immpression.png')} style={styles.title} />
+            <Image source={require('../assets/headers/Immpression_multi.png')} style={styles.title} />
         </View>
     );
 };

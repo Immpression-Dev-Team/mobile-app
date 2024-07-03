@@ -4,7 +4,7 @@ import { View, Text, Pressable, StyleSheet, ImageBackground, Image } from 'react
 const categoryLabels = ["Sketches", "Photography"]; // Define category labels here
 const backgroundImage1 = require('../../assets/thumbnails/sketches.png'); // Import your first background image
 const backgroundImage2 = require('../../assets/thumbnails/photography.png'); // Import your second background image
-const headerImage = require('../../assets/headers/Trending_Categories.png'); // Import your header image
+const headerImage = require('../../assets/headers/Trending_Categories_multi.png'); // Import your header image
 
 const Categories = () => {
     return (

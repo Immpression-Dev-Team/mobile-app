@@ -17,7 +17,8 @@ const HomeScreen = () => {
     <View style={styles.everything}>
       <View style={styles.navbar}>
         <NavBar />
-        <LongSearchBar /><LoginButton />
+        <LongSearchBar />
+        
       </View>
       <ScrollView>
         <View style={styles.container}>
@@ -29,6 +30,7 @@ const HomeScreen = () => {
           <ArtistsPick />
           {/* this is the original login button and will fix later */}
           {/* <LoginButton /> */}
+          <LoginButton />
         </View>
       </ScrollView>
     </View>
@@ -42,7 +44,7 @@ const styles = StyleSheet.create({
   container: {
     // backgroundColor: '#acb3bf',
     flex: 1,
-    paddingBottom: 150,
+    paddingBottom: 300,
     paddingHorizontal: 0,
   },
   navbar: {

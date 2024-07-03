@@ -29,7 +29,7 @@ const imagePaths = [
 ];
 
 
-const headerImage = require('../../assets/headers/Art_for_you.png'); // Import the header image
+const headerImage = require('../../assets/headers/Art_for_you_multi.png'); // Import the header image
 
 const chunkArray = (arr, chunkSize) => {
     const chunks = [];
