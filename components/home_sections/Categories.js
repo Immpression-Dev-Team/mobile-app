@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     headerContainer: {
         width: '100%',
         alignItems: 'flex-start', // Align the header image to the left
-        marginLeft: 50,
+        marginLeft: 35,
     },
     headerImage: {
         width: 230, // Adjust the width as needed
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        marginTop: 20,
+        marginTop: 2,
     },
     box: {
         width: '46%',

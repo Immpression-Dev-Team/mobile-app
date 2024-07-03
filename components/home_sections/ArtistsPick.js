@@ -50,6 +50,7 @@ const ArtistsPick = () => {
 };
 
 const styles = StyleSheet.create({
+
     section: {
         marginBottom: 20,
         marginTop: 20,
@@ -102,7 +103,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: 'white',
+        borderColor: '#5D9177',
     },
     profilePic: {
         width: '100%',
