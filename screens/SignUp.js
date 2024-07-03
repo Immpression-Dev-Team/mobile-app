@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable } from 'react-native'
 import React, { useState } from 'react'
 import NavBar from '../components/Navbar'
 import { API_URL } from '../config';
@@ -41,9 +41,9 @@ const handleSubmit = async (e) => {
           <TextInput placeholder="Password" value={password} onChangeText={text => setPassword(text)} style={styles.input} secureTextEntry />
           {/* <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={text => setConfirmPassword(text)} style={styles.input} secureTextEntry /> */}
         </View>
-        <TouchableOpacity onPress={handleSubmit} style={[styles.button, styles.buttonOutline]}>
+        <Pressable onPress={handleSubmit} style={[styles.button, styles.buttonOutline]}>
           <Text style={styles.buttonOutlineText}>Sign Up</Text>
-        </TouchableOpacity>
+        </Pressable>
       </KeyboardAvoidingView>
     </View>
   )

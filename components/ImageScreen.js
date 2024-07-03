@@ -1,14 +1,14 @@
 import React from 'react';
-import { View, Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { View, Image, StyleSheet, Text, Pressable } from 'react-native';
 
 const ImageScreen = ({ route, navigation }) => {
   const { image, artistName, artTitle } = route.params;
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.closeButton}>
+      <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}>
         <Text style={styles.closeButtonText}>X</Text>
-      </TouchableOpacity>
+      </Pressable>
       <Image source={image} style={styles.fullImage} />
       <Text style={styles.artTitle}>{artTitle}</Text>
       <Text style={styles.artistName}>{artistName}</Text>

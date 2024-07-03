@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, Image } from 'react-native';
+import { View, Text, Pressable, StyleSheet, ImageBackground, Image } from 'react-native';
 
 const categoryLabels = ["Sketches", "Photography"]; // Define category labels here
 const backgroundImage1 = require('../../assets/thumbnails/sketches.png'); // Import your first background image
@@ -14,7 +14,7 @@ const Categories = () => {
             </View>
             <View style={styles.container}>
                 {categoryLabels.map((label, index) => (
-                    <TouchableOpacity key={index} style={styles.box}>
+                    <Pressable key={index} style={styles.box}>
                         {index === 0 ? (
                             <ImageBackground source={backgroundImage1} style={styles.backgroundImage} imageStyle={styles.image}>
                                 <Text style={styles.label}>{label}</Text>
@@ -28,7 +28,7 @@ const Categories = () => {
                                 <Text style={styles.label}>{label}</Text>
                             </View>
                         )}
-                    </TouchableOpacity>
+                    </Pressable>
                 ))}
             </View>
         </View>

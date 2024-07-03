@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Image, TouchableOpacity, StyleSheet, Animated } from 'react-native';
+import { View, Image, Pressable, StyleSheet, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import logoImg from "../assets/Logo_T.png";
 import { useNavigation } from '@react-navigation/native';
@@ -66,13 +66,13 @@ export default function Navbar() {
   return (
     <View style={styles.container}>
       <View style={styles.navbar}>
-          <TouchableOpacity onPress={() => navigateTo("Home")} style={styles.logoAndTitle}>
+          <Pressable onPress={() => navigateTo("Home")} style={styles.logoAndTitle}>
             <Image source={logoImg} style={styles.logo} />
             <LogoTitle />
-          </TouchableOpacity>
-        <TouchableOpacity onPress={handleToggleNavItems} style={styles.menuButton}>
+          </Pressable>
+        <Pressable onPress={handleToggleNavItems} style={styles.menuButton}>
           <Icon name={showNavItems ? "close" : "menu"} size={30} color="black" />
-        </TouchableOpacity>
+        </Pressable>
       </View>
       <Animated.View style={[styles.navItemsContainer, {
         transform: [
@@ -84,21 +84,21 @@ export default function Navbar() {
           },
         ],
       }]}>
-        <TouchableOpacity onPress={() => navigateTo("Home")} style={styles.navItem}>
+        <Pressable onPress={() => navigateTo("Home")} style={styles.navItem}>
           <Icon name="home" size={24} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo("Statistics")} style={styles.navItem}>
+        </Pressable>
+        <Pressable onPress={() => navigateTo("Statistics")} style={styles.navItem}>
           <Icon name="equalizer" size={24} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo("Profile")} style={styles.navItem}>
+        </Pressable>
+        <Pressable onPress={() => navigateTo("Profile")} style={styles.navItem}>
           <Icon name="photo-library" size={24} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigateTo("Settings")} style={styles.navItem}>
+        </Pressable>
+        <Pressable onPress={() => navigateTo("Settings")} style={styles.navItem}>
           <Icon name="settings" size={24} color="black" />
-        </TouchableOpacity>
-        {/* <TouchableOpacity onPress={handleOpenSearch} style={styles.navItem}>
+        </Pressable>
+        {/* <Pressable onPress={handleOpenSearch} style={styles.navItem}>
           <Icon name="search" size={24} color="black" />
-        </TouchableOpacity> */}
+        </Pressable> */}
       </Animated.View>
       {showSearch && (
         <Animated.View style={[styles.searchContainer, {

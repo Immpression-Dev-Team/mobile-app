@@ -1,14 +1,14 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, TextInput, Text } from 'react-native';
+import { View, Pressable, StyleSheet, TextInput, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const LongSearchBar = () => {
   return (
     <View style={styles.main}>
       <TextInput placeholder="Search" style={styles.input} />
-      <TouchableOpacity style={styles.button}>
+      <Pressable style={styles.button}>
         <Icon name="search" size={22} color="black" />
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 };

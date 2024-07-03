@@ -27,7 +27,7 @@ const HomeScreen = () => {
           <Categories />
           <FeaturedArtists />
           <ArtistsPick />
-          // this is the original login button and will fix later
+          {/* this is the original login button and will fix later */}
           {/* <LoginButton /> */}
         </View>
       </ScrollView>

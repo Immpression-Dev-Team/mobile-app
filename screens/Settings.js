@@ -4,7 +4,7 @@ import {
   Text,
   StyleSheet,
   FlatList,
-  TouchableOpacity,
+  Pressable,
 } from "react-native";
 import NavBar from "../components/Navbar";
 import SettingsItem from "../components/SettingsItem";
@@ -79,9 +79,9 @@ const SettingsScreen = () => {
     <View style={styles.container}>
       <NavBar />
       <View style={styles.settingsContainer}>
-      <TouchableOpacity onPress={handleSubmit}>
+      <Pressable onPress={handleSubmit}>
           <Text style={styles.logoutBtn}>Log out</Text>
-        </TouchableOpacity>
+        </Pressable>
         <Text style={styles.title}>Settings</Text>
         <View style={styles.horizontalDivider} />
         <FlatList
@@ -89,13 +89,13 @@ const SettingsScreen = () => {
           renderItem={({ item }) => <SettingsItem item={item} />}
         />
         <View style={styles.horizontalDivider} />
-        // this the original logout button and will fix later
-        {/* <TouchableOpacity onPress={handleSubmit}>
+        {/* this the original logout button and will fix later */}
+        {/* <Pressable onPress={handleSubmit}>
           <Text style={styles.logoutBtn}>Log out</Text>
-        </TouchableOpacity> */}
-        <TouchableOpacity>
+        </Pressable> */}
+        <Pressable>
           <Text style={styles.addAccountBtn}>Add Account</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );

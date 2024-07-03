@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Image, Pressable, StyleSheet } from 'react-native';
 
 const LogoTitle = () => {
     return (

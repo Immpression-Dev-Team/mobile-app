@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Pressable, Text, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 const LoginButton = () => {
@@ -10,9 +10,9 @@ const LoginButton = () => {
     };
 
     return (
-        <TouchableOpacity onPress={() => navigateTo("Login")} style={styles.button}>
+        <Pressable onPress={() => navigateTo("Login")} style={styles.button}>
             <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
+        </Pressable>
     );
 };
 

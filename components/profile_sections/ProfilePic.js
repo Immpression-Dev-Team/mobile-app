@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, Image, } from 'react-native';
+import { Pressable, Text, StyleSheet, Image, } from 'react-native';
 
 const ProfilePic = ({ source }) => {
     return (

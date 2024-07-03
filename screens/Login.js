@@ -4,7 +4,7 @@ import {
   View,
   KeyboardAvoidingView,
   TextInput,
-  TouchableOpacity,
+  Pressable,
 } from "react-native";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
@@ -68,15 +68,15 @@ const Login = () => {
             />
           </View>
           <View style={styles.buttonContainer}>
-            <TouchableOpacity onPress={handleSubmit} style={styles.button}>
+            <Pressable onPress={handleSubmit} style={styles.button}>
               <Text style={styles.buttonText}>Login</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
+            </Pressable>
+            <Pressable
               onPress={() => navigateTo("SignUp")}
               style={[styles.button, styles.buttonOutline]}
             >
               <Text style={styles.buttonOutlineText}>Sign Up</Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </KeyboardAvoidingView>
       </View>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Button, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Image } from 'react-native';
 import NavBar from '../components/Navbar'
 import SearchBar from '../components/SearchBar'
 
@@ -27,12 +27,12 @@ const StatisticsScreen = () => {
       <View style={styles.box}>
         
         <View style={styles.statButtonContainer}>
-          <TouchableOpacity onPress={buttonShow(buttonA)} id='buttonA' style={[buttonA ? styles.buttonShow : styles.statButton ]}>
+          <Pressable onPress={buttonShow(buttonA)} id='buttonA' style={[buttonA ? styles.buttonShow : styles.statButton ]}>
             <Text style={styles.statText}>Similar Sales</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={buttonShow(buttonB)} id='buttonB' style={buttonB ? styles.buttonShow : styles.statButton}>
+          </Pressable>
+          <Pressable onPress={buttonShow(buttonB)} id='buttonB' style={buttonB ? styles.buttonShow : styles.statButton}>
             <Text style={styles.statText}>Record Price</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         <View>
@@ -50,9 +50,9 @@ const StatisticsScreen = () => {
         <View style={styles.statIndividual}>
           <Text>Sharpe Ratio (1995-2023)</Text>
           <View style={{ display: 'flex', flexDirection: 'row', margin: 0}}>
-            <TouchableOpacity style={{ display: 'flex', flexDirection: 'row' , justifyContent: 'space-around', padding: 0, margin: 0}}>
+            <Pressable style={{ display: 'flex', flexDirection: 'row' , justifyContent: 'space-around', padding: 0, margin: 0}}>
               <Text style={{color: 'blue', textDecorationLine: 'underline'}}>Watch Video</Text>
-            </TouchableOpacity>
+            </Pressable>
             <Image 
               source={require('../assets/question.png')}
               style={styles.logo}
@@ -90,7 +90,7 @@ const StatisticsScreen = () => {
               style={{ height: 30, width: 450, resizeMode: 'center' }}
             />
           </Text>
-          <Button 
+          <Pressable 
             title='MEMBERS ONLY'
           />
       </View>

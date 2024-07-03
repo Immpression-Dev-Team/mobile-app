@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableWithoutFeedback, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, Pressable, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import DiscoverButton from '../DiscoverButton'; // Adjust the path as needed
 import { useNavigation } from '@react-navigation/native';
@@ -93,15 +93,15 @@ const ArtForYou = () => {
         <LinearGradient colors={['white', '#acb3bf', 'white']} style={styles.section}>
             <View style={styles.headerContainer}>
                 <Image source={headerImage} style={styles.headerImage} />
-                <TouchableOpacity
+                <Pressable
                     style={styles.rightHeader}
                     onPress={() => setIsAutoScrolling((prev) => !prev)}
                 >
                     <DiscoverButton onPress={() => setIsAutoScrolling((prev) => !prev)} isAutoScrolling={isAutoScrolling} />
-                </TouchableOpacity>
+                </Pressable>
             </View>
             <View style={styles.allImageContainer}>
-                <TouchableWithoutFeedback onPressIn={handleUserInteraction}>
+                <Pressable onPressIn={handleUserInteraction}>
                     <ScrollView
                         horizontal
                         style={styles.scrollView}
@@ -115,12 +115,12 @@ const ArtForYou = () => {
                         }}
                     >
                         <View style={styles.largeImageContainer}>
-                            <TouchableOpacity onPress={() => handleImagePress(images[0].path, images[0].artistName)}>
+                            <Pressable onPress={() => handleImagePress(images[0].path, images[0].artistName)}>
                                 <Image
                                     source={images[0].path} // Access the image path from the object
                                     style={styles.largeImage}
                                 />
-                            </TouchableOpacity>
+                            </Pressable>
                             <Text style={styles.artistName}>{images[0].artistName}</Text>
                         </View>
 
@@ -129,19 +129,19 @@ const ArtForYou = () => {
                             <View key={chunkIndex} style={styles.column}>
                                 {chunk.map((path, index) => (
                                     <View key={index}>
-                                        <TouchableOpacity onPress={() => handleImagePress(path.path, path.artistName)}>
+                                        <Pressable onPress={() => handleImagePress(path.path, path.artistName)}>
                                             <Image
                                                 source={path.path}
                                                 style={styles.image}
                                             />
-                                        </TouchableOpacity>
+                                        </Pressable>
                                         <Text style={styles.artistName}>{path.artistName}</Text>
                                     </View>
                                 ))}
                             </View>
                         ))}
                     </ScrollView>
-                </TouchableWithoutFeedback>
+                </Pressable>
             </View>
         </LinearGradient>
     );

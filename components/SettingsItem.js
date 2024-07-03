@@ -1,13 +1,13 @@
-import {Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Image, StyleSheet, Text, Pressable, View} from "react-native";
 
 const SettingsItem = ({item: { iconUrl, label}, handleClick }) => {
     return (
-        <TouchableOpacity style={styles.container} onPress={handleClick}>
+        <Pressable style={styles.container} onPress={handleClick}>
             <View style={styles.settingImgContainer}>
                 <Image style={styles.settingImg} source={iconUrl} resizeMethod="contain" />
             </View>
             <Text style={styles.settingLabel}>{label}</Text>
-        </TouchableOpacity>
+        </Pressable>
     )
 }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TextInput, Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const SearchContainer = ({ onClose }) => {
@@ -8,9 +8,9 @@ const SearchContainer = ({ onClose }) => {
       <View style={styles.overlay} />
       <View style={styles.main}>
         <TextInput placeholder="Search" style={styles.input} />
-        <TouchableOpacity style={styles.button} onPress={onClose}>
+        <Pressable style={styles.button} onPress={onClose}>
           <Icon name="search" size={22} color="black" />
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );
