@@ -5,29 +5,27 @@ import DiscoverButton from '../DiscoverButton'; // Adjust the path as needed
 import { useNavigation } from '@react-navigation/native';
 
 const imagePaths = [
-    { path: require('../../assets/art/art5.png'), artistName: '@Artist1' },
-    { path: require('../../assets/art/art2.png'), artistName: '@Artist2' },
-    { path: require('../../assets/art/batman.png'), artistName: '@BruceWayne' },
-    { path: require('../../assets/art/art3.png'), artistName: '@Artist3' },
-    { path: require('../../assets/art/art4.png'), artistName: '@Artist4' },
-    { path: require('../../assets/art/art1.jpg'), artistName: '@Artist5' },
-    { path: require('../../assets/art/art6.png'), artistName: '@Artist6' },
-    { path: require('../../assets/photos/mountain.jpg'), artistName: '@Artist7' },
-    { path: require('../../assets/photos/grass.jpg'), artistName: '@Artist8' },
-    { path: require('../../assets/photos/building.jpg'), artistName: '@Artist9' },
-    { path: require('../../assets/photos/man.jpg'), artistName: '@Artist10' },
-    { path: require('../../assets/photos/hand.jpg'), artistName: '@Artist11' },
-    { path: require('../../assets/photos/gray.jpg'), artistName: '@Artist12' },
-    { path: require('../../assets/photos/path.jpg'), artistName: '@Artist13' },
-    { path: require('../../assets/photos/animal.jpg'), artistName: '@Artist14' },
-    { path: require('../../assets/photos/sunset.jpg'), artistName: '@Artist15' },
-    { path: require('../../assets/photos/deer.jpg'), artistName: '@Artist16' },
-    { path: require('../../assets/art/superman.png'), artistName: '@Clark Kent' },
-    { path: require('../../assets/art/spiderman.png'), artistName: '@PeterParker' },
-    { path: require('../../assets/art/tajmahal.png'), artistName: '@NavjotKaur' },
-    
+    { path: require('../../assets/art/art5.png'), artistName: '@Artist1', artTitle: 'Title1' },
+    { path: require('../../assets/art/art2.png'), artistName: '@Artist2', artTitle: 'Title2' },
+    { path: require('../../assets/art/batman.png'), artistName: '@BruceWayne', artTitle: 'Title3' },
+    { path: require('../../assets/art/art3.png'), artistName: '@Artist3', artTitle: 'Title4' },
+    { path: require('../../assets/art/art4.png'), artistName: '@Artist4', artTitle: 'Title5' },
+    { path: require('../../assets/art/art1.jpg'), artistName: '@Artist5', artTitle: 'Title6' },
+    { path: require('../../assets/art/art6.png'), artistName: '@Artist6', artTitle: 'Title7' },
+    { path: require('../../assets/photos/mountain.jpg'), artistName: '@Artist7', artTitle: 'Title8' },
+    { path: require('../../assets/photos/grass.jpg'), artistName: '@Artist8', artTitle: 'Title9' },
+    { path: require('../../assets/photos/building.jpg'), artistName: '@Artist9', artTitle: 'Title10' },
+    { path: require('../../assets/photos/man.jpg'), artistName: '@Artist10', artTitle: 'Title11' },
+    { path: require('../../assets/photos/hand.jpg'), artistName: '@Artist11', artTitle: 'Title12' },
+    { path: require('../../assets/photos/gray.jpg'), artistName: '@Artist12', artTitle: 'Title13' },
+    { path: require('../../assets/photos/path.jpg'), artistName: '@Artist13', artTitle: 'Title14' },
+    { path: require('../../assets/photos/animal.jpg'), artistName: '@Artist14', artTitle: 'Title15' },
+    { path: require('../../assets/photos/sunset.jpg'), artistName: '@Artist15', artTitle: 'Title16' },
+    { path: require('../../assets/photos/deer.jpg'), artistName: '@Artist16', artTitle: 'Title17' },
+    { path: require('../../assets/art/superman.png'), artistName: '@Clark Kent', artTitle: 'Title18' },
+    { path: require('../../assets/art/spiderman.png'), artistName: '@PeterParker', artTitle: 'Title19' },
+    { path: require('../../assets/art/tajmahal.png'), artistName: '@NavjotKaur', artTitle: 'Title20' },
 ];
-
 
 const headerImage = require('../../assets/headers/Art_for_you_multi.png'); // Import the header image
 
@@ -85,8 +83,8 @@ const ArtForYou = () => {
         }, 5000); // 5 seconds of inactivity
     };
 
-    const handleImagePress = (image, artistName) => {
-        navigation.navigate('ImageScreen', { image, artistName });
+    const handleImagePress = (image, artistName, artTitle) => {
+        navigation.navigate('ImageScreen', { image, artistName, artTitle });
     };
 
     return (
@@ -115,7 +113,7 @@ const ArtForYou = () => {
                         }}
                     >
                         <View style={styles.largeImageContainer}>
-                            <Pressable onPress={() => handleImagePress(images[0].path, images[0].artistName)}>
+                            <Pressable onPress={() => handleImagePress(images[0].path, images[0].artistName, images[0].artTitle)}>
                                 <Image
                                     source={images[0].path} // Access the image path from the object
                                     style={styles.largeImage}
@@ -129,7 +127,7 @@ const ArtForYou = () => {
                             <View key={chunkIndex} style={styles.column}>
                                 {chunk.map((path, index) => (
                                     <View key={index}>
-                                        <Pressable onPress={() => handleImagePress(path.path, path.artistName)}>
+                                        <Pressable onPress={() => handleImagePress(path.path, path.artistName, path.artTitle)}>
                                             <Image
                                                 source={path.path}
                                                 style={styles.image}
@@ -163,27 +161,10 @@ const styles = StyleSheet.create({
         width: 264, // Adjust width according to your image
         height: 61, // Adjust height according to your image
         resizeMode: 'contain',
-        // backgroundColor: '#000',
     },
-    // rightHeader: {
-    //     backgroundColor: '#000',
-    //     borderTopRightRadius: 10,
-    //     marginTop: 26,
-    //     marginLeft: 33,
-    // },
-    // secondaryHeader: {
-    //     fontSize: 15,
-    //     color: 'white',
-    //     fontWeight: 'bold',
-    //     marginTop: 3,
-    //     paddingVertical: 3,
-    //     paddingHorizontal: 8,
-
-    // },
     allImageContainer: {
         width: '97%',
         alignSelf: 'center',
-        // backgroundColor: 'white',
         borderWidth: 0,
         borderColor: '#aebacf',
         borderRadius: 5,
@@ -208,14 +189,6 @@ const styles = StyleSheet.create({
         width: 264, // Twice the width of normal images
         height: 264, // Twice the height of normal images
     },
-    horizontalLine: {
-        borderBottomColor: '#8a9ab5', // Match the middle color of the gradient
-        borderBottomWidth: 2,
-        marginTop: 10,
-        marginHorizontal: 20, // Adjust the horizontal margin as needed
-        borderRadius: 5, // Add some border radius for a nicer appearance
-    },
-
     artistName: {
         fontSize: 10,
         marginLeft: 2,
@@ -225,12 +198,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: 'white',
         marginBottom: 0,
-        // paddingHorizontal: 7,
-        // borderTopRightRadius: 3,
-        // backgroundColor: '#000',
     },
-
-
     button: {
         marginTop: 10,
         paddingVertical: 10,

@@ -10,8 +10,9 @@ const ImageScreen = ({ route, navigation }) => {
         <Text style={styles.closeButtonText}>X</Text>
       </Pressable>
       <Image source={image} style={styles.fullImage} />
-      <Text style={styles.artTitle}>{artTitle}</Text>
+      
       <Text style={styles.artistName}>{artistName}</Text>
+      <Text style={styles.artTitle}>{artTitle}</Text>
     </View>
   );
 };
@@ -39,7 +40,7 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   artTitle: {
-    color: 'black',
+    color: 'blue',
     fontSize: 20,
     marginTop: 10,
   },

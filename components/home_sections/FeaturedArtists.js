@@ -87,9 +87,9 @@ const styles = StyleSheet.create({
     headerContainer: {
         borderRadius: 3,
         paddingVertical: 0,
-        paddingHorizontal: 15,
+        paddingHorizontal: 5,
         marginTop: 20,
-        marginBottom: 10,
+        marginBottom: 5,
         alignSelf: 'flex-start',
     },
     headerImage: {
