@@ -17,7 +17,7 @@ const HomeScreen = () => {
     <View style={styles.everything}>
       <View style={styles.navbar}>
         <NavBar />
-        <LongSearchBar />
+        <LongSearchBar /><LoginButton />
       </View>
       <ScrollView>
         <View style={styles.container}>
@@ -27,7 +27,8 @@ const HomeScreen = () => {
           <Categories />
           <FeaturedArtists />
           <ArtistsPick />
-          <LoginButton />
+          // this is the original login button and will fix later
+          {/* <LoginButton /> */}
         </View>
       </ScrollView>
     </View>

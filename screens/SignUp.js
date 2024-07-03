@@ -1,35 +1,47 @@
 import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import NavBar from '../components/Navbar'
-import { API_URL } from '../config'; 
+import { API_URL } from '../config';
+import axios from 'axios';
+import { useNavigation } from "@react-navigation/native";
+
 
 const SignUp = () => {
   const [email, setEmail] = useState("")
-  const [userName, setUserName] = useState("")
+  const [name, setName] = useState("")
   const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
+//   const [confirmPassword, setConfirmPassword] = useState("")
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    axios.post(`${API_URL}/signup`, {email, userName, password, confirmpassword})
-    .then(result => {console.log(result)
-      back('/')
-    })
-    .catch(err => console.log(err))
-  }
+const navigation = useNavigation();
 
+// TODO: set up frontend confirmPassword logic before calling handleSubmit
+const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+        const response = await axios.post(`${API_URL}/signup`, { name, email, password}
+      ); console.log(response);
+      if (response.data.success) {
+        navigation.navigate("Home");
+      } else {
+        console.log("Login failed");
+      }
+    } catch (err) {
+      console.log("Error during login:", err);
+    }
+  };
+  
   return (
     <View style={styles.container}>
       <NavBar />
       <KeyboardAvoidingView style={styles.signUpContainer} behavior="padding">
         <View style={styles.inputContainer}>
           <Text style={styles.title}>Sign Up to Impression</Text>
-          <TextInput placeholder="Email" value={userName} onChangeText={text => setUserName(text)} style={styles.input} />
+          <TextInput placeholder="name" value={name} onChangeText={text => setName(text)} style={styles.input} />
           <TextInput placeholder="Email" value={email} onChangeText={text => setEmail(text)} style={styles.input} />
           <TextInput placeholder="Password" value={password} onChangeText={text => setPassword(text)} style={styles.input} secureTextEntry />
-          <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={text => setConfirmPassword(text)} style={styles.input} secureTextEntry />
+          {/* <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={text => setConfirmPassword(text)} style={styles.input} secureTextEntry /> */}
         </View>
-        <TouchableOpacity onPress={() => {handleSubmit}} style={[styles.button, styles.buttonOutline]}>
+        <TouchableOpacity onPress={handleSubmit} style={[styles.button, styles.buttonOutline]}>
           <Text style={styles.buttonOutlineText}>Sign Up</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>

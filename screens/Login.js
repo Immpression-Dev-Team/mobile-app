@@ -10,6 +10,7 @@ import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import NavBar from "../components/Navbar";
 import axios from "axios";
+import { API_URL } from '../config';
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -21,12 +22,12 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:4000/login",
+        `${API_URL}/login`,
         { email, password },
         {
           withCredentials: true,
         }
-      );
+      ); console.log(response);
       if (response.data.success) {
         navigation.navigate("Home");
       } else {
@@ -91,9 +92,9 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    justifyContent: "flex-start", // Align items at the very top
+    justifyContent: "flex-start",
     alignItems: "center",
-    paddingTop: 20, // Adjust the top padding to create space between NavBar and Login content
+    paddingTop: 20,
   },
   keyboardAvoidingContainer: {
     flex: 1,

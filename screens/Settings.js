@@ -17,6 +17,8 @@ import userIcon from "../assets/user.png";
 import webIcon from "../assets/web.png";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
+import { API_URL } from '../config'; 
+
 
 const options = [
   {
@@ -55,7 +57,7 @@ const SettingsScreen = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:4000/logout",
+        `${API_URL}/logout`,
         {},
         { withCredentials: true }
       );
@@ -77,6 +79,9 @@ const SettingsScreen = () => {
     <View style={styles.container}>
       <NavBar />
       <View style={styles.settingsContainer}>
+      <TouchableOpacity onPress={handleSubmit}>
+          <Text style={styles.logoutBtn}>Log out</Text>
+        </TouchableOpacity>
         <Text style={styles.title}>Settings</Text>
         <View style={styles.horizontalDivider} />
         <FlatList
@@ -84,9 +89,10 @@ const SettingsScreen = () => {
           renderItem={({ item }) => <SettingsItem item={item} />}
         />
         <View style={styles.horizontalDivider} />
-        <TouchableOpacity onPress={handleSubmit}>
+        // this the original logout button and will fix later
+        {/* <TouchableOpacity onPress={handleSubmit}>
           <Text style={styles.logoutBtn}>Log out</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity>
           <Text style={styles.addAccountBtn}>Add Account</Text>
         </TouchableOpacity>
