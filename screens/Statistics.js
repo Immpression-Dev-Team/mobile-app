@@ -1,172 +1,84 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable, Image } from 'react-native';
-import NavBar from '../components/Navbar'
-import SearchBar from '../components/SearchBar'
-
-
-const Divider = () => {
-  return (
-    <View style={{ height: 2, backgroundColor: '#ddd', marginHorizontal: 8, marginVertical: 16 }} />
-  );
-};
+// screens/StatisticsScreen.js
+import React from 'react';
+import { View, StyleSheet, ScrollView, Image, Text } from 'react-native';
+import Navbar from '../components/Navbar';
 
 const StatisticsScreen = () => {
-  const [buttonA, setButtonA] = useState(true)
-  const [buttonB, setButtonB] = useState(false)
-
-  const buttonShow = (button) => {
-    console.log(button === buttonA)
-  }
-
-  
+  const imagePaths = [
+    { uri: 'https://via.placeholder.com/150', artistName: '@OnlineArtist' },
+    { path: require('../assets/art/art5.png'), artistName: '@Artist1' },
+    { path: require('../assets/art/art2.png'), artistName: '@Artist2' },
+    { path: require('../assets/art/batman.png'), artistName: '@BruceWayne' },
+    { path: require('../assets/art/art3.png'), artistName: '@Artist3' },
+    { path: require('../assets/art/art4.png'), artistName: '@Artist4' },
+    { path: require('../assets/art/art1.jpg'), artistName: '@Artist5' },
+    { path: require('../assets/art/art6.png'), artistName: '@Artist6' },
+    { path: require('../assets/photos/mountain.jpg'), artistName: '@Artist7' },
+    { path: require('../assets/photos/grass.jpg'), artistName: '@Artist8' },
+    { path: require('../assets/photos/building.jpg'), artistName: '@Artist9' },
+    { path: require('../assets/photos/man.jpg'), artistName: '@Artist10' },
+    { path: require('../assets/photos/hand.jpg'), artistName: '@Artist11' },
+    { path: require('../assets/photos/gray.jpg'), artistName: '@Artist12' },
+    { path: require('../assets/photos/path.jpg'), artistName: '@Artist13' },
+    { path: require('../assets/photos/animal.jpg'), artistName: '@Artist14' },
+    { path: require('../assets/photos/sunset.jpg'), artistName: '@Artist15' },
+    { path: require('../assets/photos/deer.jpg'), artistName: '@Artist16' },
+    { path: require('../assets/art/superman.png'), artistName: '@Clark Kent' },
+    { path: require('../assets/art/spiderman.png'), artistName: '@PeterParker' },
+    { path: require('../assets/art/tajmahal.png'), artistName: '@NavjotKaur' },
+  ];
 
   return (
-    <ScrollView style={styles.container}>
-      <NavBar />
-
-      <View style={styles.box}>
-        
-        <View style={styles.statButtonContainer}>
-          <Pressable onPress={buttonShow(buttonA)} id='buttonA' style={[buttonA ? styles.buttonShow : styles.statButton ]}>
-            <Text style={styles.statText}>Similar Sales</Text>
-          </Pressable>
-          <Pressable onPress={buttonShow(buttonB)} id='buttonB' style={buttonB ? styles.buttonShow : styles.statButton}>
-            <Text style={styles.statText}>Record Price</Text>
-          </Pressable>
+    <>
+      <Navbar />
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.row}>
+          {imagePaths.map((image, index) => {
+            // console.log(`Rendering image at index ${index} with source: ${image.path || image.uri}`); 
+            return (
+              <View key={index} style={styles.imageContainer}>
+                <Image 
+                  source={image.path ? image.path : { uri: image.uri }} 
+                  style={styles.image} 
+                  onError={(error) => console.log(`Failed to load image at index ${index}: ${error.nativeEvent.error}`)}
+                //   onLoad={() => console.log(`Image at index ${index} loaded successfully`)}
+                />
+                <Text style={styles.artistName}>{image.artistName}</Text>
+              </View>
+            );
+          })}
         </View>
-
-        <View>
-          <Image
-            style={[styles.images, {marginTop: 15}]}
-            source={{ uri: 'https://images.pexels.com/photos/5831529/pexels-photo-5831529.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'}}
-          />
-        </View>
-      </View>
-
-      <View style={[styles.box2]}>
-        <Text style={[styles.centerAlign, { marginLeft: 8, marginTop: 20 }]}>Price Appreciation of Similar Works</Text>
-        <Text style={[{ fontSize: 30, fontWeight: '400', marginLeft: 8 }]}>21.8%</Text>
-        <Divider />
-        <View style={styles.statIndividual}>
-          <Text>Sharpe Ratio (1995-2023)</Text>
-          <View style={{ display: 'flex', flexDirection: 'row', margin: 0}}>
-            <Pressable style={{ display: 'flex', flexDirection: 'row' , justifyContent: 'space-around', padding: 0, margin: 0}}>
-              <Text style={{color: 'blue', textDecorationLine: 'underline'}}>Watch Video</Text>
-            </Pressable>
-            <Image 
-              source={require('../assets/question.png')}
-              style={styles.logo}
-            />
-          </View>
-        </View>
-        <Divider />
-        <View style={styles.statIndividual}>
-          <Text>Jean-Michel Basquiat</Text>
-          <View style={{ display: 'flex', flexDirection: 'row' }}>
-            <Image 
-              source={require('../assets/up-arrow.png')}
-              style={styles.logo}
-            />
-            <Text>
-              1.23
-            </Text>
-          </View>
-        </View>
-        <Divider />
-        <View style={styles.statIndividual}>
-          <Text>All Art</Text>
-          <Text>0.37</Text>
-        </View>
-        <Divider />
-        <View style={styles.statIndividual}>
-          <Text>S&P 500</Text>
-          <Text>0.52</Text>
-        </View>
-        <Divider />
-        <View>
-          <Text>
-            <Image 
-              source={{ uri: 'https://www.shutterstock.com/image-vector/93-loading-progress-bar-infographics-260nw-2148395211.jpg' }}
-              style={{ height: 30, width: 450, resizeMode: 'center' }}
-            />
-          </Text>
-          <Pressable 
-            title='MEMBERS ONLY'
-          />
-      </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1,
-  },
-  buttonShow: {
-    borderWidth: 2,
-    borderRadius: 22,
-    borderColor: 'blue',
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-  },
-  box: {
-    borderWidth: 2,
-    borderColor: 'gray',
-    borderRadius: 10,
-    margin: 8,
-    height: 500
-  },
-  box2: {
-    borderWidth: 2,
-    borderColor: 'gray',
-    borderRadius: 10,
-    margin: 8,
-    height: 400
-  },
-  pr: {
-    paddingLeft: 18,
-    paddingTop: 14
-  },
-  statButtonContainer: {
+  container: {
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    marginTop: 14
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    padding: 10,
   },
-  statIndividual: {
-    display: 'flex', 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    marginHorizontal: 8
+  row: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
   },
-  statButton: {
-    borderWidth: 2,
-    borderRadius: 22,
-    borderColor: 'gray',
-    paddingVertical: 10,
-    paddingHorizontal: 12,
+  imageContainer: {
+    width: '30%', // Adjust this to fit 3 images per row
+    aspectRatio: 1, // Ensures the container is square
+    marginBottom: 10,
   },
-  statText: {
+  image: {
+    width: '100%',
+    height: 110,
+    resizeMode: 'cover',
+  },
+  artistName: {
     textAlign: 'center',
-    minWidth: 100
+    marginTop: 5,
   },
-  stretch: {
-    width: 50,
-    height: 200,
-    resizeMode: 'stretch',
-  },
-  images: {
-    height: 400,
-    width: 350,
-    alignSelf: 'center'
-  },
-  logo: {
-    width: 15,
-    height: 15,
-  },
-  centerAlign: {
-    alignSelf: 'flex-start'
-  }
 });
 
 export default StatisticsScreen;
