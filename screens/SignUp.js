@@ -38,6 +38,10 @@ const handleSubmit = async (e) => {
     }
   };
   console.log(passwordLengthError);
+
+  const handleBack = () => {
+    navigation.navigate("Login");
+  }
   
   return (
     <View style={styles.container}>
@@ -63,6 +67,12 @@ const handleSubmit = async (e) => {
         style={[styles.button, styles.buttonOutline]}
         >
           <Text style={styles.buttonOutlineText}>Sign Up</Text>
+        </Pressable>
+        <Pressable 
+          onPress={handleBack} 
+          style={[styles.button, styles.buttonOutline]}
+        >
+          <Text style={styles.buttonOutlineText}>Back to Login</Text>
         </Pressable>
       </KeyboardAvoidingView>
     </View>

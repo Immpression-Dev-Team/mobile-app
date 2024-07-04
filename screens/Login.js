@@ -68,6 +68,9 @@ const Login = () => {
             />
           </View>
           <View style={styles.buttonContainer}>
+            <Pressable onPress={() => navigateTo("PasswordReset")} style={styles.button}>
+              <Text style={styles.buttonText}>Forgot Password?</Text>
+            </Pressable>
             <Pressable onPress={handleSubmit} style={styles.button}>
               <Text style={styles.buttonText}>Login</Text>
             </Pressable>
