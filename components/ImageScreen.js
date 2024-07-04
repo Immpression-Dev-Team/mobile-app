@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Image, StyleSheet, Text, Pressable } from 'react-native';
 
 const ImageScreen = ({ route, navigation }) => {
-  const { image, artistName, artTitle } = route.params;
+  const { image, artistName, artTitle, artYear, artDescription } = route.params;
 
   return (
     <View style={styles.container}>
@@ -13,6 +13,8 @@ const ImageScreen = ({ route, navigation }) => {
       
       <Text style={styles.artistName}>{artistName}</Text>
       <Text style={styles.artTitle}>{artTitle}</Text>
+      <Text style={styles.artYear}>{artYear}</Text>
+      <Text style={styles.artDescription}>{artDescription}</Text>
     </View>
   );
 };
@@ -49,6 +51,15 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 5,
   },
+  artYear: {
+    color: 'black',
+    fontSize: 18,
+    marginTop: 10,
+  },
+  artDescription: {
+    color: 'black',
+    fontSize: 18,
+  }
 });
 
 export default ImageScreen;

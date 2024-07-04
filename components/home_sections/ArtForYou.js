@@ -5,26 +5,26 @@ import DiscoverButton from '../DiscoverButton'; // Adjust the path as needed
 import { useNavigation } from '@react-navigation/native';
 
 const imagePaths = [
-    { path: require('../../assets/art/art5.png'), artistName: '@Artist1', artTitle: 'Title1' },
-    { path: require('../../assets/art/art2.png'), artistName: '@Artist2', artTitle: 'Title2' },
-    { path: require('../../assets/art/batman.png'), artistName: '@BruceWayne', artTitle: 'Title3' },
-    { path: require('../../assets/art/art3.png'), artistName: '@Artist3', artTitle: 'Title4' },
-    { path: require('../../assets/art/art4.png'), artistName: '@Artist4', artTitle: 'Title5' },
-    { path: require('../../assets/art/art1.jpg'), artistName: '@Artist5', artTitle: 'Title6' },
-    { path: require('../../assets/art/art6.png'), artistName: '@Artist6', artTitle: 'Title7' },
-    { path: require('../../assets/photos/mountain.jpg'), artistName: '@Artist7', artTitle: 'Title8' },
-    { path: require('../../assets/photos/grass.jpg'), artistName: '@Artist8', artTitle: 'Title9' },
-    { path: require('../../assets/photos/building.jpg'), artistName: '@Artist9', artTitle: 'Title10' },
-    { path: require('../../assets/photos/man.jpg'), artistName: '@Artist10', artTitle: 'Title11' },
-    { path: require('../../assets/photos/hand.jpg'), artistName: '@Artist11', artTitle: 'Title12' },
-    { path: require('../../assets/photos/gray.jpg'), artistName: '@Artist12', artTitle: 'Title13' },
-    { path: require('../../assets/photos/path.jpg'), artistName: '@Artist13', artTitle: 'Title14' },
-    { path: require('../../assets/photos/animal.jpg'), artistName: '@Artist14', artTitle: 'Title15' },
-    { path: require('../../assets/photos/sunset.jpg'), artistName: '@Artist15', artTitle: 'Title16' },
-    { path: require('../../assets/photos/deer.jpg'), artistName: '@Artist16', artTitle: 'Title17' },
-    { path: require('../../assets/art/superman.png'), artistName: '@Clark Kent', artTitle: 'Title18' },
-    { path: require('../../assets/art/spiderman.png'), artistName: '@PeterParker', artTitle: 'Title19' },
-    { path: require('../../assets/art/tajmahal.png'), artistName: '@NavjotKaur', artTitle: 'Title20' },
+    { path: require('../../assets/art/art5.png'), artistName: '@Artist1', artTitle: 'Title1', artYear: '2021', artDescription: 'description 1' },
+    { path: require('../../assets/art/art2.png'), artistName: '@Artist2', artTitle: 'Title2', artYear: '2020', artDescription: 'desc 2' },
+    { path: require('../../assets/art/batman.png'), artistName: '@BruceWayne', artTitle: 'Title3', artYear: '2019', artDescription: 'desc 2' },
+    { path: require('../../assets/art/art3.png'), artistName: '@Artist3', artTitle: 'Title4', artYear: '2018', artDescription: 'desc 2' },
+    { path: require('../../assets/art/art4.png'), artistName: '@Artist4', artTitle: 'Title5', artYear: '2017', artDescription: 'desc 2' },
+    { path: require('../../assets/art/art1.jpg'), artistName: '@Artist5', artTitle: 'Title6', artYear: '2016', artDescription: 'desc 2' },
+    { path: require('../../assets/art/art6.png'), artistName: '@Artist6', artTitle: 'Title7', artYear: '2015', artDescription: 'desc 2' },
+    { path: require('../../assets/photos/mountain.jpg'), artistName: '@Artist7', artTitle: 'Title8', artYear: '2014', artDescription: 'desc 2' },
+    { path: require('../../assets/photos/grass.jpg'), artistName: '@Artist8', artTitle: 'Title9', artYear: '2013', artDescription: 'desc 2' },
+    { path: require('../../assets/photos/building.jpg'), artistName: '@Artist9', artTitle: 'Title10', artYear: '2012', artDescription: 'desc 2' },
+    { path: require('../../assets/photos/man.jpg'), artistName: '@Artist10', artTitle: 'Title11', artYear: '2011', artDescription: 'desc 2' },
+    { path: require('../../assets/photos/hand.jpg'), artistName: '@Artist11', artTitle: 'Title12', artYear: '2010', artDescription: 'desc 2' },
+    { path: require('../../assets/photos/gray.jpg'), artistName: '@Artist12', artTitle: 'Title13', artYear: '2009', artDescription: 'desc 2' },
+    { path: require('../../assets/photos/path.jpg'), artistName: '@Artist13', artTitle: 'Title14', artYear: '2008', artDescription: 'desc 2' },
+    { path: require('../../assets/photos/animal.jpg'), artistName: '@Artist14', artTitle: 'Title15', artYear: '2007', artDescription: 'desc 2' },
+    { path: require('../../assets/photos/sunset.jpg'), artistName: '@Artist15', artTitle: 'Title16', artYear: '2006', artDescription: 'desc 2' },
+    { path: require('../../assets/photos/deer.jpg'), artistName: '@Artist16', artTitle: 'Title17', artYear: '2005', artDescription: 'desc 2' },
+    { path: require('../../assets/art/superman.png'), artistName: '@Clark Kent', artTitle: 'Title18', artYear: '2004', artDescription: 'desc 2' },
+    { path: require('../../assets/art/spiderman.png'), artistName: '@PeterParker', artTitle: 'Title19', artYear: '2003', artDescription: 'desc 2' },
+    { path: require('../../assets/art/tajmahal.png'), artistName: '@NavjotKaur', artTitle: 'Title20', artYear: '2002', artDescription: 'desc 2' },
 ];
 
 const headerImage = require('../../assets/headers/Art_for_you_multi.png'); // Import the header image
@@ -83,8 +83,8 @@ const ArtForYou = () => {
         }, 5000); // 5 seconds of inactivity
     };
 
-    const handleImagePress = (image, artistName, artTitle) => {
-        navigation.navigate('ImageScreen', { image, artistName, artTitle });
+    const handleImagePress = (image, artistName, artTitle, artYear, artDescription) => {
+        navigation.navigate('ImageScreen', { image, artistName, artTitle, artYear, artDescription });
     };
 
     return (
@@ -113,7 +113,7 @@ const ArtForYou = () => {
                         }}
                     >
                         <View style={styles.largeImageContainer}>
-                            <Pressable onPress={() => handleImagePress(images[0].path, images[0].artistName, images[0].artTitle)}>
+                            <Pressable onPress={() => handleImagePress(images[0].path, images[0].artistName, images[0].artTitle, images[0].artYear, images[0].artDescription )}>
                                 <Image
                                     source={images[0].path} // Access the image path from the object
                                     style={styles.largeImage}
@@ -127,7 +127,7 @@ const ArtForYou = () => {
                             <View key={chunkIndex} style={styles.column}>
                                 {chunk.map((path, index) => (
                                     <View key={index}>
-                                        <Pressable onPress={() => handleImagePress(path.path, path.artistName, path.artTitle)}>
+                                        <Pressable onPress={() => handleImagePress(path.path, path.artistName, path.artTitle, path.artYear, path.artDescription )}>
                                             <Image
                                                 source={path.path}
                                                 style={styles.image}
