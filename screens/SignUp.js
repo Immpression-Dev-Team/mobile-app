@@ -11,6 +11,7 @@ const SignUp = () => {
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
   const [passwordLengthError, setPasswordLengthError] = useState(false)
+  const [userAlreadyExistsError, setUserAlreadyExistsError] = useState(false)
 //   const [confirmPassword, setConfirmPassword] = useState("")
 
 const navigation = useNavigation();
@@ -31,6 +32,9 @@ const handleSubmit = async (e) => {
       }
     } catch (err) {
       console.log("Error during login:", err);
+      if(err.response.data.error.includes("User already exi")){
+        setUserAlreadyExistsError(true)
+      }
     }
   };
   console.log(passwordLengthError);
@@ -50,7 +54,8 @@ const handleSubmit = async (e) => {
             style={styles.input}
              secureTextEntry 
              />
-          <span style={{color: "red"}}>{passwordLengthError ? "Password must be at least 6 characters" : ""}</span>
+          <span style={{color: "red", textAlign: "center"}}>{passwordLengthError ? "Password must be at least 6 characters" : ""}</span>
+          <span style={{color: "red", textAlign:"center"}}>{userAlreadyExistsError ? "User already exists" : ""}</span>
           {/* <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={text => setConfirmPassword(text)} style={styles.input} secureTextEntry /> */}
         </View>
         <Pressable 
