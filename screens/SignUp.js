@@ -54,8 +54,8 @@ const handleSubmit = async (e) => {
             style={styles.input}
              secureTextEntry 
              />
-          <span style={{color: "red", textAlign: "center"}}>{passwordLengthError ? "Password must be at least 6 characters" : ""}</span>
-          <span style={{color: "red", textAlign:"center"}}>{userAlreadyExistsError ? "User already exists" : ""}</span>
+          <Text style={{color: "red", textAlign: "center"}}>{passwordLengthError ? "Password must be at least 6 characters" : ""}</Text>
+          <Text style={{color: "red", textAlign:"center"}}>{userAlreadyExistsError ? "User already exists" : ""}</Text>
           {/* <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={text => setConfirmPassword(text)} style={styles.input} secureTextEntry /> */}
         </View>
         <Pressable 

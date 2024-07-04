@@ -17,8 +17,8 @@ const SimpleCenteredSlider = () => {
           step={1}
           value={price}
           onValueChange={(value) => setPrice(value)}
-          minimumTrackTintColor="#1EB1FC"
-          maximumTrackTintColor="#d3d3d3"
+          minimumTrackTintColor="black"
+          maximumTrackTintColor="black"
           thumbTintColor="#1EB1FC"
         />
       </View>
@@ -42,21 +42,22 @@ const styles = StyleSheet.create({
     height: 40,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0',
-    borderRadius: 5,
+    borderRadius: 20, // Make container's corners circular
     overflow: 'hidden',
   },
   track: {
     position: 'absolute',
-    top: 0,
-    bottom: 0,
+    top: '50%',
     left: 0,
     right: 0,
-    backgroundColor: '#ccc',
+    height: 10, // Adjust the thickness of the track
+    backgroundColor: 'black',
+    borderRadius: 5, // Make the track's corners circular
+    transform: [{ translateY: -5 }],
   },
   slider: {
     width: '100%',
-    height: 40,
+    height: '100%',
   },
   rangeText: {
     marginTop: 10,
