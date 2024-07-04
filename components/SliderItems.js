@@ -39,6 +39,6 @@ const styles = StyleSheet.create({
         color: "blue",
         textAlign: "center",
         fontSize: 20,
-        paddingHorizontal: 64
+        paddingHorizontal: 64,
     }
   });

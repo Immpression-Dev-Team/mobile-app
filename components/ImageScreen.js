@@ -11,12 +11,16 @@ const ImageScreen = ({ route, navigation }) => {
         <Text style={styles.closeButtonText}>X</Text>
       </Pressable>
       <Image source={image} style={styles.fullImage} />
-    <ScrollBar/> 
-      <Text style={styles.artistName}>{artistName}</Text>
       <Text style={styles.artTitle}>{artTitle}</Text>
-      <Text style={styles.artYear}>{artYear}</Text>
-      <Text style={styles.artDescription}>{artDescription}</Text>
+      <ScrollBar />
+      <View style={styles.artistYearContainer}>
+        <Text style={styles.artistName}>{artistName}</Text>
+        <Text style={styles.artYear}>{artYear}</Text>
+      </View>
+
       <Text style={styles.artType}>{artType}</Text>
+      <Text style={styles.artDescription}>{artDescription}</Text>
+
     </View>
   );
 };
@@ -48,23 +52,30 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginTop: 10,
   },
+  artistYearContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 20,
+    marginTop: 5,
+  },
   artistName: {
     color: 'black',
     fontSize: 18,
-    marginTop: 5,
   },
   artYear: {
     color: 'black',
     fontSize: 18,
-    marginTop: 10,
   },
   artDescription: {
     color: 'black',
     fontSize: 18,
+    marginTop: 10,
   },
   artType: {
     color: 'black',
     fontSize: 18,
+    marginTop: 10,
   }
 });
 

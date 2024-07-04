@@ -30,13 +30,12 @@ const SimpleCenteredSlider = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
   },
   priceText: {
     fontSize: 24,
-    marginBottom: 20,
+    marginBottom: 10,
   },
   sliderContainer: {
     width: '80%', // Adjust width as needed
