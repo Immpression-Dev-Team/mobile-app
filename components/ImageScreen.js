@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Image, StyleSheet, Text, Pressable } from 'react-native';
+import ScrollBar from './ScrollBar';
 
 const ImageScreen = ({ route, navigation }) => {
   const { image, artistName, artTitle, artYear, artDescription } = route.params;
@@ -10,7 +11,7 @@ const ImageScreen = ({ route, navigation }) => {
         <Text style={styles.closeButtonText}>X</Text>
       </Pressable>
       <Image source={image} style={styles.fullImage} />
-      
+    <ScrollBar/> 
       <Text style={styles.artistName}>{artistName}</Text>
       <Text style={styles.artTitle}>{artTitle}</Text>
       <Text style={styles.artYear}>{artYear}</Text>
