@@ -3,7 +3,7 @@ import { View, Image, StyleSheet, Text, Pressable } from 'react-native';
 import ScrollBar from './ScrollBar';
 
 const ImageScreen = ({ route, navigation }) => {
-  const { image, artistName, artTitle, artYear, artDescription } = route.params;
+  const { image, artistName, artTitle, artYear, artDescription, artType } = route.params;
 
   return (
     <View style={styles.container}>
@@ -16,6 +16,7 @@ const ImageScreen = ({ route, navigation }) => {
       <Text style={styles.artTitle}>{artTitle}</Text>
       <Text style={styles.artYear}>{artYear}</Text>
       <Text style={styles.artDescription}>{artDescription}</Text>
+      <Text style={styles.artType}>{artType}</Text>
     </View>
   );
 };
@@ -58,6 +59,10 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   artDescription: {
+    color: 'black',
+    fontSize: 18,
+  },
+  artType: {
     color: 'black',
     fontSize: 18,
   }
