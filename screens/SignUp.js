@@ -10,6 +10,7 @@ const SignUp = () => {
   const [email, setEmail] = useState("")
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
+  const [passwordLengthError, setPasswordLengthError] = useState(false)
 //   const [confirmPassword, setConfirmPassword] = useState("")
 
 const navigation = useNavigation();
@@ -17,6 +18,9 @@ const navigation = useNavigation();
 // TODO: set up frontend confirmPassword logic before calling handleSubmit
 const handleSubmit = async (e) => {
     e.preventDefault();
+    if(password.length < 6){
+      setPasswordLengthError(true)
+    }
     try {
         const response = await axios.post(`${API_URL}/signup`, { name, email, password}
       ); console.log(response);
@@ -29,6 +33,7 @@ const handleSubmit = async (e) => {
       console.log("Error during login:", err);
     }
   };
+  console.log(passwordLengthError);
   
   return (
     <View style={styles.container}>
@@ -38,10 +43,20 @@ const handleSubmit = async (e) => {
           <Text style={styles.title}>Sign Up to Impression</Text>
           <TextInput placeholder="name" value={name} onChangeText={text => setName(text)} style={styles.input} />
           <TextInput placeholder="Email" value={email} onChangeText={text => setEmail(text)} style={styles.input} />
-          <TextInput placeholder="Password" value={password} onChangeText={text => setPassword(text)} style={styles.input} secureTextEntry />
+          <TextInput
+           placeholder="Password" 
+           value={password} 
+           onChangeText={text => setPassword(text)}
+            style={styles.input}
+             secureTextEntry 
+             />
+          <span style={{color: "red"}}>{passwordLengthError ? "Password must be at least 6 characters" : ""}</span>
           {/* <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={text => setConfirmPassword(text)} style={styles.input} secureTextEntry /> */}
         </View>
-        <Pressable onPress={handleSubmit} style={[styles.button, styles.buttonOutline]}>
+        <Pressable 
+        onPress={handleSubmit} 
+        style={[styles.button, styles.buttonOutline]}
+        >
           <Text style={styles.buttonOutlineText}>Sign Up</Text>
         </Pressable>
       </KeyboardAvoidingView>
