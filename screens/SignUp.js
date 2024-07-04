@@ -41,7 +41,7 @@ const handleSubmit = async (e) => {
   
   return (
     <View style={styles.container}>
-      <NavBar />
+      {/* <NavBar /> */}
       <KeyboardAvoidingView style={styles.signUpContainer} behavior="padding">
         <View style={styles.inputContainer}>
           <Text style={styles.title}>Sign Up to Impression</Text>

@@ -44,7 +44,7 @@ const Login = () => {
 
   return (
     <View style={styles.container}>
-      <NavBar />
+      {/* <NavBar /> */}
       <View style={styles.contentContainer}>
         <KeyboardAvoidingView
           style={styles.keyboardAvoidingContainer}

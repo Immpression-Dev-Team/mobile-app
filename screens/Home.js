@@ -30,8 +30,7 @@ const HomeScreen = () => {
           <ArtistsPick />
           {/* this is the original login button and will fix later */}
           {/* <LoginButton /> */}
-          <LoginButton />
-        </View>
+          </View>
       </ScrollView>
     </View>
   );
