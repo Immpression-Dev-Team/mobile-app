@@ -18,9 +18,12 @@ const ImageScreen = ({ route, navigation }) => {
         <ScrollBar />
         <View style={styles.artistNameYearContainer}>
           <Text style={styles.artistName}>{artistName}</Text>
+          <View style={styles.verticalLine} />
           <Text style={styles.artYear}>{artYear}</Text>
         </View>
+        <View style={styles.horizontalLine} />
         <Text style={styles.artType}>{artType}</Text>
+        <View style={styles.horizontalLine} />
         <Text style={styles.artDescription}>{artDescription}</Text>
       </ScrollView>
     </View>
@@ -58,12 +61,13 @@ const styles = StyleSheet.create({
   },
   artTitle: {
     color: 'blue',
-    fontSize: 20,
+    fontSize: 40,
     marginTop: 10,
   },
   artistNameYearContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     width: '100%',
     paddingHorizontal: 20,
     marginTop: 5,
@@ -71,17 +75,32 @@ const styles = StyleSheet.create({
   artistName: {
     color: 'black',
     fontSize: 16,
-    marginTop: 5,
+    marginBottom: 7,
+    flex: 1,
+    textAlign: 'center',
   },
   artYear: {
     color: 'black',
     fontSize: 18,
-    marginTop: 5,
+    marginBottom: 7,
+    flex: 1,
+    textAlign: 'center',
+  },
+  verticalLine: {
+    width: 2,
+    height: '100%',
+    backgroundColor: 'black',
+  },
+  horizontalLine: {
+    width: '100%',
+    height: 2,
+    backgroundColor: 'black',
+    alignSelf: 'center',
   },
   artType: {
     color: 'black',
     fontSize: 18,
-    marginTop: 5,
+    marginVertical: 15,
   },
   artDescription: {
     color: 'black',

@@ -5,7 +5,7 @@ import DiscoverButton from '../DiscoverButton'; // Adjust the path as needed
 import { useNavigation } from '@react-navigation/native';
 
 const imagePaths = [
-    { path: require('../../assets/art/art5.png'), artistName: '@Artist1', artTitle: 'Title1', artYear: '2021', artDescription: 'description 1', artType: 'Digital' },
+    { path: require('../../assets/art/art5.png'), artistName: 'Marco Marco', artTitle: 'Self Love', artYear: '2024', artDescription: 'Do it your way, love yourself', artType: 'Digital' },
     { path: require('../../assets/art/art2.png'), artistName: '@Artist2', artTitle: 'Title2', artYear: '2020', artDescription: 'desc 2', artType: 'Digital' },
     { path: require('../../assets/art/batman.png'), artistName: '@BruceWayne', artTitle: 'Title3', artYear: '2019', artDescription: 'desc 2', artType: 'Digital' },
     { path: require('../../assets/art/art3.png'), artistName: '@Artist3', artTitle: 'Title4', artYear: '2018', artDescription: 'desc 2', artType: 'Digital' },
@@ -27,7 +27,7 @@ const imagePaths = [
     { path: require('../../assets/art/tajmahal.png'), artistName: '@NavjotKaur', artTitle: 'Title20', artYear: '2002', artDescription: 'desc 2', artType: 'Digital' },
 ];
 
-const headerImage = require('../../assets/headers/Art_for_you_multi.png'); // Import the header image
+const headerImage = require('../../assets/headers/Art_for_you.png'); // Import the header image
 
 const chunkArray = (arr, chunkSize) => {
     const chunks = [];

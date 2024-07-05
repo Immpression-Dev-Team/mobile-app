@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
-import ArtistsPickHeader from '../../assets/headers/Artists_pick.png'; // Import the header image
+import ArtistsPickHeader from '../../assets/headers/Artists_pick_multi.png'; // Import the header image
 import DiscoverButton from '../DiscoverButton';
 
 const imagePaths = [
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 2,
         alignSelf: 'flex-start',
-        paddingHorizontal: 14,
+        paddingHorizontal: 7,
     },
     headerImage: {
         width: 200, // Adjust width according to your image
