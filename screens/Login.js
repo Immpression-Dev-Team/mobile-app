@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -5,12 +6,17 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Pressable,
+  Image,
+  ImageBackground, // Import ImageBackground component
 } from "react-native";
-import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import NavBar from "../components/Navbar";
 import axios from "axios";
-import { API_URL } from '../config';
+import { API_URL } from "../config";
+import Icon from "react-native-vector-icons/FontAwesome"; // Import your preferred icon set
+
+const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
+const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image
+const backgroundImage = require("../assets/backgrounds/paint_background.png"); // Adjust the path to your background image
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -27,7 +33,8 @@ const Login = () => {
         {
           withCredentials: true,
         }
-      ); console.log(response);
+      );
+      console.log(response);
       if (response.data.success) {
         navigation.navigate("Home");
       } else {
@@ -43,95 +50,155 @@ const Login = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* <NavBar /> */}
-      <View style={styles.contentContainer}>
-        <KeyboardAvoidingView
-          style={styles.keyboardAvoidingContainer}
-          behavior="padding"
-        >
-          <View style={styles.inputContainer}>
-            <Text style={styles.title}>Welcome to Immpression</Text>
-            {/* <TextInput placeholder="Username" value={userName} onChangeText={text => setUserName(text)} style={styles.input} /> */}
-            <TextInput
-              placeholder="Email"
-              value={email}
-              onChangeText={(text) => setEmail(text)}
-              style={styles.input}
-            />
-            <TextInput
-              placeholder="Password"
-              value={password}
-              onChangeText={(text) => setPassword(text)}
-              style={styles.input}
-              secureTextEntry
-            />
+    <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
+      <View style={styles.container}>
+        <View style={styles.totalHeader}>
+          <View style={styles.logoContainer}>
+            <Image source={logoImage} style={styles.logo} />
           </View>
-          <View style={styles.buttonContainer}>
-            <Pressable onPress={() => navigateTo("PasswordReset")} style={styles.button}>
-              <Text style={styles.buttonText}>Forgot Password?</Text>
-            </Pressable>
-            <Pressable onPress={handleSubmit} style={styles.button}>
-              <Text style={styles.buttonText}>Login</Text>
-            </Pressable>
-            <Pressable
-              onPress={() => navigateTo("SignUp")}
-              style={[styles.button, styles.buttonOutline]}
-            >
-              <Text style={styles.buttonOutlineText}>Sign Up</Text>
-            </Pressable>
+          <View style={styles.headerImageContainer}>
+            <Image source={headerImage} style={styles.headerImage} />
           </View>
-        </KeyboardAvoidingView>
+        </View>
+        <View style={styles.contentContainer}>
+          <KeyboardAvoidingView
+            style={styles.keyboardAvoidingContainer}
+            behavior="padding"
+          >
+            <View style={styles.inputContainer}>
+              <View style={styles.inputWrapper}>
+                <Icon name="envelope" size={14} color="#000" style={styles.inputIcon} />
+                <TextInput
+                  placeholder="Email"
+                  value={email}
+                  onChangeText={(text) => setEmail(text)}
+                  style={styles.input}
+                />
+              </View>
+              <View style={styles.inputWrapper}>
+                <Icon name="lock" size={20} marginLeft={1} color="#000" style={styles.inputIcon} />
+                <TextInput
+                  placeholder="Password"
+                  value={password}
+                  onChangeText={(text) => setPassword(text)}
+                  style={styles.input}
+                  secureTextEntry
+                />
+              </View>
+              <Text
+                onPress={() => navigateTo("PasswordReset")}
+                style={styles.forgotPasswordText}
+              >
+                Forgot Password?
+              </Text>
+            </View>
+            <View style={styles.buttonContainer}>
+              <Pressable onPress={handleSubmit} style={styles.button}>
+                <Text style={styles.buttonText}>Login</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => navigateTo("SignUp")}
+                style={[styles.button, styles.buttonOutline]}
+              >
+                <Text style={styles.buttonOutlineText}>Sign Up</Text>
+              </Pressable>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
 export default Login;
 
 const styles = StyleSheet.create({
-  container: {
+  backgroundImage: {
     flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
   },
-  contentContainer: {
+  container: {
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
-    paddingTop: 20,
+    paddingTop: 0,
   },
-  keyboardAvoidingContainer: {
+  totalHeader: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     width: "100%",
   },
-  title: {
-    fontSize: 30,
-    marginBottom: 30,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
-  inputContainer: {
-    width: "80%",
-  },
-  input: {
-    backgroundColor: "lightgray",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 10,
-    marginTop: 20,
-  },
-  buttonContainer: {
-    width: "80%",
+  logoContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 40,
+    marginTop: 20,
+  },
+  logo: {
+
+    width: 70,
+    height: 70,
+    resizeMode: "contain",
+  },
+  headerImageContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+    marginLeft: 12,
+  },
+  headerImage: {
+    width: 200,
+    height: 50,
+    resizeMode: "contain",
+  },
+  contentContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+  },
+  keyboardAvoidingContainer: {
+    width: "80%",
+  },
+  inputContainer: {
+    width: "100%",
+    marginTop: -200, // Adjust this value to bring inputs higher up
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#C6C7DE",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    borderRadius: 20,
+    marginTop: 15,
+  },
+  inputIcon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    height: 40,
+  },
+  forgotPasswordText: {
+    textAlign: "center",
+    marginTop: 10,
+    marginRight: 10,
+    color: "#3C3D52",
+    textDecorationLine: "underline",
+  },
+  buttonContainer: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 50, // Adjust this value to bring buttons higher up
   },
   button: {
     backgroundColor: "blue",
     width: "100%",
-    padding: 10,
-    borderRadius: 10,
+    padding: 11,
+    borderRadius: 20,
     marginTop: 10,
   },
   buttonText: {
@@ -141,12 +208,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   buttonOutline: {
-    backgroundColor: "red",
+    backgroundColor: "transparent",
     marginTop: 10,
-    borderRadius: 10,
   },
   buttonOutlineText: {
-    color: "white",
+    color: "black",
     fontWeight: "bold",
     fontSize: 15,
     textAlign: "center",
