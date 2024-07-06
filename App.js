@@ -12,6 +12,7 @@ import LoginScreen from './screens/Login';
 import SignUpScreen from './screens/SignUp';
 import ProfileScreen from './screens/Profile';
 import ImageScreen from './components/ImageScreen';
+import PasswordReset from './screens/PasswordReset';
 
 const Stack = createStackNavigator();
 
@@ -19,14 +20,14 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Statistics" component={StatisticsScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="Settings" component={SettingsScreen} />
-        
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="ImageScreen" component={ImageScreen}/>
+        <Stack.Screen name="PasswordReset" component={PasswordReset}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -13,9 +13,11 @@ const ImageScreen = ({ route, navigation }) => {
       <View style={styles.imageContainer}>
         <Image source={image} style={styles.fullImage} />
       </View>
-      <ScrollView contentContainerStyle={styles.textContainer}>
+      <View style={styles.textContainer}>
         <Text style={styles.artTitle}>{artTitle}</Text>
-        <ScrollBar />
+        <View horizontal={true} style={styles.scrollBar}>
+          <ScrollBar />
+        </View>
         <View style={styles.artistNameYearContainer}>
           <Text style={styles.artistName}>{artistName}</Text>
           <View style={styles.verticalLine} />
@@ -25,7 +27,7 @@ const ImageScreen = ({ route, navigation }) => {
         <Text style={styles.artType}>{artType}</Text>
         <View style={styles.horizontalLine} />
         <Text style={styles.artDescription}>{artDescription}</Text>
-      </ScrollView>
+      </View>
     </View>
   );
 };
@@ -57,7 +59,10 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     alignItems: 'center',
-    paddingVertical: 20,
+  },
+  scrollBar: {
+    // width: '100%',
+    height: 80,
   },
   artTitle: {
     color: 'blue',
