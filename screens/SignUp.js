@@ -1,85 +1,113 @@
-import { StyleSheet, Text, View, KeyboardAvoidingView, TextInput, Pressable } from 'react-native'
-import React, { useState } from 'react'
-import NavBar from '../components/Navbar'
+import {
+  StyleSheet,
+  Text,
+  View,
+  KeyboardAvoidingView,
+  TextInput,
+  Pressable,
+} from 'react-native';
+import React, { useState } from 'react';
+import NavBar from '../components/Navbar';
 import { API_URL } from '../config';
 import axios from 'axios';
-import { useNavigation } from "@react-navigation/native";
-
+import { useNavigation } from '@react-navigation/native';
+import { handleLogin } from '../utils/handleLogin';
 
 const SignUp = () => {
-  const [email, setEmail] = useState("")
-  const [name, setName] = useState("")
-  const [password, setPassword] = useState("")
-  const [passwordLengthError, setPasswordLengthError] = useState(false)
-  const [userAlreadyExistsError, setUserAlreadyExistsError] = useState(false)
-//   const [confirmPassword, setConfirmPassword] = useState("")
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
+  const [passwordLengthError, setPasswordLengthError] = useState(false);
+  const [userAlreadyExistsError, setUserAlreadyExistsError] = useState(false);
+  //   const [confirmPassword, setConfirmPassword] = useState("")
 
-const navigation = useNavigation();
+  const navigation = useNavigation();
 
-// TODO: set up frontend confirmPassword logic before calling handleSubmit
-const handleSubmit = async (e) => {
+  // TODO: set up frontend confirmPassword logic before calling handleSubmit
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if(password.length < 6){
-      setPasswordLengthError(true)
+    if (password.length < 6) {
+      setPasswordLengthError(true);
     }
     try {
-        const response = await axios.post(`${API_URL}/signup`, { name, email, password}
-      ); console.log(response);
+      const response = await axios.post(`${API_URL}/signup`, {
+        name,
+        email,
+        password,
+      });
+      console.log(response);
       if (response.data.success) {
-        navigation.navigate("Home");
+        await handleLogin(email, password, navigation);
+        // navigation.navigate('Home');
       } else {
-        console.log("Login failed");
+        console.log('Signup failed');
       }
     } catch (err) {
-      console.log("Error during login:", err);
-      if(err.response.data.error.includes("User already exi")){
-        setUserAlreadyExistsError(true)
+      console.log('Error during login:', err);
+      if (err.response.data.error.includes('User already exists')) {
+        setUserAlreadyExistsError(true);
       }
     }
   };
   console.log(passwordLengthError);
 
   const handleBack = () => {
-    navigation.navigate("Login");
-  }
-  
+    navigation.navigate('Login');
+  };
+
   return (
     <View style={styles.container}>
       {/* <NavBar /> */}
       <KeyboardAvoidingView style={styles.signUpContainer} behavior="padding">
         <View style={styles.inputContainer}>
           <Text style={styles.title}>Sign Up to Impression</Text>
-          <TextInput placeholder="name" value={name} onChangeText={text => setName(text)} style={styles.input} />
-          <TextInput placeholder="Email" value={email} onChangeText={text => setEmail(text)} style={styles.input} />
           <TextInput
-           placeholder="Password" 
-           value={password} 
-           onChangeText={text => setPassword(text)}
+            placeholder="name"
+            value={name}
+            onChangeText={(text) => setName(text)}
             style={styles.input}
-             secureTextEntry 
-             />
-          <Text style={{color: "red", textAlign: "center"}}>{passwordLengthError ? "Password must be at least 6 characters" : ""}</Text>
-          <Text style={{color: "red", textAlign:"center"}}>{userAlreadyExistsError ? "User already exists" : ""}</Text>
+          />
+          <TextInput
+            placeholder="Email"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+            style={styles.input}
+          />
+          <TextInput
+            placeholder="Password"
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            style={styles.input}
+            secureTextEntry
+          />
+          <Text style={{ color: 'red', textAlign: 'center' }}>
+            {passwordLengthError
+              ? 'Password must be at least 6 characters'
+              : ''}
+          </Text>
+          <Text style={{ color: 'red', textAlign: 'center' }}>
+            {userAlreadyExistsError ? 'User already exists' : ''}
+          </Text>
           {/* <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={text => setConfirmPassword(text)} style={styles.input} secureTextEntry /> */}
         </View>
-        <Pressable 
-        onPress={handleSubmit} 
-        style={[styles.button, styles.buttonOutline]}
+        <Pressable
+          onPress={handleSubmit}
+          style={[styles.button, styles.buttonOutline]}
         >
           <Text style={styles.buttonOutlineText}>Sign Up</Text>
         </Pressable>
-        <Pressable 
-          onPress={handleBack} 
+        <Pressable
+          onPress={handleBack}
           style={[styles.button, styles.buttonOutline]}
         >
           <Text style={styles.buttonOutlineText}>Back to Login</Text>
         </Pressable>
       </KeyboardAvoidingView>
     </View>
-  )
-}
+  );
+};
 
-export default SignUp
+export default SignUp;
 
 const styles = StyleSheet.create({
   container: {
@@ -126,4 +154,4 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: 'center',
   },
-})
+});

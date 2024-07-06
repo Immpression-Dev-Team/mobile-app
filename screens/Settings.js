@@ -1,52 +1,45 @@
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  Pressable,
-} from "react-native";
-import NavBar from "../components/Navbar";
-import SettingsItem from "../components/SettingsItem";
-import helpIcon from "../assets/question.png";
-import deviceIcon from "../assets/device.png";
-import friendsIcon from "../assets/friends.png";
-import lockIcon from "../assets/lock.png";
-import notificationIcon from "../assets/notification.png";
-import userIcon from "../assets/user.png";
-import webIcon from "../assets/web.png";
-import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
-import { API_URL } from '../config'; 
-
+import React from 'react';
+import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
+import NavBar from '../components/Navbar';
+import SettingsItem from '../components/SettingsItem';
+import helpIcon from '../assets/question.png';
+import deviceIcon from '../assets/device.png';
+import friendsIcon from '../assets/friends.png';
+import lockIcon from '../assets/lock.png';
+import notificationIcon from '../assets/notification.png';
+import userIcon from '../assets/user.png';
+import webIcon from '../assets/web.png';
+import { useNavigation } from '@react-navigation/native';
+import axios from 'axios';
+import { API_URL } from '../config';
 
 const options = [
   {
-    label: "Account",
+    label: 'Account',
     iconUrl: userIcon,
   },
   {
-    label: "Privacy",
+    label: 'Privacy',
     iconUrl: lockIcon,
   },
   {
-    label: "Notifications",
+    label: 'Notifications',
     iconUrl: notificationIcon,
   },
   {
-    label: "App Language",
+    label: 'App Language',
     iconUrl: webIcon,
   },
   {
-    label: "Device Permissions",
+    label: 'Device Permissions',
     iconUrl: deviceIcon,
   },
   {
-    label: "Help",
+    label: 'Help',
     iconUrl: helpIcon,
   },
   {
-    label: "Invite a friend",
+    label: 'Invite a friend',
     iconUrl: friendsIcon,
   },
 ];
@@ -59,15 +52,15 @@ const SettingsScreen = () => {
       const response = await axios.post(
         `${API_URL}/logout`,
         {},
-        { withCredentials: true }
+        { withCredentials: true },
       );
       if (response.data.success) {
-        navigateTo("Home");
+        navigateTo('Login');
       } else {
-        console.log("Logout failed");
+        console.log('Logout failed');
       }
     } catch (err) {
-      console.log("Error during logout:", err);
+      console.log('Error during logout:', err);
     }
   };
 
@@ -79,7 +72,7 @@ const SettingsScreen = () => {
     <View style={styles.container}>
       <NavBar />
       <View style={styles.settingsContainer}>
-      <Pressable onPress={handleSubmit}>
+        <Pressable onPress={handleSubmit}>
           <Text style={styles.logoutBtn}>Log out</Text>
         </Pressable>
         <Text style={styles.title}>Settings</Text>
@@ -102,7 +95,7 @@ const SettingsScreen = () => {
 };
 
 const btn = {
-  textAlign: "center",
+  textAlign: 'center',
   fontSize: 28,
   paddingVertical: 15,
 };
@@ -113,21 +106,21 @@ const styles = StyleSheet.create({
   },
   horizontalDivider: {
     borderBottomWidth: 0.5,
-    borderBottomColor: "gray",
+    borderBottomColor: 'gray',
   },
   title: {
     fontSize: 30,
     marginBottom: 10,
-    fontWeight: "semibold",
+    fontWeight: 'semibold',
     paddingHorizontal: 20,
   },
   logoutBtn: {
     ...btn,
-    color: "red",
+    color: 'red',
   },
   addAccountBtn: {
     ...btn,
-    color: "blue",
+    color: 'blue',
   },
 });
 

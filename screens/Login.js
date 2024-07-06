@@ -13,36 +13,21 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { API_URL } from "../config";
 import Icon from "react-native-vector-icons/FontAwesome"; // Import your preferred icon set
+import { handleLogin} from "../utils/handleLogin.js";
 
 const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
 const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image
 const backgroundImage = require("../assets/backgrounds/paint_background.png"); // Adjust the path to your background image
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   const navigation = useNavigation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post(
-        `${API_URL}/login`,
-        { email, password },
-        {
-          withCredentials: true,
-        }
-      );
-      console.log(response);
-      if (response.data.success) {
-        navigation.navigate("Home");
-      } else {
-        console.log("Login failed");
-      }
-    } catch (err) {
-      console.log("Error during login:", err);
-    }
+    await handleLogin(email, password, navigation);
   };
 
   const navigateTo = (screenName) => {
@@ -126,9 +111,9 @@ const styles = StyleSheet.create({
   },
   totalHeader: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
   },
   logoContainer: {
     justifyContent: "center",
@@ -202,9 +187,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   buttonText: {
-    textAlign: "center",
-    color: "white",
-    fontWeight: "bold",
+    textAlign: 'center',
+    color: 'white',
+    fontWeight: 'bold',
     fontSize: 15,
   },
   buttonOutline: {
@@ -215,6 +200,6 @@ const styles = StyleSheet.create({
     color: "black",
     fontWeight: "bold",
     fontSize: 15,
-    textAlign: "center",
+    textAlign: 'center',
   },
 });
