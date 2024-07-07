@@ -113,7 +113,7 @@ export default function Navbar() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 0,
+    marginTop: 50,
     marginBottom: 10,
     zIndex: 99,
   },
