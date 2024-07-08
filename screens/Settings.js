@@ -46,26 +46,23 @@ const options = [
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       const response = await axios.post(
         `${API_URL}/logout`,
         {},
-        { withCredentials: true },
+        { withCredentials: true }
       );
       if (response.data.success) {
-        navigateTo('Login');
+        navigation.navigate('Login');
       } else {
         console.log('Logout failed');
       }
     } catch (err) {
       console.log('Error during logout:', err);
     }
-  };
-
-  const navigateTo = (screenName) => {
-    navigation.navigate(screenName);
   };
 
   return (
