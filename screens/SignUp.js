@@ -5,6 +5,7 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Pressable,
+  Image,
 } from 'react-native';
 import React, { useState } from 'react';
 import NavBar from '../components/Navbar';
@@ -12,6 +13,10 @@ import { API_URL } from '../config';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { handleLogin } from '../utils/handleLogin';
+
+const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
+const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image
+const backgroundImage = require("../assets/backgrounds/paint_background.png"); // Adjust the path to your background image
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
@@ -60,9 +65,17 @@ const SignUp = () => {
       {/* <NavBar /> */}
       <KeyboardAvoidingView style={styles.signUpContainer} behavior="padding">
         <View style={styles.inputContainer}>
-          <Text style={styles.title}>Sign Up to Impression</Text>
+          <View style={styles.totalHeader}>
+            <View style={styles.logoContainer}>
+              <Image source={logoImage} style={styles.logo} />
+            </View>
+            <View style={styles.headerImageContainer}>
+              <Image source={headerImage} style={styles.headerImage} />
+            </View>
+          </View>
+          {/* <Text style={styles.title}>Sign Up to Impression</Text> */}
           <TextInput
-            placeholder="name"
+            placeholder="Username"
             value={name}
             onChangeText={(text) => setName(text)}
             style={styles.input}
@@ -98,9 +111,9 @@ const SignUp = () => {
         </Pressable>
         <Pressable
           onPress={handleBack}
-          style={[styles.button, styles.buttonOutline]}
+          style={[styles.button, styles.buttonOutline2]}
         >
-          <Text style={styles.buttonOutlineText}>Back to Login</Text>
+          <Text style={styles.buttonOutlineText2}>Back to Login</Text>
         </Pressable>
       </KeyboardAvoidingView>
     </View>
@@ -144,9 +157,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   buttonOutline: {
-    backgroundColor: 'red',
-    marginTop: 20,
-    borderRadius: 10,
+    backgroundColor: 'blue',
+    marginTop: 10,
+    borderRadius: 20,
+  },
+  buttonOutline2: {
+    backgroundColor: 'transparent',
+    marginTop: 10,
+    borderRadius: 20,
   },
   buttonOutlineText: {
     color: 'white',
@@ -154,4 +172,39 @@ const styles = StyleSheet.create({
     fontSize: 15,
     textAlign: 'center',
   },
+  buttonOutlineText2: {
+    color: 'black',
+    fontWeight: 'bold',
+    fontSize: 15,
+    textAlign: 'center',
+  },
+  logoContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  logo: {
+
+    width: 70,
+    height: 70,
+    resizeMode: "contain",
+  },
+  headerImageContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 10,
+    marginLeft: 12,
+  },
+  headerImage: {
+    width: 200,
+    height: 50,
+    resizeMode: "contain",
+  },
+  totalHeader: {
+    // flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+  },
 });
+
