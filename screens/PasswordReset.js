@@ -48,13 +48,6 @@ function PasswordReset() {
         </View>
 
         <TextInput
-          placeholder="Old Password"
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-          style={styles.input}
-          secureTextEntry
-        />
-        <TextInput
           placeholder="New Password"
           value={password}
           onChangeText={(text) => setPassword(text)}

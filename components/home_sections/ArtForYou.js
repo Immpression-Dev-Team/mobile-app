@@ -83,8 +83,8 @@ const ArtForYou = () => {
         }, 5000); // 5 seconds of inactivity
     };
 
-    const handleImagePress = (image, artistName, artTitle, artYear, artDescription, artType) => {
-        navigation.navigate('ImageScreen', { image, artistName, artTitle, artYear, artDescription, artType });
+    const handleImagePress = (image, artistName, artTitle, artYear, artDescription, artType, imageIndex) => {
+        navigation.navigate('ImageScreen', { images, initialIndex: imageIndex });
     };
 
     return (
@@ -127,7 +127,7 @@ const ArtForYou = () => {
                             <View key={chunkIndex} style={styles.column}>
                                 {chunk.map((path, index) => (
                                     <View key={index}>
-                                        <Pressable onPress={() => handleImagePress(path.path, path.artistName, path.artTitle, path.artYear, path.artDescription, path.artType )}>
+                                        <Pressable onPress={() => handleImagePress(path.path, path.artistName, path.artTitle, path.artYear, path.artDescription, path.artType, chunkIndex * 2 + index + 1)}>
                                             <Image
                                                 source={path.path}
                                                 style={styles.image}
