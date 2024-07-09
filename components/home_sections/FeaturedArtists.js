@@ -1,13 +1,14 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 
 // Import the header images
 import discoverHeader from '../../assets/headers/Discover.png';
 import stageLight from '../../assets/headers/StageLight.png';
 
 const imagePaths = [
-    { path: require('../../assets/photos/path.jpg'), title: 'Path', artist: 'Artist 1', profilePic: require('../../assets/artists/artist5.png') },
+    { path: require('../../assets/photos/path.jpg'), title: 'Path', artist: 'Artist 1sdjk', profilePic: require('../../assets/artists/artist5.png') },
     { path: require('../../assets/photos/animal.jpg'), title: 'Animal', artist: 'Artist 2', profilePic: require('../../assets/artists/artist4.png') },
     { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Artist 3', profilePic: require('../../assets/artists/artist3.png') },
     { path: require('../../assets/photos/deer.jpg'), title: 'Deer', artist: 'Artist 4', profilePic: require('../../assets/artists/artist1.png') },
@@ -33,6 +34,7 @@ const chunkArray = (arr, chunkSize) => {
 };
 
 const FeaturedArtists = () => {
+    const navigation = useNavigation();
     const imageChunks = chunkArray(imagePaths, 1); // Chunk into groups of 1 image
 
     return (
@@ -40,18 +42,18 @@ const FeaturedArtists = () => {
             <View style={styles.headerContainer}>
                 <Image source={discoverHeader} style={styles.headerImage} />
             </View>
-            {/* <Image source={stageLight} style={styles.stageLight} /> */}
             <ScrollView horizontal style={styles.scrollView}>
                 {imageChunks.map((chunk, chunkIndex) => (
                     <View key={chunkIndex} style={styles.column}>
                         {chunk.map((item, index) => (
-                            <View key={index} style={styles.artistContainer}>
-                                <Image
-                                    source={item.profilePic}
-                                    style={styles.image}
-                                />
+                            <TouchableOpacity
+                                key={index}
+                                style={styles.artistContainer}
+                                onPress={() => navigation.navigate('ArtistScreen', { artist: item.artist, profilePic: item.profilePic })}
+                            >
+                                <Image source={item.profilePic} style={styles.image} />
                                 <Text style={styles.artistName}>{item.artist}</Text>
-                            </View>
+                            </TouchableOpacity>
                         ))}
                     </View>
                 ))}
@@ -68,11 +70,9 @@ const styles = StyleSheet.create({
         borderColor: '#aebacf',
         borderRadius: 0,
         padding: 5,
-
         marginBottom: 20,
         paddingBottom: 40,
         overflow: 'hidden',
-        // backgroundColor: '#0076F7',
         position: 'relative',
     },
     allImageContainer: {

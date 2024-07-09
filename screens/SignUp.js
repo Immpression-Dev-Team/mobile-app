@@ -18,7 +18,7 @@ import Icon from "react-native-vector-icons/FontAwesome"; // Import your preferr
 
 const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
 const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image
-const backgroundImage = require("../assets/backgrounds/paint_background.png"); // Adjust the path to your background image
+const backgroundImage = require("../assets/backgrounds/babyBlue.png"); // Adjust the path to your background image
 
 const SignUp = () => {
   const [email, setEmail] = useState('');
