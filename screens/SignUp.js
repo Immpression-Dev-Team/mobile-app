@@ -6,6 +6,7 @@ import {
   TextInput,
   Pressable,
   Image,
+  ImageBackground, // Import ImageBackground component
 } from 'react-native';
 import React, { useState } from 'react';
 import NavBar from '../components/Navbar';
@@ -13,6 +14,7 @@ import { API_URL } from '../config';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { handleLogin } from '../utils/handleLogin';
+import Icon from "react-native-vector-icons/FontAwesome"; // Import your preferred icon set
 
 const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
 const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image
@@ -61,62 +63,77 @@ const SignUp = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* <NavBar /> */}
-      <KeyboardAvoidingView style={styles.signUpContainer} behavior="padding">
-        <View style={styles.inputContainer}>
-          <View style={styles.totalHeader}>
-            <View style={styles.logoContainer}>
-              <Image source={logoImage} style={styles.logo} />
+    <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
+      <View style={styles.container}>
+        {/* <NavBar /> */}
+        <KeyboardAvoidingView style={styles.signUpContainer} behavior="padding">
+          <View style={styles.inputContainer}>
+            <View style={styles.totalHeader}>
+              <View style={styles.logoContainer}>
+                <Image source={logoImage} style={styles.logo} />
+              </View>
+              <View style={styles.headerImageContainer}>
+                <Image source={headerImage} style={styles.headerImage} />
+              </View>
             </View>
-            <View style={styles.headerImageContainer}>
-              <Image source={headerImage} style={styles.headerImage} />
+            {/* <Text style={styles.title}>Sign Up to Impression</Text> */}
+            <View style={styles.contentContainer}>
+              <View style={styles.inputContainer}>
+                <View style={styles.inputWrapper}>
+                  <Icon name="user" size={18} color="#000" style={styles.inputIcon} />
+                  <TextInput
+                    placeholder="Username"
+                    value={name}
+                    onChangeText={(text) => setName(text)}
+                    style={styles.input}
+                  />
+                </View>
+                <View style={styles.inputWrapper}>
+                  <Icon name="envelope" size={14} color="#000" style={styles.inputIcon} />
+                  <TextInput
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={(text) => setEmail(text)}
+                    style={styles.input}
+                  />
+                </View>
+                <View style={styles.inputWrapper}>
+                  <Icon name="lock" size={20} marginLeft={1} color="#000" style={styles.inputIcon} />
+                  <TextInput
+                    placeholder="Password"
+                    value={password}
+                    onChangeText={(text) => setPassword(text)}
+                    style={styles.input}
+                    secureTextEntry
+                  />
+                </View>
+              </View>
             </View>
+            <Text style={{ color: 'red', textAlign: 'center' }}>
+              {passwordLengthError
+                ? 'Password must be at least 6 characters'
+                : ''}
+            </Text>
+            <Text style={{ color: 'red', textAlign: 'center' }}>
+              {userAlreadyExistsError ? 'User already exists' : ''}
+            </Text>
+            {/* <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={text => setConfirmPassword(text)} style={styles.input} secureTextEntry /> */}
           </View>
-          {/* <Text style={styles.title}>Sign Up to Impression</Text> */}
-          <TextInput
-            placeholder="Username"
-            value={name}
-            onChangeText={(text) => setName(text)}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Email"
-            value={email}
-            onChangeText={(text) => setEmail(text)}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Password"
-            value={password}
-            onChangeText={(text) => setPassword(text)}
-            style={styles.input}
-            secureTextEntry
-          />
-          <Text style={{ color: 'red', textAlign: 'center' }}>
-            {passwordLengthError
-              ? 'Password must be at least 6 characters'
-              : ''}
-          </Text>
-          <Text style={{ color: 'red', textAlign: 'center' }}>
-            {userAlreadyExistsError ? 'User already exists' : ''}
-          </Text>
-          {/* <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={text => setConfirmPassword(text)} style={styles.input} secureTextEntry /> */}
-        </View>
-        <Pressable
-          onPress={handleSubmit}
-          style={[styles.button, styles.buttonOutline]}
-        >
-          <Text style={styles.buttonOutlineText}>Sign Up</Text>
-        </Pressable>
-        <Pressable
-          onPress={handleBack}
-          style={[styles.button, styles.buttonOutline2]}
-        >
-          <Text style={styles.buttonOutlineText2}>Back to Login</Text>
-        </Pressable>
-      </KeyboardAvoidingView>
-    </View>
+          <Pressable
+            onPress={handleSubmit}
+            style={[styles.button, styles.buttonOutline]}
+          >
+            <Text style={styles.buttonOutlineText}>Sign Up</Text>
+          </Pressable>
+          <Pressable
+            onPress={handleBack}
+            style={[styles.button, styles.buttonOutline2]}
+          >
+            <Text style={styles.buttonOutlineText2}>Back to Login</Text>
+          </Pressable>
+        </KeyboardAvoidingView>
+      </View>
+    </ImageBackground>
   );
 };
 
@@ -125,6 +142,11 @@ export default SignUp;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "center",
   },
   signUpContainer: {
     flex: 1,
@@ -139,15 +161,32 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
+
   inputContainer: {
-    width: '80%',
+    width: "90%",
+    marginTop: 0, // Adjust this value to bring inputs higher up
   },
-  input: {
-    backgroundColor: 'lightgray',
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#C6C7DE",
     paddingHorizontal: 15,
     paddingVertical: 10,
-    borderRadius: 10,
-    marginTop: 20,
+    borderRadius: 20,
+    marginTop: 15,
+  },
+  inputIcon: {
+    marginRight: 10,
+  },
+  input: {
+    flex: 1,
+    height: 40,
+  },
+  contentContainer: {
+    // flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
   button: {
     backgroundColor: 'blue',
