@@ -1,34 +1,61 @@
-import React from 'react';
-import { View, Image, StyleSheet, Text, Pressable, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Image, StyleSheet, Text, Pressable, ScrollView, Dimensions, FlatList } from 'react-native';
 import ScrollBar from './ScrollBar';
+const { width } = Dimensions.get('window');
+
 const ImageScreen = ({ route, navigation }) => {
-  const { image, artistName, artTitle, artYear, artDescription, artType } = route.params;
+  const { images, initialIndex } = route.params;
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+
+  const renderItem = ({ item }) => (
+    <View style={styles.imageContainer}>
+      <Image source={item.image} style={styles.fullImage} />
+    </View>
+  );
+
+  const onViewRef = React.useRef((viewableItems) => {
+    setCurrentIndex(viewableItems.changed[0].index);
+  });
+  const viewConfigRef = React.useRef({ viewAreaCoveragePercentThreshold: 50 });
+
   return (
     <View style={styles.container}>
       <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}>
         <Text style={styles.closeButtonText}>X</Text>
       </Pressable>
-      <View style={styles.imageContainer}>
-        <Image source={image} style={styles.fullImage} />
-      </View>
-      <View style={styles.textContainer}>
-        <Text style={styles.artTitle}>{artTitle}</Text>
+      <FlatList
+        data={images}
+        renderItem={renderItem}
+        horizontal
+        pagingEnabled
+        keyExtractor={(item, index) => index.toString()}
+        onViewableItemsChanged={onViewRef.current}
+        viewabilityConfig={viewConfigRef.current}
+        initialScrollIndex={initialIndex}
+        getItemLayout={(data, index) => (
+          { length: width, offset: width * index, index }
+        )}
+        showsHorizontalScrollIndicator={false}
+      />
+      <ScrollView style={styles.textContainer}>
+        <Text style={styles.artTitle}>{images[currentIndex].artTitle}</Text>
         <View horizontal={true} style={styles.scrollBar}>
           <ScrollBar />
         </View>
         <View style={styles.artistNameYearContainer}>
-          <Text style={styles.artistName}>{artistName}</Text>
+          <Text style={styles.artistName}>{images[currentIndex].artistName}</Text>
           <View style={styles.verticalLine} />
-          <Text style={styles.artYear}>{artYear}</Text>
+          <Text style={styles.artYear}>{images[currentIndex].artYear}</Text>
         </View>
         <View style={styles.horizontalLine} />
-        <Text style={styles.artType}>{artType}</Text>
+        <Text style={styles.artType}>{images[currentIndex].artType}</Text>
         <View style={styles.horizontalLine} />
-        <Text style={styles.artDescription}>{artDescription}</Text>
-      </View>
+        <Text style={styles.artDescription}>{images[currentIndex].artDescription}</Text>
+      </ScrollView>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -45,20 +72,19 @@ const styles = StyleSheet.create({
     fontSize: 24,
   },
   imageContainer: {
-    marginTop: '50%',
+    width: width,
     justifyContent: 'center',
     alignItems: 'center',
   },
   fullImage: {
-    width: 300,
+    width: '100%',
     height: 300,
     resizeMode: 'cover',
   },
   textContainer: {
-    alignItems: 'center',
+    padding: 20,
   },
   scrollBar: {
-    // width: '100%',
     height: 80,
   },
   artTitle: {
@@ -110,4 +136,5 @@ const styles = StyleSheet.create({
     marginTop: 10,
   }
 });
+
 export default ImageScreen;
