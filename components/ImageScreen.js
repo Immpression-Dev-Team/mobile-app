@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Image, StyleSheet, Text, Pressable, ScrollView, Dimensions, FlatList } from 'react-native';
 import ScrollBar from './ScrollBar';
 const { width } = Dimensions.get('window');
@@ -9,14 +9,18 @@ const ImageScreen = ({ route, navigation }) => {
 
   const renderItem = ({ item }) => (
     <View style={styles.imageContainer}>
-      <Image source={item.image} style={styles.fullImage} />
+      <Image source={item.path} style={styles.fullImage} />
     </View>
   );
 
-  const onViewRef = React.useRef((viewableItems) => {
-    setCurrentIndex(viewableItems.changed[0].index);
+  const onViewRef = useRef(({ changed }) => {
+    const current = changed.find(item => item.isViewable);
+    if (current) {
+      setCurrentIndex(current.index);
+    }
   });
-  const viewConfigRef = React.useRef({ viewAreaCoveragePercentThreshold: 50 });
+
+  const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
 
   return (
     <View style={styles.container}>
@@ -39,7 +43,7 @@ const ImageScreen = ({ route, navigation }) => {
       />
       <ScrollView style={styles.textContainer}>
         <Text style={styles.artTitle}>{images[currentIndex].artTitle}</Text>
-        <View horizontal={true} style={styles.scrollBar}>
+        <View style={styles.scrollBar}>
           <ScrollBar />
         </View>
         <View style={styles.artistNameYearContainer}>
