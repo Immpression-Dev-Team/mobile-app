@@ -83,7 +83,7 @@ const ArtForYou = () => {
         }, 5000); // 5 seconds of inactivity
     };
 
-    const handleImagePress = (image, artistName, artTitle, artYear, artDescription, artType, imageIndex) => {
+    const handleImagePress = (imageIndex) => {
         navigation.navigate('ImageScreen', { images, initialIndex: imageIndex });
     };
 
@@ -113,7 +113,7 @@ const ArtForYou = () => {
                         }}
                     >
                         <View style={styles.largeImageContainer}>
-                            <Pressable onPress={() => handleImagePress(images[0].path, images[0].artistName, images[0].artTitle, images[0].artYear, images[0].artDescription, images[0].artType )}>
+                            <Pressable onPress={() => handleImagePress(0)}>
                                 <Image
                                     source={images[0].path} // Access the image path from the object
                                     style={styles.largeImage}
@@ -127,7 +127,7 @@ const ArtForYou = () => {
                             <View key={chunkIndex} style={styles.column}>
                                 {chunk.map((path, index) => (
                                     <View key={index}>
-                                        <Pressable onPress={() => handleImagePress(path.path, path.artistName, path.artTitle, path.artYear, path.artDescription, path.artType, chunkIndex * 2 + index + 1)}>
+                                        <Pressable onPress={() => handleImagePress(chunkIndex * 2 + index + 1)}>
                                             <Image
                                                 source={path.path}
                                                 style={styles.image}
