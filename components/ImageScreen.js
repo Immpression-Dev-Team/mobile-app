@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Image, StyleSheet, Text, Pressable, ScrollView, Dimensions, FlatList } from 'react-native';
 import ScrollBar from './ScrollBar';
 const { width } = Dimensions.get('window');
@@ -6,6 +6,14 @@ const { width } = Dimensions.get('window');
 const ImageScreen = ({ route, navigation }) => {
   const { images, initialIndex } = route.params;
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const flatListRef = useRef(null);
+
+  useEffect(() => {
+    // Scroll to the initial index when component mounts
+    if (flatListRef.current) {
+      flatListRef.current.scrollToIndex({ index: initialIndex, animated: false });
+    }
+  }, [initialIndex]);
 
   const renderItem = ({ item }) => (
     <View style={styles.imageContainer}>
@@ -28,6 +36,7 @@ const ImageScreen = ({ route, navigation }) => {
         <Text style={styles.closeButtonText}>X</Text>
       </Pressable>
       <FlatList
+        ref={flatListRef}
         data={images}
         renderItem={renderItem}
         horizontal
