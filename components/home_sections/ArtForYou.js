@@ -112,22 +112,12 @@ const ArtForYou = () => {
                             setScrollPosition(event.nativeEvent.contentOffset.x);
                         }}
                     >
-                        <View style={styles.largeImageContainer}>
-                            <Pressable onPress={() => handleImagePress(0)}>
-                                <Image
-                                    source={images[0].path} // Access the image path from the object
-                                    style={styles.largeImage}
-                                />
-                            </Pressable>
-                            <Text style={styles.artistName}>{images[0].artistName}</Text>
-                        </View>
-
-                        {/* Render smaller images in subsequent sections */}
-                        {imageChunks.slice(1).map((chunk, chunkIndex) => (
+                        {/* Render smaller images in columns */}
+                        {imageChunks.map((chunk, chunkIndex) => (
                             <View key={chunkIndex} style={styles.column}>
                                 {chunk.map((path, index) => (
                                     <View key={index}>
-                                        <Pressable onPress={() => handleImagePress(chunkIndex * 2 + index + 1)}>
+                                        <Pressable onPress={() => handleImagePress(chunkIndex * 2 + index)}>
                                             <Image
                                                 source={path.path}
                                                 style={styles.image}
@@ -181,13 +171,6 @@ const styles = StyleSheet.create({
         height: 130,
         marginBottom: 4, // Margin between images in a column
         borderRadius: 0,
-    },
-    largeImageContainer: {
-        marginRight: 4, // Margin between large image and subsequent images
-    },
-    largeImage: {
-        width: 264, // Twice the width of normal images
-        height: 264, // Twice the height of normal images
     },
     artistName: {
         fontSize: 10,
