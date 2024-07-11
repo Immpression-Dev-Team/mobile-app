@@ -1,10 +1,34 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Dimensions, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+const { width } = Dimensions.get('window');
 
 const ArtistScreen = ({ route }) => {
     const navigation = useNavigation();
-    const { artist, profilePic } = route.params;
+    const { artist, profilePic, galleryImages, initialIndex } = route.params;
+    const [currentIndex, setCurrentIndex] = useState(initialIndex);
+    const flatListRef = useRef(null);
+
+    useEffect(() => {
+        if (flatListRef.current) {
+            flatListRef.current.scrollToIndex({ index: initialIndex, animated: false });
+        }
+    }, [initialIndex]);
+
+    const renderItem = ({ item }) => (
+        <View style={styles.imageContainer}>
+            <Image source={item.path} style={styles.fullImage} />
+        </View>
+    );
+
+    const onViewRef = useRef(({ changed }) => {
+        const current = changed.find(item => item.isViewable);
+        if (current) {
+            setCurrentIndex(current.index);
+        }
+    });
+
+    const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
 
     return (
         <View style={styles.container}>
@@ -15,6 +39,21 @@ const ArtistScreen = ({ route }) => {
                 <Text style={styles.artistName}>{artist}</Text>
                 <Image source={profilePic} style={styles.image} />
             </View>
+            <FlatList
+                ref={flatListRef}
+                data={galleryImages}
+                renderItem={renderItem}
+                horizontal
+                pagingEnabled
+                keyExtractor={(item, index) => index.toString()}
+                onViewableItemsChanged={onViewRef.current}
+                viewabilityConfig={viewConfigRef.current}
+                initialScrollIndex={initialIndex}
+                getItemLayout={(data, index) => (
+                    { length: width, offset: width * index, index }
+                )}
+                showsHorizontalScrollIndicator={false}
+            />
         </View>
     );
 };
