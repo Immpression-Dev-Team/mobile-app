@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 
-const SimpleCenteredSlider = () => {
+const Scrollbars = () => {
   const [price, setPrice] = useState(0);
 
   return (
@@ -91,4 +91,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SimpleCenteredSlider;
+export default Scrollbars;
