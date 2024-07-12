@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -14,6 +14,8 @@ import axios from "axios";
 import { API_URL } from "../config";
 import Icon from "react-native-vector-icons/FontAwesome"; // Import your preferred icon set
 import { handleLogin} from "../utils/handleLogin.js";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from "../state/AuthProvider";
 
 const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
 const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image
@@ -22,12 +24,14 @@ const backgroundImage = require("../assets/backgrounds/paint_background.png"); /
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  const [userData, setUserData] = useState(null);
+  const { login } = useAuth()
   const navigation = useNavigation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await handleLogin(email, password, navigation);
+    await handleLogin(email, password, setUserData, navigation, login);
+    
   };
 
   const navigateTo = (screenName) => {
