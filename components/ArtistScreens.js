@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Dimensions, ScrollView } from 'react-native';
+import React, {useState, useEffect, useRef} from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+
 const { width } = Dimensions.get('window');
 
 const ArtistScreen = ({ route }) => {
@@ -10,10 +11,12 @@ const ArtistScreen = ({ route }) => {
     const flatListRef = useRef(null);
 
     useEffect(() => {
-        if (flatListRef.current) {
+        if (flatListRef.current && initialIndex >= 0 && initialIndex < galleryImages.length) {
             flatListRef.current.scrollToIndex({ index: initialIndex, animated: false });
+        } else {
+            console.warn('Initial index is out of range');
         }
-    }, [initialIndex]);
+    }, [initialIndex, galleryImages]);
 
     const renderItem = ({ item }) => (
         <View style={styles.imageContainer}>
