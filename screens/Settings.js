@@ -12,6 +12,8 @@ import webIcon from '../assets/web.png';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { API_URL } from '../config';
+import { AuthProvider, useAuth } from "../state/AuthProvider";
+
 
 const options = [
   {
@@ -46,7 +48,7 @@ const options = [
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
-
+  const { logout } = useAuth();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -56,6 +58,7 @@ const SettingsScreen = () => {
         { withCredentials: true }
       );
       if (response.data.success) {
+        logout()
         navigation.navigate('Login');
       } else {
         console.log('Logout failed');

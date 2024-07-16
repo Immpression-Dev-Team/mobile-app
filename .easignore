@@ -1,0 +1,12 @@
+# Ignore node_modules
+node_modules/
+
+# Ignore build output
+build/
+
+# Ignore other large or unnecessary files
+*.log
+*.tmp
+*.psd
+*.ai
+*.svg
