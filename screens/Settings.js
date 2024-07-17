@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, Image } from 'react-native';
 import NavBar from '../components/Navbar';
 import SettingsItem from '../components/SettingsItem';
 import helpIcon from '../assets/question.png';
@@ -9,13 +9,24 @@ import lockIcon from '../assets/lock.png';
 import notificationIcon from '../assets/notification.png';
 import userIcon from '../assets/user.png';
 import webIcon from '../assets/web.png';
+import logoutIcon from '../assets/logout.png';
+import addAccountIcon from '../assets/add_account.png';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { API_URL } from '../config';
-import { AuthProvider, useAuth } from "../state/AuthProvider";
-
+import { useAuth } from "../state/AuthProvider";
 
 const options = [
+  {
+    label: 'Log out',
+    iconUrl: logoutIcon,
+    onPress: 'handleSubmit',
+  },
+  {
+    label: 'Add Account',
+    iconUrl: addAccountIcon,
+    onPress: 'handleAddAccount',
+  },
   {
     label: 'Account',
     iconUrl: userIcon,
@@ -49,8 +60,8 @@ const options = [
 const SettingsScreen = () => {
   const navigation = useNavigation();
   const { logout } = useAuth();
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+
+  const handleSubmit = async () => {
     try {
       const response = await axios.post(
         `${API_URL}/logout`,
@@ -58,7 +69,7 @@ const SettingsScreen = () => {
         { withCredentials: true }
       );
       if (response.data.success) {
-        logout()
+        logout();
         navigation.navigate('Login');
       } else {
         console.log('Logout failed');
@@ -68,59 +79,68 @@ const SettingsScreen = () => {
     }
   };
 
+  const handleAddAccount = () => {
+    console.log('Add Account');
+  };
+
+  const handleNavigation = (label) => {
+    console.log(`Navigate to ${label}`);
+  };
+
+  const renderItem = ({ item }) => (
+    <>
+      <SettingsItem
+        item={item}
+        handleClick={
+          item.onPress
+            ? item.onPress === 'handleSubmit'
+              ? handleSubmit
+              : handleAddAccount
+            : () => handleNavigation(item.label)
+        }
+      />
+      {item.label === 'Add Account' && <View style={styles.horizontalDivider} />}
+    </>
+  );
+
   return (
     <View style={styles.container}>
       <NavBar />
       <View style={styles.settingsContainer}>
-        <Pressable onPress={handleSubmit}>
-          <Text style={styles.logoutBtn}>Log out</Text>
-        </Pressable>
-        <Text style={styles.title}>Settings</Text>
-        <View style={styles.horizontalDivider} />
         <FlatList
           data={options}
-          renderItem={({ item }) => <SettingsItem item={item} />}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.label}
+          contentContainerStyle={styles.listContent}
         />
-        <View style={styles.horizontalDivider} />
-        {/* this the original logout button and will fix later */}
-        {/* <Pressable onPress={handleSubmit}>
-          <Text style={styles.logoutBtn}>Log out</Text>
-        </Pressable> */}
-        <Pressable>
-          <Text style={styles.addAccountBtn}>Add Account</Text>
-        </Pressable>
       </View>
     </View>
   );
 };
 
-const btn = {
-  textAlign: 'center',
-  fontSize: 28,
-  paddingVertical: 15,
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f0f0f0',
+  },
+  settingsContainer: {
+    marginTop: 30,
+    flex: 1,
+    paddingHorizontal: 10,
   },
   horizontalDivider: {
-    borderBottomWidth: 0.5,
-    borderBottomColor: 'gray',
+    borderBottomWidth: 1,
+    borderBottomColor: 'lightgray',
+    marginVertical: 10,
   },
   title: {
-    fontSize: 30,
+    fontSize: 18,
     marginBottom: 10,
-    fontWeight: 'semibold',
-    paddingHorizontal: 20,
+    fontWeight: 'bold',
+    paddingHorizontal: 10,
   },
-  logoutBtn: {
-    ...btn,
-    color: 'red',
-  },
-  addAccountBtn: {
-    ...btn,
-    color: 'blue',
+  listContent: {
+    paddingBottom: 20,
   },
 });
 

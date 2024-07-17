@@ -1,6 +1,6 @@
-import {Image, StyleSheet, Text, Pressable, View} from "react-native";
+import { Image, StyleSheet, Text, Pressable, View } from "react-native";
 
-const SettingsItem = ({item: { iconUrl, label}, handleClick }) => {
+const SettingsItem = ({ item: { iconUrl, label }, handleClick }) => {
     return (
         <Pressable style={styles.container} onPress={handleClick}>
             <View style={styles.settingImgContainer}>
@@ -8,8 +8,8 @@ const SettingsItem = ({item: { iconUrl, label}, handleClick }) => {
             </View>
             <Text style={styles.settingLabel}>{label}</Text>
         </Pressable>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -18,19 +18,19 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 10,
         paddingHorizontal: 20,
-        paddingVertical: 15,
+        paddingVertical: 10,
     },
     settingImgContainer: {
-      width: 40,
-      height: 40,
+        width: 24,  // Reduced size
+        height: 24, // Reduced size
     },
     settingImg: {
         width: '100%',
-        height: '100%'
+        height: '100%',
     },
     settingLabel: {
-        fontSize: 28,
-    }
-})
+        fontSize: 18, // Reduced size
+    },
+});
 
 export default SettingsItem;
