@@ -6,16 +6,17 @@ const { width } = Dimensions.get('window');
 
 const ArtistScreen = ({ route }) => {
     const navigation = useNavigation();
-    const { images, artist, profilePic, initialIndex } = route.params;
+    const { artist, profilePic, galleryImages, initialIndex } = route.params;
     const [currentIndex, setCurrentIndex] = useState(initialIndex);
     const flatListRef = useRef(null);
 
     useEffect(() => {
-        // Scroll to the initial index when component mounts
-        if (flatListRef.current) {
-          flatListRef.current.scrollToIndex({ index: initialIndex, animated: false });
+        if (flatListRef.current && initialIndex >= 0 && initialIndex < galleryImages.length) {
+            flatListRef.current.scrollToIndex({ index: initialIndex, animated: false });
+        } else {
+            console.warn('Initial index is out of range');
         }
-      }, [initialIndex]);
+    }, [initialIndex, galleryImages]);
 
     const renderItem = ({ item }) => (
         <View style={styles.imageContainer}>
@@ -37,25 +38,25 @@ const ArtistScreen = ({ route }) => {
             <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
                 <Text style={styles.closeButtonText}>X</Text>
             </TouchableOpacity>
-            <FlatList
-            ref={flatListRef}
-            data={images}
-            renderItem={renderItem}
-            horizontal
-            pagingEnabled
-            keyExtractor={(item, index) => index.toString()}
-            onViewableItemsChanged={onViewRef.current}
-            viewabilityConfig={viewConfigRef.current}
-            initialScrollIndex={initialIndex}
-            getItemLayout={(data, index) => (
-                { length: width, offset: width * index, index }
-            )}
-            showsHorizontalScrollIndicator={false}
-        />
             <View style={styles.card}>
-                <Text style={styles.artistName}>{images[currentIndex].artist}</Text>
+                <Text style={styles.artistName}>{artist}</Text>
                 <Image source={profilePic} style={styles.image} />
             </View>
+            <FlatList
+                ref={flatListRef}
+                data={galleryImages}
+                renderItem={renderItem}
+                horizontal
+                pagingEnabled
+                keyExtractor={(item, index) => index.toString()}
+                onViewableItemsChanged={onViewRef.current}
+                viewabilityConfig={viewConfigRef.current}
+                initialScrollIndex={initialIndex}
+                getItemLayout={(data, index) => (
+                    { length: width, offset: width * index, index }
+                )}
+                showsHorizontalScrollIndicator={false}
+            />
         </View>
     );
 };
