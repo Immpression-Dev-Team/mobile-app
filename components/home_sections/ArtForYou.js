@@ -27,6 +27,7 @@ const imagePaths = [
     { path: require('../../assets/art/tajmahal.png'), artistName: '@NavjotKaur', artTitle: 'Title20', artYear: '2002', artDescription: 'desc 2', artType: 'Digital' },
 ];
 
+
 const headerImage = require('../../assets/headers/Art_for_you.png'); // Import the header image
 
 const chunkArray = (arr, chunkSize) => {

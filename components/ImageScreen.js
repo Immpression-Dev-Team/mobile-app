@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Image, StyleSheet, Text, Pressable, FlatList, Dimensions, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, Text, Pressable, FlatList, Dimensions } from 'react-native';
 const { width } = Dimensions.get('window');
 import Navbar from './Navbar';
 import Scrollbars from './ScrollBars';
@@ -10,17 +10,37 @@ const ImageScreen = ({ route, navigation }) => {
   const flatListRef = useRef(null);
 
   useEffect(() => {
-    // Scroll to the initial index when component mounts
     if (flatListRef.current) {
       flatListRef.current.scrollToIndex({ index: initialIndex, animated: false });
     }
   }, [initialIndex]);
 
-  const renderItem = ({ item }) => (
-    <View style={styles.imageContainer}>
-      <Image source={item.path} style={styles.fullImage} />
-    </View>
-  );
+  const renderItem = ({ item, index }) => {
+    const isCurrent = index === currentIndex;
+    const isNext = index === currentIndex + 1;
+    const isPrevious = index === currentIndex - 1;
+
+    return (
+      <View style={styles.imageContainer}>
+        {/* Show previous image if it exists */}
+        {isPrevious && (
+          <Image
+            source={images[index - 1]?.path}
+            style={styles.previousImage}
+          />
+        )}
+        {/* Show current image */}
+        <Image source={item.path} style={[styles.fullImage, isNext && styles.currentImage]} />
+        {/* Show next image if it exists */}
+        {isNext && (
+          <Image
+            source={images[index + 1]?.path}
+            style={styles.nextImage}
+          />
+        )}
+      </View>
+    );
+  };
 
   const onViewRef = useRef(({ changed }) => {
     const current = changed.find(item => item.isViewable);
@@ -35,7 +55,6 @@ const ImageScreen = ({ route, navigation }) => {
     <View style={styles.container}>
       <Navbar />
       <View style={styles.container}>
-
         <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}>
           <Text style={styles.closeButtonText}>X</Text>
         </Pressable>
@@ -78,7 +97,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    
   },
   closeButton: {
     position: 'absolute',
@@ -94,10 +112,28 @@ const styles = StyleSheet.create({
     width: width,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
   },
   fullImage: {
+    width: '80%',
+    height: 300,
+    resizeMode: 'cover',
+  },
+  currentImage: {
+    zIndex: 2, // Ensure current image is on top
+  },
+  nextImage: {
+    ...StyleSheet.absoluteFillObject,
     width: '100%',
     height: 300,
+    opacity: 0.5, // Adjust opacity as needed
+    resizeMode: 'cover',
+  },
+  previousImage: {
+    ...StyleSheet.absoluteFillObject,
+    width: '100%',
+    height: 300,
+    opacity: 0.5, // Adjust opacity as needed
     resizeMode: 'cover',
   },
   textContainer: {
