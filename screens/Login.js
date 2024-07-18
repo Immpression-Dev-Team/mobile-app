@@ -16,6 +16,7 @@ import Icon from "react-native-vector-icons/FontAwesome"; // Import your preferr
 import { handleLogin} from "../utils/handleLogin.js";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from "../state/AuthProvider";
+import SignUp from "./SignUp";
 
 const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
 const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image

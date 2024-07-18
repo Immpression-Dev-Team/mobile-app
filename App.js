@@ -40,11 +40,13 @@ const AppContent = () => {
           <Stack.Screen name="SignUp" component={SignUpScreen} />
           <Stack.Screen name="ImageScreen" component={ImageScreen} />
           <Stack.Screen name="PasswordReset" component={PasswordReset} />
-          <Stack.Screen name="ArtistScreen" component={ArtistScreen} />
+          <Stack.Screen name="ArtistScreens" component={ArtistScreen} />
         </>
       ) : (
        <>
        <Stack.Screen name="Login" component={LoginScreen} />
+       <Stack.Screen name="SignUp" component={SignUpScreen} />
+       <Stack.Screen name="PasswordReset" component={PasswordReset} />
        </>
         
       )}
