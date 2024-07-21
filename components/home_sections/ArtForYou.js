@@ -139,7 +139,7 @@ const ArtForYou = () => {
 const styles = StyleSheet.create({
     section: {
         marginTop: 10,
-        marginBottom: 20,
+        marginBottom: 10,
     },
     headerContainer: {
         flexDirection: 'row', // Align items side by side

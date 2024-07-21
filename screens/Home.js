@@ -9,6 +9,7 @@ import ArtQuotes from '../components/home_sections/ArtQuotes';
 import LongSearchBar from '../components/LongSearchBar';
 import FillerMessage from '../components/home_sections/FillerMessage';
 import Categories from '../components/home_sections/Categories';
+import InviteFriends from '../components/home_sections/InviteFriends';
 
 
 // TODO conditionally render if the user is logged in or not (remove the login button when logged in and show the the logout button instead)
@@ -25,6 +26,7 @@ const HomeScreen = () => {
           <ArtForYou />
           {/* <ArtQuotes /> */}
           {/* <FillerMessage /> */}
+          <InviteFriends />
           <Categories />
           <FeaturedArtists />
           <ArtistsPick />
@@ -45,6 +47,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingBottom: 300,
     paddingHorizontal: 0,
+    alignItems: 'center', // Center horizontally
   },
   navbar: {
     // borderBottomWidth: 1,
