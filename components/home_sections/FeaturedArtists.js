@@ -7,6 +7,9 @@ import { useNavigation } from '@react-navigation/native';
 import discoverHeader from '../../assets/headers/Discover.png';
 import stageLight from '../../assets/headers/StageLight.png';
 
+// Import ArtistScreen
+import ArtistScreen from '../ArtistScreens';
+
 const imagePaths = [
     { path: require('../../assets/photos/path.jpg'), title: 'Path', artist: 'Artist 1sdjk', profilePic: require('../../assets/artists/artist5.png') },
     { path: require('../../assets/photos/animal.jpg'), title: 'Animal', artist: 'Artist 2', profilePic: require('../../assets/artists/artist4.png') },
@@ -37,6 +40,10 @@ const FeaturedArtists = () => {
     const navigation = useNavigation();
     const imageChunks = chunkArray(imagePaths, 1); // Chunk into groups of 1 image
 
+    const navigateToArtistScreen = (artist, profilePic, galleryImages, initialIndex) => {
+        navigation.navigate('ArtistScreens', { artist, profilePic, galleryImages, initialIndex });
+    };
+
     return (
         <LinearGradient colors={['white', 'white', 'white']} style={styles.section}>
             <View style={styles.headerContainer}>
@@ -49,7 +56,7 @@ const FeaturedArtists = () => {
                             <TouchableOpacity
                                 key={index}
                                 style={styles.artistContainer}
-                                onPress={() => navigation.navigate('ArtistScreens', { artist: item.artist, profilePic: item.profilePic })}
+                                onPress={() => navigateToArtistScreen(item.artist, item.profilePic, imagePaths, index)}
                             >
                                 <Image source={item.profilePic} style={styles.image} />
                                 <Text style={styles.artistName}>{item.artist}</Text>

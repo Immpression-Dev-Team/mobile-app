@@ -18,12 +18,11 @@ const ImageScreen = ({ route, navigation }) => {
   const renderItem = ({ item, index }) => {
     const isCurrent = index === currentIndex;
     const isNext = index === currentIndex + 1;
-    const isPrevious = index === currentIndex - 1;
 
     return (
       <View style={styles.imageContainer}>
         {/* Show previous image if it exists */}
-        {isPrevious && (
+        {index === currentIndex - 1 && (
           <Image
             source={images[index - 1]?.path}
             style={styles.previousImage}
