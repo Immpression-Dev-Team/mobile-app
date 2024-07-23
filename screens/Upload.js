@@ -29,14 +29,15 @@ const Upload = () => {
         }
     };
 
-    const handleUpload = () => {
+    const handleUpload = async (e) => {
+        e.preventDefault()
         if (!image || !title || !description || !price) {
             Alert.alert('Error', 'Please fill in all fields and select an image');
             return;
         }
 
         // Handle the image upload logic here
-        Alert.alert('Success', 'Image uploaded successfully!');
+        await Alert.alert('Success', 'Image uploaded successfully!');
     };
 
     return (
