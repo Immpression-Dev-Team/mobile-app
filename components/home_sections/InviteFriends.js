@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import BackgroundImage from '../../assets/headers/Invite.png';
+import BackgroundImage from '../../assets/headers/inviteFriends.png';
 
 const InviteFriends = () => {
   return (
