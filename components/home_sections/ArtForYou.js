@@ -5,8 +5,8 @@ import DiscoverButton from '../DiscoverButton'; // Adjust the path as needed
 import { useNavigation } from '@react-navigation/native';
 
 const imagePaths = [
-    { path: require('../../assets/art/art5.png'), artistName: 'Marco Marco', artTitle: 'Self Love', artYear: '2024', artDescription: 'Do it your way, love yourself', artType: 'Digital' },
-    { path: require('../../assets/art/art2.png'), artistName: '@Artist2', artTitle: 'Title2', artYear: '2020', artDescription: 'desc 2', artType: 'Digital' },
+    { path: require('../../assets/realArt/IMG_7313.png'), artistName: 'Antoin Ramirez', artTitle: 'IMG_7313', artYear: '2024', artDescription: 'Do it your way, love yourself', artType: 'Digital' },
+    { path: require('../../assets/realArt/IMG_5865.png'), artistName: 'Antoin Ramirez', artTitle: 'IMG_5865', artYear: '2020', artDescription: 'desc 2', artType: 'Digital' },
     { path: require('../../assets/art/batman.png'), artistName: '@BruceWayne', artTitle: 'Title3', artYear: '2019', artDescription: 'desc 2', artType: 'Digital' },
     { path: require('../../assets/art/art3.png'), artistName: '@Artist3', artTitle: 'Title4', artYear: '2018', artDescription: 'desc 2', artType: 'Digital' },
     { path: require('../../assets/art/art4.png'), artistName: '@Artist4', artTitle: 'Title5', artYear: '2017', artDescription: 'desc 2', artType: 'Digital' },
