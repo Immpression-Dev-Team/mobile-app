@@ -14,6 +14,7 @@ import ImageScreen from "./components/ImageScreen";
 import PasswordReset from "./screens/PasswordReset";
 import ArtistScreen from "./components/ArtistScreens";
 import { AuthProvider, useAuth } from "./state/AuthProvider";
+import Upload from "./screens/Upload";
 
 const Stack = createStackNavigator();
 
@@ -41,6 +42,7 @@ const AppContent = () => {
           <Stack.Screen name="ImageScreen" component={ImageScreen} />
           <Stack.Screen name="PasswordReset" component={PasswordReset} />
           <Stack.Screen name="ArtistScreens" component={ArtistScreen} />
+          <Stack.Screen name="Upload" component={Upload} />
         </>
       ) : (
        <>

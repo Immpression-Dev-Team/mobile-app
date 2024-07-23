@@ -84,7 +84,7 @@ export default function Navbar() {
           },
         ],
       }]}>
-        <Pressable onPress={() => navigateTo("Home")} style={styles.navItem}>
+        <Pressable onPress={() => navigateTo("Upload")} style={styles.navItem}>
           <Icon name="home" size={24} color="black" />
         </Pressable>
         <Pressable onPress={() => navigateTo("Statistics")} style={styles.navItem}>
