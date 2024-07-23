@@ -11,9 +11,9 @@ import stageLight from '../../assets/headers/StageLight.png';
 import ArtistScreen from '../ArtistScreens';
 
 const imagePaths = [
-    { path: require('../../assets/photos/path.jpg'), title: 'Path', artist: 'Artist 1sdjk', profilePic: require('../../assets/artists/artist5.png') },
-    { path: require('../../assets/photos/animal.jpg'), title: 'Animal', artist: 'Artist 2', profilePic: require('../../assets/artists/artist4.png') },
-    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Artist 3', profilePic: require('../../assets/artists/artist3.png') },
+    { path: require('../../assets/photos/path.jpg'), title: 'Path', artist: 'Antoin Ramirez', profilePic: require('../../assets/realArtists/Antoin_Ramirez.jpeg') },
+    { path: require('../../assets/photos/animal.jpg'), title: 'Animal', artist: 'Karla Maldonado', profilePic: require('../../assets/realArtists/Karla_Maldonado.jpeg') },
+    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Obba Sanyang', profilePic: require('../../assets/realArtists/Obba_Sanyang.jpeg') },
     { path: require('../../assets/photos/deer.jpg'), title: 'Deer', artist: 'Artist 4', profilePic: require('../../assets/artists/artist1.png') },
     { path: require('../../assets/art/art1.jpg'), title: 'Art 1', artist: 'Artist 5', profilePic: require('../../assets/artists/artist2.png') },
     { path: require('../../assets/art/art2.png'), title: 'Art 2', artist: 'Artist 6', profilePic: require('../../assets/artists/artist6.png') },
