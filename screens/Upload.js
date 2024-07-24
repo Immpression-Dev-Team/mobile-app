@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Navbar from '../components/Navbar';
-import axios from 'axios';
+import axios from 'axios'; // Import Axios
+import { API_URL } from '../config';
 
 const Upload = () => {
     const [image, setImage] = useState(null);
