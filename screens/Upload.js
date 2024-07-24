@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import Navbar from '../components/Navbar';
+import axios from 'axios';
 
 const Upload = () => {
     const [image, setImage] = useState(null);
@@ -25,19 +26,47 @@ const Upload = () => {
         });
 
         if (!pickerResult.cancelled) {
-            setImage(pickerResult.uri);
+            setImage(pickerResult);
         }
     };
 
     const handleUpload = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
         if (!image || !title || !description || !price) {
             Alert.alert('Error', 'Please fill in all fields and select an image');
             return;
         }
 
-        // Handle the image upload logic here
-        await Alert.alert('Success', 'Image uploaded successfully!');
+        const formData = new FormData();
+        formData.append('name', title);
+        formData.append('description', description);
+        formData.append('price', price);
+        formData.append('image', {
+            uri: image.uri,
+            type: image.type,
+            name: image.uri.split('/').pop(),
+        });
+
+        try {
+            const response = await axios.post(`${API_URL}/image`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (response.data.success) {
+                Alert.alert('Success', 'Image uploaded successfully!');
+                setImage(null);
+                setTitle('');
+                setDescription('');
+                setPrice('');
+            } else {
+                Alert.alert('Error', 'Failed to upload image');
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'An error occurred while uploading the image');
+        }
     };
 
     return (
