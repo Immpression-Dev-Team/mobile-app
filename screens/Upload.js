@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import Navbar from '../components/Navbar';
-import axios from 'axios'; // Import Axios
+import axios from 'axios';
 import { API_URL } from '../config';
 
 const Upload = () => {
@@ -26,8 +27,18 @@ const Upload = () => {
             quality: 1,
         });
 
-        if (!pickerResult.cancelled) {
-            setImage(pickerResult);
+        console.log("Picker Result:", pickerResult);
+
+        if (!pickerResult.canceled) {
+            const selectedImage = pickerResult.assets[0];
+            // Reduce the image size before setting it to the state
+            const resizedImage = await ImageManipulator.manipulateAsync(
+                selectedImage.uri,
+                [{ resize: { width: 1024 } }], // Resize the image to a width of 1024 pixels
+                { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
+            );
+            console.log("Resized Image URI:", resizedImage.uri);
+            setImage({ ...selectedImage, uri: resizedImage.uri });
         }
     };
 
@@ -38,13 +49,17 @@ const Upload = () => {
             return;
         }
 
+        console.log("Image URI:", image.uri);
+        console.log("Image Type:", image.mimeType);
+        console.log("Image Name:", image.uri ? image.uri.split('/').pop() : "No image name");
+
         const formData = new FormData();
         formData.append('name', title);
         formData.append('description', description);
         formData.append('price', price);
         formData.append('image', {
             uri: image.uri,
-            type: image.type,
+            type: image.mimeType || 'image/jpeg',
             name: image.uri.split('/').pop(),
         });
 
@@ -54,6 +69,8 @@ const Upload = () => {
                     'Content-Type': 'multipart/form-data',
                 },
             });
+
+            console.log("Server Response:", response);
 
             if (response.data.success) {
                 Alert.alert('Success', 'Image uploaded successfully!');
@@ -65,7 +82,7 @@ const Upload = () => {
                 Alert.alert('Error', 'Failed to upload image');
             }
         } catch (error) {
-            console.error(error);
+            console.error("Upload Error:", error.response || error);
             Alert.alert('Error', 'An error occurred while uploading the image');
         }
     };
@@ -79,7 +96,7 @@ const Upload = () => {
                     <View style={styles.imagePlaceholderContainer}>
                         <TouchableOpacity style={styles.imagePlaceholder} onPress={selectImage}>
                             {image ? (
-                                <Image source={{ uri: image }} style={styles.image} />
+                                <Image source={{ uri: image.uri }} style={styles.image} />
                             ) : (
                                 <Text style={styles.imagePlaceholderText}>Upload Image</Text>
                             )}
@@ -114,11 +131,9 @@ const Upload = () => {
 };
 
 const styles = StyleSheet.create({
-    mainContainer: {
-    },
+    mainContainer: {},
     container: {
         padding: 16,
-        // justifyContent: 'center',
     },
     imageContainer: {
         flexDirection: 'row',
@@ -137,7 +152,6 @@ const styles = StyleSheet.create({
         borderColor: '#5f669c',
         borderStyle: 'dotted',
         borderRadius: 2,
-
     },
     imagePlaceholderText: {
         color: '#7c809c',
@@ -151,7 +165,7 @@ const styles = StyleSheet.create({
         width: '50%',
         height: 250,
         resizeMode: 'stretch',
-        marginRight: 0, // Remove any margin between images
+        marginRight: 0,
     },
     input: {
         height: 40,
