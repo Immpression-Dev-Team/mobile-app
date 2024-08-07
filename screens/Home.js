@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import NavBar from '../components/Navbar';
+import Navbar from '../components/Navbar';
 import LoginButton from '../components/LoginButton';
 import ArtForYou from '../components/home_sections/ArtForYou';
 import FeaturedArtists from '../components/home_sections/FeaturedArtists';
@@ -10,16 +10,15 @@ import LongSearchBar from '../components/LongSearchBar';
 import FillerMessage from '../components/home_sections/FillerMessage';
 import Categories from '../components/home_sections/Categories';
 import InviteFriends from '../components/home_sections/InviteFriends';
+import FooterNavbar from '../components/FooterNavbar';
 
-
-// TODO conditionally render if the user is logged in or not (remove the login button when logged in and show the the logout button instead)
+// TODO conditionally render if the user is logged in or not (remove the login button when logged in and show the logout button instead)
 const HomeScreen = () => {
   return (
     <View style={styles.everything}>
       <View style={styles.navbar}>
-        <NavBar />
+        <Navbar />
         <LongSearchBar />
-        
       </View>
       <ScrollView>
         <View style={styles.container}>
@@ -32,8 +31,11 @@ const HomeScreen = () => {
           <ArtistsPick />
           {/* this is the original login button and will fix later */}
           {/* <LoginButton /> */}
-          </View>
+        </View>
       </ScrollView>
+      <View style={styles.footer}>
+        <FooterNavbar />
+      </View>
     </View>
   );
 };
@@ -41,21 +43,18 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   everything: {
     backgroundColor: 'white',
+    flex: 1,
   },
   container: {
-    // backgroundColor: '#acb3bf',
     flex: 1,
     paddingBottom: 300,
     paddingHorizontal: 0,
     alignItems: 'center', // Center horizontally
   },
   navbar: {
-    // borderBottomWidth: 1,
-    // borderBottomLeftRadius: 10,
-    // borderBottomRightRadius: 10, 
-    // borderColor: '#ccc',
-    // paddingBottom: 2,
-
+    zIndex: 1000,
+  },
+  footer: {
     zIndex: 1000,
   },
 });

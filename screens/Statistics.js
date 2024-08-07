@@ -2,6 +2,7 @@ import React from 'react';
 import { View, StyleSheet, ScrollView, Image, Text } from 'react-native';
 import Navbar from '../components/Navbar';
 import statsBrush from '../assets/icons/stats_brush.png';
+import FooterNavbar from '../components/FooterNavbar';
 
 const StatisticsScreen = () => {
   const imagePaths = [
@@ -52,6 +53,9 @@ const StatisticsScreen = () => {
           ))}
         </View>
       </ScrollView>
+      <View style={styles.footer}>
+        <FooterNavbar />
+      </View>
     </>
   );
 };

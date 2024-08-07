@@ -5,6 +5,7 @@ import * as ImageManipulator from 'expo-image-manipulator';
 import Navbar from '../components/Navbar';
 import axios from 'axios';
 import { API_URL } from '../config';
+import FooterNavbar from '../components/FooterNavbar';
 
 const Upload = () => {
     const [image, setImage] = useState(null);
@@ -88,43 +89,49 @@ const Upload = () => {
     };
 
     return (
-        <View style={styles.mainContainer}>
-            <Navbar />
-            <View style={styles.container}>
-                <View style={styles.imageContainer}>
-                    <Image source={require('../assets/UploadSample.png')} style={styles.exampleImage} />
-                    <View style={styles.imagePlaceholderContainer}>
-                        <TouchableOpacity style={styles.imagePlaceholder} onPress={selectImage}>
-                            {image ? (
-                                <Image source={{ uri: image.uri }} style={styles.image} />
-                            ) : (
-                                <Text style={styles.imagePlaceholderText}>Upload Image</Text>
-                            )}
-                        </TouchableOpacity>
+        <View style={styles.everything}>
+            <View style={styles.mainContainer}>
+                <Navbar />
+                <View style={styles.container}>
+                    <View style={styles.imageContainer}>
+                        <Image source={require('../assets/UploadSample.png')} style={styles.exampleImage} />
+                        <View style={styles.imagePlaceholderContainer}>
+                            <TouchableOpacity style={styles.imagePlaceholder} onPress={selectImage}>
+                                {image ? (
+                                    <Image source={{ uri: image.uri }} style={styles.image} />
+                                ) : (
+                                    <Text style={styles.imagePlaceholderText}>Upload Image</Text>
+                                )}
+                            </TouchableOpacity>
+                        </View>
                     </View>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Title"
+                        value={title}
+                        onChangeText={setTitle}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Description"
+                        value={description}
+                        onChangeText={setDescription}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Price"
+                        value={price}
+                        onChangeText={setPrice}
+                        keyboardType="numeric"
+                    />
+                    <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
+                        <Text style={styles.uploadButtonText}>Upload</Text>
+                    </TouchableOpacity>
                 </View>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Title"
-                    value={title}
-                    onChangeText={setTitle}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Description"
-                    value={description}
-                    onChangeText={setDescription}
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Price"
-                    value={price}
-                    onChangeText={setPrice}
-                    keyboardType="numeric"
-                />
-                <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
-                    <Text style={styles.uploadButtonText}>Upload</Text>
-                </TouchableOpacity>
+
+            </View>
+            <View style={styles.footer}>
+                <FooterNavbar />
             </View>
         </View>
     );
@@ -132,6 +139,12 @@ const Upload = () => {
 
 const styles = StyleSheet.create({
     mainContainer: {},
+    everything: {
+        flex: 1,
+    },
+    footer: {
+        zIndex: 1000,
+    },
     container: {
         padding: 16,
     },
