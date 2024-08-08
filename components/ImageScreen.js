@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { View, Image, StyleSheet, Text, Pressable, FlatList, Dimensions } from 'react-native';
-const { width } = Dimensions.get('window');
 import Navbar from './Navbar';
 import Scrollbars from './ScrollBars';
+import FooterNavbar from '../components/FooterNavbar';
+
+const { width } = Dimensions.get('window');
 
 const ImageScreen = ({ route, navigation }) => {
   const { images, initialIndex } = route.params;
@@ -53,41 +55,40 @@ const ImageScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <Navbar />
-      <View style={styles.container}>
-        <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}>
-          <Text style={styles.closeButtonText}>X</Text>
-        </Pressable>
-        <FlatList
-          ref={flatListRef}
-          data={images}
-          renderItem={renderItem}
-          horizontal
-          pagingEnabled
-          keyExtractor={(item, index) => index.toString()}
-          onViewableItemsChanged={onViewRef.current}
-          viewabilityConfig={viewConfigRef.current}
-          initialScrollIndex={initialIndex}
-          getItemLayout={(data, index) => (
-            { length: width, offset: width * index, index }
-          )}
-          showsHorizontalScrollIndicator={false}
-        />
-        <View style={styles.textContainer}>
-          <Text style={styles.artTitle}>{images[currentIndex].artTitle}</Text>
-          <View style={styles.scrollBar}>
-            <Scrollbars />
-          </View>
-          <View style={styles.artistNameYearContainer}>
-            <Text style={styles.artistName}>{images[currentIndex].artistName}</Text>
-            <View style={styles.verticalLine} />
-            <Text style={styles.artYear}>{images[currentIndex].artYear}</Text>
-          </View>
-          <View style={styles.horizontalLine} />
-          <Text style={styles.artType}>{images[currentIndex].artType}</Text>
-          <View style={styles.horizontalLine} />
-          <Text style={styles.artDescription}>{images[currentIndex].artDescription}</Text>
+      <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}>
+        <Text style={styles.closeButtonText}>X</Text>
+      </Pressable>
+      <FlatList
+        ref={flatListRef}
+        data={images}
+        renderItem={renderItem}
+        horizontal
+        pagingEnabled
+        keyExtractor={(item, index) => index.toString()}
+        onViewableItemsChanged={onViewRef.current}
+        viewabilityConfig={viewConfigRef.current}
+        initialScrollIndex={initialIndex}
+        getItemLayout={(data, index) => (
+          { length: width, offset: width * index, index }
+        )}
+        showsHorizontalScrollIndicator={false}
+      />
+      <View style={styles.textContainer}>
+        <Text style={styles.artTitle}>{images[currentIndex].artTitle}</Text>
+        <View style={styles.scrollBar}>
+          <Scrollbars />
         </View>
+        <View style={styles.artistNameYearContainer}>
+          <Text style={styles.artistName}>{images[currentIndex].artistName}</Text>
+          <View style={styles.verticalLine} />
+          <Text style={styles.artYear}>{images[currentIndex].artYear}</Text>
+        </View>
+        <View style={styles.horizontalLine} />
+        <Text style={styles.artType}>{images[currentIndex].artType}</Text>
+        <View style={styles.horizontalLine} />
+        <Text style={styles.artDescription}>{images[currentIndex].artDescription}</Text>
       </View>
+      <FooterNavbar />
     </View>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, Image, StyleSheet, Alert, ScrollView } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import Navbar from '../components/Navbar';
@@ -32,10 +32,9 @@ const Upload = () => {
 
         if (!pickerResult.canceled) {
             const selectedImage = pickerResult.assets[0];
-            // Reduce the image size before setting it to the state
             const resizedImage = await ImageManipulator.manipulateAsync(
                 selectedImage.uri,
-                [{ resize: { width: 1024 } }], // Resize the image to a width of 1024 pixels
+                [{ resize: { width: 1024 } }],
                 { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
             );
             console.log("Resized Image URI:", resizedImage.uri);
@@ -90,8 +89,8 @@ const Upload = () => {
 
     return (
         <View style={styles.everything}>
-            <View style={styles.mainContainer}>
-                <Navbar />
+            <Navbar />
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
                 <View style={styles.container}>
                     <View style={styles.imageContainer}>
                         <Image source={require('../assets/UploadSample.png')} style={styles.exampleImage} />
@@ -128,22 +127,19 @@ const Upload = () => {
                         <Text style={styles.uploadButtonText}>Upload</Text>
                     </TouchableOpacity>
                 </View>
-
-            </View>
-            <View style={styles.footer}>
-                <FooterNavbar />
-            </View>
+            </ScrollView>
+            <FooterNavbar style={styles.footer} />
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    mainContainer: {},
     everything: {
         flex: 1,
+        justifyContent: 'space-between',
     },
-    footer: {
-        zIndex: 1000,
+    scrollContainer: {
+        paddingBottom: 100, // Ensure there's space for the footer
     },
     container: {
         padding: 16,
@@ -199,6 +195,12 @@ const styles = StyleSheet.create({
     uploadButtonText: {
         color: '#fff',
         fontWeight: 'bold',
+    },
+    footer: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        bottom: 0,
     },
 });
 

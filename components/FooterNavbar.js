@@ -1,4 +1,3 @@
-// components/FooterNavbar.js
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -13,13 +12,13 @@ const FooterNavbar = () => {
         <Icon name="home" size={24} color="#007AFF" />
         <Text style={styles.text}>Home</Text>
       </TouchableOpacity>
+      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Upload')}>
+        <Icon name="plus" size={24} color="#FFA500" />
+        <Text style={styles.text}>Upload</Text>
+      </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Profile')}>
         <Icon name="user" size={24} color="#832352" />
         <Text style={styles.text}>Profile</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Statistics')}>
-        <Icon name="bar-chart" size={24} color="#D1BE5D" />
-        <Text style={styles.text}>Statistics</Text>
       </TouchableOpacity>
     </View>
   );
@@ -28,11 +27,12 @@ const FooterNavbar = () => {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#ccc',
     paddingVertical: 10,
+    paddingHorizontal: 20,
   },
   button: {
     alignItems: 'center',
