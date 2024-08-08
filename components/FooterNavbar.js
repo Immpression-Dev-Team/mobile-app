@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
 const FooterNavbar = () => {
   const navigation = useNavigation();
@@ -9,16 +8,16 @@ const FooterNavbar = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
-        <Icon name="home" size={24} color="#007AFF" />
-        <Text style={styles.text}>Home</Text>
+        <Image source={require('../assets/icons/Home.png')} style={styles.icon} />
+        {/* <Text style={styles.text}>Home</Text> */}
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Upload')}>
-        <Icon name="plus" size={24} color="#FFA500" />
-        <Text style={styles.text}>Upload</Text>
+        <Image source={require('../assets/icons/Upload.png')} style={styles.icon} />
+        {/* <Text style={styles.text}>Upload</Text> */}
       </TouchableOpacity>
       <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Profile')}>
-        <Icon name="user" size={24} color="#832352" />
-        <Text style={styles.text}>Profile</Text>
+        <Image source={require('../assets/icons/Profile.png')} style={styles.icon} />
+        {/* <Text style={styles.text}>Profile</Text> */}
       </TouchableOpacity>
     </View>
   );
@@ -28,7 +27,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
+    backgroundColor: '#d3',
     borderTopWidth: 1,
     borderTopColor: '#ccc',
     paddingVertical: 10,
@@ -42,6 +41,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
   },
+  icon: {
+    width: 50, // Set the width as needed
+    height: 50, // Set the height as needed
+    resizeMode: 'contain', // Ensure the icon scales correctly
+  }
 });
 
 export default FooterNavbar;
