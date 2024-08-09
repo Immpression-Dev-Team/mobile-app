@@ -128,19 +128,19 @@ const ArtForYou = () => {
 
 const styles = StyleSheet.create({
     section: {
-        marginTop: 0,
+        marginTop: 10,
         marginBottom: 10,
     },
     headerContainer: {
         flexDirection: 'row', // Align items side by side
         alignItems: 'center', // Vertically center items
-        marginBottom: 2,
+        marginBottom: 0,
         alignSelf: 'flex-start', // Make sure the container's width wraps around the text
-        paddingHorizontal: 10,
+        paddingHorizontal: 5,
     },
     headerImage: {
         width: 264, // Adjust width according to your image
-        height: 61, // Adjust height according to your image
+        height: 52, // Adjust height according to your image
         resizeMode: 'contain',
     },
     allImageContainer: {
@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
         borderWidth: 0,
         borderColor: '#aebacf',
         borderRadius: 5,
+        paddingTop: 0,
         padding: 5,
     },
     scrollView: {

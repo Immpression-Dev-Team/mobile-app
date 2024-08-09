@@ -1,39 +1,32 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, ImageBackground } from 'react-native';
 import Navbar from '../components/Navbar';
-import LoginButton from '../components/LoginButton';
-import ArtForYou from '../components/home_sections/ArtForYou';
+import ArtOfTheDay from '../components/home_sections/ArtOfTheDay';
+import InviteFriends from '../components/home_sections/InviteFriends';
+import Categories from '../components/home_sections/Categories';
 import FeaturedArtists from '../components/home_sections/FeaturedArtists';
 import ArtistsPick from '../components/home_sections/ArtistsPick';
-import ArtQuotes from '../components/home_sections/ArtQuotes';
-import LongSearchBar from '../components/LongSearchBar';
-import FillerMessage from '../components/home_sections/FillerMessage';
-import Categories from '../components/home_sections/Categories';
-import InviteFriends from '../components/home_sections/InviteFriends';
 import FooterNavbar from '../components/FooterNavbar';
+import ArtForYou from '../components/home_sections/ArtForYou';
 
 const HomeScreen = () => {
   return (
     <ImageBackground 
-      source={require('../assets/backgrounds/navbar-bg.png')} // Replace with your image path
+      source={require('../assets/backgrounds/navbar-bg2.png')} // Replace with your image path
       style={styles.backgroundImage}
     >
       <View style={styles.everything}>
         <View style={styles.navbar}>
           <Navbar />
-          {/* <LongSearchBar /> */}
         </View>
         <ScrollView>
           <View style={styles.container}>
+            {/* <ArtOfTheDay /> */}
             <ArtForYou />
-            {/* <ArtQuotes /> */}
-            {/* <FillerMessage /> */}
             <InviteFriends />
             <Categories />
             <FeaturedArtists />
             <ArtistsPick />
-            {/* this is the original login button and will fix later */}
-            {/* <LoginButton /> */}
           </View>
         </ScrollView>
         <View style={styles.footer}>
@@ -59,6 +52,7 @@ const styles = StyleSheet.create({
     paddingBottom: 300,
     paddingHorizontal: 0,
     alignItems: 'center', // Center horizontally
+    backgroundColor: '#fff',
   },
   navbar: {
     zIndex: 1000,

@@ -1,28 +1,29 @@
 import React from 'react';
-import { Pressable, Text, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // Import the MaterialCommunityIcons icon set
 
-const DiscoverButton = ({ onPress, isAutoScrolling }) => {
+const DiscoverButton = ({ onPress }) => {
   return (
     <Pressable style={styles.button} onPress={onPress}>
-      <Text style={styles.buttonText}>{isAutoScrolling ? '!..' : '...'}</Text>
+      <Icon 
+        name="arrow-expand" // Diagonal both-sided arrow icon name in MaterialCommunityIcons
+        size={24} // Adjust the size of the icon as needed
+        color="#000" // Set the color of the icon
+      />
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    marginTop: 20,
+    marginTop: 5,
     marginLeft: 57,
-    paddingTop: 0,
-    paddingBottom: 0,
+    paddingTop: 10,
+    paddingBottom: 10,
     paddingHorizontal: 10,
-    backgroundColor: '#000',
+    // backgroundColor: '#000',
     borderRadius: 15,
     alignSelf: 'center',
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 20,
   },
 });
 
