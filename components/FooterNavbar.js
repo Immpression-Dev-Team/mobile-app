@@ -27,11 +27,11 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#d3',
-    borderTopWidth: 1,
-    borderTopColor: '#ccc',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    backgroundColor: '#EBEBEB',
+    borderTopWidth: 0.2,
+    borderTopColor: '#ADBBD6',
+    paddingBottom: 20,
+    paddingHorizontal: 35,
   },
   button: {
     alignItems: 'center',

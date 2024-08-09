@@ -18,7 +18,7 @@ const HomeScreen = () => {
     <View style={styles.everything}>
       <View style={styles.navbar}>
         <Navbar />
-        <LongSearchBar />
+        {/* <LongSearchBar /> */}
       </View>
       <ScrollView>
         <View style={styles.container}>
@@ -42,7 +42,7 @@ const HomeScreen = () => {
 
 const styles = StyleSheet.create({
   everything: {
-    backgroundColor: 'white',
+    backgroundColor: '#EBEBEB',
     flex: 1,
   },
   container: {
@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
   },
   navbar: {
     zIndex: 1000,
+    paddingBottom: 10,
   },
   footer: {
     zIndex: 1000,

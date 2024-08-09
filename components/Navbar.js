@@ -3,7 +3,7 @@ import { View, Image, Pressable, StyleSheet, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import logoImg from "../assets/Logo_T.png";
 import { useNavigation } from '@react-navigation/native';
-import SearchBar from '../components/SearchBar';
+import LongSearchBar from './LongSearchBar';
 import LoginButton from './LoginButton';
 import LogoTitle from './LogoTitle';
 
@@ -84,27 +84,27 @@ export default function Navbar() {
           },
         ],
       }]}>
-        <Pressable onPress={() => navigateTo("Upload")} style={styles.navItem}>
+        {/* <Pressable onPress={() => navigateTo("Home")} style={styles.navItem}>
           <Icon name="home" size={24} color="black" />
-        </Pressable>
+        </Pressable> */}
         <Pressable onPress={() => navigateTo("Statistics")} style={styles.navItem}>
           <Icon name="equalizer" size={24} color="black" />
         </Pressable>
-        <Pressable onPress={() => navigateTo("Profile")} style={styles.navItem}>
+        {/* <Pressable onPress={() => navigateTo("Profile")} style={styles.navItem}>
           <Icon name="photo-library" size={24} color="black" />
+        </Pressable> */}
+        <Pressable onPress={handleOpenSearch} style={styles.navItem}>
+          <Icon name="search" size={24} color="black" />
         </Pressable>
         <Pressable onPress={() => navigateTo("Settings")} style={styles.navItem}>
           <Icon name="settings" size={24} color="black" />
         </Pressable>
-        {/* <Pressable onPress={handleOpenSearch} style={styles.navItem}>
-          <Icon name="search" size={24} color="black" />
-        </Pressable> */}
       </Animated.View>
       {showSearch && (
         <Animated.View style={[styles.searchContainer, {
           opacity: fadeAnimation, // Apply fade animation
         }]}>
-          <SearchBar onClose={handleCloseSearch} />
+          <LongSearchBar onClose={handleCloseSearch} />
         </Animated.View>
       )}
     </View>
@@ -114,8 +114,10 @@ export default function Navbar() {
 const styles = StyleSheet.create({
   container: {
     marginTop: 50,
-    marginBottom: 10,
+    // marginBottom: 10,
+    paddingBottom: 5,
     zIndex: 99,
+    backgroundColor: '',
   },
   navbar: {
     flexDirection: 'row',
