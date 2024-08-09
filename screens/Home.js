@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, ImageBackground } from 'react-native';
 import Navbar from '../components/Navbar';
 import LoginButton from '../components/LoginButton';
 import ArtForYou from '../components/home_sections/ArtForYou';
@@ -12,37 +12,46 @@ import Categories from '../components/home_sections/Categories';
 import InviteFriends from '../components/home_sections/InviteFriends';
 import FooterNavbar from '../components/FooterNavbar';
 
-// TODO conditionally render if the user is logged in or not (remove the login button when logged in and show the logout button instead)
 const HomeScreen = () => {
   return (
-    <View style={styles.everything}>
-      <View style={styles.navbar}>
-        <Navbar />
-        {/* <LongSearchBar /> */}
-      </View>
-      <ScrollView>
-        <View style={styles.container}>
-          <ArtForYou />
-          {/* <ArtQuotes /> */}
-          {/* <FillerMessage /> */}
-          <InviteFriends />
-          <Categories />
-          <FeaturedArtists />
-          <ArtistsPick />
-          {/* this is the original login button and will fix later */}
-          {/* <LoginButton /> */}
+    <ImageBackground 
+      source={require('../assets/backgrounds/navbar-bg.png')} // Replace with your image path
+      style={styles.backgroundImage}
+    >
+      <View style={styles.everything}>
+        <View style={styles.navbar}>
+          <Navbar />
+          {/* <LongSearchBar /> */}
         </View>
-      </ScrollView>
-      <View style={styles.footer}>
-        <FooterNavbar />
+        <ScrollView>
+          <View style={styles.container}>
+            <ArtForYou />
+            {/* <ArtQuotes /> */}
+            {/* <FillerMessage /> */}
+            <InviteFriends />
+            <Categories />
+            <FeaturedArtists />
+            <ArtistsPick />
+            {/* this is the original login button and will fix later */}
+            {/* <LoginButton /> */}
+          </View>
+        </ScrollView>
+        <View style={styles.footer}>
+          <FooterNavbar />
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  backgroundImage: {
+    width: '100%',
+    height: 124,
+    flex: 1,
+  },
   everything: {
-    backgroundColor: '#EBEBEB',
+    backgroundColor: 'transparent', // Set backgroundColor to transparent
     flex: 1,
   },
   container: {
