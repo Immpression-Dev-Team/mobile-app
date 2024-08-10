@@ -21,9 +21,9 @@ const HomeScreen = () => {
         </View>
         <ScrollView>
           <View style={styles.container}>
-            {/* <ArtOfTheDay /> */}
             <ArtForYou />
             <FeaturedArtists />
+            <ArtOfTheDay />
             <InviteFriends />
             <Categories />
             
