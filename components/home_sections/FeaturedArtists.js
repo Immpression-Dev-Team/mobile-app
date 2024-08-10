@@ -115,11 +115,11 @@ const styles = StyleSheet.create({
     image: {
         width: 120,
         height: 120,
-        marginBottom: 2,
-        borderRadius: 2,
+        marginBottom: 3,
+        borderRadius: 3,
     },
     artistName: {
-        fontSize: 11,
+        fontSize: 14,
         marginTop: 5,
         color: 'black',
         fontWeight: 'bold',
