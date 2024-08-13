@@ -53,7 +53,7 @@ const FeaturedArtists = () => {
                                     <TouchableOpacity
                                         key={index}
                                         style={styles.artistContainer}
-                                        onPress={() => navigateToArtistScreen(item.artist, item.profilePic, imagePaths, index)}
+                                        onPress={() => navigateToArtistScreen(item.artist, item.profilePic, imagePaths, chunkIndex * 1 + index)}
                                     >
                                         <Image source={item.profilePic} style={styles.image} />
                                         <Text style={styles.artistName}>{item.artist}</Text>
