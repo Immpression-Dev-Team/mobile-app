@@ -18,7 +18,6 @@ const imagePaths = [
 ];
 
 const headerImage = require('../../assets/headers/Art_for_you.png'); // Import the header image
-const browseImage = require('../../assets/browse.png'); // Import the browse image
 const slideLeftGif = require('../../assets/slideLeft.gif'); // Import the sliding GIF
 
 const chunkArray = (arr, chunkSize) => {
@@ -146,7 +145,10 @@ const ArtForYou = () => {
 
                     {isOverlayVisible && (
                         <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
-                            <Image source={slideLeftGif} style={styles.browseImage} />
+                            <View style={styles.card}>
+                                <Image source={slideLeftGif} style={styles.cardImage} />
+                                <Text style={styles.cardText}>Browse More</Text>
+                            </View>
                         </Animated.View>
                     )}
                 </View>
@@ -207,16 +209,36 @@ const styles = StyleSheet.create({
     overlay: {
         position: 'absolute',
         bottom: 10,
-        right: 10,
-        width: 60,
-        height: 60,
+        right: -5, // Align the overlay to the right
+        width: '60%',  // Adjust the width as needed
+        height: 50,
         justifyContent: 'center',
-        alignItems: 'center',
+        alignItems: 'flex-end', // Align the card content to the right
     },
-    browseImage: {
-        width: '100%',
-        height: '100%',
+    card: {
+        flexDirection: 'row',
+        backgroundColor: 'white',
+        borderRadius: 3,
+        paddingHorizontal: 5,
+        paddingVertical: 2,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    cardImage: {
+        width: 30,
+        height: 30,
+        marginRight: 5,
         resizeMode: 'contain',
+    },
+    cardText: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: '#333',
+        marginRight: 5,
     },
 });
 
