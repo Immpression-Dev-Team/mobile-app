@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, Pressable, Dimensions, Animated } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, Pressable, Animated, TouchableWithoutFeedback } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import TVButton from '../TVButton';
 import { useNavigation } from '@react-navigation/native';
@@ -18,6 +18,8 @@ const imagePaths = [
 ];
 
 const headerImage = require('../../assets/headers/Art_for_you.png'); // Import the header image
+const browseImage = require('../../assets/browse.png'); // Import the browse image
+const slideLeftGif = require('../../assets/slideLeft.gif'); // Import the sliding GIF
 
 const chunkArray = (arr, chunkSize) => {
     const chunks = [];
@@ -33,9 +35,22 @@ const ArtForYou = () => {
     const navigation = useNavigation();
     const scrollDistance = 150; // Adjust this to set how much it scrolls to the right
     const imageChunks = chunkArray(imagePaths, 2); // Chunk into groups of 2 images
+    const [isOverlayVisible, setOverlayVisible] = useState(false);
+    const inactivityTimeoutRef = useRef(null);
 
     useEffect(() => {
-        const scrollTimeout = setTimeout(() => {
+        startAutoScrollOnce(); // Start the autoscroll once on mount
+        resetInactivityTimer();
+
+        return () => {
+            if (inactivityTimeoutRef.current) {
+                clearTimeout(inactivityTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    const startAutoScrollOnce = () => {
+        setTimeout(() => {
             if (scrollViewRef.current) {
                 scrollViewRef.current.scrollTo({
                     x: scrollDistance,
@@ -49,72 +64,94 @@ const ArtForYou = () => {
                     });
                 }, 500); // Scroll back to the left after 0.5 seconds
             }
-        }, 2000); // Start the scroll after 2 seconds
+        }, 2000); // Start the scroll after 2 seconds (only once)
+    };
 
-        return () => clearTimeout(scrollTimeout);
-    }, [scrollDistance]);
+    const resetInactivityTimer = () => {
+        console.log('Resetting inactivity timer'); // Debugging output
 
-    useEffect(() => {
-        const fadeInOut = () => {
-            Animated.sequence([
-                Animated.timing(fadeAnim, {
-                    toValue: 1, // Fade in to full opacity
-                    duration: 300, // 1 second
-                    useNativeDriver: true,
-                }),
-                Animated.timing(fadeAnim, {
-                    toValue: 0, // Fade out to zero opacity
-                    duration: 2000, // 1 second
-                    useNativeDriver: true,
-                }),
-            ]).start();
-        };
+        if (inactivityTimeoutRef.current) {
+            clearTimeout(inactivityTimeoutRef.current);
+        }
 
-        const overlayTimeout = setTimeout(fadeInOut, 2000); // Start the fade in/out after 2 seconds
+        setOverlayVisible(false);
 
-        return () => clearTimeout(overlayTimeout);
-    }, [fadeAnim]);
+        inactivityTimeoutRef.current = setTimeout(() => {
+            console.log('No activity detected for 5 seconds. Showing overlay.'); // Debugging output
+            setOverlayVisible(true);
+            fadeInOverlay();
+        }, 5000); // Show the overlay after 5 seconds of inactivity
+    };
+
+    const fadeInOverlay = () => {
+        console.log('Fading in overlay'); // Debugging output
+        Animated.timing(fadeAnim, {
+            toValue: 1, // Fade in to full opacity
+            duration: 500, // Fade in duration
+            useNativeDriver: true,
+        }).start();
+    };
+
+    const fadeOutOverlay = () => {
+        console.log('Fading out overlay'); // Debugging output
+        Animated.timing(fadeAnim, {
+            toValue: 0, // Fade out to zero opacity
+            duration: 500, // Fade out duration
+            useNativeDriver: true,
+        }).start(() => {
+            setOverlayVisible(false); // Hide after fade out
+        });
+    };
+
+    const handleUserActivity = () => {
+        console.log('User activity detected'); // Debugging output
+        resetInactivityTimer();
+        fadeOutOverlay(); // Immediately fade out when user interacts
+    };
 
     const handleImagePress = (imageIndex) => {
         navigation.navigate('ImageScreen', { images: imagePaths, initialIndex: imageIndex });
     };
 
     return (
-        <LinearGradient colors={['white', '#acb3bf', 'white']} style={styles.section}>
-            <View style={styles.headerContainer}>
-                <Image source={headerImage} style={styles.headerImage} />
-                <Pressable style={styles.rightHeader}>
-                    <TVButton />
-                </Pressable>
-            </View>
-            <View style={styles.allImageContainer}>
-                <ScrollView
-                    horizontal
-                    ref={scrollViewRef}
-                    showsHorizontalScrollIndicator={false} // Disable horizontal scrollbar
-                    scrollEventThrottle={16}
-                >
-                    {/* Render smaller images in columns */}
-                    {imageChunks.map((chunk, chunkIndex) => (
-                        <View key={chunkIndex} style={styles.column}>
-                            {chunk.map((path, index) => (
-                                <View key={index}>
-                                    <Pressable onPress={() => handleImagePress(chunkIndex * 2 + index)}>
-                                        <Image source={path.path} style={styles.image} />
-                                    </Pressable>
-                                    <Text style={styles.artistName}>{path.artistName}</Text>
-                                </View>
-                            ))}
-                        </View>
-                    ))}
-                </ScrollView>
+        <TouchableWithoutFeedback onPress={handleUserActivity}>
+            <LinearGradient colors={['white', '#acb3bf', 'white']} style={styles.section}>
+                <View style={styles.headerContainer}>
+                    <Image source={headerImage} style={styles.headerImage} />
+                    <Pressable style={styles.rightHeader}>
+                        <TVButton />
+                    </Pressable>
+                </View>
+                <View style={styles.allImageContainer}>
+                    <ScrollView
+                        horizontal
+                        ref={scrollViewRef}
+                        showsHorizontalScrollIndicator={false}
+                        scrollEventThrottle={16}
+                        onScroll={handleUserActivity}
+                    >
+                        {imageChunks.map((chunk, chunkIndex) => (
+                            <View key={chunkIndex} style={styles.column}>
+                                {chunk.map((path, index) => (
+                                    <View key={index}>
+                                        <Pressable onPress={() => handleImagePress(chunkIndex * 2 + index)}>
+                                            <Image source={path.path} style={styles.image} />
+                                        </Pressable>
+                                        <Text style={styles.artistName}>{path.artistName}</Text>
+                                    </View>
+                                ))}
+                            </View>
+                        ))}
+                    </ScrollView>
 
-                <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
-                    <Text style={styles.overlayText}>Browse</Text>
-                    <Text style={styles.arrow}>→</Text>
-                </Animated.View>
-            </View>
-        </LinearGradient>
+                    {isOverlayVisible && (
+                        <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
+                            <Image source={slideLeftGif} style={styles.browseImage} />
+                        </Animated.View>
+                    )}
+                </View>
+            </LinearGradient>
+        </TouchableWithoutFeedback>
     );
 };
 
@@ -124,15 +161,15 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     headerContainer: {
-        flexDirection: 'row', // Align items side by side
-        alignItems: 'center', // Vertically center items
+        flexDirection: 'row',
+        alignItems: 'center',
         marginBottom: 0,
-        alignSelf: 'flex-start', // Make sure the container's width wraps around the text
+        alignSelf: 'flex-start',
         paddingHorizontal: 5,
     },
     headerImage: {
-        width: 264, // Adjust width according to your image
-        height: 52, // Adjust height according to your image
+        width: 264,
+        height: 52,
         resizeMode: 'contain',
     },
     allImageContainer: {
@@ -143,18 +180,18 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         paddingTop: 0,
         padding: 5,
-        position: 'relative', // Ensure proper positioning of the overlay
+        position: 'relative',
     },
     scrollView: {
         flexDirection: 'row',
     },
     column: {
-        marginRight: 4, // Margin between columns
+        marginRight: 4,
     },
     image: {
         width: 130,
         height: 130,
-        marginBottom: 4, // Margin between images in a column
+        marginBottom: 4,
         borderRadius: 0,
     },
     artistName: {
@@ -169,24 +206,17 @@ const styles = StyleSheet.create({
     },
     overlay: {
         position: 'absolute',
-        top: 0,
-        bottom: 0,
-        right: 0,
-        width: '30%', // Adjust this percentage to control how much of the right side is covered
-        height: '99%',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent gray
+        bottom: 10,
+        right: 10,
+        width: 60,
+        height: 60,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingRight: 20,
     },
-    overlayText: {
-        color: 'white',
-        fontSize: 18,
-        marginBottom: 5, // Space between "Browse" and the arrow
-    },
-    arrow: {
-        color: 'white',
-        fontSize: 24,
+    browseImage: {
+        width: '100%',
+        height: '100%',
+        resizeMode: 'contain',
     },
 });
 

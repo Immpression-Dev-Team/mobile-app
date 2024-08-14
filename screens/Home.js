@@ -23,9 +23,10 @@ const HomeScreen = () => {
           <View style={styles.container}>
             <ArtForYou />
             <FeaturedArtists />
+            <Categories />
             <ArtOfTheDay />
             <InviteFriends />
-            <Categories />
+            
             
             <ArtistsPick />
           </View>

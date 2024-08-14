@@ -11,9 +11,9 @@ const Categories = () => {
     return (
         <LinearGradient colors={['white', '#acb3bf', 'white']} style={styles.section}>
             <View style={styles.mainContainer}>
-                <View style={styles.headerContainer}>
+                {/* <View style={styles.headerContainer}>
                     <Image source={headerImage} style={styles.headerImage} />
-                </View>
+                </View> */}
                 <View style={styles.container}>
                     {categoryLabels.map((label, index) => (
                         <Pressable key={index} style={styles.box}>
@@ -40,7 +40,8 @@ const Categories = () => {
 
 const styles = StyleSheet.create({
     section: {
-        width: '97%',
+        width: '98%',
+        marginTop: 10,
     },
     mainContainer: {
         width: '100%',
