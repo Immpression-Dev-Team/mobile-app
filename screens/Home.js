@@ -1,18 +1,18 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView, ImageBackground } from 'react-native';
-import Navbar from '../components/Navbar';
-import ArtOfTheDay from '../components/home_sections/ArtOfTheDay';
-import InviteFriends from '../components/home_sections/InviteFriends';
-import Categories from '../components/home_sections/Categories';
-import FeaturedArtists from '../components/home_sections/FeaturedArtists';
-import ArtistsPick from '../components/home_sections/ArtistsPick';
-import FooterNavbar from '../components/FooterNavbar';
-import ArtForYou from '../components/home_sections/ArtForYou';
+import React from "react";
+import { View, StyleSheet, ScrollView, ImageBackground } from "react-native";
+import Navbar from "../components/Navbar";
+import ArtOfTheDay from "../components/home_sections/ArtOfTheDay";
+import InviteFriends from "../components/home_sections/InviteFriends";
+import Categories from "../components/home_sections/Categories";
+import FeaturedArtists from "../components/home_sections/FeaturedArtists";
+import ArtistsPick from "../components/home_sections/ArtistsPick";
+import FooterNavbar from "../components/FooterNavbar";
+import ArtForYou from "../components/home_sections/ArtForYou";
 
 const HomeScreen = () => {
   return (
-    <ImageBackground 
-      source={require('../assets/backgrounds/navbar-bg2.png')} // Replace with your image path
+    <ImageBackground
+      source={require("../assets/backgrounds/navbar-bg2.png")} // Replace with your image path
       style={styles.backgroundImage}
     >
       <View style={styles.everything}>
@@ -26,8 +26,7 @@ const HomeScreen = () => {
             <Categories />
             <ArtOfTheDay />
             <InviteFriends />
-            
-            
+
             <ArtistsPick />
           </View>
         </ScrollView>
@@ -41,20 +40,20 @@ const HomeScreen = () => {
 
 const styles = StyleSheet.create({
   backgroundImage: {
-    width: '100%',
+    width: "100%",
     height: 124,
     flex: 1,
   },
   everything: {
-    backgroundColor: 'transparent', // Set backgroundColor to transparent
+    backgroundColor: "transparent", // Set backgroundColor to transparent
     flex: 1,
   },
   container: {
     flex: 1,
     paddingBottom: 300,
     paddingHorizontal: 0,
-    alignItems: 'center', // Center horizontally
-    backgroundColor: '#fff',
+    alignItems: "center", // Center horizontally
+    backgroundColor: "#fff",
   },
   navbar: {
     zIndex: 1000,
