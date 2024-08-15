@@ -20,7 +20,6 @@ const Stack = createStackNavigator();
 
 const AppContent = () => {
   const { userData, loading } = useAuth();
-  console.log(userData);
 
   if (loading) {
     return (
@@ -45,12 +44,11 @@ const AppContent = () => {
           <Stack.Screen name="Upload" component={Upload} />
         </>
       ) : (
-       <>
-       <Stack.Screen name="Login" component={LoginScreen} />
-       <Stack.Screen name="SignUp" component={SignUpScreen} />
-       <Stack.Screen name="PasswordReset" component={PasswordReset} />
-       </>
-        
+        <>
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="SignUp" component={SignUpScreen} />
+          <Stack.Screen name="PasswordReset" component={PasswordReset} />
+        </>
       )}
     </Stack.Navigator>
   );

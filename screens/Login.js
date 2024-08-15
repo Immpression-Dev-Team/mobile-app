@@ -13,8 +13,8 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { API_URL } from "../config";
 import Icon from "react-native-vector-icons/FontAwesome"; // Import your preferred icon set
-import { handleLogin} from "../utils/handleLogin.js";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { handleLogin } from "../utils/handleLogin.js";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../state/AuthProvider";
 import SignUp from "./SignUp";
 
@@ -23,16 +23,15 @@ const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjus
 const backgroundImage = require("../assets/backgrounds/paint_background.png"); // Adjust the path to your background image
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [userData, setUserData] = useState(null);
-  const { login } = useAuth()
+  const { login } = useAuth();
   const navigation = useNavigation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     await handleLogin(email, password, setUserData, navigation, login);
-    
   };
 
   const navigateTo = (screenName) => {
@@ -57,7 +56,12 @@ const Login = () => {
           >
             <View style={styles.inputContainer}>
               <View style={styles.inputWrapper}>
-                <Icon name="envelope" size={14} color="#000" style={styles.inputIcon} />
+                <Icon
+                  name="envelope"
+                  size={14}
+                  color="#000"
+                  style={styles.inputIcon}
+                />
                 <TextInput
                   placeholder="Email"
                   value={email}
@@ -66,7 +70,13 @@ const Login = () => {
                 />
               </View>
               <View style={styles.inputWrapper}>
-                <Icon name="lock" size={20} marginLeft={1} color="#000" style={styles.inputIcon} />
+                <Icon
+                  name="lock"
+                  size={20}
+                  marginLeft={1}
+                  color="#000"
+                  style={styles.inputIcon}
+                />
                 <TextInput
                   placeholder="Password"
                   value={password}
@@ -116,9 +126,9 @@ const styles = StyleSheet.create({
   },
   totalHeader: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
   logoContainer: {
     justifyContent: "center",
@@ -126,7 +136,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   logo: {
-
     width: 70,
     height: 70,
     resizeMode: "contain",
@@ -192,9 +201,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   buttonText: {
-    textAlign: 'center',
-    color: 'white',
-    fontWeight: 'bold',
+    textAlign: "center",
+    color: "white",
+    fontWeight: "bold",
     fontSize: 15,
   },
   buttonOutline: {
@@ -205,6 +214,6 @@ const styles = StyleSheet.create({
     color: "black",
     fontWeight: "bold",
     fontSize: 15,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

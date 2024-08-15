@@ -7,23 +7,24 @@ import {
   Pressable,
   Image,
   ImageBackground, // Import ImageBackground component
-} from 'react-native';
-import React, { useState } from 'react';
-import NavBar from '../components/Navbar';
-import { API_URL } from '../config';
-import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
-import { handleLogin } from '../utils/handleLogin';
+} from "react-native";
+import React, { useState } from "react";
+import NavBar from "../components/Navbar";
+import { API_URL } from "../config";
+import axios from "axios";
+import { useNavigation } from "@react-navigation/native";
+import { handleLogin } from "../utils/handleLogin";
 import Icon from "react-native-vector-icons/FontAwesome"; // Import your preferred icon set
+import { showToast } from "../utils/toastNotification";
 
 const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
 const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image
 const backgroundImage = require("../assets/backgrounds/babyBlue.png"); // Adjust the path to your background image
 
 const SignUp = () => {
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
   const [passwordLengthError, setPasswordLengthError] = useState(false);
   const [userAlreadyExistsError, setUserAlreadyExistsError] = useState(false);
   //   const [confirmPassword, setConfirmPassword] = useState("")
@@ -42,16 +43,17 @@ const SignUp = () => {
         email,
         password,
       });
-      console.log(response);
       if (response.data.success) {
         await handleLogin(email, password, navigation);
         // navigation.navigate('Home');
       } else {
-        console.log('Signup failed');
+        console.log("Signup failed");
+        showToast("Signup Failed");
       }
     } catch (err) {
-      console.log('Error during login:', err);
-      if (err.response.data.error.includes('User already exists')) {
+      showToast("Error during login");
+      console.log("Error during login:", err);
+      if (err.response.data.error.includes("User already exists")) {
         setUserAlreadyExistsError(true);
       }
     }
@@ -59,7 +61,7 @@ const SignUp = () => {
   console.log(passwordLengthError);
 
   const handleBack = () => {
-    navigation.navigate('Login');
+    navigation.navigate("Login");
   };
 
   return (
@@ -80,7 +82,12 @@ const SignUp = () => {
             <View style={styles.contentContainer}>
               <View style={styles.inputContainer}>
                 <View style={styles.inputWrapper}>
-                  <Icon name="user" size={18} color="#000" style={styles.inputIcon} />
+                  <Icon
+                    name="user"
+                    size={18}
+                    color="#000"
+                    style={styles.inputIcon}
+                  />
                   <TextInput
                     placeholder="Username"
                     value={name}
@@ -89,7 +96,12 @@ const SignUp = () => {
                   />
                 </View>
                 <View style={styles.inputWrapper}>
-                  <Icon name="envelope" size={14} color="#000" style={styles.inputIcon} />
+                  <Icon
+                    name="envelope"
+                    size={14}
+                    color="#000"
+                    style={styles.inputIcon}
+                  />
                   <TextInput
                     placeholder="Email"
                     value={email}
@@ -98,7 +110,13 @@ const SignUp = () => {
                   />
                 </View>
                 <View style={styles.inputWrapper}>
-                  <Icon name="lock" size={20} marginLeft={1} color="#000" style={styles.inputIcon} />
+                  <Icon
+                    name="lock"
+                    size={20}
+                    marginLeft={1}
+                    color="#000"
+                    style={styles.inputIcon}
+                  />
                   <TextInput
                     placeholder="Password"
                     value={password}
@@ -109,13 +127,13 @@ const SignUp = () => {
                 </View>
               </View>
             </View>
-            <Text style={{ color: 'red', textAlign: 'center' }}>
+            <Text style={{ color: "red", textAlign: "center" }}>
               {passwordLengthError
-                ? 'Password must be at least 6 characters'
-                : ''}
+                ? "Password must be at least 6 characters"
+                : ""}
             </Text>
-            <Text style={{ color: 'red', textAlign: 'center' }}>
-              {userAlreadyExistsError ? 'User already exists' : ''}
+            <Text style={{ color: "red", textAlign: "center" }}>
+              {userAlreadyExistsError ? "User already exists" : ""}
             </Text>
             {/* <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={text => setConfirmPassword(text)} style={styles.input} secureTextEntry /> */}
           </View>
@@ -150,16 +168,16 @@ const styles = StyleSheet.create({
   },
   signUpContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 20,
     paddingTop: 20, // Adjust the top padding to create space between NavBar and Sign Up section
   },
   title: {
     fontSize: 30,
     marginBottom: 30,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
   },
 
   inputContainer: {
@@ -189,33 +207,33 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   button: {
-    backgroundColor: 'blue',
-    width: '80%',
+    backgroundColor: "blue",
+    width: "80%",
     padding: 10,
     borderRadius: 10,
     marginTop: 20,
   },
   buttonOutline: {
-    backgroundColor: 'blue',
+    backgroundColor: "blue",
     marginTop: 10,
     borderRadius: 20,
   },
   buttonOutline2: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     marginTop: 10,
     borderRadius: 20,
   },
   buttonOutlineText: {
-    color: 'white',
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
     fontSize: 15,
-    textAlign: 'center',
+    textAlign: "center",
   },
   buttonOutlineText2: {
-    color: 'black',
-    fontWeight: 'bold',
+    color: "black",
+    fontWeight: "bold",
     fontSize: 15,
-    textAlign: 'center',
+    textAlign: "center",
   },
   logoContainer: {
     justifyContent: "center",
@@ -223,7 +241,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   logo: {
-
     width: 70,
     height: 70,
     resizeMode: "contain",
@@ -241,9 +258,8 @@ const styles = StyleSheet.create({
   },
   totalHeader: {
     // flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
 });
-
