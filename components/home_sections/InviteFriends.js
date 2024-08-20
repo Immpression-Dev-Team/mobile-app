@@ -28,6 +28,7 @@ const styles = StyleSheet.create({
   gradientContainer: {
     width: '97%',
     alignItems: 'center',
+    marginTop: 30,
     marginBottom: 20,
   },
   container: {

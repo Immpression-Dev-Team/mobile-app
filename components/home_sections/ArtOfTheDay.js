@@ -34,7 +34,7 @@ const ArtOfTheDay = () => {
 const styles = StyleSheet.create({
     container: {
         marginVertical: 10,
-        paddingHorizontal: 50,
+        paddingHorizontal: 0,
     },
     headerContainer: {
         flexDirection: 'row', // Align items side by side
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 0,
     },
     headerImage: {
-        width: 264, // Adjust width according to your image
+        width: 274, // Adjust width according to your image
         height: 52, // Adjust height according to your image
         resizeMode: 'contain',
     },
