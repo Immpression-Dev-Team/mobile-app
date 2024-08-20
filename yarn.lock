@@ -3684,14 +3684,14 @@ expo-image-loader@~4.7.0:
   resolved "https://registry.npmjs.org/expo-image-loader/-/expo-image-loader-4.7.0.tgz"
   integrity sha512-cx+MxxsAMGl9AiWnQUzrkJMJH4eNOGlu7XkLGnAXSJrRoIiciGaKqzeaD326IyCTV+Z1fXvIliSgNW+DscvD8g==
 
-expo-image-manipulator@~12.0.5:
+expo-image-manipulator@^12.0.5:
   version "12.0.5"
   resolved "https://registry.npmjs.org/expo-image-manipulator/-/expo-image-manipulator-12.0.5.tgz"
   integrity sha512-zJ8yINjckYw/yfoSuICt4yJ9xr112+W9e5QVXwK3nCAHr7sv45RQ5sxte0qppf594TPl+UoV6Tjim7WpoKipRQ==
   dependencies:
     expo-image-loader "~4.7.0"
 
-expo-image-picker@~15.0.7:
+expo-image-picker@^15.0.7:
   version "15.0.7"
   resolved "https://registry.npmjs.org/expo-image-picker/-/expo-image-picker-15.0.7.tgz"
   integrity sha512-u8qiPZNfDb+ap6PJ8pq2iTO7JKX+ikAUQ0K0c7gXGliKLxoXgDdDmXxz9/6QdICTshJBJlBvI0MwY5NWu7A/uw==
@@ -3741,7 +3741,7 @@ expo-modules-core@1.12.21:
   dependencies:
     invariant "^2.2.4"
 
-expo-status-bar@~1.12.1:
+expo-status-bar@^1.12.1:
   version "1.12.1"
   resolved "https://registry.npmjs.org/expo-status-bar/-/expo-status-bar-1.12.1.tgz"
   integrity sha512-/t3xdbS8KB0prj5KG5w7z+wZPFlPtkgs95BsmrP/E7Q0xHXTcDcQ6Cu2FkFuRM+PKTb17cJDnLkawyS5vDLxMA==
@@ -3756,7 +3756,7 @@ expo-updates-interface@~0.16.2:
   resolved "https://registry.npmjs.org/expo-updates-interface/-/expo-updates-interface-0.16.2.tgz"
   integrity sha512-929XBU70q5ELxkKADj1xL0UIm3HvhYhNAOZv5DSk7rrKvLo7QDdPyl+JVnwZm9LrkNbH4wuE2rLoKu1KMgZ+9A==
 
-expo-updates@~0.25.14:
+expo-updates@^0.25.14:
   version "0.25.22"
   resolved "https://registry.npmjs.org/expo-updates/-/expo-updates-0.25.22.tgz"
   integrity sha512-ebu+wPnISzJ/H70CFAJAybS4ZZrACxRbgr9SMqOI/h84CwXGmdxzLmgxoNhy5q/Fa1u7JBmSr6x9a7psBDT4Cw==
@@ -6134,7 +6134,7 @@ react-native-animatable@^1.4.0:
   dependencies:
     prop-types "^15.8.1"
 
-"react-native-gesture-handler@>= 1.0.0", react-native-gesture-handler@~2.16.1:
+react-native-gesture-handler@^2.16.1, "react-native-gesture-handler@>= 1.0.0":
   version "2.16.2"
   resolved "https://registry.npmjs.org/react-native-gesture-handler/-/react-native-gesture-handler-2.16.2.tgz"
   integrity sha512-vGFlrDKlmyI+BT+FemqVxmvO7nqxU33cgXVsn6IKAFishvlG3oV2Ds67D5nPkHMea8T+s1IcuMm0bF8ntZtAyg==
@@ -6164,7 +6164,7 @@ react-native-paper@^5.12.3:
     color "^3.1.2"
     use-latest-callback "^0.1.5"
 
-react-native-reanimated@~3.10.1:
+react-native-reanimated@^3.10.1:
   version "3.10.1"
   resolved "https://registry.npmjs.org/react-native-reanimated/-/react-native-reanimated-3.10.1.tgz"
   integrity sha512-sfxg6vYphrDc/g4jf/7iJ7NRi+26z2+BszPmvmk0Vnrz6FL7HYljJqTf531F1x6tFmsf+FEAmuCtTUIXFLVo9w==
@@ -6208,7 +6208,7 @@ react-native-vector-icons@*, react-native-vector-icons@^10.1.0:
     prop-types "^15.7.2"
     yargs "^16.1.1"
 
-react-native-web@~0.19.10:
+react-native-web@^0.19.10:
   version "0.19.12"
   resolved "https://registry.npmjs.org/react-native-web/-/react-native-web-0.19.12.tgz"
   integrity sha512-o2T0oztoVDQjztt4YksO9S1XRjoH/AqcSvifgWLrPJgGVbMWsfhILgl6lfUdEamVZzZSVV/2gqDVMAk/qq7mZw==
