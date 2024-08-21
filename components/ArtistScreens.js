@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '90%',
-    backgroundColor: 'gray',
+    backgroundColor: 'blue',
     borderRadius: 10,
     padding: 2,
     alignItems: 'center',
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: 400,
+    height: '80%',
     borderRadius: 0,
     marginTop: 10,
   },
