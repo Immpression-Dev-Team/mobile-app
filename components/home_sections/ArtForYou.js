@@ -3,19 +3,7 @@ import { View, Text, StyleSheet, Image, ScrollView, Pressable, Animated, Touchab
 import { LinearGradient } from 'expo-linear-gradient';
 import TVButton from '../TVButton';
 import { useNavigation } from '@react-navigation/native';
-
-const imagePaths = [
-    { path: require('../../assets/realArt/IMG_7313.png'), artistName: 'Antoin Ramirez', artTitle: 'IMG_7313', artYear: '2024', artDescription: 'Do it your way, love yourself', artType: 'Digital' },
-    { path: require('../../assets/realArt/IMG_5865.png'), artistName: 'Antoin Ramirez', artTitle: 'IMG_5865', artYear: '2020', artDescription: 'desc 2', artType: 'Digital' },
-    { path: require('../../assets/realArt/EDS_ZEBRA.png'), artistName: 'Karla Maldonando', artTitle: 'EDS_ZEBRA', artYear: '2019', artDescription: 'desc 2', artType: 'Digital' },
-    { path: require('../../assets/realArt/Opiods.png'), artistName: 'Karla Maldonando', artTitle: 'Opiods', artYear: '2018', artDescription: 'desc 2', artType: 'Digital' },
-    { path: require('../../assets/realArt/Lasting_Impacts.png'), artistName: 'Karla Maldonando', artTitle: 'Lasting_Impacts', artYear: '2017', artDescription: 'desc 2', artType: 'Digital' },
-    { path: require('../../assets/realArt/Melt.png'), artistName: 'Karla Maldonando', artTitle: 'Melt', artYear: '2016', artDescription: 'desc 2', artType: 'Digital' },
-    { path: require('../../assets/realArt/IMG_7315.png'), artistName: 'Antoin Ramirez', artTitle: 'IMG-7315', artYear: '2015', artDescription: 'desc 2', artType: 'Digital' },
-    { path: require('../../assets/realArt/IMG_7380.png'), artistName: 'Antoin Ramirez', artTitle: 'IMG_7380', artYear: '2014', artDescription: 'desc 2', artType: 'Digital' },
-    { path: require('../../assets/realArt/IMG_7434.png'), artistName: 'Antoin Ramirez', artTitle: 'IMG_7434', artYear: '2013', artDescription: 'desc 2', artType: 'Digital' },
-    { path: require('../../assets/realArt/8262E66E.jpeg'), artistName: 'Antoin Ramirez', artTitle: '8262E66E', artYear: '2012', artDescription: 'desc 2', artType: 'Digital' },
-];
+import { API_URL } from '../../config';
 
 const headerImage = require('../../assets/headers/Art_for_you.png'); // Import the header image
 const slideLeftGif = require('../../assets/slideLeft.gif'); // Import the sliding GIF
@@ -33,11 +21,12 @@ const ArtForYou = () => {
     const fadeAnim = useRef(new Animated.Value(0)).current; // Initial opacity set to 0
     const navigation = useNavigation();
     const scrollDistance = 150; // Adjust this to set how much it scrolls to the right
-    const imageChunks = chunkArray(imagePaths, 2); // Chunk into groups of 2 images
+    const [artData, setArtData] = useState([]); // State to store the fetched data
     const [isOverlayVisible, setOverlayVisible] = useState(false);
     const inactivityTimeoutRef = useRef(null);
 
     useEffect(() => {
+        fetchArtData(); // Fetch data from the database on mount
         startAutoScrollOnce(); // Start the autoscroll once on mount
         resetInactivityTimer();
 
@@ -47,6 +36,21 @@ const ArtForYou = () => {
             }
         };
     }, []);
+
+    const fetchArtData = async () => {
+        try {
+            // Fetch data from the /all_images endpoint
+            const response = await fetch(`${API_URL}/all_images`);
+            const data = await response.json();
+            if (data.success) {
+                setArtData(data.images); // Store the fetched data in state
+            } else {
+                console.error('Error fetching art data:', data.message);
+            }
+        } catch (error) {
+            console.error('Error fetching art data:', error);
+        }
+    };
 
     const startAutoScrollOnce = () => {
         setTimeout(() => {
@@ -109,8 +113,15 @@ const ArtForYou = () => {
     };
 
     const handleImagePress = (imageIndex) => {
-        navigation.navigate('ImageScreen', { images: imagePaths, initialIndex: imageIndex });
+        navigation.navigate('ImageScreen', { images: artData, initialIndex: imageIndex });
     };
+
+    // If the artData hasn't been fetched yet, show a loading indicator
+    if (artData.length === 0) {
+        return <Text>Loading...</Text>;
+    }
+
+    const imageChunks = chunkArray(artData, 2); // Chunk the fetched data into groups of 2
 
     return (
         <TouchableWithoutFeedback onPress={handleUserActivity}>
@@ -131,12 +142,15 @@ const ArtForYou = () => {
                     >
                         {imageChunks.map((chunk, chunkIndex) => (
                             <View key={chunkIndex} style={styles.column}>
-                                {chunk.map((path, index) => (
+                                {chunk.map((art, index) => (
                                     <View key={index}>
                                         <Pressable onPress={() => handleImagePress(chunkIndex * 2 + index)}>
-                                            <Image source={path.path} style={styles.image} />
+                                            <Image
+                                                source={{ uri: `data:${art.imageData.contentType};base64,${art.imageData.data}` }}
+                                                style={styles.image}
+                                            />
                                         </Pressable>
-                                        <Text style={styles.artistName}>{path.artistName}</Text>
+                                        <Text style={styles.artistName}>{art.name}</Text>
                                     </View>
                                 ))}
                             </View>
