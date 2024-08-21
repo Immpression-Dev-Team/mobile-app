@@ -17,6 +17,7 @@ const ArtistScreen = ({ route }) => {
         <View style={styles.card}>
           <Text style={styles.artistName}>{item.artist}</Text>
           <Image source={item.profilePic} style={styles.image} />
+          <Text style={styles.artistName}>{item.bio}</Text>
         </View>
       </View>
     );

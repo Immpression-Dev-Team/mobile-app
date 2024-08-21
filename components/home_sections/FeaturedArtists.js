@@ -15,7 +15,7 @@ import ArtistScreen from '../ArtistScreens';
 import backgroundImage from '../../assets/backgrounds/discover_artists_background.png'; // Replace with your actual image path
 
 const imagePaths = [
-    { path: require('../../assets/photos/path.jpg'), title: 'Path', artist: 'Antoin Ramirez', profilePic: require('../../assets/realArtists/Antoin_Ramirez.jpeg') },
+    { path: require('../../assets/photos/path.jpg'), title: 'Path', artist: 'Antoin Ramirez', profilePic: require('../../assets/realArtists/Antoin_Ramirez.jpeg'), bio: 'testing 123' },
     { path: require('../../assets/photos/animal.jpg'), title: 'Animal', artist: 'Karla Maldonado', profilePic: require('../../assets/realArtists/Karla_Maldonado.jpeg') },
     { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Obba Sanyang', profilePic: require('../../assets/realArtists/Obba_Sanyang.jpeg') },
     { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'James Young', profilePic: require('../../assets/artists/artist15.png') },
@@ -34,8 +34,8 @@ const FeaturedArtists = () => {
     const navigation = useNavigation();
     const imageChunks = chunkArray(imagePaths, 1); // Chunk into groups of 1 image
 
-    const navigateToArtistScreen = (artist, profilePic, galleryImages, initialIndex) => {
-        navigation.navigate('ArtistScreens', { artist, profilePic, galleryImages, initialIndex });
+    const navigateToArtistScreen = (artist, profilePic, galleryImages, bio, initialIndex) => {
+        navigation.navigate('ArtistScreens', { artist, profilePic, galleryImages, bio, initialIndex });
     };
 
     return (
