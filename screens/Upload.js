@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert,
   FlatList,
+  ImageBackground,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
@@ -30,6 +31,7 @@ const Upload = () => {
     { label: "Sketches", value: "sketches" },
     { label: "Sculptures", value: "sculptures" },
     { label: "Paintings", value: "paintings" },
+    { label: "Pottery", value: "pottery" },
   ]);
 
   const selectImage = async () => {
@@ -151,8 +153,12 @@ const Upload = () => {
         setOpen={setOpen}
         setValue={setCategory}
         setItems={setItems}
-        placeholder="Select Category"
+        placeholder="Category"
         style={styles.dropdown}
+        listMode="SCROLLVIEW"
+        dropDownContainerStyle={{
+          maxHeight: 150,
+        }}
       />
       <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
         <Text style={styles.uploadButtonText}>Upload</Text>
@@ -163,12 +169,17 @@ const Upload = () => {
   return (
     <View style={styles.everything}>
       <Navbar />
-      <FlatList
-        data={[{}]} // Use a FlatList with a single element to render the form
-        renderItem={renderContent}
-        keyExtractor={(item, index) => index.toString()}
-        contentContainerStyle={styles.scrollContainer}
-      />
+      <ImageBackground
+        source={require("../assets/backgrounds/white_flowers.png")}
+        style={styles.backgroundImage}
+      >
+        <FlatList
+          data={[{}]} // Use a FlatList with a single element to render the form
+          renderItem={renderContent}
+          keyExtractor={(item, index) => index.toString()}
+          contentContainerStyle={styles.scrollContainer}
+        />
+      </ImageBackground>
       <FooterNavbar style={styles.footer} />
     </View>
   );
@@ -178,6 +189,10 @@ const styles = StyleSheet.create({
   everything: {
     flex: 1,
     justifyContent: "space-between",
+  },
+  backgroundImage: {
+    flex: 1,
+    resizeMode: "cover",
   },
   scrollContainer: {
     paddingBottom: 100,
@@ -201,7 +216,9 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "#5f669c",
     borderStyle: "dotted",
-    borderRadius: 2,
+    borderRadius: 1,
+    backgroundColor: "white"
+
   },
   imagePlaceholderText: {
     color: "#7c809c",
@@ -218,18 +235,19 @@ const styles = StyleSheet.create({
     marginRight: 0,
   },
   input: {
-    height: 40,
-    borderColor: "gray",
+    height: 38,
+    borderColor: "white",
+    backgroundColor: "white",
     borderWidth: 1,
-    marginVertical: 8,
-    paddingHorizontal: 8,
-    borderRadius: 4,
+    marginVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 2,
   },
   dropdown: {
-    borderColor: "gray",
+    borderColor: "white",
     borderWidth: 1,
-    borderRadius: 4,
-    marginVertical: 8,
+    borderRadius: 2,
+    marginVertical: 4,
   },
   uploadButton: {
     height: 40,
