@@ -26,16 +26,16 @@ const ImageScreen = ({ route, navigation }) => {
         {/* Show previous image if it exists */}
         {index === currentIndex - 1 && (
           <Image
-            source={images[index - 1]?.path}
+            source={{ uri: `data:${images[index - 1]?.imageData.contentType};base64,${images[index - 1]?.imageData.data}` }}
             style={styles.previousImage}
           />
         )}
         {/* Show current image */}
-        <Image source={item.path} style={[styles.fullImage, isNext && styles.currentImage]} />
+        <Image source={{ uri: `data:${item.imageData.contentType};base64,${item.imageData.data}` }} style={[styles.fullImage, isNext && styles.currentImage]} />
         {/* Show next image if it exists */}
         {isNext && (
           <Image
-            source={images[index + 1]?.path}
+            source={{ uri: `data:${images[index + 1]?.imageData.contentType};base64,${images[index + 1]?.imageData.data}` }}
             style={styles.nextImage}
           />
         )}
@@ -74,19 +74,19 @@ const ImageScreen = ({ route, navigation }) => {
         showsHorizontalScrollIndicator={false}
       />
       <View style={styles.textContainer}>
-        <Text style={styles.artTitle}>{images[currentIndex].artTitle}</Text>
+        <Text style={styles.artTitle}>{images[currentIndex].title}</Text>
         <View style={styles.scrollBar}>
           <Scrollbars />
         </View>
         <View style={styles.artistNameYearContainer}>
-          <Text style={styles.artistName}>{images[currentIndex].artistName}</Text>
+          <Text style={styles.artistName}>{images[currentIndex].name}</Text>
           <View style={styles.verticalLine} />
-          <Text style={styles.artYear}>{images[currentIndex].artYear}</Text>
+          <Text style={styles.artYear}>{images[currentIndex].year}</Text>
         </View>
         <View style={styles.horizontalLine} />
-        <Text style={styles.artType}>{images[currentIndex].artType}</Text>
+        <Text style={styles.artType}>{images[currentIndex].type}</Text>
         <View style={styles.horizontalLine} />
-        <Text style={styles.artDescription}>{images[currentIndex].artDescription}</Text>
+        <Text style={styles.artDescription}>{images[currentIndex].description}</Text>
       </View>
       <FooterNavbar />
     </View>

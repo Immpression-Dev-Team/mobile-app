@@ -7,10 +7,11 @@ import {
   Image,
   StyleSheet,
   Alert,
-  ScrollView,
+  FlatList,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
+import DropDownPicker from "react-native-dropdown-picker";
 import Navbar from "../components/Navbar";
 import axios from "axios";
 import { API_URL } from "../config";
@@ -21,6 +22,15 @@ const Upload = () => {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [category, setCategory] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState([
+    { label: "Photography", value: "photography" },
+    { label: "Graphic Design", value: "graphic design" },
+    { label: "Sketches", value: "sketches" },
+    { label: "Sculptures", value: "sculptures" },
+    { label: "Paintings", value: "paintings" },
+  ]);
 
   const selectImage = async () => {
     let result = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -37,8 +47,6 @@ const Upload = () => {
       quality: 1,
     });
 
-    console.log("Picker Result:", pickerResult);
-
     if (!pickerResult.canceled) {
       const selectedImage = pickerResult.assets[0];
       const resizedImage = await ImageManipulator.manipulateAsync(
@@ -46,32 +54,28 @@ const Upload = () => {
         [{ resize: { width: 1024 } }],
         { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
       );
-      console.log("Resized Image URI:", resizedImage.uri);
       setImage({ ...selectedImage, uri: resizedImage.uri });
     }
   };
 
   const handleUpload = async (e) => {
     e.preventDefault();
-    if (!image || !title || !description || !price) {
-      Alert.alert("Error", "Please fill in all fields and select an image");
+    if (!image || !title || !description || !price || !category) {
+      Alert.alert(
+        "Error",
+        "Please fill in all fields, select a category, and select an image"
+      );
       return;
     }
     if (description.length > 30) {
       Alert.alert("Error", "Description cannot be longer than 30 characters");
     }
 
-    console.log("Image URI:", image.uri);
-    console.log("Image Type:", image.mimeType);
-    console.log(
-      "Image Name:",
-      image.uri ? image.uri.split("/").pop() : "No image name"
-    );
-
     const formData = new FormData();
     formData.append("name", title);
     formData.append("description", description);
     formData.append("price", price);
+    formData.append("category", category);
     formData.append("image", {
       uri: image.uri,
       type: image.mimeType || "image/jpeg",
@@ -85,14 +89,13 @@ const Upload = () => {
         },
       });
 
-      console.log("Server Response:", response);
-
       if (response.data.success) {
         Alert.alert("Success", "Image uploaded successfully!");
         setImage(null);
         setTitle("");
         setDescription("");
         setPrice("");
+        setCategory(null);
       } else {
         Alert.alert("Error", "Failed to upload image");
       }
@@ -102,53 +105,70 @@ const Upload = () => {
     }
   };
 
+  const renderContent = () => (
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <Image
+          source={require("../assets/UploadSample.png")}
+          style={styles.exampleImage}
+        />
+        <View style={styles.imagePlaceholderContainer}>
+          <TouchableOpacity
+            style={styles.imagePlaceholder}
+            onPress={selectImage}
+          >
+            {image ? (
+              <Image source={{ uri: image.uri }} style={styles.image} />
+            ) : (
+              <Text style={styles.imagePlaceholderText}>Upload Image</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+      <TextInput
+        style={styles.input}
+        placeholder="Title"
+        value={title}
+        onChangeText={setTitle}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Description"
+        value={description}
+        onChangeText={setDescription}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Price"
+        value={price}
+        onChangeText={setPrice}
+        keyboardType="numeric"
+      />
+      <DropDownPicker
+        open={open}
+        value={category}
+        items={items}
+        setOpen={setOpen}
+        setValue={setCategory}
+        setItems={setItems}
+        placeholder="Select Category"
+        style={styles.dropdown}
+      />
+      <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
+        <Text style={styles.uploadButtonText}>Upload</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <View style={styles.everything}>
       <Navbar />
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <View style={styles.container}>
-          <View style={styles.imageContainer}>
-            <Image
-              source={require("../assets/UploadSample.png")}
-              style={styles.exampleImage}
-            />
-            <View style={styles.imagePlaceholderContainer}>
-              <TouchableOpacity
-                style={styles.imagePlaceholder}
-                onPress={selectImage}
-              >
-                {image ? (
-                  <Image source={{ uri: image.uri }} style={styles.image} />
-                ) : (
-                  <Text style={styles.imagePlaceholderText}>Upload Image</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-          <TextInput
-            style={styles.input}
-            placeholder="Title"
-            value={title}
-            onChangeText={setTitle}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Description"
-            value={description}
-            onChangeText={setDescription}
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Price"
-            value={price}
-            onChangeText={setPrice}
-            keyboardType="numeric"
-          />
-          <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
-            <Text style={styles.uploadButtonText}>Upload</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+      <FlatList
+        data={[{}]} // Use a FlatList with a single element to render the form
+        renderItem={renderContent}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={styles.scrollContainer}
+      />
       <FooterNavbar style={styles.footer} />
     </View>
   );
@@ -160,7 +180,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   scrollContainer: {
-    paddingBottom: 100, // Ensure there's space for the footer
+    paddingBottom: 100,
   },
   container: {
     padding: 16,
@@ -204,6 +224,12 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     paddingHorizontal: 8,
     borderRadius: 4,
+  },
+  dropdown: {
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 4,
+    marginVertical: 8,
   },
   uploadButton: {
     height: 40,
