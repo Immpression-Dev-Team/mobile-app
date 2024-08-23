@@ -109,6 +109,7 @@ const styles = StyleSheet.create({
         height: 100,
         marginBottom: 2,
         borderRadius: 0,
+        marginRight: 4,
     },
     artistName: {
         fontSize: 11,

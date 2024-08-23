@@ -63,10 +63,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   card: {
-    width: '90%',
+    width: '95%',
     backgroundColor: 'black',
-    borderRadius: 10,
-    padding: 2,
+    borderRadius: 0,
+    padding: 4,
     alignItems: 'center',
     marginTop: 40,
     marginBottom: 40,
