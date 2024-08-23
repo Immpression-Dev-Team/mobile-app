@@ -85,13 +85,13 @@ export default function Navbar() {
           },
         ],
       }]}>
-        <Pressable onPress={() => navigateTo("Statistics")} style={styles.navItem}>
+        <Pressable onPress={() => navigation.navigate("Statistics")} style={styles.navItem}>
           <Icon name="equalizer" size={24} color="black" />
         </Pressable>
         <Pressable onPress={handleOpenSearch} style={styles.navItem}>
           <Icon name="search" size={24} color="black" />
         </Pressable>
-        <Pressable onPress={() => navigateTo("Settings")} style={styles.navItem}>
+        <Pressable onPress={() => navigation.navigate("Settings")} style={styles.navItem}>
           <Icon name="settings" size={24} color="black" />
         </Pressable>
       </Animated.View>
