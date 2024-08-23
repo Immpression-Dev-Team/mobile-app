@@ -8,17 +8,17 @@ import DiscoverButton from '../DiscoverButton';
 import discoverHeader from '../../assets/headers/Discover.png';
 import stageLight from '../../assets/headers/StageLight.png';
 
-// Import ArtistScreen
-import ArtistScreen from '../ArtistScreens';
-
 // Import the background image
 import backgroundImage from '../../assets/backgrounds/discover_artists_background.png'; // Replace with your actual image path
 
 const imagePaths = [
+    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Marcus Morales', profilePic: require('../../assets/realArtists/Marcus_Morales.jpg') },
     { path: require('../../assets/photos/path.jpg'), title: 'Path', artist: 'Antoin Ramirez', profilePic: require('../../assets/realArtists/Antoin_Ramirez.jpeg'), bio: 'testing 123' },
     { path: require('../../assets/photos/animal.jpg'), title: 'Animal', artist: 'Karla Maldonado', profilePic: require('../../assets/realArtists/Karla_Maldonado.jpeg') },
     { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Obba Sanyang', profilePic: require('../../assets/realArtists/Obba_Sanyang.jpeg') },
-    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'James Young', profilePic: require('../../assets/artists/artist15.png') },
+    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Daniel Robinson', profilePic: require('../../assets/realArtists/Daniel_Robinson.jpg') },
+    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Kailani Estrada', profilePic: require('../../assets/realArtists/Kailani_Estrada.jpeg') },
+    
     // Add more images and profile pictures if needed
 ];
 
@@ -35,7 +35,8 @@ const FeaturedArtists = () => {
     const imageChunks = chunkArray(imagePaths, 1); // Chunk into groups of 1 image
 
     const navigateToArtistScreen = (artist, profilePic, galleryImages, bio, initialIndex) => {
-        navigation.navigate('ArtistScreens', { artist, profilePic, galleryImages, bio, initialIndex });
+        const selectedGalleryImages = galleryImages.filter(image => image.artist === artist);
+        navigation.navigate('ArtistScreens', { artist, profilePic, galleryImages: selectedGalleryImages, bio, initialIndex });
     };
 
     return (
@@ -53,7 +54,7 @@ const FeaturedArtists = () => {
                                     <TouchableOpacity
                                         key={index}
                                         style={styles.artistContainer}
-                                        onPress={() => navigateToArtistScreen(item.artist, item.profilePic, imagePaths, chunkIndex * 1 + index)}
+                                        onPress={() => navigateToArtistScreen(item.artist, item.profilePic, imagePaths, item.bio, index)}
                                     >
                                         <Image source={item.profilePic} style={styles.image} />
                                         <Text style={styles.artistName}>{item.artist}</Text>
@@ -147,7 +148,7 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         marginBottom: 2,
-        borderRadius: 100,
+        borderRadius: 0,
     },
     artistName: {
         fontSize: 11,
