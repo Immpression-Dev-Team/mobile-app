@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Image, Pressable, StyleSheet, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import logoImg from "../assets/Logo_T.png";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, StackActions } from '@react-navigation/native';
 import LongSearchBar from './LongSearchBar';
 import LoginButton from './LoginButton';
 import LogoTitle from './LogoTitle';
@@ -58,15 +58,16 @@ export default function Navbar() {
     });
   };
 
-  const navigateTo = (screenName) => {
-    handleCloseSearch(); // Close search bar if open
-    navigation.navigate(screenName);
+  const refreshApp = () => {
+    navigation.dispatch(
+      StackActions.replace('Home') // Replace current screen with Home to simulate a refresh
+    );
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.navbar}>
-          <Pressable onPress={() => navigateTo("Home")} style={styles.logoAndTitle}>
+          <Pressable onPress={refreshApp} style={styles.logoAndTitle}>
             <Image source={logoImg} style={styles.logo} />
             <LogoTitle />
           </Pressable>
@@ -84,15 +85,9 @@ export default function Navbar() {
           },
         ],
       }]}>
-        {/* <Pressable onPress={() => navigateTo("Home")} style={styles.navItem}>
-          <Icon name="home" size={24} color="black" />
-        </Pressable> */}
         <Pressable onPress={() => navigateTo("Statistics")} style={styles.navItem}>
           <Icon name="equalizer" size={24} color="black" />
         </Pressable>
-        {/* <Pressable onPress={() => navigateTo("Profile")} style={styles.navItem}>
-          <Icon name="photo-library" size={24} color="black" />
-        </Pressable> */}
         <Pressable onPress={handleOpenSearch} style={styles.navItem}>
           <Icon name="search" size={24} color="black" />
         </Pressable>
@@ -114,10 +109,8 @@ export default function Navbar() {
 const styles = StyleSheet.create({
   container: {
     marginTop: 50,
-    // marginBottom: 10,
     paddingBottom: 5,
     zIndex: 99,
-    backgroundColor: '',
   },
   navbar: {
     flexDirection: 'row',
@@ -125,7 +118,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingTop: 10,
     paddingHorizontal: 20,
-    
   },
   logo: {
     width: 50,
@@ -149,13 +141,6 @@ const styles = StyleSheet.create({
   navItem: {
     marginHorizontal: 8,
   },
-  // searchContainer: {
-  //   position: 'absolute',
-  //   marginTop: -7,
-  //   marginLeft: 80,
-  //   marginRight: 0,
-  //   zIndex: 100,
-  // },
   logoAndTitle: {
     flexDirection: 'row',
     alignItems: 'center', // Ensure items are centered vertically

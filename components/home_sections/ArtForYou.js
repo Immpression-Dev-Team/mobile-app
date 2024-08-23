@@ -16,6 +16,15 @@ const chunkArray = (arr, chunkSize) => {
     return chunks;
 };
 
+const shuffleArray = (array) => {
+    let shuffledArray = [...array];
+    for (let i = shuffledArray.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+    }
+    return shuffledArray;
+};
+
 const ArtForYou = () => {
     const scrollViewRef = useRef(null);
     const fadeAnim = useRef(new Animated.Value(0)).current; // Initial opacity set to 0
@@ -23,6 +32,7 @@ const ArtForYou = () => {
     const scrollDistance = 150; // Adjust this to set how much it scrolls to the right
     const [artData, setArtData] = useState([]); // State to store the fetched data
     const [isOverlayVisible, setOverlayVisible] = useState(false);
+    const [originalArtData, setOriginalArtData] = useState([]); // Store original data
     const inactivityTimeoutRef = useRef(null);
 
     useEffect(() => {
@@ -43,7 +53,9 @@ const ArtForYou = () => {
             const response = await fetch(`${API_URL}/all_images`);
             const data = await response.json();
             if (data.success) {
-                setArtData(data.images); // Store the fetched data in state
+                const shuffledData = shuffleArray(data.images); // Shuffle the images once
+                setOriginalArtData(shuffledData); // Store the shuffled data
+                setArtData(shuffledData); // Store the shuffled data in state
             } else {
                 console.error('Error fetching art data:', data.message);
             }
@@ -71,8 +83,6 @@ const ArtForYou = () => {
     };
 
     const resetInactivityTimer = () => {
-        console.log('Resetting inactivity timer'); // Debugging output
-
         if (inactivityTimeoutRef.current) {
             clearTimeout(inactivityTimeoutRef.current);
         }
@@ -80,14 +90,12 @@ const ArtForYou = () => {
         setOverlayVisible(false);
 
         inactivityTimeoutRef.current = setTimeout(() => {
-            console.log('No activity detected for 5 seconds. Showing overlay.'); // Debugging output
             setOverlayVisible(true);
             fadeInOverlay();
         }, 5000); // Show the overlay after 5 seconds of inactivity
     };
 
     const fadeInOverlay = () => {
-        console.log('Fading in overlay'); // Debugging output
         Animated.timing(fadeAnim, {
             toValue: 1, // Fade in to full opacity
             duration: 500, // Fade in duration
@@ -96,7 +104,6 @@ const ArtForYou = () => {
     };
 
     const fadeOutOverlay = () => {
-        console.log('Fading out overlay'); // Debugging output
         Animated.timing(fadeAnim, {
             toValue: 0, // Fade out to zero opacity
             duration: 500, // Fade out duration
@@ -107,13 +114,17 @@ const ArtForYou = () => {
     };
 
     const handleUserActivity = () => {
-        console.log('User activity detected'); // Debugging output
         resetInactivityTimer();
         fadeOutOverlay(); // Immediately fade out when user interacts
     };
 
     const handleImagePress = (imageIndex) => {
         navigation.navigate('ImageScreen', { images: artData, initialIndex: imageIndex });
+    };
+
+    const handleScrollEnd = () => {
+        // Append the original shuffled data to itself to create an infinite loop
+        setArtData((prevData) => [...prevData, ...originalArtData]);
     };
 
     // If the artData hasn't been fetched yet, show a loading indicator
@@ -139,6 +150,7 @@ const ArtForYou = () => {
                         showsHorizontalScrollIndicator={false}
                         scrollEventThrottle={16}
                         onScroll={handleUserActivity}
+                        onMomentumScrollEnd={handleScrollEnd} // Handle scroll end to trigger data repetition
                     >
                         {imageChunks.map((chunk, chunkIndex) => (
                             <View key={chunkIndex} style={styles.column}>
@@ -150,7 +162,6 @@ const ArtForYou = () => {
                                                 style={styles.image}
                                             />
                                         </Pressable>
-                                        <Text style={styles.artistName}>{art.name}</Text>
                                     </View>
                                 ))}
                             </View>
@@ -161,7 +172,7 @@ const ArtForYou = () => {
                         <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
                             <View style={styles.card}>
                                 <Image source={slideLeftGif} style={styles.cardImage} />
-                                <Text style={styles.cardText}>Browse More</Text>
+                                <Text style={styles.cardText}>Scroll</Text>
                             </View>
                         </Animated.View>
                     )}
@@ -205,20 +216,10 @@ const styles = StyleSheet.create({
         marginRight: 4,
     },
     image: {
-        width: 130,
-        height: 130,
+        width: 110,
+        height: 110,
         marginBottom: 4,
         borderRadius: 0,
-    },
-    artistName: {
-        fontSize: 10,
-        marginLeft: 2,
-        bottom: 4,
-        position: 'absolute',
-        zIndex: 99,
-        fontWeight: 'bold',
-        color: 'white',
-        marginBottom: 0,
     },
     overlay: {
         position: 'absolute',
