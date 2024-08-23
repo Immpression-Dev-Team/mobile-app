@@ -1,7 +1,8 @@
 import React, { useRef } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, FlatList, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList, Dimensions, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Navbar from './Navbar';
+import FooterNavbar from './FooterNavbar';
 
 const { width } = Dimensions.get('window');
 
@@ -17,7 +18,7 @@ const ArtistScreen = ({ route }) => {
         <View style={styles.card}>
           <Text style={styles.artistName}>{item.artist}</Text>
           <Image source={item.profilePic} style={styles.image} />
-          <Text style={styles.artistName}>{item.bio}</Text>
+          <Text style={styles.artistBio}>Bio: {item.bio}</Text>
         </View>
       </View>
     );
@@ -25,21 +26,28 @@ const ArtistScreen = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Navbar />
-      <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.closeButtonText}>X</Text>
-      </TouchableOpacity>
-      <FlatList
-        ref={flatListRef}
-        data={galleryImages}
-        renderItem={renderItem}
-        horizontal
-        pagingEnabled
-        keyExtractor={(item, index) => index.toString()}
-        showsHorizontalScrollIndicator={false}
-        getItemLayout={(data, index) => ({ length: width, offset: width * index, index })}
-        initialScrollIndex={initialIndex}
-      />
+      <ImageBackground
+        source={require("../assets/backgrounds/navbar-bg2.png")}
+        style={styles.backgroundImage}
+      >
+        <Navbar />
+        <FlatList
+          ref={flatListRef}
+          data={galleryImages}
+          renderItem={renderItem}
+          horizontal
+          pagingEnabled
+          keyExtractor={(item, index) => index.toString()}
+          showsHorizontalScrollIndicator={false}
+          getItemLayout={(data, index) => ({ length: width, offset: width * index, index })}
+          initialScrollIndex={initialIndex}
+          onScrollToIndexFailed={(info) => {
+            // Handle scroll failure by scrolling manually
+            flatListRef.current?.scrollToOffset({ offset: info.averageItemLength * info.index, animated: true });
+          }}
+        />
+        <FooterNavbar />
+      </ImageBackground>
     </View>
   );
 };
@@ -49,24 +57,19 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  closeButton: {
-    marginTop: 10,
-    alignSelf: 'flex-end',
-    marginRight: 20,
-    zIndex: 1,
-  },
-  closeButtonText: {
-    color: 'black',
-    fontSize: 24,
+  backgroundImage: {
+    width: '100%',
+    height: 127,
+    flex: 1,
   },
   card: {
     width: '90%',
-    backgroundColor: 'gray',
+    backgroundColor: 'black',
     borderRadius: 10,
     padding: 2,
     alignItems: 'center',
-    marginTop: 0,
-    marginBottom: 100, // Ensure there's space between the card and the next item
+    marginTop: 40,
+    marginBottom: 40,
   },
   image: {
     width: '100%',
@@ -82,12 +85,20 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginLeft: 10,
   },
+  artistBio: {
+    fontSize: 20,
+    marginTop: 10,
+    color: 'white',
+    alignSelf: 'flex-start',
+    marginLeft: 10,
+    fontStyle: 'italic',
+  },
   imageContainer: {
     width,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'relative',
-    marginTop: -20, // Adjust this to bring the card higher up
+    marginTop: -20,
   },
 });
 

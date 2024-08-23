@@ -4,39 +4,23 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import DiscoverButton from '../DiscoverButton';
 
-// Import the header images
 import discoverHeader from '../../assets/headers/Discover.png';
-import stageLight from '../../assets/headers/StageLight.png';
-
-// Import the background image
-import backgroundImage from '../../assets/backgrounds/discover_artists_background.png'; // Replace with your actual image path
+import backgroundImage from '../../assets/backgrounds/discover_artists_background.png';
 
 const imagePaths = [
-    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Marcus Morales', profilePic: require('../../assets/realArtists/Marcus_Morales.jpg') },
-    { path: require('../../assets/photos/path.jpg'), title: 'Path', artist: 'Antoin Ramirez', profilePic: require('../../assets/realArtists/Antoin_Ramirez.jpeg'), bio: 'testing 123' },
-    { path: require('../../assets/photos/animal.jpg'), title: 'Animal', artist: 'Karla Maldonado', profilePic: require('../../assets/realArtists/Karla_Maldonado.jpeg') },
-    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Obba Sanyang', profilePic: require('../../assets/realArtists/Obba_Sanyang.jpeg') },
-    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Daniel Robinson', profilePic: require('../../assets/realArtists/Daniel_Robinson.jpg') },
-    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Kailani Estrada', profilePic: require('../../assets/realArtists/Kailani_Estrada.jpeg') },
-    
-    // Add more images and profile pictures if needed
+    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Marcus Morales', profilePic: require('../../assets/realArtists/Marcus_Morales.jpg'), bio: 'Bio for Marcus Morales' },
+    { path: require('../../assets/photos/path.jpg'), title: 'Path', artist: 'Antoin Ramirez', profilePic: require('../../assets/realArtists/Antoin_Ramirez.jpeg'), bio: 'Testing 123' },
+    { path: require('../../assets/photos/animal.jpg'), title: 'Animal', artist: 'Karla Maldonado', profilePic: require('../../assets/realArtists/Karla_Maldonado.jpeg'), bio: 'Bio for Karla Maldonado' },
+    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Obba Sanyang', profilePic: require('../../assets/realArtists/Obba_Sanyang.jpeg'), bio: 'Bio for Obba Sanyang' },
+    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Daniel Robinson', profilePic: require('../../assets/realArtists/Daniel_Robinson.jpg'), bio: 'Bio for Daniel Robinson' },
+    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Kailani Estrada', profilePic: require('../../assets/realArtists/Kailani_Estrada.jpeg'), bio: 'Bio for Kailani Estrada' },
 ];
-
-const chunkArray = (arr, chunkSize) => {
-    const chunks = [];
-    for (let i = 0; i < arr.length; i += chunkSize) {
-        chunks.push(arr.slice(i, i + chunkSize));
-    }
-    return chunks;
-};
 
 const FeaturedArtists = () => {
     const navigation = useNavigation();
-    const imageChunks = chunkArray(imagePaths, 1); // Chunk into groups of 1 image
 
-    const navigateToArtistScreen = (artist, profilePic, galleryImages, bio, initialIndex) => {
-        const selectedGalleryImages = galleryImages.filter(image => image.artist === artist);
-        navigation.navigate('ArtistScreens', { artist, profilePic, galleryImages: selectedGalleryImages, bio, initialIndex });
+    const navigateToArtistScreen = (artist, profilePic, initialIndex) => {
+        navigation.navigate('ArtistScreens', { artist, profilePic, galleryImages: imagePaths, initialIndex });
     };
 
     return (
@@ -48,19 +32,15 @@ const FeaturedArtists = () => {
                         <DiscoverButton />
                     </View>
                     <ScrollView horizontal style={styles.scrollView} showsHorizontalScrollIndicator={false}>
-                        {imageChunks.map((chunk, chunkIndex) => (
-                            <View key={chunkIndex} style={styles.column}>
-                                {chunk.map((item, index) => (
-                                    <TouchableOpacity
-                                        key={index}
-                                        style={styles.artistContainer}
-                                        onPress={() => navigateToArtistScreen(item.artist, item.profilePic, imagePaths, item.bio, index)}
-                                    >
-                                        <Image source={item.profilePic} style={styles.image} />
-                                        <Text style={styles.artistName}>{item.artist}</Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
+                        {imagePaths.map((item, index) => (
+                            <TouchableOpacity
+                                key={index}
+                                style={styles.artistContainer}
+                                onPress={() => navigateToArtistScreen(item.artist, item.profilePic, index)}
+                            >
+                                <Image source={item.profilePic} style={styles.image} />
+                                <Text style={styles.artistName}>{item.artist}</Text>
+                            </TouchableOpacity>
                         ))}
                     </ScrollView>
                 </LinearGradient>
@@ -103,20 +83,11 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
         position: 'relative',
     },
-    allImageContainer: {
-        width: '100%',
-        alignSelf: 'center',
-        backgroundColor: 'white',
-        borderWidth: 0,
-        borderColor: '#aebacf',
-        borderRadius: 5,
-        padding: 5,
-    },
     headerContainer: {
-        flexDirection: 'row', // Align items side by side
-        alignItems: 'center', // Vertically center items
+        flexDirection: 'row',
+        alignItems: 'center',
         marginBottom: 0,
-        alignSelf: 'flex-start', // Make sure the container's width wraps around the text
+        alignSelf: 'flex-start',
         paddingHorizontal: 0,
     },
     headerImage: {
@@ -125,19 +96,8 @@ const styles = StyleSheet.create({
         resizeMode: 'contain',
         marginRight: 27,
     },
-    stageLight: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        width: 400, // Adjust width as needed
-        height: 400, // Adjust height as needed
-        resizeMode: 'contain',
-    },
     scrollView: {
         flexDirection: 'row',
-    },
-    column: {
-        marginRight: 4,
     },
     artistContainer: {
         alignItems: 'center',

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Image, StyleSheet, Text, Pressable, FlatList, Dimensions } from 'react-native';
+import { View, Image, StyleSheet, Text, Pressable, FlatList, Dimensions, ImageBackground } from 'react-native';
 import Navbar from './Navbar';
 import Scrollbars from './ScrollBars';
 import FooterNavbar from '../components/FooterNavbar';
@@ -53,43 +53,50 @@ const ImageScreen = ({ route, navigation }) => {
   const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
 
   return (
+
     <View style={styles.container}>
-      <Navbar />
-      <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}>
-        <Text style={styles.closeButtonText}>X</Text>
-      </Pressable>
-      <FlatList
-        ref={flatListRef}
-        data={images}
-        renderItem={renderItem}
-        horizontal
-        pagingEnabled
-        keyExtractor={(item, index) => index.toString()}
-        onViewableItemsChanged={onViewRef.current}
-        viewabilityConfig={viewConfigRef.current}
-        initialScrollIndex={initialIndex}
-        getItemLayout={(data, index) => (
-          { length: width, offset: width * index, index }
-        )}
-        showsHorizontalScrollIndicator={false}
-      />
-      <View style={styles.textContainer}>
-        <Text style={styles.artTitle}>{images[currentIndex].title}</Text>
-        <View style={styles.scrollBar}>
-          <Scrollbars />
+      <ImageBackground
+        source={require("../assets/backgrounds/navbar-bg2.png")} // Replace with your image path
+        style={styles.backgroundImage}
+      >
+        <Navbar />
+        <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}>
+          <Text style={styles.closeButtonText}>X</Text>
+        </Pressable>
+        <FlatList
+          ref={flatListRef}
+          data={images}
+          renderItem={renderItem}
+          horizontal
+          pagingEnabled
+          keyExtractor={(item, index) => index.toString()}
+          onViewableItemsChanged={onViewRef.current}
+          viewabilityConfig={viewConfigRef.current}
+          initialScrollIndex={initialIndex}
+          getItemLayout={(data, index) => (
+            { length: width, offset: width * index, index }
+          )}
+          showsHorizontalScrollIndicator={false}
+        />
+        <View style={styles.textContainer}>
+          <Text style={styles.artTitle}>{images[currentIndex].name}</Text>
+          <View style={styles.scrollBar}>
+            <Scrollbars />
+          </View>
+          <View style={styles.artistNameYearContainer}>
+            <Text style={styles.artistName}>{images[currentIndex].viewCount}</Text>
+            <View style={styles.verticalLine} />
+            <Text style={styles.artYear}>{images[currentIndex].year}</Text>
+          </View>
+          {/* <View style={styles.horizontalLine} />
+        <Text style={styles.artType}>{images[currentIndex].type}</Text> */}
+          <View style={styles.horizontalLine} />
+          <Text style={styles.artDescription}>{images[currentIndex].description}</Text>
         </View>
-        <View style={styles.artistNameYearContainer}>
-          <Text style={styles.artistName}>{images[currentIndex].name}</Text>
-          <View style={styles.verticalLine} />
-          <Text style={styles.artYear}>{images[currentIndex].year}</Text>
-        </View>
-        <View style={styles.horizontalLine} />
-        <Text style={styles.artType}>{images[currentIndex].type}</Text>
-        <View style={styles.horizontalLine} />
-        <Text style={styles.artDescription}>{images[currentIndex].description}</Text>
-      </View>
-      <FooterNavbar />
+        <FooterNavbar />
+      </ImageBackground>
     </View>
+
   );
 };
 
@@ -97,6 +104,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
+  },
+  backgroundImage: {
+    width: "100%",
+    height: 127,
+    flex: 1,
   },
   closeButton: {
     position: 'absolute',
@@ -107,6 +119,7 @@ const styles = StyleSheet.create({
   closeButtonText: {
     color: 'black',
     fontSize: 24,
+    marginTop: 30,
   },
   imageContainer: {
     width: width,
@@ -115,9 +128,10 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   fullImage: {
-    width: '80%',
+    width: '100%',
     height: 300,
     resizeMode: 'cover',
+    marginTop: -18,
   },
   currentImage: {
     zIndex: 2, // Ensure current image is on top
@@ -139,7 +153,7 @@ const styles = StyleSheet.create({
   textContainer: {
     padding: 20,
     alignItems: 'center',
-  },
+      },
   scrollBar: {
     height: 80,
     width: '100%',
@@ -148,6 +162,7 @@ const styles = StyleSheet.create({
     color: 'blue',
     fontSize: 40,
     marginTop: 10,
+    fontWeight: 'bold',
   },
   artistNameYearContainer: {
     flexDirection: 'row',
