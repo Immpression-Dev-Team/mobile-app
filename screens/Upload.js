@@ -17,8 +17,10 @@ import Navbar from "../components/Navbar";
 import axios from "axios";
 import { API_URL } from "../config";
 import FooterNavbar from "../components/FooterNavbar";
+import { useAuth } from "../state/AuthProvider";
 
 const Upload = () => {
+
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

@@ -8,8 +8,12 @@ import FeaturedArtists from "../components/home_sections/FeaturedArtists";
 import ArtistsPick from "../components/home_sections/ArtistsPick";
 import FooterNavbar from "../components/FooterNavbar";
 import ArtForYou from "../components/home_sections/ArtForYou";
+import { useAuth } from "../state/AuthProvider";
 
 const HomeScreen = () => {
+  const name = useAuth()
+  console.log(name.userData.user.user.name);
+  
   return (
     <ImageBackground
       source={require("../assets/backgrounds/navbar-bg2.png")} // Replace with your image path
