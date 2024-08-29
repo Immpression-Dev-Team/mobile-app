@@ -7,21 +7,22 @@ const FooterNavbar = () => {
 
   return (
     <ImageBackground 
-      source={require('../assets/backgrounds/footer-bg.png')} // Replace with your image path
+      source={require('../assets/Bottom_Nav_Container.png')} // Update path if needed
       style={styles.backgroundImage}
     >
       <View style={styles.container}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
           <Image source={require('../assets/icons/Home.png')} style={styles.icon} />
-          {/* <Text style={styles.text}>Home</Text> */}
+          <Text style={styles.text}>HOME</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Upload')}>
-          <Image source={require('../assets/icons/Upload.png')} style={styles.icon} />
-          {/* <Text style={styles.text}>Upload</Text> */}
+        <TouchableOpacity style={styles.sellButton} onPress={() => navigation.navigate('Upload')}>
+          <Image source={require('../assets/icons/Sell.png')} style={styles.icon} />
+          <Text style={styles.sellText}>SELL</Text>
+          {/* Removed the circular style and adjusted to be like other buttons */}
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Profile')}>
           <Image source={require('../assets/icons/Profile.png')} style={styles.icon} />
-          {/* <Text style={styles.text}>Profile</Text> */}
+          <Text style={styles.text}>ME</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>
@@ -31,30 +32,41 @@ const FooterNavbar = () => {
 const styles = StyleSheet.create({
   backgroundImage: {
     width: '100%',
-    height: 70,
+    height: 100, // Adjust height as needed based on your image
+    resizeMode: 'cover', // Ensures the image covers the container
   },
   container: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: 'transparent', // Set backgroundColor to transparent
-    borderTopWidth: 0.2,
-    borderTopColor: '#ADBBD6',
-    paddingBottom: 20,
-    paddingHorizontal: 35,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    height: '100%', // Ensures the container stretches to fill the background image
+    paddingBottom: 0,
+    paddingHorizontal: 0,
   },
   button: {
     alignItems: 'center',
   },
+  sellButton: {
+    alignItems: 'center',
+    paddingBottom: 0,
+  },
   text: {
     color: '#000',
-    fontSize: 12,
-    marginTop: 4,
+    fontSize: 10,
+    marginTop: -10,
+    fontWeight: 'bold',
+  },
+  sellText: {
+    color: '#000',
+    fontSize: 10,
+    marginTop: 10,
+    fontWeight: 'bold',
   },
   icon: {
-    width: 50, // Set the width as needed
-    height: 50, // Set the height as needed
-    resizeMode: 'contain', // Ensure the icon scales correctly
-  }
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
+  },
 });
 
 export default FooterNavbar;
