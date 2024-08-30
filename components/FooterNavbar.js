@@ -32,8 +32,9 @@ const FooterNavbar = () => {
 const styles = StyleSheet.create({
   backgroundImage: {
     width: '100%',
-    height: 100, // Adjust height as needed based on your image
+    height: 90, // Adjust height as needed based on your image
     resizeMode: 'cover', // Ensures the image covers the container
+    backgroundColor: 'white',
   },
   container: {
     flexDirection: 'row',
