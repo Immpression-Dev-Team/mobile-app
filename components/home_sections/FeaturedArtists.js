@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'rea
 import { useNavigation } from '@react-navigation/native';
 import DiscoverButton from '../DiscoverButton';
 
-import discoverHeader from '../../assets/headers/Discover.png';
-import backgroundBottom from '../../assets/discover_assets/background_bottom.png';
+// Remove the header image import since it's no longer needed
+// import discoverHeader from '../../assets/headers/Discover.png';
 
 const imagePaths = [
     { path: require('../../assets/photos/sunset.jpg'), type: 'Graphic Designer', artist: 'Marcus Morales', profilePic: require('../../assets/realArtists/Marcus_Morales.jpg'), bio: 'Bio for Marcus Morales' },
@@ -25,7 +25,8 @@ const FeaturedArtists = () => {
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
-                <Image source={discoverHeader} style={styles.headerImage} />
+                {/* Replace Image with Text */}
+                <Text style={styles.headerText}>DISCOVER ARTISTS</Text>
                 <DiscoverButton />
             </View>
             <ScrollView horizontal style={styles.scrollView} showsHorizontalScrollIndicator={false}>
@@ -56,12 +57,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 2,
         marginTop: 0,
-        marginLeft: -15,
     },
-    headerImage: {
-        width: 200,
-        height: 30,
-        resizeMode: 'contain',
+    headerText: {
+        fontSize: 20,  // Set the font size for the header
+        fontWeight: 'bold',  // Make the text bold
+        color: '#000',  // Set the text color
     },
     scrollView: {
         flexDirection: 'row',

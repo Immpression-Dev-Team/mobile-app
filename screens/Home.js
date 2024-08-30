@@ -9,6 +9,7 @@ import ArtistsPick from "../components/home_sections/ArtistsPick";
 import FooterNavbar from "../components/FooterNavbar";
 import ArtForYou from "../components/home_sections/ArtForYou";
 import { useAuth } from "../state/AuthProvider";
+import MiddleButtons from "../components/home_sections/MiddleButtons";
 
 import discoverBackgroundBottom from '../assets/discover_assets/background_bottom.png';
 import discoverBackgroundTop from '../assets/discover_assets/background_top.png';
@@ -33,6 +34,8 @@ const HomeScreen = () => {
           <Image source={foryouBackgroundTop} style={styles.foryouBackgroundTopImage} />
           <ArtForYou />
           <Image source={foryouBackgroundBottom} style={styles.foryouBackgroundBottomImage} />
+
+          <MiddleButtons />
 
           <Image source={discoverBackgroundTop} style={styles.discoverBackgroundTopImage} />
           <FeaturedArtists />
@@ -88,14 +91,15 @@ const styles = StyleSheet.create({
     height: 40,  // Adjust height as needed
     resizeMode: 'contain',  // Resize to contain within the area
     marginLeft: 2,
-    marginTop: 40,
+    marginTop: 5,
     // marginTop: -382,  // Add some margin at the top if needed
   },
   foryouBackgroundBottomImage: {
     width: '97.5%',  // Ensure the image covers the width of the screen
     height: 40,  // Adjust height as needed
     resizeMode: 'contain',  // Resize to contain within the area
-    marginTop: -20,  // Add some margin at the top if needed
+    marginTop: -17,  // Add some margin at the top if needed
+    marginBottom: 5,
   },
   foryouBackgroundTopImage: {
     width: '97%',  // Ensure the image covers the width of the screen
