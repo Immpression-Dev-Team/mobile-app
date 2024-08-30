@@ -1,11 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, Pressable, Animated, TouchableWithoutFeedback } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import TVButton from '../TVButton';
+import DiscoverButton from '../DiscoverButton';
 import { useNavigation } from '@react-navigation/native';
 import { API_URL } from '../../config';
 
-const headerImage = require('../../assets/headers/Art_for_you.png'); // Import the header image
 const slideLeftGif = require('../../assets/slideLeft.gif'); // Import the sliding GIF
 
 const chunkArray = (arr, chunkSize) => {
@@ -138,10 +137,8 @@ const ArtForYou = () => {
         <TouchableWithoutFeedback onPress={handleUserActivity}>
             <LinearGradient colors={['white', '#acb3bf', 'white']} style={styles.section}>
                 <View style={styles.headerContainer}>
-                    <Image source={headerImage} style={styles.headerImage} />
-                    <Pressable style={styles.rightHeader}>
-                        <TVButton />
-                    </Pressable>
+                    <Text style={styles.headerText}>ART FOR YOU</Text>
+                    <DiscoverButton />
                 </View>
                 <View style={styles.allImageContainer}>
                     <ScrollView
@@ -184,20 +181,20 @@ const ArtForYou = () => {
 
 const styles = StyleSheet.create({
     section: {
-        marginTop: 10,
+        marginTop: 6,
         marginBottom: 10,
     },
     headerContainer: {
-        flexDirection: 'row',
+        flexDirection: 'row',  // Align items in a row
+        justifyContent: 'space-between',  // Space between text and button
         alignItems: 'center',
-        marginBottom: 0,
-        alignSelf: 'flex-start',
+        marginBottom: 3,
         paddingHorizontal: 5,
     },
-    headerImage: {
-        width: 264,
-        height: 52,
-        resizeMode: 'contain',
+    headerText: {
+        fontSize: 20,  // Set the font size for the header
+        fontWeight: 'bold',  // Make the text bold
+        color: '#000',  // Set the text color
     },
     allImageContainer: {
         width: '97%',
@@ -216,8 +213,8 @@ const styles = StyleSheet.create({
         marginRight: 4,
     },
     image: {
-        width: 110,
-        height: 110,
+        width: 100,
+        height: 100,
         marginBottom: 4,
         borderRadius: 0,
     },

@@ -1,11 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, ImageBackground } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DiscoverButton from '../DiscoverButton';
 
 import discoverHeader from '../../assets/headers/Discover.png';
-import backgroundImage from '../../assets/backgrounds/discover_artists_background.png';
+import backgroundBottom from '../../assets/discover_assets/background_bottom.png';
 
 const imagePaths = [
     { path: require('../../assets/photos/sunset.jpg'), type: 'Graphic Designer', artist: 'Marcus Morales', profilePic: require('../../assets/realArtists/Marcus_Morales.jpg'), bio: 'Bio for Marcus Morales' },
@@ -24,105 +23,66 @@ const FeaturedArtists = () => {
     };
 
     return (
-        <View style={styles.cardContainer}>
-            <ImageBackground source={backgroundImage} style={styles.backgroundImage} imageStyle={styles.backgroundImageStyle}>
-                <LinearGradient colors={['rgba(255,255,255,0.8)', 'rgba(255,255,255,0.8)']} style={styles.section}>
-                    <View style={styles.headerContainer}>
-                        <Image source={discoverHeader} style={styles.headerImage} />
-                        <DiscoverButton />
-                    </View>
-                    <ScrollView horizontal style={styles.scrollView} showsHorizontalScrollIndicator={false}>
-                        {imagePaths.map((item, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                style={styles.artistContainer}
-                                onPress={() => navigateToArtistScreen(item.artist, item.profilePic, index)}
-                            >
-                                <Image source={item.profilePic} style={styles.image} />
-                                <Text style={styles.artistName}>{item.artist}</Text>
-                                <Text style={styles.artistType}>{item.type}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </ScrollView>
-                </LinearGradient>
-            </ImageBackground>
+        <View style={styles.container}>
+            <View style={styles.headerContainer}>
+                <Image source={discoverHeader} style={styles.headerImage} />
+                <DiscoverButton />
+            </View>
+            <ScrollView horizontal style={styles.scrollView} showsHorizontalScrollIndicator={false}>
+                {imagePaths.map((item, index) => (
+                    <TouchableOpacity
+                        key={index}
+                        style={styles.artistContainer}
+                        onPress={() => navigateToArtistScreen(item.artist, item.profilePic, index)}
+                    >
+                        <Image source={item.profilePic} style={styles.image} />
+                        <Text style={styles.artistName}>{item.artist}</Text>
+                        <Text style={styles.artistType}>{item.type}</Text>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    cardContainer: {
-        borderWidth: 1,
-        borderColor: '#dcdcdc',
-        borderRadius: 0,
-        padding: 0,
-        backgroundColor: '#f9f9f9',
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 8,
-        elevation: 5,
-        marginBottom: 10,
-        marginTop: 5,
-    },
-    backgroundImage: {
-        width: '97%',
-    },
-    backgroundImageStyle: {
-        resizeMode: 'cover',
-        borderRadius: 0,
-    },
-    section: {
-        width: '97%',
-        alignSelf: 'center',
-        borderWidth: 0,
-        borderColor: '#aebacf',
-        borderRadius: 0,
-        padding: 20,
-        marginBottom: 0,
-        paddingBottom: 20,
-        overflow: 'hidden',
-        position: 'relative',
+    container: {
+        paddingHorizontal: 10,
+        paddingVertical: 0,
     },
     headerContainer: {
-        flexDirection: 'row',
+        flexDirection: 'row',  // Align items in a row
+        justifyContent: 'space-between',  // Space between header and button
         alignItems: 'center',
-        marginBottom: 0,
-        alignSelf: 'flex-start',
-        paddingHorizontal: 0,
+        marginBottom: 2,
+        marginTop: 0,
+        marginLeft: -15,
     },
     headerImage: {
         width: 200,
-        height: 50,
+        height: 30,
         resizeMode: 'contain',
-        marginRight: 27,
     },
     scrollView: {
         flexDirection: 'row',
     },
     artistContainer: {
         alignItems: 'left',
-        marginBottom: 0,
-        elevation: 5,
+        marginRight: 3,
     },
     image: {
         width: 100,
         height: 100,
-        marginBottom: 0,
-        borderRadius: 0,
-        marginRight: 4,
+        marginBottom: 2,
     },
     artistName: {
         fontSize: 11,
-        marginTop: 2,
-        color: 'black',
         fontWeight: 'bold',
+        color: 'black',
     },
     artistType: {
         fontSize: 8,
-        marginTop: 0,
         color: 'black',
-        fontWeight: 'bold',
     },
 });
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, ScrollView, ImageBackground } from "react-native";
+import { View, StyleSheet, ScrollView, ImageBackground, Image } from "react-native";
 import Navbar from "../components/Navbar";
 import ArtOfTheDay from "../components/home_sections/ArtOfTheDay";
 import InviteFriends from "../components/home_sections/InviteFriends";
@@ -10,10 +10,15 @@ import FooterNavbar from "../components/FooterNavbar";
 import ArtForYou from "../components/home_sections/ArtForYou";
 import { useAuth } from "../state/AuthProvider";
 
+import discoverBackgroundBottom from '../assets/discover_assets/background_bottom.png';
+import discoverBackgroundTop from '../assets/discover_assets/background_top.png';
+import foryouBackgroundBottom from '../assets/foryou_assets/background_bottom.png';
+import foryouBackgroundTop from '../assets/foryou_assets/background_top.png';
+
 const HomeScreen = () => {
   const name = useAuth()
   console.log(name.userData.user.user.name);
-  
+
   return (
     <ImageBackground
       source={require("../assets/backgrounds/navbar-bg2.png")} // Replace with your image path
@@ -23,18 +28,23 @@ const HomeScreen = () => {
         <View style={styles.navbar}>
           <Navbar />
         </View>
-        <ScrollView>
-          <View style={styles.container}>
-            <ArtForYou />
-            <FeaturedArtists />
-            <Categories />
+        {/* <ScrollView> */}
+        <View style={styles.container}>
+          <Image source={foryouBackgroundTop} style={styles.foryouBackgroundTopImage} />
+          <ArtForYou />
+          <Image source={foryouBackgroundBottom} style={styles.foryouBackgroundBottomImage} />
+
+          <Image source={discoverBackgroundTop} style={styles.discoverBackgroundTopImage} />
+          <FeaturedArtists />
+          <Image source={discoverBackgroundBottom} style={styles.discoverBackgroundBottomImage} />
+
+          {/* Other components can be added below as needed */}
+          {/* <Categories />
             <InviteFriends />
             <ArtOfTheDay />
-            
-
-            <ArtistsPick />
-          </View>
-        </ScrollView>
+            <ArtistsPick /> */}
+        </View>
+        {/* </ScrollView> */}
         <View style={styles.footer}>
           <FooterNavbar />
         </View>
@@ -66,6 +76,35 @@ const styles = StyleSheet.create({
   },
   footer: {
     zIndex: 1000,
+  },
+  discoverBackgroundBottomImage: {
+    width: '97.5%',  // Ensure the image covers the width of the screen
+    height: 50,  // Adjust height as needed
+    resizeMode: 'contain',  // Resize to contain within the area
+    marginTop: -400,  // Add some margin at the top if needed
+  },
+  discoverBackgroundTopImage: {
+    width: '97%',  // Ensure the image covers the width of the screen
+    height: 40,  // Adjust height as needed
+    resizeMode: 'contain',  // Resize to contain within the area
+    marginLeft: 2,
+    marginTop: 40,
+    // marginTop: -382,  // Add some margin at the top if needed
+  },
+  foryouBackgroundBottomImage: {
+    width: '97.5%',  // Ensure the image covers the width of the screen
+    height: 40,  // Adjust height as needed
+    resizeMode: 'contain',  // Resize to contain within the area
+    marginTop: -20,  // Add some margin at the top if needed
+  },
+  foryouBackgroundTopImage: {
+    width: '97%',  // Ensure the image covers the width of the screen
+    height: 50,  // Adjust height as needed
+    resizeMode: 'contain',  // Resize to contain within the area
+    marginLeft: 2,
+    marginTop: -20,
+    marginBottom: -25,
+    // marginTop: -382,  // Add some margin at the top if needed
   },
 });
 

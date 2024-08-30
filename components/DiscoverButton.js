@@ -1,29 +1,34 @@
 import React from 'react';
-import { Pressable, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // Import the MaterialCommunityIcons icon set
+import { Pressable, Text, StyleSheet } from 'react-native';
 
 const DiscoverButton = ({ onPress }) => {
   return (
     <Pressable style={styles.button} onPress={onPress}>
-      <Icon 
-        name="arrow-expand" // Diagonal both-sided arrow icon name in MaterialCommunityIcons
-        size={24} // Adjust the size of the icon as needed
-        color="#000" // Set the color of the icon
-      />
+      <Text style={styles.buttonText}>VIEW ALL</Text>
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    marginTop: 5,
-    marginLeft: 57,
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingHorizontal: 10,
-    // backgroundColor: '#000',
-    borderRadius: 15,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
+    backgroundColor: '#000', // Button background color
+    borderRadius: 3,
     alignSelf: 'center',
+    // Shadow properties for iOS
+    shadowColor: '#000', // Shadow color
+    shadowOffset: { width: 0, height: 2 }, // Offset of shadow
+    shadowOpacity: 0.25, // Opacity of shadow
+    shadowRadius: 3.84, // Radius of shadow blur
+    // Shadow property for Android
+    elevation: 5, // Elevation for Android shadow
+  },
+  buttonText: {
+    color: '#FFF', // Text color
+    fontSize: 10, // Font size
+    fontWeight: 'bold', // Font weight
+    textAlign: 'center', // Center text alignment
   },
 });
 
