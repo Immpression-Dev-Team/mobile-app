@@ -8,19 +8,19 @@ import discoverHeader from '../../assets/headers/Discover.png';
 import backgroundImage from '../../assets/backgrounds/discover_artists_background.png';
 
 const imagePaths = [
-    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Marcus Morales', profilePic: require('../../assets/realArtists/Marcus_Morales.jpg'), bio: 'Bio for Marcus Morales' },
-    { path: require('../../assets/photos/path.jpg'), title: 'Path', artist: 'Antoin Ramirez', profilePic: require('../../assets/realArtists/Antoin_Ramirez.jpeg'), bio: 'Testing 123' },
-    { path: require('../../assets/photos/animal.jpg'), title: 'Animal', artist: 'Karla Maldonado', profilePic: require('../../assets/realArtists/Karla_Maldonado.jpeg'), bio: 'Bio for Karla Maldonado' },
-    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Obba Sanyang', profilePic: require('../../assets/realArtists/Obba_Sanyang.jpeg'), bio: 'Bio for Obba Sanyang' },
-    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Daniel Robinson', profilePic: require('../../assets/realArtists/Daniel_Robinson.jpg'), bio: 'Bio for Daniel Robinson' },
-    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', artist: 'Kailani Estrada', profilePic: require('../../assets/realArtists/Kailani_Estrada.jpeg'), bio: 'Bio for Kailani Estrada' },
+    { path: require('../../assets/photos/sunset.jpg'), type: 'Graphic Designer', artist: 'Marcus Morales', profilePic: require('../../assets/realArtists/Marcus_Morales.jpg'), bio: 'Bio for Marcus Morales' },
+    { path: require('../../assets/photos/path.jpg'), type: 'Photographer', artist: 'Antoin Ramirez', profilePic: require('../../assets/realArtists/Antoin_Ramirez.jpeg'), bio: 'Testing 123' },
+    { path: require('../../assets/photos/animal.jpg'), type: 'Painter', artist: 'Karla Maldonado', profilePic: require('../../assets/realArtists/Karla_Maldonado.jpeg'), bio: 'Bio for Karla Maldonado' },
+    { path: require('../../assets/photos/sunset.jpg'), type: 'Painter', artist: 'Obba Sanyang', profilePic: require('../../assets/realArtists/Obba_Sanyang.jpeg'), bio: 'Bio for Obba Sanyang' },
+    { path: require('../../assets/photos/sunset.jpg'), type: 'Graphic Designer', artist: 'Daniel Robinson', profilePic: require('../../assets/realArtists/Daniel_Robinson.jpg'), bio: 'Bio for Daniel Robinson' },
+    { path: require('../../assets/photos/sunset.jpg'), type: 'Painter', artist: 'Kailani Estrada', profilePic: require('../../assets/realArtists/Kailani_Estrada.jpeg'), bio: 'Bio for Kailani Estrada' },
 ];
 
 const FeaturedArtists = () => {
     const navigation = useNavigation();
 
     const navigateToArtistScreen = (artist, profilePic, initialIndex) => {
-        navigation.navigate('ArtistScreens', { artist, profilePic, galleryImages: imagePaths, initialIndex });
+        navigation.navigate('ArtistScreens', { artist, profilePic, type, galleryImages: imagePaths, initialIndex });
     };
 
     return (
@@ -40,6 +40,7 @@ const FeaturedArtists = () => {
                             >
                                 <Image source={item.profilePic} style={styles.image} />
                                 <Text style={styles.artistName}>{item.artist}</Text>
+                                <Text style={styles.artistType}>{item.type}</Text>
                             </TouchableOpacity>
                         ))}
                     </ScrollView>
@@ -100,20 +101,26 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     artistContainer: {
-        alignItems: 'center',
-        marginBottom: 5,
+        alignItems: 'left',
+        marginBottom: 0,
         elevation: 5,
     },
     image: {
         width: 100,
         height: 100,
-        marginBottom: 2,
+        marginBottom: 0,
         borderRadius: 0,
         marginRight: 4,
     },
     artistName: {
         fontSize: 11,
-        marginTop: 5,
+        marginTop: 2,
+        color: 'black',
+        fontWeight: 'bold',
+    },
+    artistType: {
+        fontSize: 8,
+        marginTop: 0,
         color: 'black',
         fontWeight: 'bold',
     },
