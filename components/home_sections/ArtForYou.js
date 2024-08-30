@@ -126,9 +126,16 @@ const ArtForYou = () => {
         setArtData((prevData) => [...prevData, ...originalArtData]);
     };
 
-    // If the artData hasn't been fetched yet, show a loading indicator
+    // If the artData hasn't been fetched yet, show gray squares as loading placeholders
     if (artData.length === 0) {
-        return <Text>Loading...</Text>;
+        return (
+            <View style={styles.loadingContainer}>
+                <View style={styles.loadingSquare} />
+                <View style={styles.loadingSquare} />
+                <View style={styles.loadingSquare} />
+                <View style={styles.loadingSquare} />
+            </View>
+        );
     }
 
     const imageChunks = chunkArray(artData, 2); // Chunk the fetched data into groups of 2
@@ -185,16 +192,16 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     headerContainer: {
-        flexDirection: 'row',  // Align items in a row
-        justifyContent: 'space-between',  // Space between text and button
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 3,
         paddingHorizontal: 5,
     },
     headerText: {
-        fontSize: 20,  // Set the font size for the header
-        fontWeight: 'bold',  // Make the text bold
-        color: '#000',  // Set the text color
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#000',
     },
     allImageContainer: {
         width: '97%',
@@ -221,11 +228,11 @@ const styles = StyleSheet.create({
     overlay: {
         position: 'absolute',
         bottom: 10,
-        right: -5, // Align the overlay to the right
-        width: '60%',  // Adjust the width as needed
+        right: -5,
+        width: '60%',
         height: 50,
         justifyContent: 'center',
-        alignItems: 'flex-end', // Align the card content to the right
+        alignItems: 'flex-end',
     },
     card: {
         flexDirection: 'row',
@@ -251,6 +258,19 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: '#333',
         marginRight: 5,
+    },
+    loadingContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        padding: 10,
+    },
+    loadingSquare: {
+        width: 100,
+        height: 100,
+        backgroundColor: '#d3d3d3', // Light gray color
+        margin: 5,
+        borderRadius: 5,
     },
 });
 
