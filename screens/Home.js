@@ -21,10 +21,10 @@ const HomeScreen = () => {
   console.log(name.userData.user.user.name);
 
   return (
-    <ImageBackground
-      source={require("../assets/backgrounds/navbar-bg2.png")} // Replace with your image path
-      style={styles.backgroundImage}
-    >
+    // <ImageBackground
+    //   source={require("../assets/backgrounds/navbar-bg2.png")} // Replace with your image path
+    //   style={styles.backgroundImage}
+    // >
       <View style={styles.everything}>
         <View style={styles.navbar}>
           <Navbar />
@@ -52,7 +52,7 @@ const HomeScreen = () => {
           <FooterNavbar />
         </View>
       </View>
-    </ImageBackground>
+    // </ImageBackground>
   );
 };
 
@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   everything: {
-    backgroundColor: "transparent", // Set backgroundColor to transparent
+    backgroundColor: "white", // Set backgroundColor to transparent
     flex: 1,
   },
   container: {
