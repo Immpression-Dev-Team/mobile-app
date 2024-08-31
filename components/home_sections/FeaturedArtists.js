@@ -18,7 +18,7 @@ const imagePaths = [
 const FeaturedArtists = () => {
     const navigation = useNavigation();
 
-    const navigateToArtistScreen = (artist, profilePic, initialIndex) => {
+    const navigateToArtistScreen = (artist, profilePic, type, initialIndex) => {
         navigation.navigate('ArtistScreens', { artist, profilePic, type, galleryImages: imagePaths, initialIndex });
     };
 
@@ -34,7 +34,7 @@ const FeaturedArtists = () => {
                     <TouchableOpacity
                         key={index}
                         style={styles.artistContainer}
-                        onPress={() => navigateToArtistScreen(item.artist, item.profilePic, index)}
+                        onPress={() => navigateToArtistScreen(item.artist, item.profilePic, item.type, index)}
                     >
                         <Image source={item.profilePic} style={styles.image} />
                         <Text style={styles.artistName}>{item.artist}</Text>

@@ -8,7 +8,7 @@ const { width } = Dimensions.get('window');
 
 const ArtistScreen = ({ route }) => {
   const navigation = useNavigation();
-  const { artist, profilePic, galleryImages = [], initialIndex } = route.params;
+  const { artist, profilePic, type, galleryImages = [], initialIndex } = route.params;
 
   const flatListRef = useRef(null);
 
@@ -17,6 +17,7 @@ const ArtistScreen = ({ route }) => {
       <View style={styles.imageContainer}>
         <View style={styles.card}>
           <Text style={styles.artistName}>{item.artist}</Text>
+          <Text style={styles.artistType}>{item.type}</Text>
           <Image source={item.profilePic} style={styles.image} />
           <Text style={styles.artistBio}>Bio: {item.bio}</Text>
         </View>
@@ -42,7 +43,6 @@ const ArtistScreen = ({ route }) => {
           getItemLayout={(data, index) => ({ length: width, offset: width * index, index })}
           initialScrollIndex={initialIndex}
           onScrollToIndexFailed={(info) => {
-            // Handle scroll failure by scrolling manually
             flatListRef.current?.scrollToOffset({ offset: info.averageItemLength * info.index, animated: true });
           }}
         />
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: '80%',
+    height: '77%',
     borderRadius: 0,
     marginTop: 10,
   },
@@ -84,6 +84,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     alignSelf: 'flex-start',
     marginLeft: 10,
+  },
+  artistType: {
+    fontSize: 15,
+    color: 'white',
+    alignSelf: 'flex-start',
+    marginLeft: 10,
+    // fontStyle: 'italic',
   },
   artistBio: {
     fontSize: 20,
