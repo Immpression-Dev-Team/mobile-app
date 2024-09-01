@@ -5,6 +5,7 @@ import DiscoverButton from '../DiscoverButton';
 import { useNavigation } from '@react-navigation/native';
 import { API_URL } from '../../config';
 import  { useFonts } from 'expo-font';
+import FontLoader from '../../utils/FontLoader';
 
 
 const slideLeftGif = require('../../assets/slideLeft.gif'); // Import the sliding GIF
@@ -35,10 +36,11 @@ const ArtForYou = () => {
     const [isOverlayVisible, setOverlayVisible] = useState(false);
     const [originalArtData, setOriginalArtData] = useState([]); // Store original data
     const inactivityTimeoutRef = useRef(null);
+    const fontsLoaded = FontLoader();
     
-        const [isLoaded] = useFonts({
-            "LEMON MILK Bold": require('../../assets/fonts/LEMONMILK-Bold.otf'),
-        });
+        // const [isLoaded] = useFonts({
+        //     "LEMON MILK Bold": require('../../assets/fonts/LEMONMILK-Bold.otf'),
+        // });
 
     useEffect(() => {
         fetchArtData(); // Fetch data from the database on mount
