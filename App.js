@@ -62,7 +62,7 @@ export default function App() {
       </NavigationContainer>
     </AuthProvider>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
