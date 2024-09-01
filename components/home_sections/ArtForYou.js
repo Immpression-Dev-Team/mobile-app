@@ -1,13 +1,11 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, Pressable, Animated, TouchableWithoutFeedback } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import DiscoverButton from '../DiscoverButton';
 import { useNavigation } from '@react-navigation/native';
 import { API_URL } from '../../config';
-import * as Font from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen';
+import  { useFonts } from 'expo-font';
 
-SplashScreen.preventAutoHideAsync();
 
 const slideLeftGif = require('../../assets/slideLeft.gif'); // Import the sliding GIF
 
@@ -37,20 +35,10 @@ const ArtForYou = () => {
     const [isOverlayVisible, setOverlayVisible] = useState(false);
     const [originalArtData, setOriginalArtData] = useState([]); // Store original data
     const inactivityTimeoutRef = useRef(null);
-    const [fontsLoaded, setFontsLoaded] = useState(false);
-
-    const loadFonts = async () => {
-        await Font.loadAsync({
-            'LEMON MILK Bold': require('../../assets/fonts/LEMON MILK Bold.otf'),
+    
+        const [isLoaded] = useFonts({
+            "LEMON MILK Bold": require('../../assets/fonts/LEMONMILK-Bold.otf'),
         });
-        setFontsLoaded(true);
-        SplashScreen.hideAsync();
-    };
-
-    useEffect(() =>{
-        loadFonts();
-    }, []);
-
 
     useEffect(() => {
         fetchArtData(); // Fetch data from the database on mount
@@ -218,7 +206,7 @@ const styles = StyleSheet.create({
     },
     headerText: {
         fontSize: 20,
-        fontWeight: 'bold',
+        // fontWeight: 'bold',
         color: '#000',
         fontFamily: 'LEMON MILK Bold',
     },
