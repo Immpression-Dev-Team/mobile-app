@@ -27,7 +27,8 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFF', // Text color
     fontSize: 10, // Font size
-    fontWeight: 'bold', // Font weight
+    // fontWeight: 'bold',
+    fontFamily: 'LEMON MILK Bold',
     textAlign: 'center', // Center text alignment
   },
 });

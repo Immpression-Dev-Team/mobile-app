@@ -60,7 +60,8 @@ const styles = StyleSheet.create({
     },
     headerText: {
         fontSize: 20,  // Set the font size for the header
-        fontWeight: 'bold',  // Make the text bold
+        // fontWeight: 'bold',  // Make the text bold
+        fontFamily: 'LEMON MILK Bold',
         color: '#000',  // Set the text color
     },
     scrollView: {
@@ -76,13 +77,15 @@ const styles = StyleSheet.create({
         marginBottom: 2,
     },
     artistName: {
-        fontSize: 11,
-        fontWeight: 'bold',
+        fontSize: 8,
+        // fontWeight: 'bold',
         color: 'black',
+        fontFamily: 'LEMON MILK Bold',
     },
     artistType: {
         fontSize: 8,
         color: 'black',
+        fontWeight: 'bold',
     },
 });
 

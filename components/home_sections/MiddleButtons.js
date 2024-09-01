@@ -40,7 +40,8 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#FFF', // Text color
     fontSize: 17, // Font size
-    fontWeight: 'bold', // Bold text
+    // fontWeight: 'bold', // Bold text
+    fontFamily: 'LEMON MILK Bold',
   },
 });
 
