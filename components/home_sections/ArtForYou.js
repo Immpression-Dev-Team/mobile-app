@@ -4,6 +4,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import DiscoverButton from '../DiscoverButton';
 import { useNavigation } from '@react-navigation/native';
 import { API_URL } from '../../config';
+import * as Font from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
+
+SplashScreen.preventAutoHideAsync();
 
 const slideLeftGif = require('../../assets/slideLeft.gif'); // Import the sliding GIF
 
@@ -33,6 +37,20 @@ const ArtForYou = () => {
     const [isOverlayVisible, setOverlayVisible] = useState(false);
     const [originalArtData, setOriginalArtData] = useState([]); // Store original data
     const inactivityTimeoutRef = useRef(null);
+    const [fontsLoaded, setFontsLoaded] = useState(false);
+
+    const loadFonts = async () => {
+        await Font.loadAsync({
+            'LEMON MILK Bold': require('../../assets/fonts/LEMON MILK Bold.otf'),
+        });
+        setFontsLoaded(true);
+        SplashScreen.hideAsync();
+    };
+
+    useEffect(() =>{
+        loadFonts();
+    }, []);
+
 
     useEffect(() => {
         fetchArtData(); // Fetch data from the database on mount
