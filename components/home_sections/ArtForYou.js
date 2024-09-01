@@ -202,6 +202,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: '#000',
+        fontFamily: 'LEMON MILK Bold',
     },
     allImageContainer: {
         width: '97%',
