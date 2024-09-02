@@ -55,13 +55,15 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 10,
     marginTop: -10,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
+    fontFamily: 'LEMON MILK Bold',
   },
   sellText: {
     color: '#000',
     fontSize: 10,
     marginTop: 10,
-    fontWeight: 'bold',
+    // fontWeight: 'bold',
+    fontFamily: 'LEMON MILK Bold',
   },
   icon: {
     width: 40,
