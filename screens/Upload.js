@@ -14,8 +14,6 @@ import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import DropDownPicker from "react-native-dropdown-picker";
 import Navbar from "../components/Navbar";
-import axios from "axios";
-import { API_URL } from "../config";
 import FooterNavbar from "../components/FooterNavbar";
 import { useAuth } from "../state/AuthProvider";
 
@@ -36,9 +34,11 @@ const Upload = () => {
     { label: "Pottery", value: "pottery" },
   ]);
 
-  const selectImage = async () => {
-    let result = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
+
+  const selectImage = async () => {
+    console.log("FUNCTION RUNNING");
+    let result = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (result.granted === false) {
       alert("Permission to access camera roll is required!");
       return;
@@ -49,7 +49,11 @@ const Upload = () => {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
+      base64: false
     });
+
+    console.log("Picker Result:", pickerResult);
+
 
     if (!pickerResult.canceled) {
       const selectedImage = pickerResult.assets[0];
@@ -62,52 +66,57 @@ const Upload = () => {
     }
   };
 
-  const handleUpload = async (e) => {
-    e.preventDefault();
+
+  const handleUpload = async () => {
     if (!image || !title || !description || !price || !category) {
-      Alert.alert(
-        "Error",
-        "Please fill in all fields, select a category, and select an image"
-      );
+      Alert.alert("Error", "Please fill in all fields, select a category, and select an image");
       return;
     }
+  
     if (description.length > 30) {
       Alert.alert("Error", "Description cannot be longer than 30 characters");
+      return;
     }
-
-    const formData = new FormData();
-    formData.append("name", title);
-    formData.append("description", description);
-    formData.append("price", price);
-    formData.append("category", category);
-    formData.append("image", {
-      uri: image.uri,
-      type: image.mimeType || "image/jpeg",
-      name: image.uri.split("/").pop(),
-    });
-
+  
+    const data = new FormData();
+  
+    const base64String = image.uri.split(',')[1];
+  
+    const imageBlob = base64ToBlob(base64String, 'image/jpeg');
+    data.append("file", imageBlob, 'upload_image.jpg');
+    data.append("upload_preset", "edevre");
+  
     try {
-      const response = await axios.post(`${API_URL}/image`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await fetch(
+        "https://api.cloudinary.com/v1_1/dttomxwev/image/upload",
+        {
+          method: "POST",
+          body: data,
+        }
+      );
 
-      if (response.data.success) {
-        Alert.alert("Success", "Image uploaded successfully!");
+      const result = await response.json();
+      console.log(result);
+  
+      if (result.secure_url) {
         setImage(null);
         setTitle("");
         setDescription("");
         setPrice("");
         setCategory(null);
+        Alert.alert("Success", "Image uploaded successfully!");
       } else {
-        Alert.alert("Error", "Failed to upload image");
+        Alert.alert("Error", result.error.message || "Image upload failed");
       }
+  
     } catch (error) {
-      console.error("Upload Error:", error.response || error);
+      console.error("Upload Error:", error);
       Alert.alert("Error", "An error occurred while uploading the image");
     }
   };
+  
+  
+  
 
   const renderContent = () => (
     <View style={styles.container}>
@@ -272,3 +281,23 @@ const styles = StyleSheet.create({
 });
 
 export default Upload;
+
+
+const base64ToBlob = (base64Data, contentType = 'image/jpeg') => {
+  const byteCharacters = atob(base64Data);
+  const byteArrays = [];
+
+  for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+    const slice = byteCharacters.slice(offset, offset + 512);
+
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
+    }
+
+    const byteArray = new Uint8Array(byteNumbers);
+    byteArrays.push(byteArray);
+  }
+
+  return new Blob(byteArrays, { type: contentType });
+};
