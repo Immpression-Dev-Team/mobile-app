@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { API_URL } from '../../config';
 import  { useFonts } from 'expo-font';
 import FontLoader from '../../utils/FontLoader';
+import { getAllImages } from '../../API/API';
 
 
 const slideLeftGif = require('../../assets/slideLeft.gif'); // Import the sliding GIF
@@ -57,15 +58,15 @@ const ArtForYou = () => {
     const fetchArtData = async () => {
         try {
             // Fetch data from the /all_images endpoint
-            const response = await fetch(`${API_URL}/all_images`);
-            const data = await response.json();
-            if (data.success) {
-                const shuffledData = shuffleArray(data.images); // Shuffle the images once
+            const response = await getAllImages()
+            console.log(response)
+            /*if (response.success) {
+                const shuffledData = shuffleArray(response.images); // Shuffle the images once
                 setOriginalArtData(shuffledData); // Store the shuffled data
                 setArtData(shuffledData); // Store the shuffled data in state
             } else {
-                console.error('Error fetching art data:', data.message);
-            }
+                console.error('Error fetching art data:', response.message);
+            }*/
         } catch (error) {
             console.error('Error fetching art data:', error);
         }

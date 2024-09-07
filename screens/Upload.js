@@ -16,8 +16,11 @@ import DropDownPicker from "react-native-dropdown-picker";
 import Navbar from "../components/Navbar";
 import FooterNavbar from "../components/FooterNavbar";
 import { useAuth } from "../state/AuthProvider";
+import { uploadImage } from "../API/API";
 
 const Upload = () => {
+  const name = useAuth()
+  console.log(name.userData.user.user._id);
 
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
@@ -79,7 +82,7 @@ const Upload = () => {
     }
   
     const data = new FormData();
-  
+    
     const base64String = image.uri.split(',')[1];
   
     const imageBlob = base64ToBlob(base64String, 'image/jpeg');
@@ -99,6 +102,17 @@ const Upload = () => {
       console.log(result);
   
       if (result.secure_url) {
+        const imageData = { 
+          userId: name.userData.user.user._id,
+          artistName: name.userData.user.user.name,
+          name: title,
+          imageLink: result.secure_url,
+          price: price,
+          description: description,
+        }
+
+        const sendImageData = await uploadImage(imageData);
+
         setImage(null);
         setTitle("");
         setDescription("");
