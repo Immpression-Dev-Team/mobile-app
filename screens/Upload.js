@@ -19,8 +19,8 @@ import { useAuth } from "../state/AuthProvider";
 import { uploadImage } from "../API/API";
 
 const Upload = () => {
-  const name = useAuth()
-  console.log(name.userData.user.user._id);
+  const { userData } = useAuth();  // Retrieve userData from AuthProvider, including token
+  console.log(userData?.user?._id);  // Log user ID to verify
 
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
@@ -36,8 +36,6 @@ const Upload = () => {
     { label: "Paintings", value: "paintings" },
     { label: "Pottery", value: "pottery" },
   ]);
-
-
 
   const selectImage = async () => {
     console.log("FUNCTION RUNNING");
@@ -57,7 +55,6 @@ const Upload = () => {
 
     console.log("Picker Result:", pickerResult);
 
-
     if (!pickerResult.canceled) {
       const selectedImage = pickerResult.assets[0];
       const resizedImage = await ImageManipulator.manipulateAsync(
@@ -69,26 +66,30 @@ const Upload = () => {
     }
   };
 
-
   const handleUpload = async () => {
     if (!image || !title || !description || !price || !category) {
       Alert.alert("Error", "Please fill in all fields, select a category, and select an image");
       return;
     }
-  
+
     if (description.length > 30) {
       Alert.alert("Error", "Description cannot be longer than 30 characters");
       return;
     }
-  
+
     const data = new FormData();
-    
     const base64String = image.uri.split(',')[1];
-  
+
     const imageBlob = base64ToBlob(base64String, 'image/jpeg');
     data.append("file", imageBlob, 'upload_image.jpg');
     data.append("upload_preset", "edevre");
-  
+
+    // Make sure to append the additional data
+    data.append("name", title);  // Appending title as name
+    data.append("description", description);
+    data.append("price", price);
+    data.append("category", category);
+
     try {
       const response = await fetch(
         "https://api.cloudinary.com/v1_1/dttomxwev/image/upload",
@@ -100,18 +101,32 @@ const Upload = () => {
 
       const result = await response.json();
       console.log(result);
-  
+
       if (result.secure_url) {
-        const imageData = { 
-          userId: name.userData.user.user._id,
-          artistName: name.userData.user.user.name,
+        const imageData = {
+          userId: userData.user.user._id,  // Retrieve user ID from AuthProvider
+          artistName: userData.user.user.name,  // Retrieve artist name from AuthProvider
           name: title,
           imageLink: result.secure_url,
           price: price,
           description: description,
-        }
+        };
 
-        const sendImageData = await uploadImage(imageData);
+        console.log("Title:", title);
+        console.log("ArtistName:", userData.user.user.name,)
+        console.log("Description:", description);
+        console.log("Price:", price);
+        console.log("Category:", category);
+        console.log("ImageLink:", result.secure_url);
+        console.log("userId:", userData.user.user._id)
+
+
+        // Include the token in the upload request
+        const token = userData.token;  // Retrieve token from AuthProvider
+        console.log("Token:", token)
+        console.log(data)
+        const sendImageData = await uploadImage(imageData, token);
+        console.log(sendImageData)
 
         setImage(null);
         setTitle("");
@@ -122,15 +137,12 @@ const Upload = () => {
       } else {
         Alert.alert("Error", result.error.message || "Image upload failed");
       }
-  
+
     } catch (error) {
       console.error("Upload Error:", error);
       Alert.alert("Error", "An error occurred while uploading the image");
     }
   };
-  
-  
-  
 
   const renderContent = () => (
     <View style={styles.container}>
@@ -296,7 +308,7 @@ const styles = StyleSheet.create({
 
 export default Upload;
 
-
+// Helper function to convert base64 to Blob
 const base64ToBlob = (base64Data, contentType = 'image/jpeg') => {
   const byteCharacters = atob(base64Data);
   const byteArrays = [];

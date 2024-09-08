@@ -11,14 +11,20 @@ async function getAllImages() {
     }
 }
 
-async function uploadImage(data) {
+async function uploadImage(data, token) {
     try {
-        const response = await axios.post(`${API_URL}/image`, data)
-        return response.data;
+      const response = await axios.post(`${API_URL}/image`, data, {
+        headers: {
+          'Authorization': `Bearer ${token}`,  // Add token to headers
+          'Content-Type': 'application/json',  // Ensure the content type is set correctly
+        }
+      });
+      return response.data;
     } catch (error) {
-        return error;
+      return error;
     }
-}
+  }
+  
 
 export {
     getAllImages,
