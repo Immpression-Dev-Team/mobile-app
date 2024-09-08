@@ -253,7 +253,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "#5f669c",
     borderStyle: "dotted",
-    borderRadius: 1,
+    borderRadius: 2,
     backgroundColor: "white"
 
   },
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginVertical: 4,
     paddingHorizontal: 10,
-    borderRadius: 2,
+    borderRadius: 3,
   },
   dropdown: {
     borderColor: "white",
@@ -312,6 +312,7 @@ export default Upload;
 const base64ToBlob = (base64Data, contentType = 'image/jpeg') => {
   const byteCharacters = atob(base64Data);
   const byteArrays = [];
+
 
   for (let offset = 0; offset < byteCharacters.length; offset += 512) {
     const slice = byteCharacters.slice(offset, offset + 512);
