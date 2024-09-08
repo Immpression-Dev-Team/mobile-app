@@ -18,7 +18,8 @@ import foryouBackgroundTop from '../assets/foryou_assets/background_top.png';
 
 const HomeScreen = () => {
   const name = useAuth()
-  console.log(name.userData.user.user.name);
+  console.log("username: ", name.userData.user.user.name);
+  console.log("useAuth response: ", name)
 
   return (
     // <ImageBackground

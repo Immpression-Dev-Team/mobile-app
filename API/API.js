@@ -17,6 +17,7 @@ async function uploadImage(data, token) {
         headers: {
           'Authorization': `Bearer ${token}`,  // Add token to headers
           'Content-Type': 'application/json',  // Ensure the content type is set correctly
+          'Cookies': `cookies=${token}`
         }
       });
       return response.data;

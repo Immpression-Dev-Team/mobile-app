@@ -123,8 +123,11 @@ const Upload = () => {
 
         // Include the token in the upload request
         const token = userData.token;  // Retrieve token from AuthProvider
+        const cookie = userData.cookie
         console.log("Token:", token)
+        console.log("Cookies:", cookie)
         console.log(data)
+        console.log(imageData)
         const sendImageData = await uploadImage(imageData, token);
         console.log(sendImageData)
 
