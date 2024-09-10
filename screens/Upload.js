@@ -38,7 +38,6 @@ const Upload = () => {
   ]);
 
   const selectImage = async () => {
-    console.log("FUNCTION RUNNING");
     let result = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (result.granted === false) {
       alert("Permission to access camera roll is required!");
@@ -100,7 +99,7 @@ const Upload = () => {
       );
 
       const result = await response.json();
-      console.log(result);
+      //console.log(result);
 
       if (result.secure_url) {
         const imageData = {
@@ -112,25 +111,23 @@ const Upload = () => {
           description: description,
         };
 
-        console.log("Title:", title);
-        console.log("ArtistName:", userData.user.user.name,)
-        console.log("Description:", description);
-        console.log("Price:", price);
-        console.log("Category:", category);
-        console.log("ImageLink:", result.secure_url);
+        // console.log("Title:", title);
+        // console.log("ArtistName:", userData.user.user.name,)
+        // console.log("Description:", description);
+        // console.log("Price:", price);
+        // console.log("Category:", category);
+        // console.log("ImageLink:", result.secure_url);
+        console.log('USER DATA: ', userData);
         console.log("userId:", userData.user.user._id)
-
-
         // Include the token in the upload request
         const token = userData.token;  // Retrieve token from AuthProvider
         const cookie = userData.cookie
-        console.log("Token:", token)
-        console.log("Cookies:", cookie)
-        console.log(data)
-        console.log(imageData)
-        const sendImageData = await uploadImage(imageData, token);
-        console.log(sendImageData)
-
+        // console.log("Token:", token)
+        // console.log("Cookies:", cookie)
+        // console.log(data)
+        // console.log(imageData)
+        await uploadImage(imageData, token);
+        //console.log(sendImageData)
         setImage(null);
         setTitle("");
         setDescription("");
