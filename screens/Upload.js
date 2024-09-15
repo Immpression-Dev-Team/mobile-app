@@ -17,6 +17,8 @@ import Navbar from "../components/Navbar";
 import FooterNavbar from "../components/FooterNavbar";
 import { useAuth } from "../state/AuthProvider";
 import { uploadImage } from "../API/API";
+import { Platform } from 'react-native';
+
 
 const Upload = () => {
   const { userData } = useAuth();  // Retrieve userData from AuthProvider, including token
@@ -70,26 +72,35 @@ const Upload = () => {
       Alert.alert("Error", "Please fill in all fields, select a category, and select an image");
       return;
     }
-
+  
     if (description.length > 30) {
       Alert.alert("Error", "Description cannot be longer than 30 characters");
       return;
     }
-
+  
     const data = new FormData();
-    const base64String = image.uri.split(',')[1];
-
-    const imageBlob = base64ToBlob(base64String, 'image/jpeg');
-    data.append("file", imageBlob, 'upload_image.jpg');
-    data.append("upload_preset", "edevre");
-
-    // Make sure to append the additional data
-    data.append("name", title);  // Appending title as name
-    data.append("description", description);
-    data.append("price", price);
-    data.append("category", category);
-
+  
     try {
+      if (Platform.OS === 'web') {
+        // Web-specific logic: Convert base64 to Blob for web uploads
+        const base64String = image.uri.split(',')[1];
+        const imageBlob = base64ToBlob(base64String, 'image/jpeg');
+        data.append("file", imageBlob, "upload_image.jpg");
+      } else {
+        // Mobile-specific logic: Directly append image URI
+        data.append("file", {
+          uri: image.uri, // Use the URI directly for mobile
+          name: 'upload_image.jpg', // Filename (Cloudinary expects a filename)
+          type: 'image/jpeg' // Adjust based on the image format (e.g., 'image/png' if PNG)
+        });
+      }
+  
+      data.append("upload_preset", "edevre");
+      data.append("name", title);
+      data.append("description", description);
+      data.append("price", price);
+      data.append("category", category);
+  
       const response = await fetch(
         "https://api.cloudinary.com/v1_1/dttomxwev/image/upload",
         {
@@ -97,37 +108,22 @@ const Upload = () => {
           body: data,
         }
       );
-
+  
       const result = await response.json();
-      //console.log(result);
-
+  
       if (result.secure_url) {
         const imageData = {
-          userId: userData.user.user._id,  // Retrieve user ID from AuthProvider
-          artistName: userData.user.user.name,  // Retrieve artist name from AuthProvider
+          userId: userData.user.user._id,
+          artistName: userData.user.user.name,
           name: title,
           imageLink: result.secure_url,
           price: price,
           description: description,
         };
-
-        // console.log("Title:", title);
-        // console.log("ArtistName:", userData.user.user.name,)
-        // console.log("Description:", description);
-        // console.log("Price:", price);
-        // console.log("Category:", category);
-        // console.log("ImageLink:", result.secure_url);
-        console.log('USER DATA: ', userData);
-        console.log("userId:", userData.user.user._id)
-        // Include the token in the upload request
-        const token = userData.token;  // Retrieve token from AuthProvider
-        const cookie = userData.cookie
-        // console.log("Token:", token)
-        // console.log("Cookies:", cookie)
-        // console.log(data)
-        // console.log(imageData)
+  
+        const token = userData.token;
         await uploadImage(imageData, token);
-        //console.log(sendImageData)
+  
         setImage(null);
         setTitle("");
         setDescription("");
@@ -137,12 +133,12 @@ const Upload = () => {
       } else {
         Alert.alert("Error", result.error.message || "Image upload failed");
       }
-
     } catch (error) {
       console.error("Upload Error:", error);
       Alert.alert("Error", "An error occurred while uploading the image");
     }
   };
+  
 
   const renderContent = () => (
     <View style={styles.container}>
@@ -198,7 +194,9 @@ const Upload = () => {
         }}
       />
       <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
-        <Text style={styles.uploadButtonText}>Upload</Text>
+        <Text style={styles.uploadButtonText}>
+        Upload
+        </Text>
       </TouchableOpacity>
     </View>
   );
