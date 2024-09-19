@@ -1,16 +1,14 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, Pressable, Animated, TouchableWithoutFeedback } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import DiscoverButton from '../DiscoverButton';
 import { useNavigation } from '@react-navigation/native';
-import { API_URL } from '../../config';
-import  { useFonts } from 'expo-font';
-import FontLoader from '../../utils/FontLoader';
 import { getAllImages } from '../../API/API';
-
+import FontLoader from '../../utils/FontLoader';
 
 const slideLeftGif = require('../../assets/slideLeft.gif'); // Import the sliding GIF
 
+// Utility to chunk an array into groups
 const chunkArray = (arr, chunkSize) => {
     const chunks = [];
     for (let i = 0; i < arr.length; i += chunkSize) {
@@ -19,6 +17,7 @@ const chunkArray = (arr, chunkSize) => {
     return chunks;
 };
 
+// Utility to shuffle an array
 const shuffleArray = (array) => {
     let shuffledArray = [...array];
     for (let i = shuffledArray.length - 1; i > 0; i--) {
@@ -30,22 +29,18 @@ const shuffleArray = (array) => {
 
 const ArtForYou = () => {
     const scrollViewRef = useRef(null);
-    const fadeAnim = useRef(new Animated.Value(0)).current; // Initial opacity set to 0
+    const fadeAnim = useRef(new Animated.Value(0)).current;
     const navigation = useNavigation();
-    const scrollDistance = 150; // Adjust this to set how much it scrolls to the right
-    const [artData, setArtData] = useState([]); // State to store the fetched data
+    const scrollDistance = 150;
+    const [artData, setArtData] = useState([]);
     const [isOverlayVisible, setOverlayVisible] = useState(false);
-    const [originalArtData, setOriginalArtData] = useState([]); // Store original data
+    const [originalArtData, setOriginalArtData] = useState([]);
     const inactivityTimeoutRef = useRef(null);
     const fontsLoaded = FontLoader();
-    
-        // const [isLoaded] = useFonts({
-        //     "LEMON MILK Bold": require('../../assets/fonts/LEMONMILK-Bold.otf'),
-        // });
 
     useEffect(() => {
-        fetchArtData(); // Fetch data from the database on mount
-        startAutoScrollOnce(); // Start the autoscroll once on mount
+        fetchArtData();
+        startAutoScrollOnce();
         resetInactivityTimer();
 
         return () => {
@@ -55,18 +50,19 @@ const ArtForYou = () => {
         };
     }, []);
 
+    // Fetching the data from the API
     const fetchArtData = async () => {
         try {
-            // Fetch data from the /all_images endpoint
-            const response = await getAllImages()
-            console.log(response)
-            /*if (response.success) {
-                const shuffledData = shuffleArray(response.images); // Shuffle the images once
-                setOriginalArtData(shuffledData); // Store the shuffled data
-                setArtData(shuffledData); // Store the shuffled data in state
+            const response = await getAllImages();
+            console.log(response); // Check the structure of your response
+
+            if (response.success) {
+                const shuffledData = shuffleArray(response.images); // Assuming images are in response.images
+                setOriginalArtData(shuffledData);
+                setArtData(shuffledData);
             } else {
                 console.error('Error fetching art data:', response.message);
-            }*/
+            }
         } catch (error) {
             console.error('Error fetching art data:', error);
         }
@@ -85,9 +81,9 @@ const ArtForYou = () => {
                         x: 0,
                         animated: true,
                     });
-                }, 500); // Scroll back to the left after 0.5 seconds
+                }, 500);
             }
-        }, 2000); // Start the scroll after 2 seconds (only once)
+        }, 2000);
     };
 
     const resetInactivityTimer = () => {
@@ -100,30 +96,30 @@ const ArtForYou = () => {
         inactivityTimeoutRef.current = setTimeout(() => {
             setOverlayVisible(true);
             fadeInOverlay();
-        }, 5000); // Show the overlay after 5 seconds of inactivity
+        }, 5000);
     };
 
     const fadeInOverlay = () => {
         Animated.timing(fadeAnim, {
-            toValue: 1, // Fade in to full opacity
-            duration: 500, // Fade in duration
+            toValue: 1,
+            duration: 500,
             useNativeDriver: true,
         }).start();
     };
 
     const fadeOutOverlay = () => {
         Animated.timing(fadeAnim, {
-            toValue: 0, // Fade out to zero opacity
-            duration: 500, // Fade out duration
+            toValue: 0,
+            duration: 500,
             useNativeDriver: true,
         }).start(() => {
-            setOverlayVisible(false); // Hide after fade out
+            setOverlayVisible(false);
         });
     };
 
     const handleUserActivity = () => {
         resetInactivityTimer();
-        fadeOutOverlay(); // Immediately fade out when user interacts
+        fadeOutOverlay();
     };
 
     const handleImagePress = (imageIndex) => {
@@ -131,14 +127,14 @@ const ArtForYou = () => {
     };
 
     const handleScrollEnd = () => {
-        // Append the original shuffled data to itself to create an infinite loop
         setArtData((prevData) => [...prevData, ...originalArtData]);
     };
 
-    // If the artData hasn't been fetched yet, show gray squares as loading placeholders
     if (artData.length === 0) {
         return (
             <View style={styles.loadingContainer}>
+                <View style={styles.loadingSquare} />
+                <View style={styles.loadingSquare} />
                 <View style={styles.loadingSquare} />
                 <View style={styles.loadingSquare} />
                 <View style={styles.loadingSquare} />
@@ -147,7 +143,7 @@ const ArtForYou = () => {
         );
     }
 
-    const imageChunks = chunkArray(artData, 2); // Chunk the fetched data into groups of 2
+    const imageChunks = chunkArray(artData, 2);
 
     return (
         <TouchableWithoutFeedback onPress={handleUserActivity}>
@@ -163,7 +159,7 @@ const ArtForYou = () => {
                         showsHorizontalScrollIndicator={false}
                         scrollEventThrottle={16}
                         onScroll={handleUserActivity}
-                        onMomentumScrollEnd={handleScrollEnd} // Handle scroll end to trigger data repetition
+                        onMomentumScrollEnd={handleScrollEnd}
                     >
                         {imageChunks.map((chunk, chunkIndex) => (
                             <View key={chunkIndex} style={styles.column}>
@@ -171,7 +167,7 @@ const ArtForYou = () => {
                                     <View key={index}>
                                         <Pressable onPress={() => handleImagePress(chunkIndex * 2 + index)}>
                                             <Image
-                                                source={{ uri: `data:${art.imageData.contentType};base64,${art.imageData.data}` }}
+                                                source={{ uri: art.imageLink }} // Using imageLink to display the image
                                                 style={styles.image}
                                             />
                                         </Pressable>
@@ -209,7 +205,6 @@ const styles = StyleSheet.create({
     },
     headerText: {
         fontSize: 20,
-        // fontWeight: 'bold',
         color: '#000',
         fontFamily: 'LEMON MILK Bold',
     },
@@ -217,14 +212,10 @@ const styles = StyleSheet.create({
         width: '97%',
         alignSelf: 'center',
         borderWidth: 0,
-        borderColor: '#aebacf',
         borderRadius: 5,
         paddingTop: 0,
         padding: 5,
         position: 'relative',
-    },
-    scrollView: {
-        flexDirection: 'row',
     },
     column: {
         marginRight: 4,
@@ -278,7 +269,7 @@ const styles = StyleSheet.create({
     loadingSquare: {
         width: 100,
         height: 100,
-        backgroundColor: '#d3d3d3', // Light gray color
+        backgroundColor: '#d3d3d3',
         margin: 5,
         borderRadius: 5,
     },
