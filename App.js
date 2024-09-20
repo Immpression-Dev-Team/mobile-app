@@ -7,8 +7,8 @@ import HomeScreen from "./screens/Home";
 import StatisticsScreen from "./screens/Statistics";
 import GalleryScreen from "./screens/Gallery";
 import SettingsScreen from "./screens/Settings";
-import LoginScreen from "./screens/Login";
-import SignUpScreen from "./screens/SignUp";
+import Login from "./screens/Login";
+import SignUp from "./screens/SignUp";
 import ProfileScreen from "./screens/Profile";
 import ImageScreen from "./components/ImageScreen";
 import PasswordReset from "./screens/PasswordReset";
@@ -37,7 +37,7 @@ const AppContent = () => {
           <Stack.Screen name="Statistics" component={StatisticsScreen} />
           <Stack.Screen name="Profile" component={ProfileScreen} />
           <Stack.Screen name="Settings" component={SettingsScreen} />
-          <Stack.Screen name="SignUp" component={SignUpScreen} />
+          <Stack.Screen name="SignUp" component={SignUp} />
           <Stack.Screen name="ImageScreen" component={ImageScreen} />
           <Stack.Screen name="PasswordReset" component={PasswordReset} />
           <Stack.Screen name="ArtistScreens" component={ArtistScreen} />
@@ -45,8 +45,8 @@ const AppContent = () => {
         </>
       ) : (
         <>
-          <Stack.Screen name="Login" component={LoginScreen} />
-          <Stack.Screen name="SignUp" component={SignUpScreen} />
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="SignUp" component={SignUp} />
           <Stack.Screen name="PasswordReset" component={PasswordReset} />
         </>
       )}

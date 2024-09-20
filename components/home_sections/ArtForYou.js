@@ -5,6 +5,7 @@ import DiscoverButton from '../DiscoverButton';
 import { useNavigation } from '@react-navigation/native';
 import { getAllImages } from '../../API/API';
 import FontLoader from '../../utils/FontLoader';
+import { useAuth } from '../../state/AuthProvider';
 
 const slideLeftGif = require('../../assets/slideLeft.gif'); // Import the sliding GIF
 
@@ -37,23 +38,31 @@ const ArtForYou = () => {
     const [originalArtData, setOriginalArtData] = useState([]);
     const inactivityTimeoutRef = useRef(null);
     const fontsLoaded = FontLoader();
+    const { userData } = useAuth();  // Moved useAuth to the top level
+    const token = userData?.token;   // Get the token from userData
 
     useEffect(() => {
-        fetchArtData();
-        startAutoScrollOnce();
-        resetInactivityTimer();
+        if (token) {
+            fetchArtData(token);  // Pass the token to the fetchArtData function
+            startAutoScrollOnce();
+            resetInactivityTimer();
+        }
 
         return () => {
             if (inactivityTimeoutRef.current) {
                 clearTimeout(inactivityTimeoutRef.current);
             }
         };
-    }, []);
+    }, [token]);  // Add token as a dependency to ensure it re-runs when token is available
 
-    // Fetching the data from the API
-    const fetchArtData = async () => {
+    const fetchArtData = async (token) => {  // Add token as a parameter here
+        if (!token) {
+            console.error('No token found');
+            return;
+        }
+
         try {
-            const response = await getAllImages();
+            const response = await getAllImages(token);
             console.log(response); // Check the structure of your response
 
             if (response.success) {
