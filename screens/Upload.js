@@ -20,6 +20,7 @@ import { uploadImage } from "../API/API";
 import { Platform } from 'react-native';
 
 
+
 const Upload = () => {
   const { userData } = useAuth();  // Retrieve userData from AuthProvider, including token
   console.log(userData?.user?._id);  // Log user ID to verify
@@ -100,6 +101,7 @@ const Upload = () => {
       data.append("description", description);
       data.append("price", price);
       data.append("category", category);
+      data.append('folder', 'artwork');
   
       const response = await fetch(
         "https://api.cloudinary.com/v1_1/dttomxwev/image/upload",
@@ -326,3 +328,4 @@ const base64ToBlob = (base64Data, contentType = 'image/jpeg') => {
 
   return new Blob(byteArrays, { type: contentType });
 };
+
