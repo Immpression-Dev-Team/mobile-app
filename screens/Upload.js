@@ -91,7 +91,7 @@ const Upload = () => {
         // Mobile-specific logic: Directly append image URI
         data.append("file", {
           uri: image.uri, // Use the URI directly for mobile
-          name: 'upload_image.jpg', // Filename (Cloudinary expects a filename)
+          name: title, // Filename (Cloudinary expects a filename)
           type: 'image/jpeg' // Adjust based on the image format (e.g., 'image/png' if PNG)
         });
       }
