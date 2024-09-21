@@ -98,6 +98,7 @@ const Upload = () => {
   
       data.append("upload_preset", "edevre");
       data.append("name", title);
+      data.append("public_id", title.replace(/\s+/g, "_"));
       data.append("description", description);
       data.append("price", price);
       data.append("category", category);
