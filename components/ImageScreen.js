@@ -21,21 +21,28 @@ const ImageScreen = ({ route, navigation }) => {
     const isCurrent = index === currentIndex;
     const isNext = index === currentIndex + 1;
 
+    // Check if imageLink exists
+    const currentImageLink = item.imageLink ? item.imageLink : null;
+
     return (
       <View style={styles.imageContainer}>
         {/* Show previous image if it exists */}
-        {index === currentIndex - 1 && (
+        {index === currentIndex - 1 && images[index - 1]?.imageLink && (
           <Image
-            source={{ uri: `data:${images[index - 1]?.imageData.contentType};base64,${images[index - 1]?.imageData.data}` }}
+            source={{ uri: images[index - 1].imageLink }}
             style={styles.previousImage}
           />
         )}
         {/* Show current image */}
-        <Image source={{ uri: `data:${item.imageData.contentType};base64,${item.imageData.data}` }} style={[styles.fullImage, isNext && styles.currentImage]} />
+        {currentImageLink ? (
+          <Image source={{ uri: currentImageLink }} style={[styles.fullImage, isNext && styles.currentImage]} />
+        ) : (
+          <Text>No Image Available</Text> // Fallback if image link is missing
+        )}
         {/* Show next image if it exists */}
-        {isNext && (
+        {isNext && images[index + 1]?.imageLink && (
           <Image
-            source={{ uri: `data:${images[index + 1]?.imageData.contentType};base64,${images[index + 1]?.imageData.data}` }}
+            source={{ uri: images[index + 1].imageLink }}
             style={styles.nextImage}
           />
         )}
@@ -53,10 +60,9 @@ const ImageScreen = ({ route, navigation }) => {
   const viewConfigRef = useRef({ viewAreaCoveragePercentThreshold: 50 });
 
   return (
-
     <View style={styles.container}>
       <ImageBackground
-        source={require("../assets/backgrounds/navbar-bg2.png")} // Replace with your image path
+        source={require("../assets/backgrounds/navbar-bg2.png")} 
         style={styles.backgroundImage}
       >
         <Navbar />
@@ -79,24 +85,21 @@ const ImageScreen = ({ route, navigation }) => {
           showsHorizontalScrollIndicator={false}
         />
         <View style={styles.textContainer}>
-          <Text style={styles.artTitle}>{images[currentIndex].name}</Text>
+          <Text style={styles.artTitle}>{images[currentIndex]?.name || 'Untitled'}</Text>
           <View style={styles.scrollBar}>
             <Scrollbars />
           </View>
           <View style={styles.artistNameYearContainer}>
-            <Text style={styles.artistName}>{images[currentIndex].viewCount}</Text>
+            <Text style={styles.artistName}>{images[currentIndex]?.artistName || 'Unknown Artist'}</Text>
             <View style={styles.verticalLine} />
-            <Text style={styles.artYear}>{images[currentIndex].year}</Text>
+            <Text style={styles.artYear}>{images[currentIndex]?.year || 'Unknown Year'}</Text>
           </View>
-          {/* <View style={styles.horizontalLine} />
-        <Text style={styles.artType}>{images[currentIndex].type}</Text> */}
           <View style={styles.horizontalLine} />
-          <Text style={styles.artDescription}>{images[currentIndex].description}</Text>
+          <Text style={styles.artDescription}>{images[currentIndex]?.description || 'No Description Available'}</Text>
         </View>
         <FooterNavbar />
       </ImageBackground>
     </View>
-
   );
 };
 
@@ -107,19 +110,22 @@ const styles = StyleSheet.create({
   },
   backgroundImage: {
     width: "100%",
-    height: 127,
+    height: '100%',
     flex: 1,
   },
   closeButton: {
     position: 'absolute',
-    top: 100,
+    top: 50,
     right: 20,
     zIndex: 1,
+    backgroundColor: 'rgba(255,255,255,0.7)',
+    borderRadius: 15,
+    padding: 5,
   },
   closeButtonText: {
     color: 'black',
     fontSize: 24,
-    marginTop: 30,
+    fontWeight: 'bold',
   },
   imageContainer: {
     width: width,
@@ -134,41 +140,43 @@ const styles = StyleSheet.create({
     marginTop: -18,
   },
   currentImage: {
-    zIndex: 2, // Ensure current image is on top
+    zIndex: 2,
   },
   nextImage: {
     ...StyleSheet.absoluteFillObject,
     width: '100%',
     height: 300,
-    opacity: 0.5, // Adjust opacity as needed
+    opacity: 0.5,
     resizeMode: 'cover',
   },
   previousImage: {
     ...StyleSheet.absoluteFillObject,
     width: '100%',
     height: 300,
-    opacity: 0.5, // Adjust opacity as needed
+    opacity: 0.5,
     resizeMode: 'cover',
   },
   textContainer: {
     padding: 20,
     alignItems: 'center',
-      },
+  },
   scrollBar: {
     height: 80,
     width: '100%',
+    marginVertical: 10,
   },
   artTitle: {
-    color: 'blue',
-    fontSize: 40,
+    color: '#333',
+    fontSize: 28,
     marginTop: 10,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
   artistNameYearContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
-    width: '100%',
+    width: '80%',
     paddingHorizontal: 20,
     marginTop: 5,
   },
@@ -181,31 +189,28 @@ const styles = StyleSheet.create({
   },
   artYear: {
     color: 'black',
-    fontSize: 18,
+    fontSize: 16,
     marginBottom: 7,
     flex: 1,
     textAlign: 'center',
   },
   verticalLine: {
-    width: 2,
-    height: '100%',
+    width: 1,
+    height: 20,
     backgroundColor: 'black',
+    marginHorizontal: 10,
   },
   horizontalLine: {
     width: '100%',
-    height: 2,
+    height: 1,
     backgroundColor: 'black',
     alignSelf: 'center',
-  },
-  artType: {
-    color: 'black',
-    fontSize: 18,
     marginVertical: 15,
   },
   artDescription: {
     color: 'black',
-    fontSize: 18,
-    marginTop: 10,
+    fontSize: 16,
+    textAlign: 'center',
   }
 });
 
