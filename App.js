@@ -15,6 +15,7 @@ import PasswordReset from "./screens/PasswordReset";
 import ArtistScreen from "./components/ArtistScreens";
 import { AuthProvider, useAuth } from "./state/AuthProvider";
 import Upload from "./screens/Upload";
+import UploadProfilePicture from "./screens/UploadProfilePicture";
 
 const Stack = createStackNavigator();
 
@@ -35,7 +36,8 @@ const AppContent = () => {
         <>
           <Stack.Screen name="Home" component={HomeScreen} />
           <Stack.Screen name="Statistics" component={StatisticsScreen} />
-          <Stack.Screen name="Profile" component={ProfileScreen} />
+          {/* <Stack.Screen name="Profile" component={ProfileScreen} /> */}
+          <Stack.Screen name="Profile" component={UploadProfilePicture} />
           <Stack.Screen name="Settings" component={SettingsScreen} />
           <Stack.Screen name="SignUp" component={SignUp} />
           <Stack.Screen name="ImageScreen" component={ImageScreen} />
