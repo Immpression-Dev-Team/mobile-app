@@ -46,7 +46,7 @@ async function uploadProfilePicture(data, token) {
   }
 }
 
-export const fetchProfilePicture = async (userId) => {
+const fetchProfilePicture = async (userId) => {
   try {
     const response = await fetch(`${API_URL}/profile-picture/${userId}`, {
       method: 'GET',
@@ -63,10 +63,34 @@ export const fetchProfilePicture = async (userId) => {
   }
 };
 
+const updateProfilePicture = async (imageData, token) => {
+  try {
+    const response = await fetch(`${API_URL}/profile-picture`, {
+      method: 'PUT', // Use PUT method to update
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`, // Assuming you use a token for authentication
+      },
+      body: JSON.stringify(imageData),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update profile picture');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error uploading profile picture:', error);
+    throw error;
+  }
+};
+
 
 
 export {
   getAllImages,
   uploadImage,
   uploadProfilePicture,
+  fetchProfilePicture,
+  updateProfilePicture
 }
