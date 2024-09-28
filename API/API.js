@@ -46,6 +46,24 @@ async function uploadProfilePicture(data, token) {
   }
 }
 
+export const fetchProfilePicture = async (userId) => {
+  try {
+    const response = await fetch(`${API_URL}/profile-picture/${userId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching profile picture:", error);
+    throw error;
+  }
+};
+
+
 
 export {
   getAllImages,
