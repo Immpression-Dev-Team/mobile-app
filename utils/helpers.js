@@ -11,12 +11,12 @@ export const pageSuspense = (component) => {
 
 export const userStackScreen = () => {
     return (
-        UserNavigation.map((navigation) => <Stack.Screen name = {navigation.name} component = {pageSuspense(navigation.component)}/>)
+        UserNavigation.map((navigation) => <Stack.Screen key = {navigation.name} name = {navigation.name} component = {navigation.component}/>)
     )
 }
 
 export const guestStackScreen = () => {
     return (
-        GuestNavigation.map((navigation) => <Stack.Screen name = {navigation.name} component = {navigation.component}/>)
+        GuestNavigation.map((navigation) => <Stack.Screen key = {navigation.name} name = {navigation.name} component = {navigation.component}/>)
     )
 }
