@@ -158,7 +158,7 @@ const ArtForYou = () => {
         <TouchableWithoutFeedback onPress={handleUserActivity}>
             <LinearGradient colors={['white', '#acb3bf', 'white']} style={styles.section}>
                 <View style={styles.headerContainer}>
-                    <Text style={styles.headerText}>ART FOR YOU</Text>
+                    <Text style={styles.headerText}>ART FOR YOU!</Text>
                     <DiscoverButton />
                 </View>
                 <View style={styles.allImageContainer}>

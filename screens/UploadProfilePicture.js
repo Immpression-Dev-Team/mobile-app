@@ -1,33 +1,21 @@
-import React, { useState, useEffect } from "react";
-import { View, TouchableOpacity, Image, StyleSheet, Alert } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  Alert,
+} from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
-import { useAuth } from "../../state/AuthProvider";
-import { uploadProfilePicture, fetchProfilePicture } from "../../API/API"; // Add the fetchProfilePicture API
+import { useAuth } from "../state/AuthProvider"; // Assuming you have an AuthProvider to get userData
+import { uploadProfilePicture } from "../API/API"; // Your API function to update the user's profile picture on the backend
 import { Platform } from "react-native";
 
-const ProfilePic = () => {
-  const { userData } = useAuth(); // Retrieve userData from AuthProvider, including token
-  const [image, setImage] = useState(null); // Image state for profile picture
-
-  // Function to fetch the user's profile picture on component mount
-  const loadProfilePicture = async () => {
-    try {
-      const response = await fetchProfilePicture(userData.user.user._id);
-      if (response && response.profilePictureLink) {
-        setImage({ uri: response.profilePictureLink }); // Set the fetched image
-      } else {
-        console.log("No profile picture found.");
-      }
-    } catch (error) {
-      console.error("Error fetching profile picture:", error);
-    }
-  };
-
-  useEffect(() => {
-    // Fetch the profile picture when the component mounts
-    loadProfilePicture();
-  }, []);
+const UploadProfilePicture = () => {
+  const { userData } = useAuth();  // Retrieve userData from AuthProvider, including token
+  const [image, setImage] = useState(null);
 
   // Image picker function
   const selectImage = async () => {
@@ -40,7 +28,7 @@ const ProfilePic = () => {
     let pickerResult = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [1, 1], // Ensure the image is square to maintain circular profile picture
+      aspect: [4, 3],
       quality: 1,
       base64: false,
     });
@@ -49,33 +37,40 @@ const ProfilePic = () => {
       const selectedImage = pickerResult.assets[0];
       const resizedImage = await ImageManipulator.manipulateAsync(
         selectedImage.uri,
-        [{ resize: { width: 512, height: 512 } }], // Resize image for optimal profile picture size
+        [{ resize: { width: 1024 } }],
         { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
       );
-      setImage({ uri: resizedImage.uri }); // Update the local image state
-      handleUpload(resizedImage.uri); // Upload the image to Cloudinary
+      setImage({ ...selectedImage, uri: resizedImage.uri });
     }
   };
 
   // Function to handle image upload to Cloudinary
-  const handleUpload = async (uri) => {
+  const handleUpload = async () => {
+    if (!image) {
+      Alert.alert("Error", "Please select an image to upload");
+      return;
+    }
+
     const data = new FormData();
 
     try {
       if (Platform.OS === "web") {
-        const base64String = uri.split(",")[1];
+        // Web-specific logic: Convert base64 to Blob for web uploads
+        const base64String = image.uri.split(",")[1];
         const imageBlob = base64ToBlob(base64String, "image/jpeg");
         data.append("file", imageBlob, "profile_picture.jpg");
       } else {
+        // Mobile-specific logic: Directly append image URI
         data.append("file", {
-          uri: uri,
+          uri: image.uri,
           name: `profile_picture_${userData.user.user._id}.jpg`,
           type: "image/jpeg",
         });
       }
 
-      data.append("upload_preset", "edevre"); // Cloudinary upload preset
-      data.append("folder", "artists"); // Upload to 'artists' folder in Cloudinary
+      // Append other necessary data for Cloudinary
+      data.append("upload_preset", "edevre"); // Your Cloudinary unsigned upload preset
+      data.append("folder", "artists"); // Upload to the 'artists' folder in Cloudinary
       data.append("public_id", `profile_picture_${userData.user.user._id}`);
 
       const response = await fetch(
@@ -91,6 +86,7 @@ const ProfilePic = () => {
       if (result.secure_url) {
         const profilePictureLink = result.secure_url;
 
+        // After successful upload to Cloudinary, update backend with the profilePictureLink
         const imageData = {
           userId: userData.user.user._id,
           profilePictureLink: profilePictureLink,
@@ -99,6 +95,7 @@ const ProfilePic = () => {
         const token = userData.token;
         await uploadProfilePicture(imageData, token); // API call to save profilePictureLink to backend
 
+        setImage(null);
         Alert.alert("Success", "Profile picture uploaded successfully!");
       } else {
         Alert.alert("Error", result.error?.message || "Image upload failed");
@@ -110,9 +107,19 @@ const ProfilePic = () => {
   };
 
   return (
-    <View>
-      <TouchableOpacity onPress={selectImage}>
-        <Image source={image ? { uri: image.uri } : require('../../assets/defaultProfile.png')} style={styles.profilePicture} />
+    <View style={styles.container}>
+      <Text style={styles.title}>Upload Profile Picture</Text>
+
+      <TouchableOpacity style={styles.imagePlaceholder} onPress={selectImage}>
+        {image ? (
+          <Image source={{ uri: image.uri }} style={styles.image} />
+        ) : (
+          <Text style={styles.imagePlaceholderText}>Select Image</Text>
+        )}
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
+        <Text style={styles.uploadButtonText}>Upload Profile Picture</Text>
       </TouchableOpacity>
     </View>
   );
@@ -139,13 +146,45 @@ const base64ToBlob = (base64Data, contentType = "image/jpeg") => {
 };
 
 const styles = StyleSheet.create({
-  profilePicture: {
-    width: 110,
-    height: 110,
-    borderRadius: 55, // To make the image circular
-    borderWidth: 3,
-    borderColor: "white",
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+  },
+  imagePlaceholder: {
+    width: 200,
+    height: 200,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#ccc",
+    borderRadius: 10,
+    backgroundColor: "#f0f0f0",
+  },
+  imagePlaceholderText: {
+    color: "#aaa",
+  },
+  image: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 10,
+  },
+  uploadButton: {
+    marginTop: 20,
+    backgroundColor: "#007bff",
+    padding: 10,
+    borderRadius: 5,
+  },
+  uploadButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
 });
 
-export default ProfilePic;
+export default UploadProfilePicture;
