@@ -84,6 +84,30 @@ const UploadProfilePicture = () => {
       const result = await response.json();
 
       if (result.secure_url) {
+        const deleteImage = async (publicId) => {
+          const url = `https://api.cloudinary.com/v1_1/dttomxwev/image/destroy`;
+        
+          // FormData to send the public_id of the image
+          const formData = new FormData();
+          formData.append("public_id", publicId);
+        
+          try {
+            const response = await fetch(url, {
+              method: "POST", // Cloudinary destroy method uses POST, not DELETE
+              body: formData,
+            });
+        
+            const result = await response.json();
+            console.log(result);
+          } catch (error) {
+            console.error('Error deleting image:', error);
+          }
+        };
+        
+        // Call the function with the image's public ID
+        deleteImage(`profile_picture_${userData.user.user._id}.jpg`);        
+        
+
         const profilePictureLink = result.secure_url;
 
         // After successful upload to Cloudinary, update backend with the profilePictureLink
@@ -96,7 +120,7 @@ const UploadProfilePicture = () => {
         await uploadProfilePicture(imageData, token); // API call to save profilePictureLink to backend
 
         setImage(null);
-        Alert.alert("Success", "Profile picture uploaded successfully!");
+        Alert.alert("Success", "Profile picture DELETED successfully!");
       } else {
         Alert.alert("Error", result.error?.message || "Image upload failed");
       }

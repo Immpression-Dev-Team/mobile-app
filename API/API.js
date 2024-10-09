@@ -85,6 +85,25 @@ const updateProfilePicture = async (imageData, token) => {
   }
 };
 
+const deleteProfilePicture = async (publicId) => {
+  try {
+    const response = await fetch(`${API_URL}/delete-profile-picture`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ public_id: publicId }),
+    });
+
+    const result = await response.json();
+    console.log(result);
+    return result
+  } catch (error) {
+    console.error('Error deleting image:', error);
+    return error
+  }
+};
+
 
 
 export {
@@ -92,5 +111,6 @@ export {
   uploadImage,
   uploadProfilePicture,
   fetchProfilePicture,
-  updateProfilePicture
+  updateProfilePicture,
+  deleteProfilePicture
 }

@@ -3,7 +3,7 @@ import { View, TouchableOpacity, Image, StyleSheet, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import { useAuth } from "../../state/AuthProvider";
-import { uploadProfilePicture, fetchProfilePicture } from "../../API/API"; // Add the fetchProfilePicture API
+import { uploadProfilePicture, fetchProfilePicture, deleteProfilePicture, updateProfilePicture } from "../../API/API"; // Add the fetchProfilePicture API
 import { Platform } from "react-native";
 
 const ProfilePic = () => {
@@ -88,19 +88,59 @@ const ProfilePic = () => {
 
       const result = await response.json();
 
-      if (result.secure_url) {
-        const profilePictureLink = result.secure_url;
+      const profilePictureLink = result.secure_url;
 
-        const imageData = {
-          userId: userData.user.user._id,
-          profilePictureLink: profilePictureLink,
-        };
+      const imageData = {
+        userId: userData.user.user._id,
+        profilePictureLink: profilePictureLink,
+      };
 
-        const token = userData.token;
-        await uploadProfilePicture(imageData, token); // API call to save profilePictureLink to backend
+      const token = userData.token;
+      await uploadProfilePicture(imageData, token); // API call to save profilePictureLink to backend
 
-        Alert.alert("Success", "Profile picture uploaded successfully!");
+      if (result.secure_url) { //IF YOU HAVE AN EXISTING PROFILE PICTURE
+        // Call the function with the image's public ID
+        const publicID = `profile_picture_${userData.user.user._id}`;
+        console.log(`Cloudinary profile picture name: ${publicID}`)
+        const deleteResponse = await deleteProfilePicture(publicID); //DELETE THE PICTURE FROM CLOUDINARY FIRST
+        console.log(`Delete's response: ${deleteResponse}`)
+
+        const updateFetch = await fetch(
+          "https://api.cloudinary.com/v1_1/dttomxwev/image/upload",
+          {
+            method: "POST",
+            body: data,
+          }
+        );
+
+        const updateResult = await updateFetch.json();
+
+        if (updateResult.secure_url) {
+          const imageData = {
+            userId: userData.user.user._id,
+            profilePictureLink: profilePictureLink,
+          };
+    
+          const token = userData.token;
+          await updateProfilePicture(imageData, token);
+        }
+
+       
+
+        Alert.alert("Success", "Profile picture successfully!");
       } else {
+        // const updateFetch = await fetch(
+        //   "https://api.cloudinary.com/v1_1/dttomxwev/image/upload",
+        //   {
+        //     method: "POST",
+        //     body: data,
+        //   }
+        // );
+
+        // const result = await response.json();
+
+
+
         Alert.alert("Error", result.error?.message || "Image upload failed");
       }
     } catch (error) {
