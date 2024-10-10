@@ -7,7 +7,7 @@ const FooterNavbar = () => {
 
   return (
     <ImageBackground 
-      source={require('../assets/Bottom_Nav_Container.png')} // Update path if needed
+      source={require('../assets/Bottom_Nav_Container_blue.png')} // Update path if needed
       style={styles.backgroundImage}
     >
       <View style={styles.container}>
