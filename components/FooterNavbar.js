@@ -52,14 +52,14 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   text: {
-    color: '#000',
+    color: '#fff',
     fontSize: 10,
     marginTop: -10,
     // fontWeight: 'bold',
     fontFamily: 'LEMON MILK Bold',
   },
   sellText: {
-    color: '#000',
+    color: '#fff',
     fontSize: 10,
     marginTop: 10,
     // fontWeight: 'bold',
