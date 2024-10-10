@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1, // Equal width for both buttons
-    backgroundColor: '#000', // Button background color
+    backgroundColor: '#007AFF', // Button background color
     paddingVertical: 14, // Vertical padding inside the button
     marginHorizontal: 5, // Space between the buttons
     borderRadius: 6, // Rounded corners

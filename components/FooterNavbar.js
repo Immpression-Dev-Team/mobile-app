@@ -7,7 +7,7 @@ const FooterNavbar = () => {
 
   return (
     <ImageBackground 
-      source={require('../assets/Bottom_Nav_Container.png')} // Update path if needed
+      source={require('../assets/Bottom_Nav_Container_blue.png')} // Update path if needed
       style={styles.backgroundImage}
     >
       <View style={styles.container}>
@@ -16,7 +16,7 @@ const FooterNavbar = () => {
           <Text style={styles.text}>HOME</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.sellButton} onPress={() => navigation.navigate('Upload')}>
-          <Image source={require('../assets/icons/Sell.png')} style={styles.icon} />
+          <Image source={require('../assets/icons/Sell_green.png')} style={styles.icon} />
           <Text style={styles.sellText}>SELL</Text>
           {/* Removed the circular style and adjusted to be like other buttons */}
         </TouchableOpacity>
@@ -52,14 +52,14 @@ const styles = StyleSheet.create({
     paddingBottom: 0,
   },
   text: {
-    color: '#000',
+    color: '#fff',
     fontSize: 10,
     marginTop: -10,
     // fontWeight: 'bold',
     fontFamily: 'LEMON MILK Bold',
   },
   sellText: {
-    color: '#000',
+    color: '#fff',
     fontSize: 10,
     marginTop: 10,
     // fontWeight: 'bold',
