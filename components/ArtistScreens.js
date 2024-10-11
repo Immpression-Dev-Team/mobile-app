@@ -16,7 +16,7 @@ const ArtistScreen = ({ route }) => {
     return (
       <View style={styles.imageContainer}>
         <View style={styles.card}>
-          <Text style={styles.artistName}>{item.artist}</Text>
+          <Text style={styles.artistName}>{item.name}</Text>
           <Text style={styles.artistType}>{item.type}</Text>
           <Image source={{ uri: item.profilePictureLink }} style={styles.image} />
           <Text style={styles.artistBio}>Bio: {item.bio}</Text>
