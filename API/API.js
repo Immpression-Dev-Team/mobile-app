@@ -104,6 +104,20 @@ const deleteProfilePicture = async (publicId) => {
   }
 };
 
+async function getAllProfilePictures(token) {
+  try {
+    const response = await axios.get(`${API_URL}/all-profile-pictures`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,  // Add token to headers
+      },
+    });
+    return response.data.profilePictures;
+  } catch (error) {
+    console.error("Error fetching profile pictures:", error);
+    return error;
+  }
+}
+
 
 
 export {
@@ -112,5 +126,6 @@ export {
   uploadProfilePicture,
   fetchProfilePicture,
   updateProfilePicture,
-  deleteProfilePicture
+  deleteProfilePicture,
+  getAllProfilePictures
 }
