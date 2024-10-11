@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, ImageBackground } from 'react-native';
 import Navbar from '../components/Navbar';
 import ProfilePic from '../components/profile_sections/ProfilePic';
 import ProfileName from '../components/profile_sections/ProfileName';
@@ -15,8 +15,15 @@ const Profile = () => {
 
     return (
         <View style={styles.everything}>
+            <View style={styles.navbarContainer}>
+                <ImageBackground
+                    source={require("../assets/backgrounds/navbar-bg3.png")} // Replace with your image path
+                    style={styles.navbarBackgroundImage}
+                >
+                    <Navbar />
+                </ImageBackground>
+            </View>
             <ScrollView contentContainerStyle={styles.container}>
-                <Navbar />
                 <View style={styles.profileContainer}>
                     <ProfileBanner />
                     <ProfilePic source={profilePicSource} />
@@ -35,8 +42,21 @@ const Profile = () => {
 };
 
 const styles = StyleSheet.create({
+    navbarContainer: {
+        position: 'absolute',
+        top: 0,
+        width: '100%',
+        zIndex: 1000, // Ensure the navbar is always on top
+    },
+    navbarBackgroundImage: {
+        width: "100%",
+        height: 80, // Adjust this value to match the height of your navbar
+        resizeMode: 'cover', // Ensures the image covers the area of the navbar
+    },
     everything: {
         flex: 1,
+        backgroundColor: "white",
+        paddingTop: 115, // Create space for the navbar so content starts below it
     },
     container: {
         flexGrow: 1,
