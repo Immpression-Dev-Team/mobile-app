@@ -28,7 +28,7 @@ const ArtistScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       <ImageBackground
-        source={require("../assets/backgrounds/navbar-bg2.png")}
+        source={require("../assets/backgrounds/navbar-bg3.png")}
         style={styles.backgroundImage}
       >
         <Navbar />

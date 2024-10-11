@@ -12,7 +12,7 @@ const FooterNavbar = () => {
     >
       <View style={styles.container}>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Home')}>
-          <Image source={require('../assets/icons/Home.png')} style={styles.icon} />
+          <Image source={require('../assets/icons/Home_white.png')} style={styles.icon} />
           <Text style={styles.text}>HOME</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.sellButton} onPress={() => navigation.navigate('Upload')}>
@@ -21,7 +21,7 @@ const FooterNavbar = () => {
           {/* Removed the circular style and adjusted to be like other buttons */}
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Profile')}>
-          <Image source={require('../assets/icons/Profile.png')} style={styles.icon} />
+          <Image source={require('../assets/icons/Profile_white.png')} style={styles.icon} />
           <Text style={styles.text}>ME</Text>
         </TouchableOpacity>
       </View>

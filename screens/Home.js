@@ -17,61 +17,54 @@ import foryouBackgroundBottom from '../assets/foryou_assets/background_bottom.pn
 import foryouBackgroundTop from '../assets/foryou_assets/background_top.png';
 
 const HomeScreen = () => {
-  const name = useAuth()
+  const name = useAuth();
   console.log("username: ", name.userData.user.user.name);
-  console.log("useAuth response: ", name)
+  console.log("useAuth response: ", name);
 
   return (
-    // <ImageBackground
-    //   source={require("../assets/backgrounds/navbar-bg2.png")} // Replace with your image path
-    //   style={styles.backgroundImage}
-    // >
-      <View style={styles.everything}>
-        <View style={styles.navbar}>
+    <View style={styles.everything}>
+      <View style={styles.navbar}>
+        <ImageBackground
+          source={require("../assets/backgrounds/navbar-bg3.png")} // Replace with your image path
+          style={styles.navbarBackgroundImage}
+        >
           <Navbar />
-        </View>
-        {/* <ScrollView> */}
-        <View style={styles.container}>
-          <Image source={foryouBackgroundTop} style={styles.foryouBackgroundTopImage} />
-          <ArtForYou />
-          <Image source={foryouBackgroundBottom} style={styles.foryouBackgroundBottomImage} />
-
-          <MiddleButtons />
-
-          <Image source={discoverBackgroundTop} style={styles.discoverBackgroundTopImage} />
-          <FeaturedArtists />
-          <Image source={discoverBackgroundBottom} style={styles.discoverBackgroundBottomImage} />
-
-          {/* Other components can be added below as needed */}
-          {/* <Categories />
-            <InviteFriends />
-            <ArtOfTheDay />
-            <ArtistsPick /> */}
-        </View>
-        {/* </ScrollView> */}
-        <View style={styles.footer}>
-          <FooterNavbar />
-        </View>
+        </ImageBackground>
       </View>
-    // </ImageBackground>
+      <View style={styles.container}>
+        <Image source={foryouBackgroundTop} style={styles.foryouBackgroundTopImage} />
+        <ArtForYou />
+        <Image source={foryouBackgroundBottom} style={styles.foryouBackgroundBottomImage} />
+
+        <MiddleButtons />
+
+        <Image source={discoverBackgroundTop} style={styles.discoverBackgroundTopImage} />
+        <FeaturedArtists />
+        <Image source={discoverBackgroundBottom} style={styles.discoverBackgroundBottomImage} />
+      </View>
+      <View style={styles.footer}>
+        <FooterNavbar />
+      </View>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  backgroundImage: {
+  navbarBackgroundImage: {
     width: "100%",
-    height: 124,
-    flex: 1,
+    height: 80, // Adjust this value to match the height of your navbar
+    resizeMode: 'cover', // Ensures the image covers the area of the navbar
   },
   everything: {
-    backgroundColor: "white", // Set backgroundColor to transparent
     flex: 1,
+    backgroundColor: "white",
   },
   container: {
     flex: 1,
+    marginTop: 35, // Add margin to create space between the navbar and the content
     paddingBottom: 10,
     paddingHorizontal: 0,
-    alignItems: "center", // Center horizontally
+    alignItems: "center",
     backgroundColor: "#fff",
   },
   navbar: {
@@ -82,34 +75,32 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   discoverBackgroundBottomImage: {
-    width: '97.5%',  // Ensure the image covers the width of the screen
-    height: 50,  // Adjust height as needed
-    resizeMode: 'contain',  // Resize to contain within the area
-    marginTop: -400,  // Add some margin at the top if needed
+    width: '97.5%',
+    height: 50,
+    resizeMode: 'contain',
+    marginTop: -400,
   },
   discoverBackgroundTopImage: {
-    width: '97%',  // Ensure the image covers the width of the screen
-    height: 40,  // Adjust height as needed
-    resizeMode: 'contain',  // Resize to contain within the area
+    width: '97%',
+    height: 40,
+    resizeMode: 'contain',
     marginLeft: 2,
     marginTop: 5,
-    // marginTop: -382,  // Add some margin at the top if needed
   },
   foryouBackgroundBottomImage: {
-    width: '97.5%',  // Ensure the image covers the width of the screen
-    height: 40,  // Adjust height as needed
-    resizeMode: 'contain',  // Resize to contain within the area
-    marginTop: -17,  // Add some margin at the top if needed
+    width: '97.5%',
+    height: 40,
+    resizeMode: 'contain',
+    marginTop: -17,
     marginBottom: 5,
   },
   foryouBackgroundTopImage: {
-    width: '97%',  // Ensure the image covers the width of the screen
-    height: 50,  // Adjust height as needed
-    resizeMode: 'contain',  // Resize to contain within the area
+    width: '97%',
+    height: 50,
+    resizeMode: 'contain',
     marginLeft: 2,
     marginTop: -20,
     marginBottom: -25,
-    // marginTop: -382,  // Add some margin at the top if needed
   },
 });
 
