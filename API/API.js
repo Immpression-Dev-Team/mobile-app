@@ -44,11 +44,12 @@ async function getBio(token) {
 }
 
 // Function to update the user's artist type
-async function updateArtistType(userId, artistType, token) {
+async function updateArtistType(artistType, token) { // Removed userId parameter
   try {
+    console.log('Sending data to server:', { artistType }); // Log the data being sent to the server
     const response = await axios.put(
-      `${API_URL}/set-artist-type`,
-      { userId, artistType },
+      `${API_URL}/set-artist-type`, // Removed userId from the payload
+      { artistType },
       {
         headers: {
           'Authorization': `Bearer ${token}`,  // Add token to headers
@@ -59,6 +60,7 @@ async function updateArtistType(userId, artistType, token) {
     return response.data;
   } catch (error) {
     console.error("Error updating artist type:", error);
+    console.error("Server response:", error.response?.data); // Log server response for more details
     return error;
   }
 }
