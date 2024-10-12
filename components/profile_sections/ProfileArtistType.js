@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, Button, StyleSheet, Alert } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { updateArtistType } from '../../API/API';
+import { getArtistType, updateArtistType } from '../../API/API'; // Import the getArtistType function
 import { useAuth } from '../../state/AuthProvider';
 
 const ProfileArtistType = () => {
@@ -17,6 +17,26 @@ const ProfileArtistType = () => {
         { label: 'Sculptor', value: 'Sculptor' },
         { label: 'Illustrator', value: 'Illustrator' },
     ]);
+
+    useEffect(() => {
+        // Fetch the artist type when the component mounts
+        const fetchArtistType = async () => {
+            if (!token) return; // Exit if there's no token
+
+            try {
+                const response = await getArtistType(token);
+                if (response && response.success) {
+                    setArtistType(response.artistType);
+                } else {
+                    console.error('Failed to fetch artist type:', response.error);
+                }
+            } catch (error) {
+                console.error('Error fetching artist type:', error);
+            }
+        };
+
+        fetchArtistType();
+    }, [token]);
 
     const handleSaveArtistType = async () => {
         if (!token) {

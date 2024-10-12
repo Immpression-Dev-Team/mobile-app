@@ -65,6 +65,26 @@ async function updateArtistType(artistType, token) { // Removed userId parameter
   }
 }
 
+// Function to get the user's artist type
+async function getArtistType(token) {
+  try {
+    const response = await axios.get(
+      `${API_URL}/get-artist-type`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`, // Add token to headers for authentication
+          'Content-Type': 'application/json', // Ensure the content type is set correctly
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching artist type:", error);
+    console.error("Server response:", error.response?.data); // Log server response for more details
+    return error;
+  }
+}
+
 // Existing API functions
 async function getAllImages(token) {
   try {
@@ -192,5 +212,6 @@ export {
   getAllProfilePictures,
   updateBio,
   updateArtistType,
-  getBio
+  getBio,
+  getArtistType
 };
