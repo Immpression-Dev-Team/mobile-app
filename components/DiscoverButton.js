@@ -4,7 +4,7 @@ import { Pressable, Text, StyleSheet } from 'react-native';
 const DiscoverButton = ({ onPress }) => {
   return (
     <Pressable style={styles.button} onPress={onPress}>
-      <Text style={styles.buttonText}>VIEW ALL</Text>
+      <Text style={styles.buttonText}>ALL</Text>
     </Pressable>
   );
 };

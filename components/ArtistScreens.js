@@ -16,9 +16,9 @@ const ArtistScreen = ({ route }) => {
     return (
       <View style={styles.imageContainer}>
         <View style={styles.card}>
-          <Text style={styles.artistName}>{item.artist}</Text>
-          <Text style={styles.artistType}>{item.type}</Text>
-          <Image source={item.profilePic} style={styles.image} />
+          <Text style={styles.artistName}>{item.name}</Text>
+          <Text style={styles.artistType}>{item.artistType}</Text>
+          <Image source={{ uri: item.profilePictureLink }} style={styles.image} />
           <Text style={styles.artistBio}>Bio: {item.bio}</Text>
         </View>
       </View>
@@ -90,10 +90,9 @@ const styles = StyleSheet.create({
     color: 'white',
     alignSelf: 'flex-start',
     marginLeft: 10,
-    // fontStyle: 'italic',
   },
   artistBio: {
-    fontSize: 20,
+    fontSize: 15,
     marginTop: 10,
     color: 'white',
     alignSelf: 'flex-start',

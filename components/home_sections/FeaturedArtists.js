@@ -1,44 +1,47 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DiscoverButton from '../DiscoverButton';
-
-// Remove the header image import since it's no longer needed
-// import discoverHeader from '../../assets/headers/Discover.png';
-
-const imagePaths = [
-    { path: require('../../assets/photos/sunset.jpg'), type: 'Graphic Designer', artist: 'Marcus Morales', profilePic: require('../../assets/realArtists/Marcus_Morales.jpg'), bio: 'Bio for Marcus Morales' },
-    { path: require('../../assets/photos/path.jpg'), type: 'Photographer', artist: 'Antoin Ramirez', profilePic: require('../../assets/realArtists/Antoin_Ramirez.jpeg'), bio: 'Testing 123' },
-    { path: require('../../assets/photos/animal.jpg'), type: 'Painter', artist: 'Karla Maldonado', profilePic: require('../../assets/realArtists/Karla_Maldonado.jpeg'), bio: 'Bio for Karla Maldonado' },
-    { path: require('../../assets/photos/sunset.jpg'), type: 'Painter', artist: 'Obba Sanyang', profilePic: require('../../assets/realArtists/Obba_Sanyang.jpeg'), bio: 'Bio for Obba Sanyang' },
-    { path: require('../../assets/photos/sunset.jpg'), type: 'Graphic Designer', artist: 'Daniel Robinson', profilePic: require('../../assets/realArtists/Daniel_Robinson.jpg'), bio: 'Bio for Daniel Robinson' },
-    { path: require('../../assets/photos/sunset.jpg'), type: 'Painter', artist: 'Kailani Estrada', profilePic: require('../../assets/realArtists/Kailani_Estrada.jpeg'), bio: 'Bio for Kailani Estrada' },
-];
+import { getAllProfilePictures } from '../../API/API';
 
 const FeaturedArtists = () => {
     const navigation = useNavigation();
+    const [artists, setArtists] = useState([]);
+
+    useEffect(() => {
+        const fetchArtists = async () => {
+            try {
+                const token = ''; // Add your logic to retrieve the authentication token
+                const data = await getAllProfilePictures(token);
+                setArtists(data);
+            } catch (error) {
+                console.error('Error fetching artist data:', error);
+            }
+        };
+
+        fetchArtists();
+    }, []);
 
     const navigateToArtistScreen = (artist, profilePic, type, initialIndex) => {
-        navigation.navigate('ArtistScreens', { artist, profilePic, type, galleryImages: imagePaths, initialIndex });
+        navigation.navigate('ArtistScreens', { artist, profilePic, type, galleryImages: artists, initialIndex });
     };
 
     return (
         <View style={styles.container}>
             <View style={styles.headerContainer}>
-                {/* Replace Image with Text */}
                 <Text style={styles.headerText}>DISCOVER ARTISTS</Text>
                 <DiscoverButton />
             </View>
             <ScrollView horizontal style={styles.scrollView} showsHorizontalScrollIndicator={false}>
-                {imagePaths.map((item, index) => (
+                {artists.map((item, index) => (
                     <TouchableOpacity
                         key={index}
                         style={styles.artistContainer}
-                        onPress={() => navigateToArtistScreen(item.artist, item.profilePic, item.type, index)}
+                        onPress={() => navigateToArtistScreen(item.name, item.profilePictureLink, item.type, index)}
                     >
-                        <Image source={item.profilePic} style={styles.image} />
-                        <Text style={styles.artistName}>{item.artist}</Text>
-                        <Text style={styles.artistType}>{item.type}</Text>
+                        <Image source={{ uri: item.profilePictureLink }} style={styles.image} />
+                        <Text style={styles.artistName}>{item.name}</Text>
+                        <Text style={styles.artistType}>{item.artistType}</Text>
                     </TouchableOpacity>
                 ))}
             </ScrollView>
@@ -52,17 +55,16 @@ const styles = StyleSheet.create({
         paddingVertical: 0,
     },
     headerContainer: {
-        flexDirection: 'row',  // Align items in a row
-        justifyContent: 'space-between',  // Space between header and button
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 2,
         marginTop: 0,
     },
     headerText: {
-        fontSize: 20,  // Set the font size for the header
-        // fontWeight: 'bold',  // Make the text bold
+        fontSize: 20,
         fontFamily: 'LEMON MILK Bold',
-        color: '#000',  // Set the text color
+        color: '#000',
     },
     scrollView: {
         flexDirection: 'row',
@@ -78,7 +80,6 @@ const styles = StyleSheet.create({
     },
     artistName: {
         fontSize: 8,
-        // fontWeight: 'bold',
         color: 'black',
         fontFamily: 'LEMON MILK Bold',
     },
