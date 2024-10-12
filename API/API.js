@@ -1,7 +1,69 @@
 import axios from "axios";
 import { API_URL } from "../config";
-//These request will be split off to separate api files
 
+// Function to update the user's bio
+async function updateBio(bio, token) { // Removed userId parameter from the function
+  try {
+    console.log('Sending data to server:', { bio }); // Log the data being sent to the server
+    const response = await axios.put(
+      `${API_URL}/set-bio`, // Removed userId from the payload
+      { bio },
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,  // Add token to headers
+          'Content-Type': 'application/json',  // Ensure the content type is set correctly
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating bio:", error);
+    console.error("Server response:", error.response?.data); // Log server response for more details
+    return error;
+  }
+}
+
+// Function to get the user's bio
+async function getBio(token) {
+  try {
+    const response = await axios.get(
+      `${API_URL}/get-bio`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,  // Add token to headers for authentication
+          'Content-Type': 'application/json',  // Ensure the content type is set correctly
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching bio:", error);
+    console.error("Server response:", error.response?.data); // Log server response for more details
+    return error;
+  }
+}
+
+// Function to update the user's artist type
+async function updateArtistType(userId, artistType, token) {
+  try {
+    const response = await axios.put(
+      `${API_URL}/set-artist-type`,
+      { userId, artistType },
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,  // Add token to headers
+          'Content-Type': 'application/json',  // Ensure the content type is set correctly
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating artist type:", error);
+    return error;
+  }
+}
+
+// Existing API functions
 async function getAllImages(token) {
   try {
     const response = await axios.get(`${API_URL}/all_images`, {
@@ -111,14 +173,12 @@ async function getAllProfilePictures(token) {
         'Authorization': `Bearer ${token}`,  // Add token to headers
       },
     });
-    return response.data.profilePictures;
+    return response.data.users; // Adjusted to return the full user data including bio and artistType
   } catch (error) {
     console.error("Error fetching profile pictures:", error);
     return error;
   }
 }
-
-
 
 export {
   getAllImages,
@@ -127,5 +187,8 @@ export {
   fetchProfilePicture,
   updateProfilePicture,
   deleteProfilePicture,
-  getAllProfilePictures
-}
+  getAllProfilePictures,
+  updateBio,
+  updateArtistType,
+  getBio
+};
