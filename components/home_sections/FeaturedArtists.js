@@ -41,7 +41,7 @@ const FeaturedArtists = () => {
                     >
                         <Image source={{ uri: item.profilePictureLink }} style={styles.image} />
                         <Text style={styles.artistName}>{item.name}</Text>
-                        <Text style={styles.artistType}>{item.type}</Text>
+                        <Text style={styles.artistType}>{item.artistType}</Text>
                     </TouchableOpacity>
                 ))}
             </ScrollView>
