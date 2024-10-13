@@ -202,6 +202,20 @@ async function getAllProfilePictures(token) {
   }
 }
 
+const getUserProfile = async (token) => {
+  try {
+    const response = await axios.get(`${API_URL}/get-profile`, {
+      headers: {
+        'Authorization': `Bearer ${token}`, // Add token if authentication is needed
+      },
+    });
+    return response.data; // Return the user profile data
+  } catch (error) {
+    console.error('Error fetching user profile:', error);
+    throw error;
+  }
+};
+
 export {
   getAllImages,
   uploadImage,
@@ -213,5 +227,6 @@ export {
   updateBio,
   updateArtistType,
   getBio,
-  getArtistType
+  getArtistType,
+  getUserProfile
 };
