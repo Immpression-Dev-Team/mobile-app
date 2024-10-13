@@ -1,46 +1,76 @@
-import React from 'react';
-import { View, Image, StyleSheet, ScrollView } from 'react-native';
-
-const images = [
-    require('../../assets/art/sketch1.png'),
-    require('../../assets/art/photography1.png'),
-    require('../../assets/art/sketch2.png'),
-    require('../../assets/art/photography2.png'),
-    require('../../assets/art/sketch3.png'),
-    require('../../assets/art/photography3.png'),
-];
+import React, { useEffect, useState } from 'react';
+import { View, Image, StyleSheet, ScrollView, Text } from 'react-native';
+import { useAuth } from '../../state/AuthProvider';  // Import the useAuth hook
+import { getUserImages } from '../../API/API';  // Import the function to fetch user images
 
 const ProfileGallery = () => {
-    return (
-        <View style={styles.all}>
-            <ScrollView contentContainerStyle={styles.galleryContainer}>
-                {images.map((image, index) => (
-                    <Image key={index} source={image} style={styles.image} />
-                ))}
-            </ScrollView>
-        </View>
-    );
+  const { userData } = useAuth();  // Use the useAuth hook to get the user data
+  const token = userData?.token;   // Extract the token from userData
+  const [images, setImages] = useState([]);  // Initialize state to hold the images
+  const [loading, setLoading] = useState(true);  // Loading state
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      if (token) {
+        try {
+          const response = await getUserImages(token);  // Fetch the images
+          if (response.success) {
+            setImages(response.images);  // Set the images in state
+          } else {
+            console.error('Failed to fetch images');
+          }
+        } catch (error) {
+          console.error('Error fetching images:', error);
+        }
+      }
+      setLoading(false);  // Stop loading after the fetch
+    };
+
+    fetchImages();
+  }, [token]);
+
+  if (loading) {
+    return <Text>Loading...</Text>;
+  }
+
+  return (
+    <View style={styles.all}>
+      <ScrollView contentContainerStyle={styles.galleryContainer}>
+        {images.length > 0 ? (
+          images.map((image, index) => (
+            <Image
+              key={index}
+              source={{ uri: image.imageLink }}  // Assuming imageLink holds the URL of the image
+              style={styles.image}
+            />
+          ))
+        ) : (
+          <Text>No images found</Text>
+        )}
+      </ScrollView>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
-    all: {
-        width: '100%',
-        alignItems: 'center',
-        marginTop: 50,
-        bottom: -100,
-    },
-    galleryContainer: {
-        width: '100%', // Adjust this width to control the gallery width
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        alignItems: 'flex-start',
-        justifyContent: 'flex-start',
-    },
-    image: {
-        width: 125,
-        height: 125,
-        margin: 1,
-    },
+  all: {
+    width: '100%',
+    alignItems: 'center',
+    marginTop: 50,
+    bottom: -100,
+  },
+  galleryContainer: {
+    width: '100%', 
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+  },
+  image: {
+    width: 125,
+    height: 125,
+    margin: 1,
+  },
 });
 
 export default ProfileGallery;
