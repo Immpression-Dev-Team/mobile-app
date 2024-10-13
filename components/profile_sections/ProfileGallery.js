@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Image, StyleSheet, ScrollView, Text } from 'react-native';
+import { View, Image, StyleSheet, ScrollView, Pressable, Text } from 'react-native';
 import { useAuth } from '../../state/AuthProvider';  // Import the useAuth hook
 import { getUserImages } from '../../API/API';  // Import the function to fetch user images
+import { useNavigation } from '@react-navigation/native';  // Import navigation
 
 const ProfileGallery = () => {
   const { userData } = useAuth();  // Use the useAuth hook to get the user data
   const token = userData?.token;   // Extract the token from userData
   const [images, setImages] = useState([]);  // Initialize state to hold the images
   const [loading, setLoading] = useState(true);  // Loading state
+  const navigation = useNavigation();  // Access the navigation object
 
   useEffect(() => {
     const fetchImages = async () => {
@@ -29,6 +31,10 @@ const ProfileGallery = () => {
     fetchImages();
   }, [token]);
 
+  const handleImagePress = (index) => {
+    navigation.navigate('ImageScreen', { images, initialIndex: index });  // Navigate to the ImageScreen
+  };
+
   if (loading) {
     return <Text>Loading...</Text>;
   }
@@ -38,11 +44,12 @@ const ProfileGallery = () => {
       <ScrollView contentContainerStyle={styles.galleryContainer}>
         {images.length > 0 ? (
           images.map((image, index) => (
-            <Image
-              key={index}
-              source={{ uri: image.imageLink }}  // Assuming imageLink holds the URL of the image
-              style={styles.image}
-            />
+            <Pressable key={index} onPress={() => handleImagePress(index)}>
+              <Image
+                source={{ uri: image.imageLink }}  // Assuming imageLink holds the URL of the image
+                style={styles.image}
+              />
+            </Pressable>
           ))
         ) : (
           <Text>No images found</Text>
@@ -60,7 +67,7 @@ const styles = StyleSheet.create({
     bottom: -100,
   },
   galleryContainer: {
-    width: '100%', 
+    width: '100%',
     flexDirection: 'row',
     flexWrap: 'wrap',
     alignItems: 'flex-start',
