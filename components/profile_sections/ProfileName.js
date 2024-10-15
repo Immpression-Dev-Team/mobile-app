@@ -12,7 +12,7 @@ const ProfileName = ({ name }) => {
 const styles = StyleSheet.create({
   profileName: {
     fontSize: 24,
-    bottom: -110,
+    bottom: -20,
     fontWeight: 'bold',
     marginTop: 0,
     marginBottom: 0,

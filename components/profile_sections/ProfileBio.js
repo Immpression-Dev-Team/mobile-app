@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
       padding: 10,
       backgroundColor: 'rgba(255, 255, 255, 0)', // Make the background fully transparent
       borderRadius: 8,
-      marginTop: 100,
+      marginTop: 30,
       alignItems: 'center',
     },
     heading: {

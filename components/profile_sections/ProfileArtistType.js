@@ -93,17 +93,17 @@ const ProfileArtistType = () => {
 
 const styles = StyleSheet.create({
     container: {
-        width: '90%',
-        padding: 10,
+        width: '85%',
+        padding: 8,
         backgroundColor: 'rgba(255, 255, 255, 0.7)',
         borderRadius: 8,
-        marginTop: 20,
+        marginTop: 15,
         alignItems: 'center',
     },
     heading: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: 'bold',
-        marginBottom: 8,
+        marginBottom: 6,
         color: '#333',
     },
     dropdown: {
@@ -111,11 +111,30 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 4,
         marginVertical: 4,
+        paddingVertical: 5,
     },
     artistTypeText: {
-        fontSize: 16,
+        fontSize: 14,
         color: '#333',
+        textAlign: "center",
+        marginBottom: 6,
+    },
+    buttonContainer: {
+        width: '80%', // Button width set to 80% of the container width
+        marginTop: 8,
+    },
+    button: {
+        backgroundColor: '#3498db', // Button background color
+        paddingVertical: 8, // Adjusted vertical padding
+        paddingHorizontal: 12, // Adjusted horizontal padding for a smaller button
+        borderRadius: 4, // Rounded corners for a better look
+    },
+    buttonText: {
+        fontSize: 14, // Slightly smaller font size for a more proportional button
+        color: '#fff', // White text color for contrast
+        textAlign: 'center',
     },
 });
+
 
 export default ProfileArtistType;

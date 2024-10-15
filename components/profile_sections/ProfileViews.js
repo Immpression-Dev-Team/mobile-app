@@ -19,7 +19,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginTop: 10,
         alignItems: 'center',
-        bottom: -110,
+        bottom: -20,
     },
     label: {
         fontSize: 12,
