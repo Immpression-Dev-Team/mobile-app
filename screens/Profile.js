@@ -75,35 +75,25 @@ const Profile = () => {
 const styles = StyleSheet.create({
   everything: {
     flex: 1,  // Ensure the main container takes up the full height
-    backgroundColor: "#f1f3f6",
-    paddingTop: 115,
+    paddingTop: 60,
   },
   navbarContainer: {
     position: 'absolute',
     top: 0,
     width: '100%',
     zIndex: 1000,
-    backgroundColor: 'rgba(255, 255, 255, 0.85)',
     backdropFilter: 'blur(10px)',
   },
   navbarBackgroundImage: {
     width: "100%",
-    height: 80,
     resizeMode: 'cover',
     opacity: 0.9,
   },
   profileContainer: {
     alignItems: 'center',
-    marginTop: 40,
+    marginTop: 55,
     position: 'relative',
     backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    elevation: 5,
   },
   profilePic: {
     borderRadius: 50,
@@ -122,28 +112,25 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   bioArtistContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    width: '100%',
-    marginVertical: 30,  // Reduced margin for smaller size
-    padding: 5,  // Reduced padding to make the container smaller
-    borderRadius: 10,  // Smaller corner radius for compact design
+    flexDirection: 'column',  // Stack items vertically
+    justifyContent: 'center',  // Center them vertically
+    alignItems: 'center',  // Center them horizontally
+    width: '100%', 
+    marginVertical: 20,  // Adjust margin for spacing
+    padding: 10,
+    borderRadius: 10,
   },
   bioContainer: {
-    flex: 0.45,  // Reduced flex size to take up less width
-    borderRadius: 10,  // Slightly smaller radius
-    padding: 8,  // Reduced padding
-    marginHorizontal: 5,  // Smaller margin between cards
+    width: '100%',  // Take full width
+    borderRadius: 10,
+    padding: 10,
   },
   artistTypeContainer: {
-    flex: 0.45,  // Matching flex with bioContainer
+    width: '100%',  // Take full width
     borderRadius: 10,
-    padding: 8,  // Reduced padding for consistency
-    marginHorizontal: 5,
   },
   galleryContainer: {
-    marginTop: 40,
+    marginTop: 20,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',

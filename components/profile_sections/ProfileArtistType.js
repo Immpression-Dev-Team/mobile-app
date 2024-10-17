@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import { getArtistType, updateArtistType } from '../../API/API'; // Import the getArtistType function
 import { useAuth } from '../../state/AuthProvider';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'; // Import MaterialIcons
 
 const ProfileArtistType = () => {
     const { userData } = useAuth();
@@ -77,14 +78,18 @@ const ProfileArtistType = () => {
                             maxHeight: 150,
                         }}
                     />
-                    <Button title="Save Artist Type" onPress={handleSaveArtistType} />
+                    <TouchableOpacity style={styles.saveButton} onPress={handleSaveArtistType}>
+                        <Text style={styles.saveButtonText}>Save Artist Type</Text>
+                    </TouchableOpacity>
                 </View>
             ) : (
-                <View>
+                <View style={styles.artistTypeContainer}>
                     <Text style={styles.artistTypeText}>
                         {artistType || 'No artist type selected. Set your artist type!'}
                     </Text>
-                    <Button title="Edit Artist Type" onPress={() => setIsEditing(true)} />
+                    <TouchableOpacity style={styles.editButton} onPress={() => setIsEditing(true)}>
+                        <MaterialIcons name="edit" size={24} color="#555" />
+                    </TouchableOpacity>
                 </View>
             )}
         </View>
@@ -94,14 +99,14 @@ const ProfileArtistType = () => {
 const styles = StyleSheet.create({
     container: {
         width: '85%',
-        padding: 8,
-        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+        padding: 10,
+        backgroundColor: 'rgba(255, 255, 255, 0)', // Transparent background
         borderRadius: 8,
         marginTop: 15,
         alignItems: 'center',
     },
     heading: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 6,
         color: '#333',
@@ -113,28 +118,35 @@ const styles = StyleSheet.create({
         marginVertical: 4,
         paddingVertical: 5,
     },
+    artistTypeContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',  // Align icon vertically with text
+        justifyContent: 'center',  // Center both text and icon
+        width: '100%',
+    },
     artistTypeText: {
-        fontSize: 14,
-        color: '#333',
+        fontSize: 16,
         textAlign: "center",
-        marginBottom: 6,
+        color: '#333',
+        marginRight: 5,  // Add small space between the text and the icon
     },
-    buttonContainer: {
-        width: '80%', // Button width set to 80% of the container width
-        marginTop: 8,
+    editButton: {
+        padding: 4,  // Smaller padding for tighter alignment
     },
-    button: {
-        backgroundColor: '#3498db', // Button background color
-        paddingVertical: 8, // Adjusted vertical padding
-        paddingHorizontal: 12, // Adjusted horizontal padding for a smaller button
-        borderRadius: 4, // Rounded corners for a better look
+    saveButton: {
+        backgroundColor: '#007BFF',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginTop: 10,
     },
-    buttonText: {
-        fontSize: 14, // Slightly smaller font size for a more proportional button
-        color: '#fff', // White text color for contrast
-        textAlign: 'center',
+    saveButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });
 
-
 export default ProfileArtistType;
+
