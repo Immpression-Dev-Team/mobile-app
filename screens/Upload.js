@@ -206,7 +206,12 @@ const Upload = () => {
 
   return (
     <View style={styles.everything}>
-      <Navbar />
+       <ImageBackground
+          source={require("../assets/backgrounds/navbar-bg3.png")} // Replace with your image path
+          style={styles.navbarBackgroundImage}
+        >
+          <Navbar />
+        </ImageBackground>
       <ImageBackground
         source={require("../assets/backgrounds/white_flowers.png")}
         style={styles.backgroundImage}
