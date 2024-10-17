@@ -45,17 +45,26 @@ const Profile = () => {
         </ImageBackground>
       </View>
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.profileContainer}>
-          <ProfilePic source={profilePicSource} />
-          <ProfileName name={profileName} /> 
-          <ProfileViews views={viewsCount} />
-          <ProfileBio />
-          <ProfileArtistType />
+      <View style={styles.profileContainer}>
+        <ProfilePic source={profilePicSource} />
+        <ProfileName name={profileName} /> 
+        <ProfileViews views={viewsCount} />
+        
+        {/* New container for Bio and ArtistType centered */}
+        <View style={styles.bioArtistContainer}>
+          <View style={styles.bioContainer}>
+            <ProfileBio />
+          </View>
+          <View style={styles.artistTypeContainer}>
+            <ProfileArtistType />
+          </View>
         </View>
-        <View style={styles.galleryContainer}>
-          <ProfileGallery />
-        </View>
-      </ScrollView>
+      </View>
+    
+      <View style={styles.galleryContainer}>
+        <ProfileGallery />
+      </View>
+    </ScrollView>
       <View style={styles.footer}>
         <FooterNavbar />
       </View>
@@ -64,38 +73,88 @@ const Profile = () => {
 };
 
 const styles = StyleSheet.create({
+  everything: {
+    flex: 1,  // Ensure the main container takes up the full height
+    paddingTop: 60,
+  },
   navbarContainer: {
     position: 'absolute',
     top: 0,
     width: '100%',
     zIndex: 1000,
+    backdropFilter: 'blur(10px)',
   },
   navbarBackgroundImage: {
     width: "100%",
-    height: 80,
     resizeMode: 'cover',
-  },
-  everything: {
-    flex: 1,
-    backgroundColor: "white",
-    paddingTop: 115,
-  },
-  container: {
-    flexGrow: 1,
+    opacity: 0.9,
   },
   profileContainer: {
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 55,
     position: 'relative',
+    backgroundColor: 'white',
+  },
+  profilePic: {
+    borderRadius: 50,
+    borderColor: '#e0e0e0',
+    borderWidth: 2,
+  },
+  profileName: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#2c3e50',
+    marginVertical: 8,
+  },
+  profileViews: {
+    fontSize: 14,
+    color: '#7f8c8d',
+    marginBottom: 15,
+  },
+  bioArtistContainer: {
+    flexDirection: 'column',  // Stack items vertically
+    justifyContent: 'center',  // Center them vertically
+    alignItems: 'center',  // Center them horizontally
+    width: '100%', 
+    marginVertical: 20,  // Adjust margin for spacing
+    padding: 10,
+    borderRadius: 10,
+  },
+  bioContainer: {
+    width: '100%',  // Take full width
+    borderRadius: 10,
+    padding: 10,
+  },
+  artistTypeContainer: {
+    width: '100%',  // Take full width
+    borderRadius: 10,
   },
   galleryContainer: {
-    alignItems: 'center',
+    marginTop: 20,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'center',
-    marginTop: -150,
+  },
+  galleryItem: {
+    width: '45%',
+    margin: 8,
+    borderRadius: 15,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 3,
   },
   footer: {
-    zIndex: 1000,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderTopColor: '#dfe6e9',
+    borderTopWidth: 1,
+    position: 'absolute',  // Stick the footer to the bottom
+    bottom: 0,
+    width: '100%',
   },
 });
+
 
 export default Profile;

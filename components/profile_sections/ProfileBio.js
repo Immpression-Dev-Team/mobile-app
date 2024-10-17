@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { updateBio, getBio } from '../../API/API';
 import { useAuth } from '../../state/AuthProvider'; // Import the useAuth hook
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'; // Import MaterialIcons
 
 const ProfileBio = () => {
   const { userData } = useAuth();  // Use the useAuth hook to get user data
@@ -62,12 +63,16 @@ const ProfileBio = () => {
             multiline={true}
             numberOfLines={4}
           />
-          <Button title="Save Bio" onPress={handleSaveBio} />
+          <TouchableOpacity style={styles.saveButton} onPress={handleSaveBio}>
+            <Text style={styles.saveButtonText}>Save Bio</Text>
+          </TouchableOpacity>
         </View>
       ) : (
-        <View>
+        <View style={styles.bioContainer}>
           <Text style={styles.bioText}>{bio || 'No bio available. Add a bio!'}</Text>
-          <Button title="Edit Bio" onPress={() => setIsEditing(true)} />
+          <TouchableOpacity style={styles.editButton} onPress={() => setIsEditing(true)}>
+            <MaterialIcons name="edit" size={24} color="#555" />
+          </TouchableOpacity>
         </View>
       )}
     </View>
@@ -75,36 +80,60 @@ const ProfileBio = () => {
 };
 
 const styles = StyleSheet.create({
-    container: {
-      width: '90%',
-      padding: 10,
-      backgroundColor: 'rgba(255, 255, 255, 0)', // Make the background fully transparent
-      borderRadius: 8,
-      marginTop: 100,
-      alignItems: 'center',
-    },
-    heading: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      marginBottom: 8,
-      color: '#333', // Ensure text color is visible against a transparent background
-    },
-    input: {
-      width: '100%',
-      height: 80,
-      borderColor: '#ccc',
-      borderWidth: 1,
-      borderRadius: 5,
-      padding: 8,
-      marginBottom: 10,
-      textAlignVertical: 'top',
-      backgroundColor: 'rgba(255, 255, 255, 0.7)', // Semi-transparent background for the text input
-    },
-    bioText: {
-      fontSize: 16,
-      color: '#333',
-    },
-  });
-  
+  container: {
+    width: '90%',
+    padding: 10,
+    backgroundColor: 'rgba(255, 255, 255, 0)', // Transparent background
+    borderRadius: 8,
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  heading: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
+    color: '#333',
+  },
+  input: {
+    width: '100%',
+    height: 80,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 8,
+    marginBottom: 10,
+    textAlignVertical: 'top',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+  },
+  bioContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',  // Align icon vertically with text
+    justifyContent: 'center',  // Push the icon to the right
+    width: '100%',
+  },
+  bioText: {
+    fontSize: 16,
+    textAlign: "center",
+    color: '#333',
+    flex: 1,  // Take the available space
+    marginRight: 10,  // Add some space between the text and the icon
+  },
+  editButton: {
+    padding: 2,  // Give some padding to make the icon touchable
+  },
+  saveButton: {
+    backgroundColor: '#007BFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
 
 export default ProfileBio;
