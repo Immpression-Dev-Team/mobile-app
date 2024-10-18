@@ -61,7 +61,6 @@ const ProfileArtistType = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.heading}>Artist Type</Text>
             {isEditing ? (
                 <View>
                     <DropDownPicker
@@ -98,11 +97,10 @@ const ProfileArtistType = () => {
 
 const styles = StyleSheet.create({
     container: {
-        width: '85%',
+        width: '100%',  // Ensure the container takes full width
         padding: 10,
         backgroundColor: 'rgba(255, 255, 255, 0)', // Transparent background
         borderRadius: 8,
-        marginTop: 15,
         alignItems: 'center',
     },
     heading: {
@@ -121,14 +119,14 @@ const styles = StyleSheet.create({
     artistTypeContainer: {
         flexDirection: 'row',
         alignItems: 'center',  // Align icon vertically with text
-        justifyContent: 'center',  // Center both text and icon
+        justifyContent: 'center',  // Center contents horizontally
         width: '100%',
     },
     artistTypeText: {
+        fontWeight: "bold",
         fontSize: 16,
-        textAlign: "center",
+        textAlign: "center",  // Center text
         color: '#333',
-        marginRight: 5,  // Add small space between the text and the icon
     },
     editButton: {
         padding: 4,  // Smaller padding for tighter alignment

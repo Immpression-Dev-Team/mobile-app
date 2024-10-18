@@ -52,7 +52,6 @@ const ProfileBio = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Bio</Text>
       {isEditing ? (
         <View>
           <TextInput
@@ -81,11 +80,10 @@ const ProfileBio = () => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '90%',
+    width: '100%',
     padding: 10,
     backgroundColor: 'rgba(255, 255, 255, 0)', // Transparent background
     borderRadius: 8,
-    marginTop: 30,
     alignItems: 'center',
   },
   heading: {
@@ -107,16 +105,14 @@ const styles = StyleSheet.create({
   },
   bioContainer: {
     flexDirection: 'row',
-    alignItems: 'center',  // Align icon vertically with text
-    justifyContent: 'center',  // Push the icon to the right
-    width: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',  // Center contents horizontally
+    width: '100%',  // Ensure full width is used
   },
   bioText: {
     fontSize: 16,
-    textAlign: "center",
+    textAlign: "center",  // Center text
     color: '#333',
-    flex: 1,  // Take the available space
-    marginRight: 10,  // Add some space between the text and the icon
   },
   editButton: {
     padding: 2,  // Give some padding to make the icon touchable

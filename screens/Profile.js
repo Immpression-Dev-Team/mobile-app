@@ -112,22 +112,22 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   bioArtistContainer: {
+    width: '90%',  // Reduce width to center better
     flexDirection: 'column',  // Stack items vertically
-    justifyContent: 'center',  // Center them vertically
-    alignItems: 'center',  // Center them horizontally
-    width: '100%', 
+    justifyContent: 'center',  // Center vertically
+    alignItems: 'center',  // Center horizontally
     marginVertical: 20,  // Adjust margin for spacing
     padding: 10,
     borderRadius: 10,
   },
   bioContainer: {
     width: '100%',  // Take full width
-    borderRadius: 10,
-    padding: 10,
+    marginBottom: 10, // Add space between bio and artist type
+    alignItems: 'center',  // Ensure contents of bio are centered
   },
   artistTypeContainer: {
     width: '100%',  // Take full width
-    borderRadius: 10,
+    alignItems: 'center',  // Ensure contents of artist type are centered
   },
   galleryContainer: {
     marginTop: 20,
