@@ -98,7 +98,6 @@ const ProfileArtistType = () => {
 const styles = StyleSheet.create({
     container: {
         width: '100%',  // Ensure the container takes full width
-        padding: 10,
         backgroundColor: 'rgba(255, 255, 255, 0)', // Transparent background
         borderRadius: 8,
         alignItems: 'center',

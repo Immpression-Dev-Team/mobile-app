@@ -80,8 +80,8 @@ const ProfileBio = () => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
-    padding: 10,
+    marginTop: 20,
+    width: '80%',
     backgroundColor: 'rgba(255, 255, 255, 0)', // Transparent background
     borderRadius: 8,
     alignItems: 'center',
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   input: {
-    width: '100%',
+    width: '80%',
     height: 80,
     borderColor: '#ccc',
     borderWidth: 1,
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',  // Center contents horizontally
-    width: '100%',  // Ensure full width is used
+    width: '80%',  // Ensure full width is used
   },
   bioText: {
     fontSize: 16,
