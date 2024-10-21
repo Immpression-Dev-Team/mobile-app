@@ -1,7 +1,17 @@
-import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { useNavigation } from "@react-navigation/native";
 
-const MiddleButtons = ({ onCategoriesPress, onTrendingPress }) => {
+const MiddleButtons = () => {
+  const navigation = useNavigation();
+
+  const onCategoriesPress = () => {
+    navigation.navigate('Categories');
+  }
+
+  const onTrendingPress = () => {
+    navigation.navigate('Trending');
+  }
+
   return (
     <View style={styles.container}>
       {/* Categories Button */}
