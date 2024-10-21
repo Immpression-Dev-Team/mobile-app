@@ -1,7 +1,7 @@
-import axios from "axios";
-import { API_URL } from "../config";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { showToast } from "../utils/toastNotification";
+import axios from 'axios';
+import { API_URL } from '../config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { showToast } from '../utils/toastNotification';
 
 export const handleLogin = async (
   email,
@@ -19,14 +19,14 @@ export const handleLogin = async (
     if (response.data.success) {
       await login(response.data);
       setUserData(response.data); // Immediately set user data in the context
-      showToast("Login Successful");
-      navigation.navigate("Home"); // Navigate to the Home screen
+      showToast('Login Successful');
+      navigation.navigate('Home'); // Navigate to the Home screen
     } else {
-      showToast("Login Failed");
-      console.log("Login failed");
+      showToast('Login Failed');
+      console.log('Login failed');
     }
   } catch (err) {
-    showToast("Error During Login");
-    console.log("Error during login:", err);
+    showToast('Error During Login');
+    console.log('Error during login:', err);
   }
 };
