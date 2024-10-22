@@ -83,9 +83,11 @@ const ProfileArtistType = () => {
                 </View>
             ) : (
                 <View style={styles.artistTypeContainer}>
-                    <Text style={styles.artistTypeText}>
-                        {artistType || 'No artist type selected. Set your artist type!'}
-                    </Text>
+                    <View style={styles.artistTypeTextContainer}>
+                        <Text style={styles.artistTypeText}>
+                            {artistType || 'No artist type selected. Set your artist type!'}
+                        </Text>
+                    </View>
                     <TouchableOpacity style={styles.editButton} onPress={() => setIsEditing(true)}>
                         <MaterialIcons name="edit" size={24} color="#555" />
                     </TouchableOpacity>
@@ -98,7 +100,6 @@ const ProfileArtistType = () => {
 const styles = StyleSheet.create({
     container: {
         width: '100%',  // Ensure the container takes full width
-        padding: 10,
         backgroundColor: 'rgba(255, 255, 255, 0)', // Transparent background
         borderRadius: 8,
         alignItems: 'center',
@@ -117,18 +118,25 @@ const styles = StyleSheet.create({
         paddingVertical: 5,
     },
     artistTypeContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',  // Align icon vertically with text
-        justifyContent: 'center',  // Center contents horizontally
-        width: '100%',
+        flexDirection: 'row',  // Ensure items are placed in a row
+        alignItems: 'center',  // Center the text vertically with the icon
+        justifyContent: 'center',  // Center the content horizontally
+        width: '80%',
+        position: 'relative',  // Make the edit button position relative to this container
+    },
+    artistTypeTextContainer: {
+        flex: 1,  // Take up remaining space for text
+        alignItems: 'center',  // Center the text horizontally
     },
     artistTypeText: {
-        fontWeight: "bold",
+        fontWeight: 'bold',
         fontSize: 16,
-        textAlign: "center",  // Center text
+        textAlign: 'center',  // Center text inside the container
         color: '#333',
     },
     editButton: {
+        position: 'absolute',  // Position the edit button absolutely
+        right: 0,  // Align it to the right edge
         padding: 4,  // Smaller padding for tighter alignment
     },
     saveButton: {
