@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, Pressable, Animated, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView, Pressable, Animated, TouchableWithoutFeedback, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import DiscoverButton from '../DiscoverButton';
 import { useNavigation } from '@react-navigation/native';
@@ -157,10 +157,10 @@ const ArtForYou = () => {
     return (
         <TouchableWithoutFeedback onPress={handleUserActivity}>
             <LinearGradient colors={['white', '#acb3bf', 'white']} style={styles.section}>
-                <View style={styles.headerContainer}>
+                {/* <View style={styles.headerContainer}>
                     <Text style={styles.headerText}>ART FOR YOU!</Text>
                     <DiscoverButton />
-                </View>
+                </View> */}
                 <View style={styles.allImageContainer}>
                     <ScrollView
                         horizontal

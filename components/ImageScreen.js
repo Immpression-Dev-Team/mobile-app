@@ -65,7 +65,12 @@ const ImageScreen = ({ route, navigation }) => {
         source={require("../assets/backgrounds/navbar-bg2.png")} 
         style={styles.backgroundImage}
       >
-        <Navbar />
+       <ImageBackground
+          source={require("../assets/backgrounds/navbar-bg3.png")} // Replace with your image path
+          style={styles.navbarBackgroundImage}
+        >
+          <Navbar />
+        </ImageBackground>
         <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}>
           <Text style={styles.closeButtonText}>X</Text>
         </Pressable>
