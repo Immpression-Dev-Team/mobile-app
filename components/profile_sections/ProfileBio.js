@@ -68,7 +68,9 @@ const ProfileBio = () => {
         </View>
       ) : (
         <View style={styles.bioContainer}>
-          <Text style={styles.bioText}>{bio || 'No bio available. Add a bio!'}</Text>
+          <View style={styles.bioTextContainer}>
+            <Text style={styles.bioText}>{bio || 'No bio available. Add a bio!'}</Text>
+          </View>
           <TouchableOpacity style={styles.editButton} onPress={() => setIsEditing(true)}>
             <MaterialIcons name="edit" size={24} color="#555" />
           </TouchableOpacity>
@@ -81,7 +83,7 @@ const ProfileBio = () => {
 const styles = StyleSheet.create({
   container: {
     marginTop: 20,
-    width: '80%',
+    width: '100%',
     backgroundColor: 'rgba(255, 255, 255, 0)', // Transparent background
     borderRadius: 8,
     alignItems: 'center',
@@ -93,7 +95,8 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   input: {
-    width: '80%',
+    width: '100%',  // Make sure the input takes full width available (relative to its container)
+    maxWidth: '80%',  // Ensure it doesn't stretch beyond the container
     height: 80,
     borderColor: '#ccc',
     borderWidth: 1,
@@ -102,20 +105,28 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlignVertical: 'top',
     backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    multiline: true, // This is necessary to wrap text
   },
   bioContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',  // Center contents horizontally
-    width: '80%',  // Ensure full width is used
+    flexDirection: 'row',  // Ensure items are placed in a row
+    alignItems: 'center',  // Center the text vertically
+    justifyContent: 'center',  // Center content horizontally
+    width: '100%',
+    position: 'relative',  // Make the edit button position relative to this container
+  },
+  bioTextContainer: {
+    flex: 1,  // Take up remaining space for text
+    alignItems: 'center',  // Center text in the middle of the container
   },
   bioText: {
     fontSize: 16,
-    textAlign: "center",  // Center text
+    textAlign: 'center',  // Center the text inside its container
     color: '#333',
   },
   editButton: {
-    padding: 2,  // Give some padding to make the icon touchable
+    position: 'absolute',  // Position the edit button absolutely
+    right: 0,  // Align it to the right edge
+    padding: 4,
   },
   saveButton: {
     backgroundColor: '#007BFF',
