@@ -61,11 +61,13 @@ const ImageScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={require("../assets/backgrounds/navbar-bg2.png")} 
-        style={styles.backgroundImage}
-      >
-        <Navbar />
+   
+       <ImageBackground
+          source={require("../assets/backgrounds/navbar-bg3.png")} // Replace with your image path
+          style={styles.navbarBackgroundImage}
+        >
+          <Navbar />
+        </ImageBackground>
         <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}>
           <Text style={styles.closeButtonText}>X</Text>
         </Pressable>
@@ -98,7 +100,6 @@ const ImageScreen = ({ route, navigation }) => {
           <Text style={styles.artDescription}>{images[currentIndex]?.description || 'No Description Available'}</Text>
         </View>
         <FooterNavbar />
-      </ImageBackground>
     </View>
   );
 };

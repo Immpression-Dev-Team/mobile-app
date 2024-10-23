@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Image } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Pressable, Image, ImageBackground } from 'react-native';
 import NavBar from '../components/Navbar';
 import SettingsItem from '../components/SettingsItem';
 import helpIcon from '../assets/question.png';
@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { API_URL } from '../config';
 import { useAuth } from "../state/AuthProvider";
+
 
 const options = [
   {
@@ -105,7 +106,13 @@ const SettingsScreen = () => {
 
   return (
     <View style={styles.container}>
-      <NavBar />
+       <ImageBackground
+          source={require("../assets/backgrounds/navbar-bg3.png")} // Replace with your image path
+          style={styles.navbarBackgroundImage}
+        >
+          <NavBar />
+        </ImageBackground>
+      
       <View style={styles.settingsContainer}>
         <FlatList
           data={options}
