@@ -212,17 +212,14 @@ const Upload = () => {
         >
           <Navbar />
         </ImageBackground>
-      <ImageBackground
-        source={require("../assets/backgrounds/white_flowers.png")}
-        style={styles.backgroundImage}
-      >
+      
         <FlatList
           data={[{}]} // Use a FlatList with a single element to render the form
           renderItem={renderContent}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.scrollContainer}
         />
-      </ImageBackground>
+    
       <FooterNavbar style={styles.footer} />
     </View>
   );
