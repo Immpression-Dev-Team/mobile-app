@@ -12,6 +12,7 @@ import * as ImageManipulator from "expo-image-manipulator";
 import { useAuth } from "../state/AuthProvider"; // Assuming you have an AuthProvider to get userData
 import { uploadProfilePicture } from "../API/API"; // Your API function to update the user's profile picture on the backend
 import { Platform } from "react-native";
+import { marginBottom20 } from "../styles/helper";
 
 const UploadProfilePicture = () => {
   const { userData } = useAuth();  // Retrieve userData from AuthProvider, including token
@@ -179,7 +180,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: marginBottom20(),
   },
   imagePlaceholder: {
     width: 200,

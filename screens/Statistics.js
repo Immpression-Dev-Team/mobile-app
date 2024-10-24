@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView, Image, Text } from 'react-native';
 import Navbar from '../components/Navbar';
 import statsBrush from '../assets/icons/stats_brush.png';
 import FooterNavbar from '../components/FooterNavbar';
+import { marginBottom } from '../styles/helper';
 
 const StatisticsScreen = () => {
   const imagePaths = [
@@ -75,7 +76,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: '30%',
     aspectRatio: 1,
-    marginBottom: 10,
+    marginBottom: marginBottom(),
   },
   imageWrapper: {
     position: 'relative',

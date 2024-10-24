@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
+import { styles } from '../../styles/home/FillerMessageStyles';
 
 const FillerMessage = () => {
     return (
@@ -8,29 +9,5 @@ const FillerMessage = () => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        width: '100%',
-        borderLeftWidth: 20,
-        borderRightWidth: 20,
-        borderLeftColor: 'red',
-        borderRightColor: 'blue',
-        borderRadius: 0,
-        alignSelf: 'center',
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 1,
-        marginBottom: 20,
-    },
-    quoteText: {
-        fontSize: 16,
-        color: 'purple',
-        textAlign: 'left',
-        fontWeight: 'bold',
-        // fontWeight: 'bold',
-    },
-});
 
 export default FillerMessage;

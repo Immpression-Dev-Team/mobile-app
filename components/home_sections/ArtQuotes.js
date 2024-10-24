@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
+import { styles } from '../../styles/home/ArtQuotesStyles';
 
 const ArtQuotes = () => {
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
@@ -29,19 +30,6 @@ const ArtQuotes = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 20, 
-  },
-  quoteText: {
-    fontSize: 15,
-    textAlign: 'left', // Align text to the left
-    fontStyle: 'italic',
-    marginHorizontal: 20,
-  },
-});
+
 
 export default ArtQuotes;

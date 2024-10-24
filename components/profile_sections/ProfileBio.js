@@ -3,6 +3,7 @@ import { View, Text, TextInput, StyleSheet, Alert, TouchableOpacity } from 'reac
 import { updateBio, getBio } from '../../API/API';
 import { useAuth } from '../../state/AuthProvider'; // Import the useAuth hook
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'; // Import MaterialIcons
+import { marginBottom } from '../../styles/helper';
 
 const ProfileBio = () => {
   const { userData } = useAuth();  // Use the useAuth hook to get user data
@@ -102,7 +103,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     padding: 8,
-    marginBottom: 10,
+    marginBottom: marginBottom(),
     textAlignVertical: 'top',
     backgroundColor: 'rgba(255, 255, 255, 0.7)',
     multiline: true, // This is necessary to wrap text

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { headerContainer, marginBottom20 } from '../styles/helper';
 
 const imagePaths = [
     { path: require('../../assets/photos/path.jpg'), title: 'Path', profilePic: require('../../assets/artists/artist5.png'), width: 155 },
@@ -61,15 +62,11 @@ const DifferentWidths = () => {
 
 const styles = StyleSheet.create({
     section: {
-        marginBottom: 20,
+        marginBottom: marginBottom20,
         marginTop: 20,
     },
-    headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 5,
-        alignSelf: 'flex-start',
-    },
+
+    headerContainer: headerContainer(5),
     leftHeader: {
         backgroundColor: 'gray',
         paddingVertical: 5,

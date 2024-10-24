@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, Image, useWindowDimensions } from 'react-native'
 import React from 'react'
+import { marginBottom } from '../styles/helper'
 
 export default SliderItems = ({item}) => {
     const {width} = useWindowDimensions()
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
     title: {
         fontWeight: "800",
         fontSize: 20,
-        marginBottom: 10,
+        marginBottom: marginBottom(),
         color: "blue",
         textAlign: "center"
     },

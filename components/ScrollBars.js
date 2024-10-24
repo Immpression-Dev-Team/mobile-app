@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Slider from '@react-native-community/slider';
 import Svg, { Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
+import { marginBottom } from '../styles/helper';
 
 const Scrollbars = () => {
   const [price, setPrice] = useState(0);
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     paddingHorizontal: 30,
-    marginBottom: 20,
+    marginBottom: marginBottom20(),
   },
   priceText: {
     fontSize: 24,

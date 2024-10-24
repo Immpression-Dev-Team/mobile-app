@@ -12,6 +12,7 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { API_URL } from '../config';
 import Icon from "react-native-vector-icons/FontAwesome"; 
+import { marginBottom20 } from "../styles/helper";
 
 function PasswordReset() {
   const [email, setEmail] = useState("");
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: marginBottom20(),
     textAlign: 'center',
   },
   inputWrapper: {
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#C6C7DE',
     borderRadius: 20,
     paddingHorizontal: 15,
-    marginBottom: 20,
+    marginBottom: marginBottom20(),
     height: 60,
   },
   inputIcon: {

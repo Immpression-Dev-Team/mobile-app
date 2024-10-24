@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, ScrollView, ImageBackground } from 'react-native';
+import { View, Text, Image, ScrollView, ImageBackground } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import ArtistsPickHeader from '../../assets/headers/Artists_pick.png'; // Import the header image
 import DiscoverButton from '../DiscoverButton'; // Import the DiscoverButton component
-
+import styles from '../../styles/home/ArtistsPickStyles';
 // Import the background image
 import backgroundImage from '../../assets/backgrounds/discover_artists_background.png'; // Replace with your actual image path
 
@@ -58,102 +58,6 @@ const ArtistsPick = () => {
     );
 };
 
-const styles = StyleSheet.create({
-    cardContainer: {
-        borderWidth: 1,
-        borderColor: '#dcdcdc',
-        borderRadius: 0,
-        padding: 0,
-        backgroundColor: '#f9f9f9',
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowOffset: { width: 0, height: 2 },
-        shadowRadius: 8,
-        elevation: 5,
-        marginBottom: 10,
-        marginTop: 20,
-    },
-    backgroundImage: {
-        width: '97%',
-    },
-    backgroundImageStyle: {
-        resizeMode: 'cover',
-        borderRadius: 0,
-    },
-    gradient: {
-        flex: 1,
-        borderRadius: 0,
-    },
-    section: {
-        width: '97%',
-        alignSelf: 'center',
-        borderWidth: 0,
-        borderColor: '#aebacf',
-        borderRadius: 0,
-        padding: 20,
-        marginBottom: 0,
-        paddingBottom: 20,
-        overflow: 'hidden',
-        position: 'relative',
-    },
-    headerContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 2,
-        alignSelf: 'flex-start',
-        paddingHorizontal: 7,
-    },
-    headerImage: {
-        width: 200, // Adjust width according to your image
-        height: 50, // Adjust height according to your image
-        resizeMode: 'contain',
-    },
-    rightHeader: {
-        marginLeft: 'auto',
-        marginRight: 10,
-    },
-    scrollView: {
-        flexDirection: 'row',
-    },
-    imageContainer: {
-        marginRight: 4,
-        alignItems: 'flex-start',
-    },
-    imageWrapper: {
-        position: 'relative',
-        width: 110,
-        height: 110,
-    },
-    image: {
-        width: '100%',
-        height: '100%',
-    },
-    profilePicContainer: {
-        position: 'absolute',
-        bottom: -20,
-        right: 15,
-        width: 55,
-        height: 55,
-        borderRadius: 50,
-        overflow: 'hidden',
-        borderWidth: 1,
-        borderColor: '#5D9177',
-    },
-    profilePic: {
-        width: '100%',
-        height: '100%',
-    },
-    imageTitle: {
-        marginTop: 20,
-        marginLeft: 7,
-        textAlign: 'left',
-        fontWeight: 'bold',
-    },
-    artistName: {
-        marginLeft: 7,
-        textAlign: 'left',
-        color: 'gray',
-    },
-});
+
 
 export default ArtistsPick;
