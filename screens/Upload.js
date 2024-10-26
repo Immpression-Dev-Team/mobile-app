@@ -290,11 +290,13 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   dropdown: {
-    borderColor: "white",
+    borderColor: "blue",
     borderWidth: 1,
     borderRadius: 2,
     marginVertical: 4,
-    backgroundColor: "white"
+    backgroundColor: "white",
+    borderStyle: "solid",
+    borderWeight: "2"
   },
   uploadButton: {
     height: 40,
