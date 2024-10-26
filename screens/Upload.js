@@ -219,7 +219,7 @@ const Upload = () => {
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.scrollContainer}
         />
-    
+      
       <FooterNavbar style={styles.footer} />
     </View>
   );
@@ -229,6 +229,7 @@ const styles = StyleSheet.create({
   everything: {
     flex: 1,
     justifyContent: "space-between",
+    backgroundColor: "white"
   },
   backgroundImage: {
     flex: 1,
@@ -239,11 +240,14 @@ const styles = StyleSheet.create({
   },
   container: {
     padding: 16,
+    backgroundColor: "white",
   },
   imageContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 16,
+    backgroundColor: "white"
+    
   },
   imagePlaceholderContainer: {
     flex: 1,
@@ -267,18 +271,20 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     borderRadius: 8,
+    backgroundColor: "white"
   },
   exampleImage: {
     width: "50%",
     height: 250,
     resizeMode: "stretch",
     marginRight: 0,
+    backgroundColor: "white"
   },
   input: {
     height: 38,
-    borderColor: "white",
+    borderColor: "blue",
     backgroundColor: "white",
-    borderWidth: 1,
+    borderWidth: 2,
     marginVertical: 4,
     paddingHorizontal: 10,
     borderRadius: 3,
@@ -288,6 +294,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 2,
     marginVertical: 4,
+    backgroundColor: "white"
   },
   uploadButton: {
     height: 40,
@@ -296,16 +303,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 4,
     marginTop: 16,
+
+    
   },
   uploadButtonText: {
     color: "#fff",
     fontWeight: "bold",
+
+   
   },
   footer: {
     position: "absolute",
     left: 0,
     right: 0,
     bottom: 0,
+    backgroundColor: "white"
   },
 });
 
