@@ -4,6 +4,7 @@ import {
     Text,
     Image,
     TouchableOpacity,
+    ImageBackground,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import Navbar from "../components/Navbar";
@@ -35,7 +36,12 @@ export default function CategoriesScreen() {
 
     return(
         <View style={styles.container}>
-            <Navbar/>
+            <ImageBackground
+          source={require("../assets/backgrounds/navbar_bg_blue.png")} // Replace with your image path
+          style={styles.navbarBackgroundImage}
+        >  
+          <Navbar />
+        </ImageBackground>
             <View style={styles.content}>
                 <Text style={styles.title}>Categories</Text>
                 <View style={styles.categoriesContainer}>
