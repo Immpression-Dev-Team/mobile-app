@@ -25,7 +25,7 @@ const HomeScreen = () => {
     <View style={styles.everything}>
       <View style={styles.navbar}>
         <ImageBackground
-          source={require("../assets/backgrounds/navbar-bg3.png")} // Replace with your image path
+          source={require("../assets/backgrounds/navbar_bg_blue.png")} // Replace with your image path
           style={styles.navbarBackgroundImage}
         >
           <Navbar />
