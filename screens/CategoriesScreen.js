@@ -17,6 +17,7 @@ import Sculptures from '../assets/categories/Sculptures.jpg';
 import Woodwork from '../assets/categories/Woodwork.jpg';
 import Graffiti from '../assets/categories/Graffiti.jpg';
 import Stencil from '../assets/categories/Stencil.jpg';
+import { LEMON_MILK_BOLD_FONT } from "../styles/helper";
 
 export default function CategoriesScreen() {
     const navigation = useNavigation();
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
     title: {
         marginLeft: '1.75%',
         fontSize: 25,
-        fontFamily: 'LEMON MILK Bold',
+        fontFamily: LEMON_MILK_BOLD_FONT,
     },
     categoriesContainer: {
         flex: 1,
@@ -99,7 +100,7 @@ const styles = StyleSheet.create({
     label: {
         marginTop: '1.5%',
         fontSize: 12.5,
-        fontFamily: 'LEMON MILK Bold',
+        fontFamily: LEMON_MILK_BOLD_FONT,
         textAlign: 'center',
     }
 })

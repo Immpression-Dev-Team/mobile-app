@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { API_URL } from '../config';
 import { useAuth } from "../state/AuthProvider";
+import { marginBottom } from '../styles/helper';
 
 
 const options = [
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    marginBottom: 10,
+    marginBottom: marginBottom(),
     fontWeight: 'bold',
     paddingHorizontal: 10,
   },

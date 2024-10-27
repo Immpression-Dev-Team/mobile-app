@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { LEMON_MILK_BOLD_FONT } from '../styles/helper';
 
 const FooterNavbar = () => {
   const navigation = useNavigation();
@@ -56,14 +57,14 @@ const styles = StyleSheet.create({
     fontSize: 10,
     marginTop: -10,
     // fontWeight: 'bold',
-    fontFamily: 'LEMON MILK Bold',
+    fontFamily: LEMON_MILK_BOLD_FONT,
   },
   sellText: {
     color: '#fff',
     fontSize: 10,
     marginTop: 10,
     // fontWeight: 'bold',
-    fontFamily: 'LEMON MILK Bold',
+    fontFamily: LEMON_MILK_BOLD_FONT,
   },
   icon: {
     width: 40,

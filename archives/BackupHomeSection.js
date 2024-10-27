@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
+import { marginBottom, marginBottom20 } from '../styles/helper';
 
 const imagePaths = [
   require('../../assets/art/art1.jpg'),
@@ -55,12 +56,12 @@ const ArtForYou = () => {
 
 const styles = StyleSheet.create({
   section: {
-    marginBottom: 20,
+    marginBottom: marginBottom20(),
   },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: marginBottom(),
   },
   scrollView: {
     flexDirection: 'row',
@@ -71,7 +72,7 @@ const styles = StyleSheet.create({
   image: {
     width: 110,
     height: 110,
-    marginBottom: 10, // Margin between images in a column
+    marginBottom: marginBottom(), // Margin between images in a column
     borderRadius: 5,
   },
 });

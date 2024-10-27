@@ -10,6 +10,7 @@ import ProfileBio from '../components/profile_sections/ProfileBio';
 import ProfileArtistType from '../components/profile_sections/ProfileArtistType'; 
 import { getUserProfile } from '../API/API';
 import { useAuth } from '../state/AuthProvider';  // Import the useAuth hook
+import { marginBottom } from '../styles/helper';
 
 const Profile = () => {
   const { userData } = useAuth();  // Use the useAuth hook to get the user data
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
   },
   bioContainer: {
     width: '100%',  // Take full width
-    marginBottom: 10, // Add space between bio and artist type
+    marginBottom: marginBottom(), // Add space between bio and artist type
     alignItems: 'center',  // Ensure contents of bio are centered
   },
   artistTypeContainer: {

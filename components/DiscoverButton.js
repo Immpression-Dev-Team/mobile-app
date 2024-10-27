@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, Text, StyleSheet } from 'react-native';
+import { LEMON_MILK_BOLD_FONT } from '../styles/helper';
 
 const DiscoverButton = ({ onPress }) => {
   return (
@@ -28,7 +29,7 @@ const styles = StyleSheet.create({
     color: '#FFF', // Text color
     fontSize: 10, // Font size
     // fontWeight: 'bold',
-    fontFamily: 'LEMON MILK Bold',
+    fontFamily: LEMON_MILK_BOLD_FONT,
     textAlign: 'center', // Center text alignment
   },
 });

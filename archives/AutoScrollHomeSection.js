@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, Pressable, Pressable, Dimensions } from 'react-native';
+import { headerContainer, marginBottom20 } from '../styles/helper';
 
 const imagePaths = [
     require('../../assets/art/art5.png'),
@@ -143,14 +144,9 @@ const ArtForYou2 = () => {
 
 const styles = StyleSheet.create({
     section: {
-        marginBottom: 20,
+        marginBottom: marginBottom20,
     },
-    headerContainer: {
-        flexDirection: 'row', // Align items side by side
-        alignItems: 'center', // Vertically center items
-        marginBottom: 2,
-        alignSelf: 'flex-start', // Make sure the container's width wraps around the text
-    },
+    headerContainer: headerContainer(2),
     leftHeader: {
         backgroundColor: 'black',
         paddingVertical: 5,
