@@ -97,8 +97,9 @@ const ImageScreen = ({ route, navigation }) => {
             <Text style={styles.artYear}>{images[currentIndex]?.year || 'Unknown Year'}</Text>
           </View>
           <View style={styles.horizontalLine} />
+          <Text style={styles.category}>{images[currentIndex]?.category || 'Category'}</Text>
           <Text style={styles.artDescription}>{images[currentIndex]?.description || 'No Description Available'}</Text>
-        </View>
+          </View>
         <FooterNavbar />
     </View>
   );
@@ -212,7 +213,13 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 16,
     textAlign: 'center',
-  }
+  },
+  category: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 15,
+  },
 });
 
 export default ImageScreen;
