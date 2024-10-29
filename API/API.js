@@ -178,10 +178,24 @@ const deleteProfilePicture = async (publicId) => {
     });
 
     const result = await response.json();
-    return result;
+    console.log('Delete result:', result);
+
+    // Check if the backend returned a success message or that the file was not found
+    if (result.success || result.message === 'File not found') {
+      return {
+        success: true,
+        message: result.message || 'Profile picture deleted successfully',
+      };
+    } else {
+      console.warn('No existing profile picture found.');
+      return {
+        success: true,
+        message: 'No profile picture found for deletion',
+      };
+    }
   } catch (error) {
     console.error('Error deleting image:', error);
-    return error;
+    return { success: false, error: 'Failed to delete image' };
   }
 };
 
