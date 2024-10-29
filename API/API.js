@@ -83,18 +83,20 @@ async function getArtistType(token) {
 }
 
 // Existing API functions
-async function getAllImages(token) {
+async function getAllImages(token, category=null) {
   try {
+    // set up header w/ token & optional param in request
     const response = await axios.get(`${API_URL}/all_images`, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add token to headers
+        Authorization: `Bearer ${token}`,
       },
-    });
-
+      params: (category) ? { category: category.toLowerCase() } : {}
+    }
+  );
     return response.data;
   } catch (error) {
-    console.error('Error fetching images:', error);
-    return error;
+    // console.error('Error fetching images:', error.response);
+    return error.response;
   }
 }
 
@@ -109,7 +111,7 @@ async function uploadImage(data, token) {
     return response.data;
   } catch (error) {
     console.log(error);
-    return error;
+    return error.response;
   }
 }
 
