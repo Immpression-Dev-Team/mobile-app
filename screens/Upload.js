@@ -23,23 +23,126 @@ import { Platform } from 'react-native';
 
 const Upload = () => {
   const { userData } = useAuth();  // Retrieve userData from AuthProvider, including token
-  console.log(userData?.user?._id);  // Log user ID to verify
+  // console.log(`id: ${userData?.user?.user?._id}`);  // Log user ID to verify
 
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [category, setCategory] = useState(null);
+  const [category, setCategory] = useState("");
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([
+    { label: "Paintings", value: "paintings" },
     { label: "Photography", value: "photography" },
     { label: "Graphic Design", value: "graphic design" },
-    { label: "Sketches", value: "sketches" },
+    { label: "Illustrations", value: "illustrations" },
     { label: "Sculptures", value: "sculptures" },
-    { label: "Paintings", value: "paintings" },
-    { label: "Pottery", value: "pottery" },
+    { label: "Woodwork", value: "woodwork" },
+    { label: "Graffiti", value: "graffiti" },
+    { label: "Stencil", value: "stencil" },
   ]);
 
+  /*
+    clear form after uploaded image successfully
+  */
+  const resetForm = () => {
+    setImage(null);
+    setTitle("");
+    setDescription("");
+    setPrice("");
+    setCategory("");
+  }
+
+  /*
+    show error modal on screen when encounter any errors
+  */
+  const displayError = (message) => {
+    Alert.alert("Error", message);
+  };
+
+  /*
+    validate each field & return error msg if sth is invalidate
+  */
+  const validateFields = () => {
+    const price_val = parseFloat(price);
+    const fieldCheck = [
+      {
+        condition: !image,
+        message: "Please select an image"
+      },
+      {
+        condition: (!title || !description || !price), 
+        message: "Please fill in all fields"
+      },
+      {
+        condition: (isNaN(price_val) || !isFinite(price_val)), 
+        message:  "Please enter a valid number for price"
+      },
+      {
+        condition: !category,
+        message: "Please select a category"
+      },
+      {
+        condition: (description.length > 30),
+        message: "Description cannot be longer than 30 characters"
+      },
+    ];
+
+    for (const { condition, message } of fieldCheck) {
+      if (condition) {
+        return message;
+      }
+    }
+  }
+
+  /*
+    prepare form data to upload on cloud 
+  */
+  const prepareFormData = async () => {
+    const data = new FormData();
+    
+    if (Platform.OS === 'web') {
+      // Web-specific logic: Convert base64 to Blob for web uploads
+      const base64String = image.uri.split(',')[1];
+      const imageBlob = base64ToBlob(base64String, 'image/jpeg');
+      data.append("file", imageBlob, "upload_image.jpg");
+    } else {
+      // Mobile-specific logic: Directly append image URI
+      data.append("file", {
+        uri: image.uri, // Use the URI directly for mobile
+        name: title, // Filename (Cloudinary expects a filename)
+        type: 'image/jpeg' // Adjust based on the image format (e.g., 'image/png' if PNG)
+      });
+    }
+
+    data.append("upload_preset", "edevre");
+    data.append("name", title);
+    data.append("public_id", title.replace(/\s+/g, "_"));
+    data.append("description", description);
+    data.append("price", price);
+    data.append("category", category);
+    data.append('folder', 'artwork');
+  
+    return data;
+  };
+
+  /*
+    upload img to cloud & return url
+  */
+  const uploadImageToCloud = async (data) => {
+    const response = await fetch(
+      "https://api.cloudinary.com/v1_1/dttomxwev/image/upload",
+      {
+        method: "POST",
+        body: data,
+      }
+    );
+    return response.json();
+  }
+
+  /*
+    handler when user select img
+  */
   const selectImage = async () => {
     let result = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (result.granted === false) {
@@ -68,81 +171,53 @@ const Upload = () => {
     }
   };
 
+  /*
+    handler when user upload img
+  */
   const handleUpload = async () => {
-    if (!image || !title || !description || !price || !category) {
-      Alert.alert("Error", "Please fill in all fields, select a category, and select an image");
+    const errorMsg = validateFields();
+    if(errorMsg){
+      displayError(errorMsg);
       return;
     }
-  
-    if (description.length > 30) {
-      Alert.alert("Error", "Description cannot be longer than 30 characters");
-      return;
-    }
-  
-    const data = new FormData();
   
     try {
-      if (Platform.OS === 'web') {
-        // Web-specific logic: Convert base64 to Blob for web uploads
-        const base64String = image.uri.split(',')[1];
-        const imageBlob = base64ToBlob(base64String, 'image/jpeg');
-        data.append("file", imageBlob, "upload_image.jpg");
-      } else {
-        // Mobile-specific logic: Directly append image URI
-        data.append("file", {
-          uri: image.uri, // Use the URI directly for mobile
-          name: title, // Filename (Cloudinary expects a filename)
-          type: 'image/jpeg' // Adjust based on the image format (e.g., 'image/png' if PNG)
-        });
+      const data = await prepareFormData();
+      const result = await uploadImageToCloud(data);
+      if(!result.secure_url){
+        displayError(result.error.message || "Image upload failed");
+        return;
       }
-  
-      data.append("upload_preset", "edevre");
-      data.append("name", title);
-      data.append("public_id", title.replace(/\s+/g, "_"));
-      data.append("description", description);
-      data.append("price", price);
-      data.append("category", category);
-      data.append('folder', 'artwork');
-  
-      const response = await fetch(
-        "https://api.cloudinary.com/v1_1/dttomxwev/image/upload",
-        {
-          method: "POST",
-          body: data,
-        }
-      );
-  
-      const result = await response.json();
-  
-      if (result.secure_url) {
-        const imageData = {
-          userId: userData.user.user._id,
-          artistName: userData.user.user.name,
-          name: title,
-          imageLink: result.secure_url,
-          price: price,
-          description: description,
-        };
-  
-        const token = userData.token;
-        await uploadImage(imageData, token);
-  
-        setImage(null);
-        setTitle("");
-        setDescription("");
-        setPrice("");
-        setCategory(null);
+
+      const userId = userData.user.user._id,
+            userName = userData.user.user.name,
+            token = userData.token;
+
+      const imageData = {
+        userId: userId,
+        artistName: userName,
+        name: title,
+        imageLink: result.secure_url,
+        price: price,
+        description: description,
+        category: category,
+      };
+
+      const response = await uploadImage(imageData, token);
+      if(response.success){
+        resetForm();
         Alert.alert("Success", "Image uploaded successfully!");
-      } else {
-        Alert.alert("Error", result.error.message || "Image upload failed");
       }
-    } catch (error) {
+      else{
+        displayError(response.data?.error || "Image upload failed")
+      }
+    }
+    catch (error) {
       console.error("Upload Error:", error);
-      Alert.alert("Error", "An error occurred while uploading the image");
+      displayError("An error occurred while uploading the image")
     }
   };
   
-
   const renderContent = () => (
     <View style={styles.container}>
       <View style={styles.imageContainer}>

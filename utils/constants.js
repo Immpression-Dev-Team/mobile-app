@@ -9,6 +9,7 @@ import ArtistScreen from '../components/ArtistScreens'
 import Upload from '../screens/Upload'
 import Login from '../screens/Login'
 import CategoriesScreen from '../screens/CategoriesScreen'
+import CategoryView from '../screens/CategoryView'
 
 export const UserNavigation = [
     {
@@ -50,6 +51,10 @@ export const UserNavigation = [
     {
         name: 'Categories',
         component: CategoriesScreen
+    },
+    {
+        name: 'Category',
+        component: CategoryView
     }
 ]
 

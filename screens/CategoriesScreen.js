@@ -1,13 +1,10 @@
 import {
     StyleSheet,
     View,
-    Text,
-    Image,
-    TouchableOpacity,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
 import Navbar from "../components/Navbar";
 import FooterNavbar from "../components/FooterNavbar";
+import CategoryContent from "../components/category_sections/CategoryContent";
 
 import Paintings from '../assets/categories/Paintings.jpg';
 import Photography from '../assets/categories/Photography.jpg';
@@ -19,13 +16,11 @@ import Graffiti from '../assets/categories/Graffiti.jpg';
 import Stencil from '../assets/categories/Stencil.jpg';
 
 export default function CategoriesScreen() {
-    const navigation = useNavigation();
-
-    // tbd - these links are for useNav in utils
+    // links will redirect app to visit different categories
     const images = [
         { text: "Paintings", img: Paintings, link: 'Paintings' },
         { text: "Photography", img: Photography, link: 'Photography' },
-        { text: "Graphic Design", img: Graphic, link: 'GraphicDesign' },
+        { text: "Graphic Design", img: Graphic, link: 'Graphic Design' },
         { text: "Illustrations", img: Illustrations, link: 'Illustrations' },
         { text: "Sculptures", img: Sculptures, link: 'Sculptures' },
         { text: "Woodwork", img: Woodwork, link: 'Woodwork' },
@@ -36,24 +31,10 @@ export default function CategoriesScreen() {
     return(
         <View style={styles.container}>
             <Navbar/>
-            <View style={styles.content}>
-                <Text style={styles.title}>Categories</Text>
-                <View style={styles.categoriesContainer}>
-                    {
-                        images.map((item, index) => (
-                            <TouchableOpacity
-                                key={index} style={styles.category}
-                                onPress={() => navigation.navigate(item.link)}
-                            >
-                                <>
-                                    <Image source={item.img} style={styles.image}/>
-                                    <Text style={styles.label}>{item.text}</Text>
-                                </>
-                            </TouchableOpacity>
-                        ))
-                    }
-                </View>
-            </View>
+            <CategoryContent
+                title='Categories'
+                images={images}
+            />
             <FooterNavbar/>
         </View>
     )
@@ -68,38 +49,4 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         backgroundColor: 'white',
     },
-    content: {
-        flex: 1,
-        flexDirection: 'column',
-        paddingVertical: '2.5%',
-        paddingHorizontal: '1.25%',
-    },
-    title: {
-        marginLeft: '1.75%',
-        fontSize: 25,
-        fontFamily: 'LEMON MILK Bold',
-    },
-    categoriesContainer: {
-        flex: 1,
-        flexWrap: 'wrap',
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        paddingVertical: '2%',
-    },
-    category: {
-        width: '50%',
-        height: '23.55%',
-        padding: '1%',
-        marginVertical: '0.75%',
-    },
-    image: {
-        width: '100%',
-        height: '77.5%',
-    },
-    label: {
-        marginTop: '1.5%',
-        fontSize: 12.5,
-        fontFamily: 'LEMON MILK Bold',
-        textAlign: 'center',
-    }
 })
