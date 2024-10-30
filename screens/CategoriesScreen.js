@@ -1,6 +1,7 @@
 import {
     StyleSheet,
     View,
+    ImageBackground,
 } from "react-native";
 import Navbar from "../components/Navbar";
 import FooterNavbar from "../components/FooterNavbar";
@@ -30,7 +31,12 @@ export default function CategoriesScreen() {
 
     return(
         <View style={styles.container}>
-            <Navbar/>
+            <ImageBackground
+          source={require("../assets/backgrounds/navbar_bg_blue.png")} // Replace with your image path
+          style={styles.navbarBackgroundImage}
+        >
+          <Navbar />
+        </ImageBackground>
             <CategoryContent
                 title='Categories'
                 images={images}
