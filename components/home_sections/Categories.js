@@ -42,12 +42,12 @@ const Categories = () => {
 
                         return (
                             <Pressable key={index} style={styles.box}>
-                                <ImageBackground 
+                                {/* <ImageBackground 
                                     source={backgroundImage} 
                                     style={styles.backgroundImage} 
                                     imageStyle={styles.image}>
                                     <Text style={styles.label}>{label}</Text>
-                                </ImageBackground>
+                                </ImageBackground> */}
                             </Pressable>
                         );
                     })}
