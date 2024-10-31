@@ -49,7 +49,7 @@ const Profile = () => {
     <View style={styles.everything}>
       <View style={styles.navbarContainer}>
         <ImageBackground
-          source={require("../assets/backgrounds/navbar-bg3.png")}
+          source={require("../assets/backgrounds/navbar_bg_blue.png")}
           style={styles.navbarBackgroundImage}
         >
           <Navbar />
