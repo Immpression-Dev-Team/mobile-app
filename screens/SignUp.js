@@ -32,10 +32,10 @@ const SignUp = () => {
   //   const [confirmPassword, setConfirmPassword] = useState("")
 
   // Error states
-  const [nameError, setNameError] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [userAlreadyExistsError, setUserAlreadyExistsError] = useState(false);
+  // const [nameError, setNameError] = useState('');
+  // const [emailError, setEmailError] = useState('');
+  // const [passwordError, setPasswordError] = useState('');
+  // const [userAlreadyExistsError, setUserAlreadyExistsError] = useState(false);
 
   const [error, setError] = useState('');
 
@@ -85,7 +85,7 @@ const SignUp = () => {
         password,
       });
       if (response.data.success) {
-        await handleLogin(email, password, navigation);
+        // await handleLogin(email, password, navigation);
         navigation.navigate('Login');
       } else {
         console.log('Signup failed');
@@ -93,8 +93,8 @@ const SignUp = () => {
       }
     } catch (err) {
       showToast('Error during login');
-      console.log('Error during login:', err.response.data.message);
-      setError(err.response.data.message);
+      console.log('Error during login:', err.response);
+      setError(err.response);
     } finally {
       setIsLoading(false);
     }
