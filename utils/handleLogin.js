@@ -27,6 +27,6 @@ export const handleLogin = async (
     }
   } catch (err) {
     showToast('Error During Login');
-    console.log('Error during login:', err);
+    console.log('Error during login:', err.response.data);
   }
 };
