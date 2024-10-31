@@ -244,6 +244,42 @@ async function getUserImages(token) {
   }
 }
 
+// Function to increment views count for a user
+async function incrementViews(token) {
+  try {
+    const response = await axios.patch(
+      `${API_URL}/increment-views`, // Replace with your actual endpoint if different
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add token to headers for authentication
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data; // Return response data
+  } catch (error) {
+    console.error('Error incrementing views:', error);
+    return error;
+  }
+}
+
+async function getViewCount(token) {
+  try {
+    const response = await axios.get(`${API_URL}/get-views`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Token for authentication
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data.views; // Assuming the backend returns view count in `response.data.views`
+  } catch (error) {
+    console.error('Error fetching view count:', error);
+    console.error('Server response:', error.response?.data); // Log server response for more details
+    return null; // Return null in case of an error
+  }
+}
+
 export {
   getAllImages,
   uploadImage,
@@ -258,4 +294,6 @@ export {
   getArtistType,
   getUserProfile,
   getUserImages,
+  incrementViews,
+  getViewCount
 };

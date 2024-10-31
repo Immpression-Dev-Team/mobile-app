@@ -31,14 +31,21 @@ const FeaturedArtists = () => {
     fetchArtists();
   }, [token]);
 
-  const navigateToArtistScreen = (artist, profilePic, type, initialIndex) => {
-    navigation.navigate('ArtistScreens', {
-      artist,
-      profilePic,
-      type,
-      galleryImages: artists,
-      initialIndex,
-    });
+  const navigateToArtistScreen = async (artist, profilePic, type, initialIndex, userId) => {
+    try {
+      // Increment views when navigating to an artist's profile
+      await incrementViews(token);  // Call the increment function with the token
+      navigation.navigate('ArtistScreens', {
+        artist,
+        profilePic,
+        type,
+        galleryImages: artists,
+        initialIndex,
+        userId,
+      });
+    } catch (error) {
+      console.error('Error incrementing view count:', error);
+    }
   };
 
   return (

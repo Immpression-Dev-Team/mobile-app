@@ -16,7 +16,7 @@ const Profile = () => {
   const token = userData?.token;   // Extract the token from userData
   const [profileName, setProfileName] = useState('');  // Initialize as an empty string
   const profilePicSource = require('../assets/artists/flight.png'); // Example profile picture
-  const viewsCount = 394;  // Example views count
+  const [viewsCount, setViewsCount] = useState(0);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -32,7 +32,18 @@ const Profile = () => {
     };
   
     fetchProfileData();
-  }, [token]);  
+  }, [token]);
+
+  const handleProfilePicClick = async () => {
+    if (token) {
+      try {
+        const updatedViews = await incrementViews(token); // Call incrementViews function
+        setViewsCount(updatedViews); // Update the local state with the new views count
+      } catch (error) {
+        console.error('Error incrementing views:', error);
+      }
+    }
+  };
 
   return (
     <View style={styles.everything}>
