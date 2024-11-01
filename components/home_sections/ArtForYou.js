@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,16 +8,16 @@ import {
   Pressable,
   Animated,
   TouchableWithoutFeedback,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import DiscoverButton from '../DiscoverButton';
-import { useNavigation } from '@react-navigation/native';
-import { getAllImages } from '../../API/API';
-import FontLoader from '../../utils/FontLoader';
-import { useAuth } from '../../state/AuthProvider';
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import DiscoverButton from "../DiscoverButton";
+import { useNavigation } from "@react-navigation/native";
+import { getAllImages } from "../../API/API";
+import FontLoader from "../../utils/FontLoader";
+import { useAuth } from "../../state/AuthProvider";
 
-const slideLeftGif = require('../../assets/slideLeft.gif');
-const loadingGif = require('../../assets/loading-gif.gif'); // Import loading GIF
+const slideLeftGif = require("../../assets/slideLeft.gif");
+const loadingGif = require("../../assets/loading-gif.gif"); // Import loading GIF
 
 // Utility to shuffle an array
 const shuffleArray = (array) => {
@@ -79,10 +79,10 @@ const ArtForYou = () => {
         setOriginalArtData(shuffledData);
         setArtData(shuffledData);
       } else {
-        console.error('Error fetching art data:', response.message);
+        console.error("Error fetching art data:", response.message);
       }
     } catch (error) {
-      console.error('Error fetching art data:', error);
+      console.error("Error fetching art data:", error);
     } finally {
       setIsLoading(false); // Stop loading when done
     }
@@ -139,7 +139,7 @@ const ArtForYou = () => {
   };
 
   const handleImagePress = (imageIndex) => {
-    navigation.navigate('ImageScreen', {
+    navigation.navigate("ImageScreen", {
       images: artData,
       initialIndex: imageIndex,
     });
@@ -152,6 +152,7 @@ const ArtForYou = () => {
   if (isLoading) {
     return (
       <View style={styles.loadingContainer}>
+        <Text style={styles.headerText}>ART FOR YOU!</Text>
         <Image source={loadingGif} style={styles.loadingGif} />
       </View>
     );
@@ -161,7 +162,10 @@ const ArtForYou = () => {
 
   return (
     <TouchableWithoutFeedback onPress={handleUserActivity}>
-      <LinearGradient colors={['white', '#acb3bf', 'white']} style={styles.section}>
+      <LinearGradient
+        colors={["white", "#acb3bf", "white"]}
+        style={styles.section}
+      >
         <View style={styles.headerContainer}>
           <Text style={styles.headerText}>ART FOR YOU!</Text>
           <DiscoverButton />
@@ -182,7 +186,10 @@ const ArtForYou = () => {
                     key={index}
                     onPress={() => handleImagePress(chunkIndex * 2 + index)}
                   >
-                    <Image source={{ uri: art.imageLink }} style={styles.image} />
+                    <Image
+                      source={{ uri: art.imageLink }}
+                      style={styles.image}
+                    />
                   </Pressable>
                 ))}
               </View>
@@ -209,22 +216,22 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 3,
     paddingHorizontal: 5,
   },
   headerText: {
     fontSize: 20,
-    color: '#000',
-    fontFamily: 'LEMON MILK Bold',
+    color: "#000",
+    fontFamily: "LEMON MILK Bold",
   },
   allImageContainer: {
-    width: '97%',
-    alignSelf: 'center',
+    width: "97%",
+    alignSelf: "center",
     padding: 5,
-    position: 'relative',
+    position: "relative",
   },
   column: {
     marginRight: 4,
@@ -236,22 +243,22 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   overlay: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 10,
     right: -5,
-    width: '60%',
+    width: "60%",
     height: 50,
-    justifyContent: 'center',
-    alignItems: 'flex-end',
+    justifyContent: "center",
+    alignItems: "flex-end",
   },
   card: {
-    flexDirection: 'row',
-    backgroundColor: 'white',
+    flexDirection: "row",
+    backgroundColor: "white",
     borderRadius: 3,
     paddingHorizontal: 5,
     paddingVertical: 2,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 4,
@@ -261,23 +268,23 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     marginRight: 5,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   cardText: {
     fontSize: 12,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
   },
   loadingGif: {
-    width: 100,
-    height: 100,
-    resizeMode: 'contain',
+    width: 50,
+    height: 50,
+    resizeMode: "contain",
   },
 });
 

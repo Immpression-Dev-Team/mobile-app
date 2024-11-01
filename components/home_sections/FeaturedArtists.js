@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+// Updated FeaturedArtists component
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,25 +7,29 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
-} from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import DiscoverButton from '../DiscoverButton';
-import { getAllProfilePictures } from '../../API/API';
-import { useAuth } from '../../state/AuthProvider';
+} from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import DiscoverButton from "../DiscoverButton";
+import { getAllProfilePictures } from "../../API/API";
+import { useAuth } from "../../state/AuthProvider";
+
+const loadingGif = require("../../assets/loading-gif.gif"); // Import loading GIF
 
 const FeaturedArtists = () => {
   const { token } = useAuth();
   const navigation = useNavigation();
   const [artists, setArtists] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Loading state
 
   useEffect(() => {
     const fetchArtists = async () => {
       try {
-        // const token = useAuth().token; // Add your logic to retrieve the authentication token
         const data = await getAllProfilePictures(token);
         setArtists(data);
       } catch (error) {
-        console.error('Error fetching artist data:', error);
+        console.error("Error fetching artist data:", error);
+      } finally {
+        setIsLoading(false); // Stop loading when done
       }
     };
 
@@ -32,7 +37,7 @@ const FeaturedArtists = () => {
   }, [token]);
 
   const navigateToArtistScreen = (artist, profilePic, type, initialIndex) => {
-    navigation.navigate('ArtistScreens', {
+    navigation.navigate("ArtistScreens", {
       artist,
       profilePic,
       type,
@@ -40,6 +45,15 @@ const FeaturedArtists = () => {
       initialIndex,
     });
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.headerText}>DISCOVER ARTISTS</Text>
+        <Image source={loadingGif} style={styles.loadingGif} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -84,22 +98,22 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
   },
   headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 2,
     marginTop: 0,
   },
   headerText: {
     fontSize: 20,
-    fontFamily: 'LEMON MILK Bold',
-    color: '#000',
+    fontFamily: "LEMON MILK Bold",
+    color: "#000",
   },
   scrollView: {
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   artistContainer: {
-    alignItems: 'left',
+    alignItems: "left",
     marginRight: 3,
   },
   image: {
@@ -109,13 +123,24 @@ const styles = StyleSheet.create({
   },
   artistName: {
     fontSize: 8,
-    color: 'black',
-    fontFamily: 'LEMON MILK Bold',
+    color: "black",
+    fontFamily: "LEMON MILK Bold",
   },
   artistType: {
     fontSize: 8,
-    color: 'black',
-    fontWeight: 'bold',
+    color: "black",
+    fontWeight: "bold",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
+  },
+  loadingGif: {
+    width: 100,
+    height: 100,
+    resizeMode: "contain",
   },
 });
 

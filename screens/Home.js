@@ -1,5 +1,11 @@
 import React from "react";
-import { View, StyleSheet, ScrollView, ImageBackground, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  ImageBackground,
+  Image,
+} from "react-native";
 import Navbar from "../components/Navbar";
 import ArtOfTheDay from "../components/home_sections/ArtOfTheDay";
 import InviteFriends from "../components/home_sections/InviteFriends";
@@ -11,10 +17,10 @@ import ArtForYou from "../components/home_sections/ArtForYou";
 import { useAuth } from "../state/AuthProvider";
 import MiddleButtons from "../components/home_sections/MiddleButtons";
 
-import discoverBackgroundBottom from '../assets/discover_assets/background_bottom.png';
-import discoverBackgroundTop from '../assets/discover_assets/background_top.png';
-import foryouBackgroundBottom from '../assets/foryou_assets/background_bottom.png';
-import foryouBackgroundTop from '../assets/foryou_assets/background_top.png';
+import discoverBackgroundBottom from "../assets/discover_assets/background_bottom.png";
+import discoverBackgroundTop from "../assets/discover_assets/background_top.png";
+import foryouBackgroundBottom from "../assets/foryou_assets/background_bottom.png";
+import foryouBackgroundTop from "../assets/foryou_assets/background_top.png";
 
 const HomeScreen = () => {
   const name = useAuth();
@@ -25,23 +31,44 @@ const HomeScreen = () => {
     <View style={styles.everything}>
       <View style={styles.navbar}>
         <ImageBackground
-          source={require("../assets/backgrounds/navbar_bg_blue.png")} // Replace with your image path
+          source={require("../assets/backgrounds/navbar_bg_blue.png")}
           style={styles.navbarBackgroundImage}
         >
           <Navbar />
         </ImageBackground>
       </View>
-      <View style={styles.container}>
-        <Image source={foryouBackgroundTop} style={styles.foryouBackgroundTopImage} />
-        <ArtForYou />
-        <Image source={foryouBackgroundBottom} style={styles.foryouBackgroundBottomImage} />
 
+      <ScrollView contentContainerStyle={styles.container}>
+        {/* Art For You Section */}
+        <Image
+          source={foryouBackgroundTop}
+          style={styles.sectionBackgroundTop}
+        />
+        <View style={styles.section}>
+          <ArtForYou />
+        </View>
+        <Image
+          source={foryouBackgroundBottom}
+          style={styles.sectionBackgroundBottom}
+        />
+
+        {/* Middle Buttons Section */}
         <MiddleButtons />
 
-        <Image source={discoverBackgroundTop} style={styles.discoverBackgroundTopImage} />
-        <FeaturedArtists />
-        <Image source={discoverBackgroundBottom} style={styles.discoverBackgroundBottomImage} />
-      </View>
+        {/* Featured Artists Section */}
+        <Image
+          source={discoverBackgroundTop}
+          style={styles.sectionBackgroundTop}
+        />
+        <View style={styles.section}>
+          <FeaturedArtists />
+        </View>
+        <Image
+          source={discoverBackgroundBottom}
+          style={styles.sectionBackgroundBottom}
+        />
+      </ScrollView>
+
       <View style={styles.footer}>
         <FooterNavbar />
       </View>
@@ -50,57 +77,43 @@ const HomeScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  navbarBackgroundImage: {
-    width: "100%",
-    height: 80, // Adjust this value to match the height of your navbar
-    resizeMode: 'cover', // Ensures the image covers the area of the navbar
-  },
   everything: {
     flex: 1,
     backgroundColor: "white",
-  },
-  container: {
-    flex: 1,
-    marginTop: 35, // Add margin to create space between the navbar and the content
-    paddingBottom: 10,
-    paddingHorizontal: 0,
-    alignItems: "center",
-    backgroundColor: "#fff",
   },
   navbar: {
     zIndex: 1000,
     paddingBottom: 10,
   },
-  footer: {
-    zIndex: 1000,
+  navbarBackgroundImage: {
+    width: "100%",
+    height: 80,
+    resizeMode: "cover",
   },
-  discoverBackgroundBottomImage: {
-    width: '97.5%',
-    height: 50,
-    resizeMode: 'contain',
-    marginTop: -400,
+  container: {
+    alignItems: "center",
+    backgroundColor: "#fff",
+    paddingBottom: 20,
   },
-  discoverBackgroundTopImage: {
-    width: '97%',
+  section: {
+    width: "100%",
+    paddingVertical: 10,
+    alignItems: "center",
+  },
+  sectionBackgroundTop: {
+    width: "100%",
     height: 40,
-    resizeMode: 'contain',
-    marginLeft: 2,
+    resizeMode: "contain",
     marginTop: 5,
   },
-  foryouBackgroundBottomImage: {
-    width: '97.5%',
+  sectionBackgroundBottom: {
+    width: "100%",
     height: 40,
-    resizeMode: 'contain',
-    marginTop: -17,
-    marginBottom: 5,
+    resizeMode: "contain",
+    marginBottom: 10,
   },
-  foryouBackgroundTopImage: {
-    width: '97%',
-    height: 50,
-    resizeMode: 'contain',
-    marginLeft: 2,
-    marginTop: -20,
-    marginBottom: -25,
+  footer: {
+    zIndex: 1000,
   },
 });
 
