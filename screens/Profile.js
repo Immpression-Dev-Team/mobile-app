@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, ImageBackground } from 'react-native';
+import { View, StyleSheet, ScrollView, ImageBackground, TouchableOpacity } from 'react-native';
 import Navbar from '../components/Navbar';
 import ProfilePic from '../components/profile_sections/ProfilePic';
 import ProfileName from '../components/profile_sections/ProfileName';
@@ -20,32 +20,31 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      if (token) {  // Ensure we have a token before fetching data
+      if (token) {
         try {
-          const data = await getUserProfile(token);  // Fetch the user profile data with the token
-          console.log('Profile Data:', data);  // Check if name is being fetched correctly
-          setProfileName(data.user.name);  // Update the profile name with data from the server
+          const data = await getUserProfile(token);
+          setProfileName(data.user.name);
+          setViewsCount(data.user.views);  // Set initial views count from API response
         } catch (error) {
           console.error('Error fetching profile data:', error);
         }
       }
     };
-  
     fetchProfileData();
   }, [token]);
 
   const handleProfilePicClick = async () => {
     if (token) {
       try {
-        const updatedViews = await incrementViews(token); // Call incrementViews function
-        setViewsCount(updatedViews); // Update the local state with the new views count
+        const updatedViews = await incrementViews(token);
+        setViewsCount(updatedViews); // Update views count in state
       } catch (error) {
         console.error('Error incrementing views:', error);
       }
     }
   };
 
-  return (
+ return (
     <View style={styles.everything}>
       <View style={styles.navbarContainer}>
         <ImageBackground
@@ -56,26 +55,25 @@ const Profile = () => {
         </ImageBackground>
       </View>
       <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.profileContainer}>
-        <ProfilePic source={profilePicSource} />
-        <ProfileName name={profileName} /> 
-        <ProfileViews views={viewsCount} />
-        
-        {/* New container for Bio and ArtistType centered */}
-        <View style={styles.bioArtistContainer}>
-          <View style={styles.bioContainer}>
-            <ProfileBio />
-          </View>
-          <View style={styles.artistTypeContainer}>
-            <ProfileArtistType />
+        <View style={styles.profileContainer}>
+          <TouchableOpacity onPress={handleProfilePicClick}>
+            <ProfilePic source={profilePicSource} />
+          </TouchableOpacity>
+          <ProfileName name={profileName} /> 
+          <ProfileViews views={viewsCount} />
+          <View style={styles.bioArtistContainer}>
+            <View style={styles.bioContainer}>
+              <ProfileBio />
+            </View>
+            <View style={styles.artistTypeContainer}>
+              <ProfileArtistType />
+            </View>
           </View>
         </View>
-      </View>
-    
-      <View style={styles.galleryContainer}>
-        <ProfileGallery />
-      </View>
-    </ScrollView>
+        <View style={styles.galleryContainer}>
+          <ProfileGallery />
+        </View>
+      </ScrollView>
       <View style={styles.footer}>
         <FooterNavbar />
       </View>

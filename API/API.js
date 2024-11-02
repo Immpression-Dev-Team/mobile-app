@@ -245,10 +245,10 @@ async function getUserImages(token) {
 }
 
 // Function to increment views count for a user
-async function incrementViews(token) {
+async function incrementViews(token,name) {
   try {
     const response = await axios.patch(
-      `${API_URL}/increment-views`, // Replace with your actual endpoint if different
+      `${API_URL}/increment-views/${name}`, // Replace with your actual endpoint if different
       {},
       {
         headers: {

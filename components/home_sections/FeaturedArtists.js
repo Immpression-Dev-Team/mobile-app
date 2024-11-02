@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import DiscoverButton from '../DiscoverButton';
-import { getAllProfilePictures } from '../../API/API';
+import { getAllProfilePictures, incrementViews } from '../../API/API';  // Import incrementViews
 import { useAuth } from '../../state/AuthProvider';
 
 const FeaturedArtists = () => {
@@ -20,7 +20,6 @@ const FeaturedArtists = () => {
   useEffect(() => {
     const fetchArtists = async () => {
       try {
-        // const token = useAuth().token; // Add your logic to retrieve the authentication token
         const data = await getAllProfilePictures(token);
         setArtists(data);
       } catch (error) {
@@ -33,16 +32,16 @@ const FeaturedArtists = () => {
 
   const navigateToArtistScreen = async (artist, profilePic, type, initialIndex, userId) => {
     try {
-      // Increment views when navigating to an artist's profile
-      await incrementViews(token);  // Call the increment function with the token
+      // Pass artist's name to incrementViews function
+      await incrementViews(token, artist); 
       navigation.navigate('ArtistScreens', {
         artist,
         profilePic,
         type,
         galleryImages: artists,
         initialIndex,
-        userId,
       });
+      console.log(artist);
     } catch (error) {
       console.error('Error incrementing view count:', error);
     }
@@ -68,7 +67,8 @@ const FeaturedArtists = () => {
                 item.name,
                 item.profilePictureLink,
                 item.type,
-                index
+                index,
+                item.userId  // Ensure userId is passed if needed for profile-specific data
               )
             }
           >
