@@ -37,7 +37,9 @@ const Profile = () => {
     if (token) {
       try {
         const updatedViews = await incrementViews(token);
-        setViewsCount(updatedViews); // Update views count in state
+        if (updatedViews !== null) {
+          setViewsCount(updatedViews); // Update views count in state
+        }
       } catch (error) {
         console.error('Error incrementing views:', error);
       }
