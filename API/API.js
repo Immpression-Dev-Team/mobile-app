@@ -83,16 +83,15 @@ async function getArtistType(token) {
 }
 
 // Existing API functions
-async function getAllImages(token, category=null) {
+async function getAllImages(token, category = null) {
   try {
     // set up header w/ token & optional param in request
     const response = await axios.get(`${API_URL}/all_images`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      params: (category) ? { category: category.toLowerCase() } : {}
-    }
-  );
+      params: category ? { category: category.toLowerCase() } : {},
+    });
     return response.data;
   } catch (error) {
     // console.error('Error fetching images:', error.response);
@@ -217,12 +216,14 @@ async function getAllProfilePictures(token) {
 }
 
 const getUserProfile = async (token) => {
+  console.log('getUserProfile was called');
   try {
     const response = await axios.get(`${API_URL}/get-profile`, {
       headers: {
         Authorization: `Bearer ${token}`, // Add token if authentication is needed
       },
     });
+    console.log('this is the response', response.data);
     return response.data; // Return the user profile data
   } catch (error) {
     console.error('Error fetching user profile:', error);
@@ -245,7 +246,8 @@ async function getUserImages(token) {
 }
 
 // Function to increment views count for a user
-async function incrementViews(token,name) {
+async function incrementViews(token, name) {
+  console.log('incrementViews was called!!!');
   try {
     const response = await axios.patch(
       `${API_URL}/increment-views/${name}`, // Replace with your actual endpoint if different
@@ -257,6 +259,8 @@ async function incrementViews(token,name) {
         },
       }
     );
+
+    console.log(response.data);
     return response.data; // Return response data
   } catch (error) {
     console.error('Error incrementing views:', error);
@@ -295,5 +299,5 @@ export {
   getUserProfile,
   getUserImages,
   incrementViews,
-  getViewCount
+  getViewCount,
 };

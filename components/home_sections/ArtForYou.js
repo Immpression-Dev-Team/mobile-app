@@ -72,7 +72,7 @@ const ArtForYou = () => {
 
     try {
       const response = await getAllImages(token);
-      console.log(response); // Check the structure of your response
+      // console.log(response); // Check the structure of your response
 
       if (response.success) {
         const shuffledData = shuffleArray(response.images); // Assuming images are in response.images

@@ -2,7 +2,7 @@
 
 //export const API_URL = "https://immpression-backend.vercel.app";
 
- export const API_URL = `http://192.168.1.165:4000`;
+export const API_URL = `http://192.168.8.121:4000`;
 
 // To test the app locally, follow these steps:
 
