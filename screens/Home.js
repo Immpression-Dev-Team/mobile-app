@@ -1,15 +1,21 @@
-import React from "react";
-import { View, StyleSheet, ScrollView, ImageBackground, Image } from "react-native";
-import Navbar from "../components/Navbar";
-import ArtOfTheDay from "../components/home_sections/ArtOfTheDay";
-import InviteFriends from "../components/home_sections/InviteFriends";
-import Categories from "../components/home_sections/Categories";
-import FeaturedArtists from "../components/home_sections/FeaturedArtists";
-import ArtistsPick from "../components/home_sections/ArtistsPick";
-import FooterNavbar from "../components/FooterNavbar";
-import ArtForYou from "../components/home_sections/ArtForYou";
-import { useAuth } from "../state/AuthProvider";
-import MiddleButtons from "../components/home_sections/MiddleButtons";
+import React from 'react';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  ImageBackground,
+  Image,
+} from 'react-native';
+import Navbar from '../components/Navbar';
+import ArtOfTheDay from '../components/home_sections/ArtOfTheDay';
+import InviteFriends from '../components/home_sections/InviteFriends';
+import Categories from '../components/home_sections/Categories';
+import FeaturedArtists from '../components/home_sections/FeaturedArtists';
+import ArtistsPick from '../components/home_sections/ArtistsPick';
+import FooterNavbar from '../components/FooterNavbar';
+import ArtForYou from '../components/home_sections/ArtForYou';
+import { useAuth } from '../state/AuthProvider';
+import MiddleButtons from '../components/home_sections/MiddleButtons';
 
 import discoverBackgroundBottom from '../assets/discover_assets/background_bottom.png';
 import discoverBackgroundTop from '../assets/discover_assets/background_top.png';
@@ -18,29 +24,41 @@ import foryouBackgroundTop from '../assets/foryou_assets/background_top.png';
 
 const HomeScreen = () => {
   const name = useAuth();
-  console.log("username: ", name.userData.user.user.name);
-  console.log("useAuth response: ", name);
+  console.log('username: ', name.userData.user.user.name);
+  // console.log("useAuth response: ", name);
 
   return (
     <View style={styles.everything}>
       <View style={styles.navbar}>
         <ImageBackground
-          source={require("../assets/backgrounds/navbar_bg_blue.png")} // Replace with your image path
+          source={require('../assets/backgrounds/navbar_bg_blue.png')} // Replace with your image path
           style={styles.navbarBackgroundImage}
         >
           <Navbar />
         </ImageBackground>
       </View>
       <View style={styles.container}>
-        <Image source={foryouBackgroundTop} style={styles.foryouBackgroundTopImage} />
+        <Image
+          source={foryouBackgroundTop}
+          style={styles.foryouBackgroundTopImage}
+        />
         <ArtForYou />
-        <Image source={foryouBackgroundBottom} style={styles.foryouBackgroundBottomImage} />
+        <Image
+          source={foryouBackgroundBottom}
+          style={styles.foryouBackgroundBottomImage}
+        />
 
         <MiddleButtons />
 
-        <Image source={discoverBackgroundTop} style={styles.discoverBackgroundTopImage} />
+        <Image
+          source={discoverBackgroundTop}
+          style={styles.discoverBackgroundTopImage}
+        />
         <FeaturedArtists />
-        <Image source={discoverBackgroundBottom} style={styles.discoverBackgroundBottomImage} />
+        <Image
+          source={discoverBackgroundBottom}
+          style={styles.discoverBackgroundBottomImage}
+        />
       </View>
       <View style={styles.footer}>
         <FooterNavbar />
@@ -51,21 +69,21 @@ const HomeScreen = () => {
 
 const styles = StyleSheet.create({
   navbarBackgroundImage: {
-    width: "100%",
+    width: '100%',
     height: 80, // Adjust this value to match the height of your navbar
     resizeMode: 'cover', // Ensures the image covers the area of the navbar
   },
   everything: {
     flex: 1,
-    backgroundColor: "white",
+    backgroundColor: 'white',
   },
   container: {
     flex: 1,
     marginTop: 35, // Add margin to create space between the navbar and the content
     paddingBottom: 10,
     paddingHorizontal: 0,
-    alignItems: "center",
-    backgroundColor: "#fff",
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
   navbar: {
     zIndex: 1000,

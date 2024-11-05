@@ -14,11 +14,12 @@ import ProfileViews from '../components/profile_sections/ProfileViews';
 import FooterNavbar from '../components/FooterNavbar';
 import ProfileBio from '../components/profile_sections/ProfileBio';
 import ProfileArtistType from '../components/profile_sections/ProfileArtistType';
-import { getUserProfile } from '../API/API';
+import { getUserProfile, incrementViews } from '../API/API';
 import { useAuth } from '../state/AuthProvider'; // Import the useAuth hook
 
 const Profile = () => {
   const { userData } = useAuth(); // Use the useAuth hook to get the user data
+  const userId = userData?.user.user._id; // Extract the user's ID if available
   const token = userData?.token; // Extract the token from userData
   const [profileName, setProfileName] = useState(''); // Initialize as an empty string
   const profilePicSource = require('../assets/artists/flight.png'); // Example profile picture
@@ -31,26 +32,19 @@ const Profile = () => {
           const data = await getUserProfile(token);
           setProfileName(data.user.name);
           setViewsCount(data.user.views); // Set initial views count from API response
+
+          // Increment view count when profile data is fetched
+          const updatedViews = await incrementViews(token, userId);
+          if (updatedViews !== null) {
+            setViewsCount(updatedViews.user.views); // Update views count in state
+          }
         } catch (error) {
           console.error('Error fetching profile data:', error);
         }
       }
     };
     fetchProfileData();
-  }, [token]);
-
-  const handleProfilePicClick = async () => {
-    if (token) {
-      try {
-        const updatedViews = await incrementViews(token);
-        if (updatedViews !== null) {
-          setViewsCount(updatedViews); // Update views count in state
-        }
-      } catch (error) {
-        console.error('Error incrementing views:', error);
-      }
-    }
-  };
+  }, [token, userId]);
 
   return (
     <View style={styles.everything}>
@@ -64,7 +58,7 @@ const Profile = () => {
       </View>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.profileContainer}>
-          <TouchableOpacity onPress={handleProfilePicClick}>
+          <TouchableOpacity onPress={() => {}}>
             <ProfilePic source={profilePicSource} />
           </TouchableOpacity>
           <ProfileName name={profileName} />

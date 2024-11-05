@@ -216,14 +216,12 @@ async function getAllProfilePictures(token) {
 }
 
 const getUserProfile = async (token) => {
-  console.log('getUserProfile was called');
   try {
     const response = await axios.get(`${API_URL}/get-profile`, {
       headers: {
         Authorization: `Bearer ${token}`, // Add token if authentication is needed
       },
     });
-    console.log('this is the response', response.data);
     return response.data; // Return the user profile data
   } catch (error) {
     console.error('Error fetching user profile:', error);
@@ -246,11 +244,10 @@ async function getUserImages(token) {
 }
 
 // Function to increment views count for a user
-async function incrementViews(token, name) {
-  console.log('incrementViews was called!!!');
+async function incrementViews(token, id) {
   try {
     const response = await axios.patch(
-      `${API_URL}/increment-views/${name}`, // Replace with your actual endpoint if different
+      `${API_URL}/increment-views/${id}`, // Replace with your actual endpoint if different
       {},
       {
         headers: {
@@ -260,7 +257,6 @@ async function incrementViews(token, name) {
       }
     );
 
-    console.log(response.data);
     return response.data; // Return response data
   } catch (error) {
     console.error('Error incrementing views:', error);
