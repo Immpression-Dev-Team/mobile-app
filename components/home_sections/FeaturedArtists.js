@@ -1,4 +1,3 @@
-// Updated FeaturedArtists component
 import React, { useEffect, useState } from "react";
 import {
   View,
@@ -10,16 +9,16 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import DiscoverButton from "../DiscoverButton";
-import { getAllProfilePictures } from "../../API/API";
+import { getAllProfilePictures, incrementViews } from "../../API/API";
 import { useAuth } from "../../state/AuthProvider";
 
-const loadingGif = require("../../assets/loading-gif.gif"); // Import loading GIF
+const loadingGif = require("../../assets/loading-gif.gif");
 
 const FeaturedArtists = () => {
   const { token } = useAuth();
   const navigation = useNavigation();
   const [artists, setArtists] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchArtists = async () => {
@@ -29,21 +28,27 @@ const FeaturedArtists = () => {
       } catch (error) {
         console.error("Error fetching artist data:", error);
       } finally {
-        setIsLoading(false); // Stop loading when done
+        setIsLoading(false);
       }
     };
 
     fetchArtists();
   }, [token]);
 
-  const navigateToArtistScreen = (artist, profilePic, type, initialIndex) => {
-    navigation.navigate("ArtistScreens", {
-      artist,
-      profilePic,
-      type,
-      galleryImages: artists,
-      initialIndex,
-    });
+  const navigateToArtistScreen = async (artist, profilePic, type, initialIndex, userId) => {
+    try {
+      await incrementViews(userId, token); // Increment views for the specific user
+      navigation.navigate("ArtistScreens", {
+        artist,
+        profilePic,
+        type,
+        galleryImages: artists,
+        initialIndex,
+      });
+      console.log(`Navigating to ${artist}'s screen`);
+    } catch (error) {
+      console.error("Error incrementing view count:", error);
+    }
   };
 
   if (isLoading) {
@@ -74,8 +79,9 @@ const FeaturedArtists = () => {
               navigateToArtistScreen(
                 item.name,
                 item.profilePictureLink,
-                item.type,
-                index
+                item.artistType,
+                index,
+                item._id // Assuming `_id` is the user's unique identifier
               )
             }
           >
@@ -113,7 +119,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
   },
   artistContainer: {
-    alignItems: "left",
+    alignItems: "center",
     marginRight: 3,
   },
   image: {
