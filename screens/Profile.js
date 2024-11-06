@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, ImageBackground } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  ScrollView,
+  ImageBackground,
+  TouchableOpacity,
+} from 'react-native';
 import Navbar from '../components/Navbar';
 import ProfilePic from '../components/profile_sections/ProfilePic';
 import ProfileName from '../components/profile_sections/ProfileName';
@@ -7,64 +13,67 @@ import ProfileGallery from '../components/profile_sections/ProfileGallery';
 import ProfileViews from '../components/profile_sections/ProfileViews';
 import FooterNavbar from '../components/FooterNavbar';
 import ProfileBio from '../components/profile_sections/ProfileBio';
-import ProfileArtistType from '../components/profile_sections/ProfileArtistType'; 
+import ProfileArtistType from '../components/profile_sections/ProfileArtistType';
 import { getUserProfile } from '../API/API';
-import { useAuth } from '../state/AuthProvider';  // Import the useAuth hook
+import { useAuth } from '../state/AuthProvider';
 
 const Profile = () => {
-  const { userData } = useAuth();  // Use the useAuth hook to get the user data
-  const token = userData?.token;   // Extract the token from userData
-  const [profileName, setProfileName] = useState('');  // Initialize as an empty string
+  const { userData } = useAuth(); // Use the useAuth hook to get the user data
+  const token = userData?.token; // Extract the token from userData
+  const [profileName, setProfileName] = useState(''); // Initialize as an empty string
   const profilePicSource = require('../assets/artists/flight.png'); // Example profile picture
-  const viewsCount = 394;  // Example views count
+  const [viewsCount, setViewsCount] = useState(0);
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      if (token) {  // Ensure we have a token before fetching data
+      if (token) {
         try {
-          const data = await getUserProfile(token);  // Fetch the user profile data with the token
-          console.log('Profile Data:', data);  // Check if name is being fetched correctly
-          setProfileName(data.user.name);  // Update the profile name with data from the server
+          const data = await getUserProfile(token);
+          if (data?.user) {
+            setProfileName(data.user.name || ''); // Set profile name if available
+            setViewsCount(data.user.views || 0); // Set views count if available
+          } else {
+            console.error('Error: user data is undefined in fetchProfileData');
+          }
         } catch (error) {
           console.error('Error fetching profile data:', error);
         }
       }
     };
-  
+
     fetchProfileData();
-  }, [token]);  
+  }, [token]);
 
   return (
     <View style={styles.everything}>
       <View style={styles.navbarContainer}>
         <ImageBackground
-          source={require("../assets/backgrounds/navbar_bg_blue.png")}
+          source={require('../assets/backgrounds/navbar_bg_blue.png')}
           style={styles.navbarBackgroundImage}
         >
           <Navbar />
         </ImageBackground>
       </View>
       <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.profileContainer}>
-        <ProfilePic source={profilePicSource} />
-        <ProfileName name={profileName} /> 
-        <ProfileViews views={viewsCount} />
-        
-        {/* New container for Bio and ArtistType centered */}
-        <View style={styles.bioArtistContainer}>
-          <View style={styles.bioContainer}>
-            <ProfileBio />
-          </View>
-          <View style={styles.artistTypeContainer}>
-            <ProfileArtistType />
+        <View style={styles.profileContainer}>
+          <TouchableOpacity onPress={() => {}}>
+            <ProfilePic source={profilePicSource} />
+          </TouchableOpacity>
+          <ProfileName name={profileName} />
+          <ProfileViews views={viewsCount} />
+          <View style={styles.bioArtistContainer}>
+            <View style={styles.bioContainer}>
+              <ProfileBio />
+            </View>
+            <View style={styles.artistTypeContainer}>
+              <ProfileArtistType />
+            </View>
           </View>
         </View>
-      </View>
-    
-      <View style={styles.galleryContainer}>
-        <ProfileGallery />
-      </View>
-    </ScrollView>
+        <View style={styles.galleryContainer}>
+          <ProfileGallery />
+        </View>
+      </ScrollView>
       <View style={styles.footer}>
         <FooterNavbar />
       </View>
@@ -74,7 +83,7 @@ const Profile = () => {
 
 const styles = StyleSheet.create({
   everything: {
-    flex: 1,  // Ensure the main container takes up the full height
+    flex: 1, // Ensure the main container takes up the full height
     paddingTop: 60,
   },
   navbarContainer: {
@@ -85,7 +94,7 @@ const styles = StyleSheet.create({
     backdropFilter: 'blur(10px)',
   },
   navbarBackgroundImage: {
-    width: "100%",
+    width: '100%',
     resizeMode: 'cover',
     opacity: 0.9,
   },
@@ -112,22 +121,22 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   bioArtistContainer: {
-    width: '90%',  // Reduce width to center better
-    flexDirection: 'column',  // Stack items vertically
-    justifyContent: 'center',  // Center vertically
-    alignItems: 'center',  // Center horizontally
-    marginVertical: 20,  // Adjust margin for spacing
+    width: '90%', // Reduce width to center better
+    flexDirection: 'column', // Stack items vertically
+    justifyContent: 'center', // Center vertically
+    alignItems: 'center', // Center horizontally
+    marginVertical: 20, // Adjust margin for spacing
     padding: 10,
     borderRadius: 10,
   },
   bioContainer: {
-    width: '100%',  // Take full width
+    width: '100%', // Take full width
     marginBottom: 10, // Add space between bio and artist type
-    alignItems: 'center',  // Ensure contents of bio are centered
+    alignItems: 'center', // Ensure contents of bio are centered
   },
   artistTypeContainer: {
-    width: '100%',  // Take full width
-    alignItems: 'center',  // Ensure contents of artist type are centered
+    width: '100%', // Take full width
+    alignItems: 'center', // Ensure contents of artist type are centered
   },
   galleryContainer: {
     marginTop: 20,
@@ -150,11 +159,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     borderTopColor: '#dfe6e9',
     borderTopWidth: 1,
-    position: 'absolute',  // Stick the footer to the bottom
+    position: 'absolute', // Stick the footer to the bottom
     bottom: 0,
     width: '100%',
   },
 });
-
 
 export default Profile;

@@ -3,27 +3,40 @@ import { View, Text, StyleSheet, Image, FlatList, Dimensions, ImageBackground } 
 import { useNavigation } from '@react-navigation/native';
 import Navbar from './Navbar';
 import FooterNavbar from './FooterNavbar';
+import { incrementViews } from '../API/API'; // Import the incrementViews function
+import { useAuth } from '../state/AuthProvider';
 
 const { width } = Dimensions.get('window');
 
 const ArtistScreen = ({ route }) => {
   const navigation = useNavigation();
   const { artist, profilePic, type, galleryImages = [], initialIndex } = route.params;
-
+  const { token } = useAuth();
   const flatListRef = useRef(null);
 
-  const renderItem = ({ item }) => {
-    return (
-      <View style={styles.imageContainer}>
-        <View style={styles.card}>
-          <Text style={styles.artistName}>{item.name}</Text>
-          <Text style={styles.artistType}>{item.artistType}</Text>
-          <Image source={{ uri: item.profilePictureLink }} style={styles.image} />
-          <Text style={styles.artistBio}>Bio: {item.bio}</Text>
-        </View>
-      </View>
-    );
+  // Function to increment views for the artist at the current index
+  const handleViewIncrement = async (index) => {
+    const currentArtist = galleryImages[index];
+    if (currentArtist && currentArtist._id) { // Ensure artist has an ID
+      try {
+        await incrementViews(currentArtist._id, token);
+        console.log(`Incremented views for artist: ${currentArtist.name}`);
+      } catch (error) {
+        console.error('Error incrementing artist views:', error);
+      }
+    }
   };
+
+  const renderItem = ({ item }) => (
+    <View style={styles.imageContainer}>
+      <View style={styles.card}>
+        <Text style={styles.artistName}>{item.name}</Text>
+        <Text style={styles.artistType}>{item.artistType}</Text>
+        <Image source={{ uri: item.profilePictureLink }} style={styles.image} />
+        <Text style={styles.artistBio}>Bio: {item.bio}</Text>
+      </View>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -44,6 +57,10 @@ const ArtistScreen = ({ route }) => {
           initialScrollIndex={initialIndex}
           onScrollToIndexFailed={(info) => {
             flatListRef.current?.scrollToOffset({ offset: info.averageItemLength * info.index, animated: true });
+          }}
+          onMomentumScrollEnd={(event) => {
+            const index = Math.round(event.nativeEvent.contentOffset.x / width);
+            handleViewIncrement(index); // Increment views for the artist at this index
           }}
         />
         <FooterNavbar />
