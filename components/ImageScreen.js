@@ -11,7 +11,6 @@ import {
   TouchableOpacity,
 } from "react-native";
 import Navbar from "./Navbar";
-import Scrollbars from "./ScrollBars";
 import FooterNavbar from "../components/FooterNavbar";
 
 const { width } = Dimensions.get("window");
@@ -83,9 +82,10 @@ const ImageScreen = ({ route, navigation }) => {
       >
         <Navbar />
       </ImageBackground>
-      <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}>
+      {/* X button */}
+      {/* <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}>  
         <Text style={styles.closeButtonText}>X</Text>
-      </Pressable>
+      </Pressable> */}
       <FlatList
         ref={flatListRef}
         data={images}
@@ -103,23 +103,18 @@ const ImageScreen = ({ route, navigation }) => {
         })}
         showsHorizontalScrollIndicator={false}
       />
+
       <View style={styles.textContainer}>
         <Text style={styles.artTitle}>
           {images[currentIndex]?.name || "Untitled"}
         </Text>
-        <View style={styles.container}>
-          <TouchableOpacity>
-            <Text>Message Artist</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text>Buy Now</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* <View style={styles.scrollBar}> */}
-        {/* <Scrollbars /> */}
-        {/* </View> */}
-        <View style={styles.artistNameYearContainer}>
+        <Text style={styles.artistName}>
+          {images[currentIndex]?.artistName || "Unknown Artist"}
+        </Text>
+        <Text style={styles.categoryInfo}>
+          {images[currentIndex]?.category || "\n No Category"}
+        </Text>
+        {/* <View style={styles.artistNameYearContainer}>
           <Text style={styles.artistName}>
             {images[currentIndex]?.artistName || "Unknown Artist"}
           </Text>
@@ -127,14 +122,21 @@ const ImageScreen = ({ route, navigation }) => {
           <Text style={styles.artYear}>
             {images[currentIndex]?.year || "Unknown Year"}
           </Text>
-        </View>
-        <View style={styles.horizontalLine} />
-        <Text style={styles.category}>
-          {images[currentIndex]?.category || "Category"}
-        </Text>
+        </View> */}
+        {/* <View style={styles.horizontalLine} /> */}
+
         <Text style={styles.artDescription}>
           {images[currentIndex]?.description || "No Description Available"}
         </Text>
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Message Artist</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Buy Now</Text>
+        </TouchableOpacity>
       </View>
       <FooterNavbar />
     </View>
@@ -142,6 +144,33 @@ const ImageScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    //Button
+    flexDirection: "row", // Arrange buttons in a row
+    justifyContent: "space-between", // Space between the buttons
+    paddingHorizontal: 15, // Add horizontal padding
+    paddingVertical: 0, // Add vertical padding
+  },
+  button: {
+    flex: 1,
+    backgroundColor: "#1565C0", // Deeper, more saturated blue
+    paddingVertical: 16,
+    marginHorizontal: 20,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#0D47A1", // Darker shadow for contrast
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.6, // Slightly more prominent shadow
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  buttonText: {
+    color: "#FFF", // Text color
+    fontSize: 15, // Font size
+    // fontWeight: 'bold', // Bold text
+    fontFamily: "LEMON MILK Bold",
+  },
   container: {
     flex: 1,
     backgroundColor: "white",
@@ -173,7 +202,7 @@ const styles = StyleSheet.create({
   },
   fullImage: {
     width: "100%",
-    height: 300,
+    height: 400,
     resizeMode: "cover",
     marginTop: -18,
   },
@@ -195,7 +224,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   textContainer: {
-    padding: 20,
+    paddingBottom: 20,
     alignItems: "center",
   },
   scrollBar: {
@@ -205,8 +234,9 @@ const styles = StyleSheet.create({
   },
   artTitle: {
     color: "#333",
-    fontSize: 28,
+    fontSize: 20,
     marginTop: 10,
+    marginBottom: 10,
     fontWeight: "bold",
     textAlign: "center",
   },
@@ -214,15 +244,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    width: "80%",
+    width: "100%",
     paddingHorizontal: 20,
     marginTop: 5,
   },
   artistName: {
     color: "black",
     fontSize: 16,
-    marginBottom: 7,
-    flex: 1,
+    marginBottom: 10,
     textAlign: "center",
   },
   artYear: {
@@ -245,16 +274,22 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginVertical: 15,
   },
+  category: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 0,
+  },
+  categoryInfo: {
+    fontWeight: "bold",
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 10,
+  },
   artDescription: {
     color: "black",
     fontSize: 16,
     textAlign: "center",
-  },
-  category: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 15,
   },
 });
 
