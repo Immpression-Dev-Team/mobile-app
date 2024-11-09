@@ -25,18 +25,19 @@ const ImageScreen = ({ route, navigation }) => {
   // Function to increment views for the image at the current index
   const handleViewIncrement = async (index) => {
     const currentImage = images[index];
-    if (currentImage && currentImage.id) {
+    if (currentImage && currentImage._id) { // Check for _id instead of id
       try {
-        console.log(`Attempting to increment views for image ID: ${currentImage.id}`);
-        const response = await incrementImageViews(currentImage.id, token);
+        console.log(`Attempting to increment views for image ID: ${currentImage._id}`);
+        const response = await incrementImageViews(currentImage._id, token); // Use _id in the API call
         console.log('Increment view response:', response);
       } catch (error) {
         console.error("Error incrementing image views:", error);
       }
     } else {
-      console.warn("No valid image ID to increment views.");
+      console.warn("No valid image ID (_id) to increment views.");
     }
   };
+  
 
   const renderItem = ({ item }) => (
     <View style={styles.imageContainer}>
