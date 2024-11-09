@@ -259,6 +259,22 @@ async function incrementViews(userId, token) {
   }
 }
 
+// Function to increment views for a specific image by ID
+async function incrementImageViews(imageId, token) {
+  try {
+    const response = await axios.patch(`${API_URL}/increment-image-views/${imageId}`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add token to headers for authentication
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error incrementing image views:', error);
+    return error.response;
+  }
+}
+
+
 export {
   getAllImages,
   uploadImage,
@@ -274,4 +290,5 @@ export {
   getUserProfile,
   getUserImages,
   incrementViews,
+  incrementImageViews,
 };
