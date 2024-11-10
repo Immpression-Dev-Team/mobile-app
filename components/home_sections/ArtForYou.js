@@ -12,14 +12,13 @@ import {
 import { LinearGradient } from "expo-linear-gradient";
 import DiscoverButton from "../DiscoverButton";
 import { useNavigation } from "@react-navigation/native";
-import { getAllImages } from "../../API/API";
+import { getAllImages, incrementImageViews } from "../../API/API"; // Import incrementImageViews
 import FontLoader from "../../utils/FontLoader";
 import { useAuth } from "../../state/AuthProvider";
 
 const slideLeftGif = require("../../assets/slideLeft.gif");
-const loadingGif = require("../../assets/loading-gif.gif"); // Import loading GIF
+const loadingGif = require("../../assets/loading-gif.gif");
 
-// Utility to shuffle an array
 const shuffleArray = (array) => {
   let shuffledArray = [...array];
   for (let i = shuffledArray.length - 1; i > 0; i--) {
@@ -29,7 +28,6 @@ const shuffleArray = (array) => {
   return shuffledArray;
 };
 
-// Utility to chunk an array into groups
 const chunkArray = (arr, chunkSize) => {
   const chunks = [];
   for (let i = 0; i < arr.length; i += chunkSize) {
@@ -43,7 +41,7 @@ const ArtForYou = () => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
   const [artData, setArtData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [isLoading, setIsLoading] = useState(true);
   const [isOverlayVisible, setOverlayVisible] = useState(false);
   const [originalArtData, setOriginalArtData] = useState([]);
   const inactivityTimeoutRef = useRef(null);
@@ -51,7 +49,6 @@ const ArtForYou = () => {
   const { token } = useAuth();
   const scrollDistance = 150;
 
-  // Auto-scroll function
   const startAutoScrollOnce = () => {
     setTimeout(() => {
       if (scrollViewRef.current) {
@@ -70,7 +67,6 @@ const ArtForYou = () => {
     }, 2000);
   };
 
-  // Fetch art data from API
   const fetchArtData = async (token) => {
     try {
       const response = await getAllImages(token);
@@ -84,7 +80,7 @@ const ArtForYou = () => {
     } catch (error) {
       console.error("Error fetching art data:", error);
     } finally {
-      setIsLoading(false); // Stop loading when done
+      setIsLoading(false);
     }
   };
 
@@ -138,12 +134,32 @@ const ArtForYou = () => {
     fadeOutOverlay();
   };
 
-  const handleImagePress = (imageIndex) => {
-    navigation.navigate("ImageScreen", {
-      images: artData,
-      initialIndex: imageIndex,
-    });
+  // Function to handle image press and increment views
+  const handleImagePress = async (imageIndex) => {
+    const selectedImage = artData[imageIndex];
+  
+    if (selectedImage && selectedImage._id) {
+      try {
+        // Increment view count for the image and get updated views
+        const updatedImage = await incrementImageViews(selectedImage._id, token);
+        
+        if (updatedImage.success) {
+          const updatedViewCount = updatedImage.views; // Get new views from response
+          console.log(`Updated views for image ID: ${selectedImage._id}: ${updatedViewCount}`);
+          
+          // Navigate to ImageScreen with updated view count
+          navigation.navigate("ImageScreen", {
+            images: artData,
+            initialIndex: imageIndex,
+            views: updatedViewCount,
+          });
+        }
+      } catch (error) {
+        console.error("Error incrementing image views:", error);
+      }
+    }
   };
+  
 
   const handleScrollEnd = () => {
     setArtData((prevData) => [...prevData, ...originalArtData]);
@@ -162,10 +178,7 @@ const ArtForYou = () => {
 
   return (
     <TouchableWithoutFeedback onPress={handleUserActivity}>
-      <LinearGradient
-        colors={["white", "#acb3bf", "white"]}
-        style={styles.section}
-      >
+      <LinearGradient colors={["white", "#acb3bf", "white"]} style={styles.section}>
         <View style={styles.headerContainer}>
           <Text style={styles.headerText}>ART FOR YOU!</Text>
           <DiscoverButton />
@@ -186,10 +199,7 @@ const ArtForYou = () => {
                     key={index}
                     onPress={() => handleImagePress(chunkIndex * 2 + index)}
                   >
-                    <Image
-                      source={{ uri: art.imageLink }}
-                      style={styles.image}
-                    />
+                    <Image source={{ uri: art.imageLink }} style={styles.image} />
                   </Pressable>
                 ))}
               </View>

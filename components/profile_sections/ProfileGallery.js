@@ -1,23 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Image, StyleSheet, ScrollView, Pressable, Text } from 'react-native';
-import { useAuth } from '../../state/AuthProvider';  // Import the useAuth hook
-import { getUserImages } from '../../API/API';  // Import the function to fetch user images
-import { useNavigation } from '@react-navigation/native';  // Import navigation
+import { useAuth } from '../../state/AuthProvider';
+import { getUserImages, incrementImageViews } from '../../API/API'; // Import incrementImageViews
+import { useNavigation } from '@react-navigation/native';
 
 const ProfileGallery = () => {
-  const { userData } = useAuth();  // Use the useAuth hook to get the user data
-  const token = userData?.token;   // Extract the token from userData
-  const [images, setImages] = useState([]);  // Initialize state to hold the images
-  const [loading, setLoading] = useState(true);  // Loading state
-  const navigation = useNavigation();  // Access the navigation object
+  const { userData } = useAuth();
+  const token = userData?.token;
+  const [images, setImages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [originalImages, setOriginalImages] = useState([]); // To store original data for infinite scroll
+  const scrollViewRef = useRef(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     const fetchImages = async () => {
       if (token) {
         try {
-          const response = await getUserImages(token);  // Fetch the images
+          const response = await getUserImages(token);
           if (response.success) {
-            setImages(response.images);  // Set the images in state
+            setImages(response.images);
+            setOriginalImages(response.images); // Save original images for infinite scrolling
           } else {
             console.error('Failed to fetch images');
           }
@@ -25,14 +28,29 @@ const ProfileGallery = () => {
           console.error('Error fetching images:', error);
         }
       }
-      setLoading(false);  // Stop loading after the fetch
+      setLoading(false);
     };
 
     fetchImages();
   }, [token]);
 
-  const handleImagePress = (index) => {
-    navigation.navigate('ImageScreen', { images, initialIndex: index });  // Navigate to the ImageScreen
+  // Function to increment view count when an image is tapped
+  const handleImagePress = async (index) => {
+    const selectedImage = images[index];
+    if (selectedImage && selectedImage._id) {
+      try {
+        await incrementImageViews(selectedImage._id, token); // Increment views
+        console.log(`Incremented views for image ID: ${selectedImage._id}`);
+      } catch (error) {
+        console.error('Error incrementing image views:', error);
+      }
+    }
+    navigation.navigate('ImageScreen', { images, initialIndex: index }); // Navigate to ImageScreen
+  };
+
+  // Infinite scrolling: Extend images array by appending original images at the end
+  const handleScrollEnd = () => {
+    setImages((prevImages) => [...prevImages, ...originalImages]);
   };
 
   if (loading) {
@@ -41,12 +59,16 @@ const ProfileGallery = () => {
 
   return (
     <View style={styles.all}>
-      <ScrollView contentContainerStyle={styles.galleryContainer}>
+      <ScrollView
+        contentContainerStyle={styles.galleryContainer}
+        ref={scrollViewRef}
+        onMomentumScrollEnd={handleScrollEnd} // Trigger on scroll end
+      >
         {images.length > 0 ? (
           images.map((image, index) => (
             <Pressable key={index} onPress={() => handleImagePress(index)}>
               <Image
-                source={{ uri: image.imageLink }}  // Assuming imageLink holds the URL of the image
+                source={{ uri: image.imageLink }}
                 style={styles.image}
               />
             </Pressable>
