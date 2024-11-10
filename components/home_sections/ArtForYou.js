@@ -137,22 +137,29 @@ const ArtForYou = () => {
   // Function to handle image press and increment views
   const handleImagePress = async (imageIndex) => {
     const selectedImage = artData[imageIndex];
-
+  
     if (selectedImage && selectedImage._id) {
       try {
-        // Increment view count for the image
-        await incrementImageViews(selectedImage._id, token);
-        console.log(`Incremented views for image ID: ${selectedImage._id}`);
+        // Increment view count for the image and get updated views
+        const updatedImage = await incrementImageViews(selectedImage._id, token);
+        
+        if (updatedImage.success) {
+          const updatedViewCount = updatedImage.views; // Get new views from response
+          console.log(`Updated views for image ID: ${selectedImage._id}: ${updatedViewCount}`);
+          
+          // Navigate to ImageScreen with updated view count
+          navigation.navigate("ImageScreen", {
+            images: artData,
+            initialIndex: imageIndex,
+            views: updatedViewCount,
+          });
+        }
       } catch (error) {
         console.error("Error incrementing image views:", error);
       }
     }
-
-    navigation.navigate("ImageScreen", {
-      images: artData,
-      initialIndex: imageIndex,
-    });
   };
+  
 
   const handleScrollEnd = () => {
     setArtData((prevData) => [...prevData, ...originalArtData]);

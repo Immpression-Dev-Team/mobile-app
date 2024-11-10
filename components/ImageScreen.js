@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import Navbar from "./Navbar";
 import FooterNavbar from "../components/FooterNavbar";
-import { incrementImageViews } from "../API/API"; // Import the incrementImageViews function
+import { incrementImageViews } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
 
 const { width } = Dimensions.get("window");
@@ -22,14 +22,12 @@ const ImageScreen = ({ route, navigation }) => {
   const flatListRef = useRef(null);
   const { token } = useAuth();
 
-  // Function to increment views for the image at the current index
   const handleViewIncrement = async (index) => {
     const currentImage = images[index];
-    if (currentImage && currentImage._id) { // Check for _id instead of id
+    if (currentImage && currentImage._id) {
       try {
         console.log(`Attempting to increment views for image ID: ${currentImage._id}`);
-        const response = await incrementImageViews(currentImage._id, token); // Use _id in the API call
-        console.log('Increment view response:', response);
+        await incrementImageViews(currentImage._id, token); // No need to update local view count
       } catch (error) {
         console.error("Error incrementing image views:", error);
       }
@@ -37,14 +35,10 @@ const ImageScreen = ({ route, navigation }) => {
       console.warn("No valid image ID (_id) to increment views.");
     }
   };
-  
 
   const renderItem = ({ item }) => (
     <View style={styles.imageContainer}>
-      <Image
-        source={{ uri: item.imageLink }}
-        style={styles.fullImage}
-      />
+      <Image source={{ uri: item.imageLink }} style={styles.fullImage} />
     </View>
   );
 
@@ -72,9 +66,6 @@ const ImageScreen = ({ route, navigation }) => {
         })}
         onMomentumScrollEnd={(event) => {
           const index = Math.round(event.nativeEvent.contentOffset.x / width);
-          console.log(`Scrolled to index: ${index}`);
-          console.log(`Previous index: ${currentIndex}`);
-
           if (index !== currentIndex) {
             setCurrentIndex(index);
             handleViewIncrement(index);
@@ -82,18 +73,11 @@ const ImageScreen = ({ route, navigation }) => {
         }}
       />
       <View style={styles.textContainer}>
-        <Text style={styles.artTitle}>
-          {images[currentIndex]?.name || "Untitled"}
-        </Text>
-        <Text style={styles.artistName}>
-          {images[currentIndex]?.artistName || "Unknown Artist"}
-        </Text>
-        <Text style={styles.categoryInfo}>
-          {images[currentIndex]?.category || "No Category"}
-        </Text>
-        <Text style={styles.artDescription}>
-          {images[currentIndex]?.description || "No Description Available"}
-        </Text>
+        <Text style={styles.artTitle}>{images[currentIndex]?.name || "Untitled"}</Text>
+        <Text style={styles.artistName}>{images[currentIndex]?.artistName || "Unknown Artist"}</Text>
+        <Text style={styles.categoryInfo}>{images[currentIndex]?.category || "No Category"}</Text>
+        <Text style={styles.artDescription}>{images[currentIndex]?.description || "No Description Available"}</Text>
+        <Text style={styles.viewsCount}>Views: {images[currentIndex]?.views || 0}</Text>
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button}>
@@ -146,6 +130,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
   },
+  viewsCount: {
+    color: "gray",
+    fontSize: 14,
+    textAlign: "center",
+    marginTop: 5,
+  },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -154,11 +144,11 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
     paddingVertical: 14,
     marginHorizontal: 10,
     borderRadius: 6,
-    alignItems: 'center',
+    alignItems: "center",
     elevation: 8,
   },
   buttonText: {

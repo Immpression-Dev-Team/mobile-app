@@ -274,6 +274,21 @@ async function incrementImageViews(imageId, token) {
   }
 }
 
+// Function to get the view count for a specific image by ID
+async function getImageViews(imageId, token) {
+  try {
+    const response = await axios.get(`${API_URL}/get-image-views/${imageId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add token to headers for authentication
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data; // Return the image views data
+  } catch (error) {
+    console.error('Error fetching image views:', error);
+    return error.response;
+  }
+}
 
 export {
   getAllImages,
@@ -291,4 +306,5 @@ export {
   getUserImages,
   incrementViews,
   incrementImageViews,
+  getImageViews,
 };
