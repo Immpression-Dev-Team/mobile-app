@@ -76,6 +76,7 @@ const ImageScreen = ({ route, navigation }) => {
           }
         }}
       />
+      <View style={styles.descriptionButtonContainer}>
       <View style={styles.textContainer}>
         <Text style={styles.artTitle}>{images[currentIndex]?.name || "Untitled"}</Text>
         <Text style={styles.artistName}>
@@ -96,6 +97,7 @@ const ImageScreen = ({ route, navigation }) => {
         <TouchableOpacity style={styles.likeButton}>
           <Text style={styles.likeText}>LIKE</Text>
         </TouchableOpacity>
+      </View>
       </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.buyNowButton}>
@@ -126,7 +128,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     alignItems: "flex-start",
     paddingHorizontal: 20,
-    width: "60%",
+    width: "65%", // Adjust width for more space for text and description
   },
   artTitle: {
     color: "#333",
@@ -181,15 +183,22 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textTransform: "uppercase",
   },
+  descriptionButtonContainer: {
+    flexDirection: 'row', // Align the description and buttons in a row
+    justifyContent: 'space-between', // Create space between description and buttons
+    alignItems: 'flex-start', // Align both to the top
+    marginTop: 10, // Add some space between the description and buttons
+    width: "100%", // Make it take the full width of the container
+    paddingHorizontal: 20, // Add some padding on the sides for spacing
+  },
   shareLikeButton: {
-    flexDirection: 'column', // Keep buttons in a column layout
-    alignSelf: 'flex-end', // Align buttons to the right side
-    marginTop: 5, // Reduced margin to move the buttons closer to the text
-    marginBottom: 10, // Space to separate from the next section
-    width: "30%", // Align with the text container width
+    flexDirection: 'column', // Align buttons vertically
+    justifyContent: 'flex-start', // Align buttons to the top
+    width: "30%", // Take up 30% of the width for the buttons container
+    alignItems: 'flex-end', // Align buttons to the right
   },
   shareButton: {
-    marginRight: 10, // Add space between the buttons
+    marginBottom: 10, // Add margin between the buttons
     paddingVertical: 10,
     borderRadius: 5,
     alignItems: 'center',
