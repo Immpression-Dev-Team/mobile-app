@@ -15,7 +15,11 @@ import { incrementImageViews } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
 
 const { width } = Dimensions.get("window");
-
+// Helper function to calculate responsive font size
+const getResponsiveFontSize = (size) => {
+  const scale = width / 375; // Base scale on a typical screen width (375 for iPhone 6/7/8)
+  return Math.round(size * scale);
+};
 const ImageScreen = ({ route, navigation }) => {
   const { images, initialIndex } = route.params;
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -27,7 +31,7 @@ const ImageScreen = ({ route, navigation }) => {
     if (currentImage && currentImage._id) {
       try {
         console.log(`Attempting to increment views for image ID: ${currentImage._id}`);
-        await incrementImageViews(currentImage._id, token); // No need to update local view count
+        await incrementImageViews(currentImage._id, token);
       } catch (error) {
         console.error("Error incrementing image views:", error);
       }
@@ -72,19 +76,32 @@ const ImageScreen = ({ route, navigation }) => {
           }
         }}
       />
+      <View style={styles.descriptionButtonContainer}>
       <View style={styles.textContainer}>
         <Text style={styles.artTitle}>{images[currentIndex]?.name || "Untitled"}</Text>
-        <Text style={styles.artistName}>{images[currentIndex]?.artistName || "Unknown Artist"}</Text>
-        <Text style={styles.categoryInfo}>{images[currentIndex]?.category || "No Category"}</Text>
-        <Text style={styles.artDescription}>{images[currentIndex]?.description || "No Description Available"}</Text>
+        <Text style={styles.artistName}>
+          BY: <Text style={styles.boldText}>{images[currentIndex]?.artistName || "Unknown Artist"}</Text>
+        </Text>
+        <Text style={styles.labelText}>
+          CATEGORY: <Text style={styles.boldText}>{images[currentIndex]?.category || "No Category"}</Text>
+        </Text>
+        <Text style={styles.labelText}>
+          DESCRIPTION: <Text style={styles.boldText}>{images[currentIndex]?.description || "No Description Available"}</Text>
+        </Text>
         <Text style={styles.viewsCount}>Views: {images[currentIndex]?.views || 0}</Text>
       </View>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Message Artist</Text>
+      <View style={styles.shareLikeButton}>
+        <TouchableOpacity style={styles.shareButton}>
+          <Text style={styles.shareText}>SHARE</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Buy Now</Text>
+        <TouchableOpacity style={styles.likeButton}>
+          <Text style={styles.likeText}>LIKE</Text>
+        </TouchableOpacity>
+      </View>
+      </View>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity style={styles.buyNowButton}>
+          <Text style={styles.buyNowButtonText}>BUY NOW</Text>
         </TouchableOpacity>
       </View>
       <FooterNavbar />
@@ -109,51 +126,100 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     paddingBottom: 20,
-    alignItems: "center",
+    alignItems: "flex-start",
+    paddingHorizontal: 20,
+    width: "65%", // Adjust width for more space for text and description
   },
   artTitle: {
     color: "#333",
-    fontSize: 30,
-    textAlign: "center",
+    fontSize: getResponsiveFontSize(25),
+    fontFamily: "Calibri",
+    fontWeight: "bold",
+    textAlign: "left",
+    textTransform: "uppercase",
   },
   artistName: {
     color: "black",
     fontSize: 15,
-    textAlign: "center",
+    fontFamily: "Calibri",
+    textAlign: "left",
+    textTransform: "uppercase",
   },
-  categoryInfo: {
-    fontSize: 12,
-    textAlign: "center",
-  },
-  artDescription: {
+  labelText: {
     color: "black",
-    fontSize: 16,
-    textAlign: "center",
+    fontSize: 9,
+    fontFamily: "Calibri",
+    textAlign: "left",
+    textTransform: "uppercase",
+  },
+  boldText: {
+    fontWeight: "bold",
   },
   viewsCount: {
     color: "gray",
     fontSize: 14,
-    textAlign: "center",
+    fontFamily: "Calibri",
+    textAlign: "left",
     marginTop: 5,
   },
   buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingVertical: 10,
+    alignItems: "center",
   },
-  button: {
-    flex: 1,
+  buyNowButton: {
     backgroundColor: "#007AFF",
     paddingVertical: 14,
-    marginHorizontal: 10,
     borderRadius: 6,
     alignItems: "center",
+    width: "90%",
+    marginHorizontal: 20,
     elevation: 8,
   },
-  buttonText: {
+  buyNowButtonText: {
     color: "#FFF",
-    fontSize: 12,
+    fontSize: 18, // Increased font size
+    fontFamily: "Calibri",
+    fontWeight: "bold",
+    textTransform: "uppercase",
+  },
+  descriptionButtonContainer: {
+    flexDirection: 'row', // Align the description and buttons in a row
+    justifyContent: 'space-between', // Create space between description and buttons
+    alignItems: 'flex-start', // Align both to the top
+    marginTop: 10, // Add some space between the description and buttons
+    width: "100%", // Make it take the full width of the container
+    paddingHorizontal: 20, // Add some padding on the sides for spacing
+  },
+  shareLikeButton: {
+    flexDirection: 'column', // Align buttons vertically
+    justifyContent: 'flex-start', // Align buttons to the top
+    width: "30%", // Take up 30% of the width for the buttons container
+    alignItems: 'flex-end', // Align buttons to the right
+  },
+  shareButton: {
+    marginBottom: 10, // Add margin between the buttons
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: 100,
+  },
+  shareText: {
+    color: '#333',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  likeButton: {
+    paddingVertical: 10,
+    backgroundColor: '#007AFF',
+    borderRadius: 5,
+    alignItems: 'center',
+    width: 100,
+  },
+  likeText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
