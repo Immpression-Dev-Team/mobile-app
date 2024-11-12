@@ -126,7 +126,6 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     alignItems: "flex-start",
     paddingHorizontal: 20,
-    borderWidth: 1,
     width: "60%",
   },
   artTitle: {
