@@ -89,6 +89,14 @@ const ImageScreen = ({ route, navigation }) => {
         </Text>
         <Text style={styles.viewsCount}>Views: {images[currentIndex]?.views || 0}</Text>
       </View>
+      <View style={styles.shareLikeButton}>
+        <TouchableOpacity style={styles.shareButton}>
+          <Text style={styles.shareText}>SHARE</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.likeButton}>
+          <Text style={styles.likeText}>LIKE</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.buyNowButton}>
           <Text style={styles.buyNowButtonText}>BUY NOW</Text>
@@ -128,7 +136,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "left",
     textTransform: "uppercase",
-    
   },
   artistName: {
     color: "black",
@@ -174,6 +181,37 @@ const styles = StyleSheet.create({
     fontFamily: "Calibri",
     fontWeight: "bold",
     textTransform: "uppercase",
+  },
+  shareLikeButton: {
+    flexDirection: 'column', // Keep buttons in a column layout
+    alignSelf: 'flex-end', // Align buttons to the right side
+    marginTop: 5, // Reduced margin to move the buttons closer to the text
+    marginBottom: 10, // Space to separate from the next section
+    width: "30%", // Align with the text container width
+  },
+  shareButton: {
+    marginRight: 10, // Add space between the buttons
+    paddingVertical: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    width: 100,
+  },
+  shareText: {
+    color: '#333',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  likeButton: {
+    paddingVertical: 10,
+    backgroundColor: '#007AFF',
+    borderRadius: 5,
+    alignItems: 'center',
+    width: 100,
+  },
+  likeText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
