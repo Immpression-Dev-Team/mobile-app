@@ -15,7 +15,11 @@ import { incrementImageViews } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
 
 const { width } = Dimensions.get("window");
-
+// Helper function to calculate responsive font size
+const getResponsiveFontSize = (size) => {
+  const scale = width / 375; // Base scale on a typical screen width (375 for iPhone 6/7/8)
+  return Math.round(size * scale);
+};
 const ImageScreen = ({ route, navigation }) => {
   const { images, initialIndex } = route.params;
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -74,7 +78,7 @@ const ImageScreen = ({ route, navigation }) => {
       />
       <View style={styles.textContainer}>
         <Text style={styles.artTitle}>{images[currentIndex]?.name || "Untitled"}</Text>
-        <Text style={styles.labelText}>
+        <Text style={styles.artistName}>
           BY: <Text style={styles.boldText}>{images[currentIndex]?.artistName || "Unknown Artist"}</Text>
         </Text>
         <Text style={styles.labelText}>
@@ -114,18 +118,28 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     alignItems: "flex-start",
     paddingHorizontal: 20,
+    borderWidth: 1,
+    width: "60%",
   },
   artTitle: {
     color: "#333",
-    fontSize: 30,
+    fontSize: getResponsiveFontSize(25),
     fontFamily: "Calibri",
     fontWeight: "bold",
+    textAlign: "left",
+    textTransform: "uppercase",
+    
+  },
+  artistName: {
+    color: "black",
+    fontSize: 15,
+    fontFamily: "Calibri",
     textAlign: "left",
     textTransform: "uppercase",
   },
   labelText: {
     color: "black",
-    fontSize: 15,
+    fontSize: 9,
     fontFamily: "Calibri",
     textAlign: "left",
     textTransform: "uppercase",
