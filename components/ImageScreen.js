@@ -27,7 +27,7 @@ const ImageScreen = ({ route, navigation }) => {
     if (currentImage && currentImage._id) {
       try {
         console.log(`Attempting to increment views for image ID: ${currentImage._id}`);
-        await incrementImageViews(currentImage._id, token); // No need to update local view count
+        await incrementImageViews(currentImage._id, token);
       } catch (error) {
         console.error("Error incrementing image views:", error);
       }
@@ -74,17 +74,20 @@ const ImageScreen = ({ route, navigation }) => {
       />
       <View style={styles.textContainer}>
         <Text style={styles.artTitle}>{images[currentIndex]?.name || "Untitled"}</Text>
-        <Text style={styles.artistName}>{images[currentIndex]?.artistName || "Unknown Artist"}</Text>
-        <Text style={styles.categoryInfo}>{images[currentIndex]?.category || "No Category"}</Text>
-        <Text style={styles.artDescription}>{images[currentIndex]?.description || "No Description Available"}</Text>
+        <Text style={styles.labelText}>
+          BY: <Text style={styles.boldText}>{images[currentIndex]?.artistName || "Unknown Artist"}</Text>
+        </Text>
+        <Text style={styles.labelText}>
+          CATEGORY: <Text style={styles.boldText}>{images[currentIndex]?.category || "No Category"}</Text>
+        </Text>
+        <Text style={styles.labelText}>
+          DESCRIPTION: <Text style={styles.boldText}>{images[currentIndex]?.description || "No Description Available"}</Text>
+        </Text>
         <Text style={styles.viewsCount}>Views: {images[currentIndex]?.views || 0}</Text>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Message Artist</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Buy Now</Text>
+        <TouchableOpacity style={styles.buyNowButton}>
+          <Text style={styles.buyNowButtonText}>BUY NOW</Text>
         </TouchableOpacity>
       </View>
       <FooterNavbar />
@@ -109,51 +112,54 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     paddingBottom: 20,
-    alignItems: "center",
+    alignItems: "flex-start",
+    paddingHorizontal: 20,
   },
   artTitle: {
     color: "#333",
     fontSize: 30,
-    textAlign: "center",
+    fontFamily: "Calibri",
+    fontWeight: "bold",
+    textAlign: "left",
+    textTransform: "uppercase",
   },
-  artistName: {
+  labelText: {
     color: "black",
     fontSize: 15,
-    textAlign: "center",
+    fontFamily: "Calibri",
+    textAlign: "left",
+    textTransform: "uppercase",
   },
-  categoryInfo: {
-    fontSize: 12,
-    textAlign: "center",
-  },
-  artDescription: {
-    color: "black",
-    fontSize: 16,
-    textAlign: "center",
+  boldText: {
+    fontWeight: "bold",
   },
   viewsCount: {
     color: "gray",
     fontSize: 14,
-    textAlign: "center",
+    fontFamily: "Calibri",
+    textAlign: "left",
     marginTop: 5,
   },
   buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingVertical: 10,
+    alignItems: "center",
   },
-  button: {
-    flex: 1,
+  buyNowButton: {
     backgroundColor: "#007AFF",
     paddingVertical: 14,
-    marginHorizontal: 10,
     borderRadius: 6,
     alignItems: "center",
+    width: "90%",
+    marginHorizontal: 20,
     elevation: 8,
   },
-  buttonText: {
+  buyNowButtonText: {
     color: "#FFF",
-    fontSize: 12,
+    fontSize: 18, // Increased font size
+    fontFamily: "Calibri",
+    fontWeight: "bold",
+    textTransform: "uppercase",
   },
 });
 
