@@ -59,7 +59,7 @@ const ArtForYou2 = () => {
                 setScrollPosition((prevPosition) => {
                     const screenWidth = Dimensions.get('window').width;
                     const newPosition = prevPosition + screenWidth / 60; // Adjust the speed as needed
-                    scrollViewRef.current.scrollTo({ x: newPosition, animated: true });
+                    scrollViewRef?.current?.scrollTo({ x: newPosition, animated: true });
                     return newPosition;
                 });
             }, 100); // Adjust the speed as needed

@@ -57,7 +57,13 @@ const Upload = () => {
     show error modal on screen when encounter any errors
   */
   const displayError = (message) => {
-    Alert.alert("Error", message);
+      console.log(`Error: ${message}`);
+    if (Platform.OS === 'web') {
+      alert(message);
+    }
+    else{
+      Alert.alert("Error", message);
+    }
   };
 
   /*
@@ -380,14 +386,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 4,
     marginTop: 16,
-
-    
   },
   uploadButtonText: {
     color: "#fff",
     fontWeight: "bold",
-
-   
   },
   footer: {
     position: "absolute",
@@ -420,4 +422,3 @@ const base64ToBlob = (base64Data, contentType = 'image/jpeg') => {
 
   return new Blob(byteArrays, { type: contentType });
 };
-

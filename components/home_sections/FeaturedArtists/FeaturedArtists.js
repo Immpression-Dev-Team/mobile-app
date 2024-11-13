@@ -1,0 +1,93 @@
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+} from "react-native";
+
+import { useNavigation } from "@react-navigation/native";
+import { useAuth } from "../../../state/AuthProvider";
+
+import { getAllProfilePictures, incrementViews } from "../../../API/API";
+import FeaturedArtistsHeader from "./FeaturedArtistsHeader";
+import FeaturedArtistsContent from "./FeaturedArtistsContent";
+
+const loadingGif = require("../../../assets/loading-gif.gif");
+
+export default function FeaturedArtists() {
+  const { token } = useAuth();
+  const navigation = useNavigation();
+  
+  const [artists, setArtists] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchArtists = async () => {
+      try {
+        const data = await getAllProfilePictures(token);
+        setArtists(data);
+      } catch (error) {
+        console.error("Error fetching artist data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchArtists();
+  }, [token]);
+
+  const navigateToArtistScreen = async (artist, profilePic, type, initialIndex, userId) => {
+    try {
+      await incrementViews(userId, token); // Increment views for the specific user
+      navigation.navigate("ArtistScreens", {
+        artist,
+        profilePic,
+        type,
+        galleryImages: artists,
+        initialIndex,
+      });
+      console.log(`Navigating to ${artist}'s screen`);
+    } catch (error) {
+      console.error("Error incrementing view count:", error);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.headerText}>DISCOVER ARTISTS</Text>
+        <Image source={loadingGif} style={styles.loadingGif} />
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <FeaturedArtistsHeader/>
+      <FeaturedArtistsContent
+        artists={artists}
+        navigate={navigateToArtistScreen}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: '100%',
+    padding: '1.75%',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
+  },
+  loadingGif: {
+    width: 100,
+    height: 100,
+    resizeMode: "contain",
+  },
+});
