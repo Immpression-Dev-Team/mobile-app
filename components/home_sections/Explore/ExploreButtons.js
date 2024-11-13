@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Platform } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 
 import NavButton from './NavButton';
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: '2.5%',
+    marginVertical: (Platform.OS === 'web') ? '1%' : '2.5%',
     paddingHorizontal: 7.5,
     gap: 7.5,
   },

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
   View,
-  Text,
   StyleSheet,
-  Image,
+  Platform,
 } from "react-native";
 
 import { useNavigation } from "@react-navigation/native";
@@ -76,6 +75,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
-    padding: '1.75%',
+    padding: (Platform.OS === 'web') ? '1%' : '1.75%',
   },
 });
