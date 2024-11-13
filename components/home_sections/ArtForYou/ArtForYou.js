@@ -1,9 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import {
-  View,
-  Text,
   StyleSheet,
-  Image,
   Animated,
   TouchableWithoutFeedback,
 } from "react-native";
@@ -13,11 +10,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useAuth } from "../../../state/AuthProvider";
 import FontLoader from "../../../utils/FontLoader";
 
-import ArtForYouContent from "./ArtForYouContent";
 import ArtForYouHeader from "./ArtForYouHeader";
+import ArtForYouContent from "./ArtForYouContent";
+import LoadingSection from "../SectionTemplate/LoadingSection";
 import { getAllImages, incrementImageViews } from "../../../API/API"; // Import incrementImageViews
 
-const loadingGif = require("../../../assets/loading-gif.gif");
 
 const shuffleArray = (array) => {
   let shuffledArray = [...array];
@@ -176,11 +173,11 @@ export default function ArtForYou() {
 
   // render animation if still loading images
   if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.headerText}>ART FOR YOU!</Text>
-        <Image source={loadingGif} style={styles.loadingGif} />
-      </View>
+    return(
+      <LoadingSection
+        loadingMsg={'LOADING ART FOR YOU!'}
+        size={'large'}
+      />
     );
   }
 

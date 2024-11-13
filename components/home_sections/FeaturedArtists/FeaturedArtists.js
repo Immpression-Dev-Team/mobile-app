@@ -12,8 +12,7 @@ import { useAuth } from "../../../state/AuthProvider";
 import { getAllProfilePictures, incrementViews } from "../../../API/API";
 import FeaturedArtistsHeader from "./FeaturedArtistsHeader";
 import FeaturedArtistsContent from "./FeaturedArtistsContent";
-
-const loadingGif = require("../../../assets/loading-gif.gif");
+import LoadingSection from "../SectionTemplate/LoadingSection";
 
 export default function FeaturedArtists() {
   const { token } = useAuth();
@@ -54,11 +53,11 @@ export default function FeaturedArtists() {
   };
 
   if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text style={styles.headerText}>DISCOVER ARTISTS</Text>
-        <Image source={loadingGif} style={styles.loadingGif} />
-      </View>
+    return(
+      <LoadingSection
+        loadingMsg={'LOADING DISCOVER ARTISTS'}
+        size={'medium'}
+      />
     );
   }
 
@@ -78,16 +77,5 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     padding: '1.75%',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "transparent",
-  },
-  loadingGif: {
-    width: 100,
-    height: 100,
-    resizeMode: "contain",
   },
 });
