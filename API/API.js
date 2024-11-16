@@ -83,16 +83,15 @@ async function getArtistType(token) {
 }
 
 // Existing API functions
-async function getAllImages(token, category=null) {
+async function getAllImages(token, category = null) {
   try {
     // set up header w/ token & optional param in request
     const response = await axios.get(`${API_URL}/all_images`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      params: (category) ? { category: category.toLowerCase() } : {}
-    }
-  );
+      params: category ? { category: category.toLowerCase() } : {},
+    });
     return response.data;
   } catch (error) {
     // console.error('Error fetching images:', error.response);
@@ -247,15 +246,44 @@ async function getUserImages(token) {
 // Function to increment views for a specific user by ID
 async function incrementViews(userId, token) {
   try {
-    const response = await axios.patch(`${API_URL}/increment-views/${userId}`, {}, {
-      headers: {
-        Authorization: `Bearer ${token}`, // Add token to headers for authentication
-      },
-    });
+    const response = await axios.patch(
+      `${API_URL}/increment-views/${userId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add token to headers for authentication
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error('Error incrementing views:', error);
     return error.response;
+  }
+}
+
+// Function to update accountType for a specific user by ID
+async function updateAccountType(accountType, token) {
+  console.log('update account type is called', accountType);
+  console.log('token for update account type request', token);
+  try {
+    const response = await axios.post(
+      `${API_URL}/accountType`,
+      {
+        accountType,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    console.log('result from account type: ', response.data);
+  } catch (error) {
+    console.error('Error updating account type:', error);
+    return error.response?.data || error;
   }
 }
 
@@ -274,4 +302,5 @@ export {
   getUserProfile,
   getUserImages,
   incrementViews,
+  updateAccountType,
 };

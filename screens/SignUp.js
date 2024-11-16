@@ -86,15 +86,16 @@ const SignUp = () => {
       });
       if (response.data.success) {
         // await handleLogin(email, password, navigation);
-        navigation.navigate('Login');
+        // navigation.navigate('Login');
+        navigation.navigate('AccountType');
       } else {
         console.log('Signup failed');
         showToast('Signup Failed');
       }
     } catch (err) {
       showToast('Error during login');
-      console.log('Error during login:', err.response);
-      setError(err.response);
+      console.log('Error during login:', err.response.data);
+      setError(err.response.data.error);
     } finally {
       setIsLoading(false);
     }
@@ -227,7 +228,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-
   inputContainer: {
     width: '90%',
     marginTop: 0, // Adjust this value to bring inputs higher up
