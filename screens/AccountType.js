@@ -12,6 +12,7 @@ import { updateAccountType } from '../API/API';
 import { useAuth } from '../state/AuthProvider';
 
 const backgroundImage = require('../assets/backgrounds/navbar_bg_blue.png');
+const artistEmoji = require('../assets/artisteemoji.png');
 
 const AccountTypeScreen = () => {
   const { userData } = useAuth();
@@ -20,10 +21,9 @@ const AccountTypeScreen = () => {
 
   const handleSelection = async (type) => {
     try {
-      // call api to update account type
       const response = await updateAccountType(type, token);
-      console.log('this is response', response);
-      // after successful update, navigate to home screen
+      console.log('response from updating account type: ' + response);
+
       navigation.navigate('Home');
     } catch (error) {
       console.error('Error updating account type:', error);
@@ -52,6 +52,7 @@ const AccountTypeScreen = () => {
             onPress={() => handleSelection('artist')}
           >
             <Text style={styles.buttonText}>YES</Text>
+            <Image source={artistEmoji} style={styles.artistEmoji} />
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button2}
@@ -83,6 +84,7 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     height: '100%',
+    backgroundColor: 'white',
   },
   header: {
     display: 'flex',
@@ -97,11 +99,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttons: {
-    marginVertical: 45,
+    marginVertical: 65,
   },
   button: {
-    backgroundColor: 'blue',
-    borderRadius: 10,
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 10,
+    backgroundColor: '#0284c7',
+    borderRadius: 16,
     marginBottom: 10,
     paddingVertical: 3,
     paddingHorizontal: 10,
@@ -110,8 +115,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'green',
-    borderRadius: 10,
+    backgroundColor: 'black',
+    borderRadius: 16,
     paddingVertical: 3,
     paddingHorizontal: 10,
   },
@@ -119,7 +124,11 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 25,
-    margin: 10,
+    marginTop: 70,
+  },
+  artistEmoji: {
+    width: 50,
+    height: 50,
   },
   headingContainer: {
     fontWeight: '900',
@@ -158,6 +167,3 @@ const styles = StyleSheet.create({
 });
 
 export default AccountTypeScreen;
-
-// to successfully update the accountType field, we need to update the userData with the signup data
-// this means i have to handle login after signup itself and update the userData
