@@ -284,6 +284,34 @@ async function updateAccountType(accountType, token) {
   } catch (error) {
     console.error('Error updating account type:', error);
     return error.response?.data || error;
+// Function to increment views for a specific image by ID
+async function incrementImageViews(imageId, token) {
+  try {
+    const response = await axios.patch(`${API_URL}/increment-image-views/${imageId}`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add token to headers for authentication
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error incrementing image views:', error);
+    return error.response;
+  }
+}
+
+// Function to get the view count for a specific image by ID
+async function getImageViews(imageId, token) {
+  try {
+    const response = await axios.get(`${API_URL}/get-image-views/${imageId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add token to headers for authentication
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data; // Return the image views data
+  } catch (error) {
+    console.error('Error fetching image views:', error);
+    return error.response;
   }
 }
 
@@ -303,4 +331,6 @@ export {
   getUserImages,
   incrementViews,
   updateAccountType,
+  incrementImageViews,
+  getImageViews,
 };

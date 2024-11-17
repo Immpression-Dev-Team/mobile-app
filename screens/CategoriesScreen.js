@@ -32,10 +32,10 @@ export default function CategoriesScreen() {
     return(
         <View style={styles.container}>
             <ImageBackground
-          source={require("../assets/backgrounds/navbar_bg_blue.png")} // Replace with your image path
-          style={styles.navbarBackgroundImage}
-        >
-          <Navbar />
+                source={require("../assets/backgrounds/navbar_bg_blue.png")} // Replace with your image path
+                style={styles.navbarBackgroundImage}
+            >
+            <Navbar />
         </ImageBackground>
             <CategoryContent
                 title='Categories'

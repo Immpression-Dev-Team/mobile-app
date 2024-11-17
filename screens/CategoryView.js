@@ -48,11 +48,11 @@ export default function CategoryView() {
     return(
         <View style={styles.container}>
             <ImageBackground
-          source={require("../assets/backgrounds/navbar_bg_blue.png")} // Replace with your image path
-          style={styles.navbarBackgroundImage}
-        >
-          <Navbar />
-        </ImageBackground>
+                source={require("../assets/backgrounds/navbar_bg_blue.png")} // Replace with your image path
+                style={styles.navbarBackgroundImage}
+            >
+                <Navbar />
+            </ImageBackground>
             <CategoryContent
                 title={category}
                 images={categoryArts}
