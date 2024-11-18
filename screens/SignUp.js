@@ -16,6 +16,8 @@ import { useNavigation } from '@react-navigation/native';
 import { handleLogin } from '../utils/handleLogin';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import your preferred icon set
 import { showToast } from '../utils/toastNotification';
+import { useAuth } from '../state/AuthProvider';
+import GoogleAuthButton from '../components/GoogleAuthButton';
 
 const logoImage = require('../assets/Logo_T.png'); // Adjust the path to your logo image
 const headerImage = require('../assets/headers/Immpression_multi.png'); // Adjust the path to your header image
@@ -26,18 +28,12 @@ const SignUp = () => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [passwordLengthError, setPasswordLengthError] = useState(false);
-  // const [userAlreadyExistsError, setUserAlreadyExistsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [ellipsis, setEllipsis] = useState('');
-  //   const [confirmPassword, setConfirmPassword] = useState("")
-
-  // Error states
-  // const [nameError, setNameError] = useState('');
-  // const [emailError, setEmailError] = useState('');
-  // const [passwordError, setPasswordError] = useState('');
-  // const [userAlreadyExistsError, setUserAlreadyExistsError] = useState(false);
 
   const [error, setError] = useState('');
+
+  const { login } = useAuth();
 
   const navigation = useNavigation();
 
@@ -84,17 +80,21 @@ const SignUp = () => {
         email,
         password,
       });
+
       if (response.data.success) {
-        // await handleLogin(email, password, navigation);
-        navigation.navigate('Login');
+        const result = await handleLogin(email, password, login);
+
+        if (result.success) {
+          navigation.navigate('AccountType');
+        }
       } else {
         console.log('Signup failed');
         showToast('Signup Failed');
       }
     } catch (err) {
       showToast('Error during login');
-      console.log('Error during login:', err.response);
-      setError(err.response);
+      console.log('Error during login:', err.response.data);
+      setError(err.response.data.error);
     } finally {
       setIsLoading(false);
     }
@@ -104,7 +104,30 @@ const SignUp = () => {
   const handleBack = () => {
     navigation.navigate('Login');
   };
-
+  const handleGoogleAuth = async (authResult) => {
+    try {
+      if (authResult.token) {
+        // Create the loginData object to match AuthProvider expectations
+        const loginData = {
+          token: authResult.token,
+          user: authResult.user,
+          success: true
+        };
+        
+        // Save the auth data
+        await login(loginData);
+        
+        // Reset navigation and go to AccountType
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'AccountType' }],
+        });
+      }
+    } catch (error) {
+      console.error('Error handling Google auth:', error);
+      setError('Failed to authenticate with Google');
+    }
+  };
   return (
     <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
       <View style={styles.container}>
@@ -196,8 +219,10 @@ const SignUp = () => {
             style={[styles.button, styles.buttonOutline2]}
           >
             <Text style={styles.buttonOutlineText2}>Back to Login</Text>
+            <GoogleAuthButton onAuthComplete={handleGoogleAuth} isSignUp={true} />
           </Pressable>
         </KeyboardAvoidingView>
+        
       </View>
     </ImageBackground>
   );
@@ -227,7 +252,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-
   inputContainer: {
     width: '90%',
     marginTop: 0, // Adjust this value to bring inputs higher up

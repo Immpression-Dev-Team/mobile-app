@@ -17,6 +17,7 @@ import { handleLogin } from "../utils/handleLogin.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../state/AuthProvider";
 import SignUp from "./SignUp";
+import GoogleAuthButton from "../components/GoogleAuthButton.js";
 
 const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
 const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image
@@ -32,21 +33,41 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await handleLogin(
-      email,
-      password,
-      setUserData,
-      navigation,
-      login
-    );
 
-    if (result) {
-      navigation.navigate("Home");
+    setError(''); // Clear previous errors
+
+    const result = await handleLogin(email, password, login);
+
+    if (result.success) {
+      navigation.navigate('Home');
     } else {
       setError("Invalid email or password");
     }
   };
-
+  const handleGoogleAuth = async (authResult) => {
+    try {
+      if (authResult.token) {
+        // Create the loginData object to match AuthProvider expectations
+        const loginData = {
+          token: authResult.token,
+          user: authResult.user,
+          success: true
+        };
+        
+        // Save the auth data
+        await login(loginData);
+        
+        // Reset navigation and go to Home
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
+      }
+    } catch (error) {
+      console.error('Error handling Google auth:', error);
+      setError('Failed to authenticate with Google');
+    }
+  };
   const navigateTo = (screenName) => {
     navigation.navigate(screenName);
   };
@@ -124,6 +145,7 @@ const Login = () => {
               >
                 <Text style={styles.buttonOutlineText}>Sign Up</Text>
               </Pressable>
+              <GoogleAuthButton onAuthComplete={handleGoogleAuth} />
             </View>
           </KeyboardAvoidingView>
         </View>
