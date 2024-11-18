@@ -284,14 +284,20 @@ async function updateAccountType(accountType, token) {
   } catch (error) {
     console.error('Error updating account type:', error);
     return error.response?.data || error;
+  }
+}
 // Function to increment views for a specific image by ID
 async function incrementImageViews(imageId, token) {
   try {
-    const response = await axios.patch(`${API_URL}/increment-image-views/${imageId}`, {}, {
-      headers: {
-        Authorization: `Bearer ${token}`, // Add token to headers for authentication
-      },
-    });
+    const response = await axios.patch(
+      `${API_URL}/increment-image-views/${imageId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Add token to headers for authentication
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error('Error incrementing image views:', error);
