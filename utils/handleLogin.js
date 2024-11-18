@@ -6,8 +6,8 @@ import { showToast } from '../utils/toastNotification';
 export const handleLogin = async (
   email,
   password,
-  setUserData,
-  navigation,
+  // setUserData,
+  // navigation,
   login
 ) => {
   try {
@@ -16,14 +16,17 @@ export const handleLogin = async (
       { email, password },
       { withCredentials: true }
     );
+
     if (response.data.success) {
       await login(response.data);
-      setUserData(response.data); // Immediately set user data in the context
-      showToast('Login Successful');
-      navigation.navigate('Home'); // Navigate to the Home screen
+      return { success: true }; // Return success status
+      // setUserData(response.data); // Immediately set user data in the context
+      // showToast('Login Successful');
+      // navigation.navigate('Home'); // Navigate to the Home screen
     } else {
       showToast('Login Failed');
       console.log('Login failed');
+      return { success: false, error: response.data.message }; // Return failure with error
     }
   } catch (err) {
     showToast('Error During Login');
