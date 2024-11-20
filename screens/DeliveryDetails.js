@@ -3,28 +3,41 @@ import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   TouchableOpacity,
+  StyleSheet,
+  Alert,
   ScrollView,
   ImageBackground,
 } from "react-native";
+import { createOrder } from "../API/API";
 import Navbar from "../components/Navbar"; // Adjust the path if needed
 import FooterNavbar from "../components/FooterNavbar"; // Adjust the path if needed
 
-const DeliveryDetails = ({ navigation }) => {
+const DeliveryDetails = ({ navigation, route }) => {
+  const { artName } = route.params; // Get the art name from navigation params
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [state, setState] = useState("");
   const [zipCode, setZipCode] = useState("");
 
-  const handleContinue = () => {
-    if (name && address && city && state && zipCode) {
-      navigation.navigate("PaymentScreen", {
-        deliveryDetails: { name, address, city, state, zipCode },
-      });
-    } else {
-      alert("Please fill all fields");
+  const handleSubmit = async () => {
+    if (!name || !address || !city || !state || !zipCode) {
+      Alert.alert("Error", "Please fill out all fields.");
+      return;
+    }
+
+    try {
+      const deliveryDetails = { name, address, city, state, zipCode };
+      const orderData = { artName, deliveryDetails };
+
+      const response = await createOrder(orderData);
+
+      Alert.alert("Success", "Order placed successfully!");
+      navigation.goBack(); // Go back to the previous screen
+    } catch (error) {
+      console.error("Error placing order:", error);
+      Alert.alert("Error", "Failed to place the order.");
     }
   };
 
@@ -38,6 +51,7 @@ const DeliveryDetails = ({ navigation }) => {
       </ImageBackground>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.header}>Delivery Details</Text>
+        <Text style={styles.subHeader}>For: {artName}</Text>
         <TextInput
           style={styles.input}
           placeholder="Name"
@@ -67,10 +81,9 @@ const DeliveryDetails = ({ navigation }) => {
           placeholder="Zip Code"
           value={zipCode}
           onChangeText={setZipCode}
-          keyboardType="numeric"
         />
-        <TouchableOpacity style={styles.button} onPress={handleContinue}>
-          <Text style={styles.buttonText}>Continue</Text>
+        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>Submit</Text>
         </TouchableOpacity>
       </ScrollView>
       <FooterNavbar />
@@ -79,10 +92,7 @@ const DeliveryDetails = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFF",
-  },
+  container: { flex: 1, backgroundColor: "#FFF" },
   navbarBackgroundImage: {
     width: "100%",
     height: 60,
@@ -90,31 +100,24 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     padding: 20,
-    justifyContent: "center",
   },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
+  header: { fontSize: 24, fontWeight: "bold", marginBottom: 10 },
+  subHeader: { fontSize: 18, marginBottom: 20 },
   input: {
     borderWidth: 1,
     borderColor: "#CCC",
     borderRadius: 5,
     padding: 10,
     marginBottom: 15,
+    fontSize: 16,
   },
   button: {
     backgroundColor: "#007AFF",
-    paddingVertical: 15,
+    padding: 15,
     borderRadius: 5,
     alignItems: "center",
   },
-  buttonText: {
-    color: "#FFF",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
+  buttonText: { color: "#FFF", fontWeight: "bold", fontSize: 16 },
 });
 
 export default DeliveryDetails;

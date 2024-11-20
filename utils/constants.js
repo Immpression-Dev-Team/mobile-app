@@ -12,6 +12,7 @@ import CategoriesScreen from '../screens/CategoriesScreen';
 import CategoryView from '../screens/CategoryView';
 import AccountTypeScreen from '../screens/AccountType';
 import DeliveryDetails from "../screens/DeliveryDetails";
+import PaymentScreen from "../screens/PaymentScreen";
 
 export const UserNavigation = [
   {
@@ -65,6 +66,10 @@ export const UserNavigation = [
   {
     name: "DeliveryDetails",
     component: DeliveryDetails,
+  },
+  {
+    name: "PaymentScreen",
+    component: PaymentScreen,
   },
 ];
 
