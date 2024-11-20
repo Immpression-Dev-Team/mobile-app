@@ -11,6 +11,7 @@ import Login from '../screens/Login';
 import CategoriesScreen from '../screens/CategoriesScreen';
 import CategoryView from '../screens/CategoryView';
 import AccountTypeScreen from '../screens/AccountType';
+import DeliveryDetails from "../screens/DeliveryDetails";
 
 export const UserNavigation = [
   {
@@ -60,6 +61,10 @@ export const UserNavigation = [
   {
     name: 'AccountType',
     component: AccountTypeScreen,
+  },
+  {
+    name: "DeliveryDetails",
+    component: DeliveryDetails,
   },
 ];
 

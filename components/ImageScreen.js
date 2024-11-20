@@ -77,32 +77,36 @@ const ImageScreen = ({ route, navigation }) => {
         }}
       />
       <View style={styles.descriptionButtonContainer}>
-      <View style={styles.textContainer}>
-        <Text style={styles.artTitle}>{images[currentIndex]?.name || "Untitled"}</Text>
-        <Text style={styles.artistName}>
-          BY: <Text style={styles.boldText}>{images[currentIndex]?.artistName || "Unknown Artist"}</Text>
-        </Text>
-        <Text style={styles.labelText}>
-          CATEGORY: <Text style={styles.boldText}>{images[currentIndex]?.category || "No Category"}</Text>
-        </Text>
-        <Text style={styles.labelText}>
-          DESCRIPTION: <Text style={styles.boldText}>{images[currentIndex]?.description || "No Description Available"}</Text>
-        </Text>
-        <Text style={styles.viewsCount}>Views: {images[currentIndex]?.views || 0}</Text>
-      </View>
-      <View style={styles.shareLikeButton}>
-        <TouchableOpacity style={styles.shareButton}>
-          <Text style={styles.shareText}>SHARE</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.likeButton}>
-          <Text style={styles.likeText}>LIKE</Text>
-        </TouchableOpacity>
-      </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.artTitle}>{images[currentIndex]?.name || "Untitled"}</Text>
+          <Text style={styles.artistName}>
+            BY: <Text style={styles.boldText}>{images[currentIndex]?.artistName || "Unknown Artist"}</Text>
+          </Text>
+          <Text style={styles.labelText}>
+            CATEGORY: <Text style={styles.boldText}>{images[currentIndex]?.category || "No Category"}</Text>
+          </Text>
+          <Text style={styles.labelText}>
+            DESCRIPTION: <Text style={styles.boldText}>{images[currentIndex]?.description || "No Description Available"}</Text>
+          </Text>
+          <Text style={styles.viewsCount}>Views: {images[currentIndex]?.views || 0}</Text>
+        </View>
+        <View style={styles.shareLikeButton}>
+          <TouchableOpacity style={styles.shareButton}>
+            <Text style={styles.shareText}>SHARE</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.likeButton}>
+            <Text style={styles.likeText}>LIKE</Text>
+          </TouchableOpacity>
+        </View>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.buyNowButton}>
+        <TouchableOpacity
+          style={styles.buyNowButton}
+          onPress={() => navigation.navigate("DeliveryDetails")}
+        >
           <Text style={styles.buyNowButtonText}>BUY NOW</Text>
         </TouchableOpacity>
+
       </View>
       <FooterNavbar />
     </View>
