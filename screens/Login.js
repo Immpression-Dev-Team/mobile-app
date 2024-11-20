@@ -47,27 +47,20 @@ const Login = () => {
   const handleGoogleAuth = async (authResult) => {
     try {
       if (authResult.token) {
-        // Create the loginData object to match AuthProvider expectations
         const loginData = {
           token: authResult.token,
           user: authResult.user,
           success: true
         };
-        
-        // Save the auth data
         await login(loginData);
-        
-        // Reset navigation and go to Home
-        navigation.reset({
-          index: 0,
-          routes: [{ name: 'Home' }],
-        });
+        // Navigation will happen automatically due to userData change in AuthProvider
       }
     } catch (error) {
       console.error('Error handling Google auth:', error);
       setError('Failed to authenticate with Google');
     }
   };
+  
   const navigateTo = (screenName) => {
     navigation.navigate(screenName);
   };
