@@ -103,9 +103,13 @@ const ImageScreen = ({ route, navigation }) => {
       </View>
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.buyNowButton}>
+        <TouchableOpacity
+          style={styles.buyNowButton}
+          onPress={() => navigation.navigate("DeliveryDetails")}
+        >
           <Text style={styles.buyNowButtonText}>BUY NOW</Text>
         </TouchableOpacity>
+
       </View>
       <FooterNavbar />
     </View>
