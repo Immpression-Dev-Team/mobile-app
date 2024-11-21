@@ -92,7 +92,7 @@ const ImageScreen = ({ route, navigation }) => {
       </View>
       <View style={styles.shareLikeButton}>
         <TouchableOpacity style={styles.shareButton}>
-        <Image source={share} style = {{width:20,height:20}}/>
+        <Image source={share} style = {styles.shareIcon}/>
           <Text style={styles.shareText}>SHARE</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.likeButton}>
@@ -199,12 +199,20 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end', // Align buttons to the right
   },
   shareButton: {
+    flexDirection:'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginBottom: 10, // Add margin between the buttons
     paddingVertical: 10,
     borderRadius: 5,
-    alignItems: 'center',
     width: 100,
   },
+  shareIcon: {
+  width:20,
+  height:20,
+  marginRight:8,
+  },
+
   shareText: {
     color: '#333',
     fontSize: 16,
