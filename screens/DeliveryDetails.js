@@ -1,22 +1,6 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-  ScrollView,
-  ImageBackground,
-} from "react-native";
-import { createOrder } from "../API/API";
-import Navbar from "../components/Navbar"; // Adjust the path if needed
-import FooterNavbar from "../components/FooterNavbar"; // Adjust the path if needed
-import { useAuth } from "../state/AuthProvider"; // Import useAuth to access the token
-
 const DeliveryDetails = ({ navigation, route }) => {
   const { artName } = route.params; // Get the art name from navigation params
-  const { token } = useAuth(); // Retrieve the token from useAuth
+  const { userData, token } = useAuth(); // Retrieve userData and token
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
@@ -31,9 +15,12 @@ const DeliveryDetails = ({ navigation, route }) => {
 
     try {
       const deliveryDetails = { name, address, city, state, zipCode };
-      const orderData = { artName, deliveryDetails };
+      const orderData = {
+        artName,
+        userAccountName: userData.user.user.name, // Include account name
+        deliveryDetails,
+      };
 
-      // Pass the token to the createOrder function
       const response = await createOrder(orderData, token);
 
       Alert.alert("Success", "Order placed successfully!");
