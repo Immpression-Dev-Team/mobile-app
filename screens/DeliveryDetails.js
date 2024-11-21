@@ -12,9 +12,11 @@ import {
 import { createOrder } from "../API/API";
 import Navbar from "../components/Navbar"; // Adjust the path if needed
 import FooterNavbar from "../components/FooterNavbar"; // Adjust the path if needed
+import { useAuth } from "../state/AuthProvider"; // Import useAuth to access the token
 
 const DeliveryDetails = ({ navigation, route }) => {
   const { artName } = route.params; // Get the art name from navigation params
+  const { token } = useAuth(); // Retrieve the token from useAuth
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
@@ -31,7 +33,8 @@ const DeliveryDetails = ({ navigation, route }) => {
       const deliveryDetails = { name, address, city, state, zipCode };
       const orderData = { artName, deliveryDetails };
 
-      const response = await createOrder(orderData);
+      // Pass the token to the createOrder function
+      const response = await createOrder(orderData, token);
 
       Alert.alert("Success", "Order placed successfully!");
       navigation.goBack(); // Go back to the previous screen
