@@ -1,3 +1,19 @@
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ScrollView,
+  ImageBackground,
+} from "react-native";
+import { createOrder } from "../API/API";
+import Navbar from "../components/Navbar"; // Adjust the path if needed
+import FooterNavbar from "../components/FooterNavbar"; // Adjust the path if needed
+import { useAuth } from "../state/AuthProvider"; // Import useAuth to access the token
+
 const DeliveryDetails = ({ navigation, route }) => {
   const { artName } = route.params; // Get the art name from navigation params
   const { userData, token } = useAuth(); // Retrieve userData and token
