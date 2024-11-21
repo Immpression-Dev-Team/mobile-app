@@ -14,6 +14,7 @@ import FooterNavbar from "../components/FooterNavbar";
 import { incrementImageViews } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
 const share = require ("../assets/icons/share-button.png")
+const like = require ("../assets/icons/like-button.png")
 const { width } = Dimensions.get("window");
 // Helper function to calculate responsive font size
 const getResponsiveFontSize = (size) => {
@@ -96,6 +97,7 @@ const ImageScreen = ({ route, navigation }) => {
           <Text style={styles.shareText}>SHARE</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.likeButton}>
+        <Image source={like} style ={styles.likeIcon}/>
           <Text style={styles.likeText}>LIKE</Text>
         </TouchableOpacity>
       </View>
@@ -222,8 +224,15 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: '#007AFF',
     borderRadius: 5,
+    flexDirection:'row',
     alignItems: 'center',
+    justifyContent: 'center',
     width: 100,
+  },
+  likeIcon: {
+  width:20,
+  height:20,
+  marginRight:8,
   },
   likeText: {
     color: '#FFF',
