@@ -32,16 +32,13 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const result = await handleLogin(
-      email,
-      password,
-      setUserData,
-      navigation,
-      login
-    );
 
-    if (result) {
-      navigation.navigate("Home");
+    setError(''); // Clear previous errors
+
+    const result = await handleLogin(email, password, login);
+
+    if (result.success) {
+      navigation.navigate('Home');
     } else {
       setError("Invalid email or password");
     }
