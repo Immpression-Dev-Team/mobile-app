@@ -13,7 +13,7 @@ import Navbar from "./Navbar";
 import FooterNavbar from "../components/FooterNavbar";
 import { incrementImageViews } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
-
+const share = require ("../assets/icons/share-button.png")
 const { width } = Dimensions.get("window");
 // Helper function to calculate responsive font size
 const getResponsiveFontSize = (size) => {
@@ -92,6 +92,7 @@ const ImageScreen = ({ route, navigation }) => {
       </View>
       <View style={styles.shareLikeButton}>
         <TouchableOpacity style={styles.shareButton}>
+        <Image source={share} style = {{width:20,height:20}}/>
           <Text style={styles.shareText}>SHARE</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.likeButton}>
