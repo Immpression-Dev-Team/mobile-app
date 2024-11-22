@@ -17,12 +17,11 @@ import Navbar from "../components/Navbar";
 import FooterNavbar from "../components/FooterNavbar";
 import { useAuth } from "../state/AuthProvider";
 import { uploadImage } from "../API/API";
-import { Platform } from 'react-native';
-
-
+import { Platform } from "react-native";
+import LoadingSection from "../components/home_sections/SectionTemplate/LoadingSection";
 
 const Upload = () => {
-  const { userData } = useAuth();  // Retrieve userData from AuthProvider, including token
+  const { userData } = useAuth(); // Retrieve userData from AuthProvider, including token
   // console.log(`id: ${userData?.user?.user?._id}`);  // Log user ID to verify
 
   const [image, setImage] = useState(null);
@@ -41,6 +40,7 @@ const Upload = () => {
     { label: "Graffiti", value: "graffiti" },
     { label: "Stencil", value: "stencil" },
   ]);
+  const [isLoading, setIsLoading] = useState(false);
 
   /*
     clear form after uploaded image successfully
@@ -51,17 +51,16 @@ const Upload = () => {
     setDescription("");
     setPrice("");
     setCategory("");
-  }
+  };
 
   /*
     show error modal on screen when encounter any errors
   */
   const displayError = (message) => {
-      console.log(`Error: ${message}`);
-    if (Platform.OS === 'web') {
+    console.log(`Error: ${message}`);
+    if (Platform.OS === "web") {
       alert(message);
-    }
-    else{
+    } else {
       Alert.alert("Error", message);
     }
   };
@@ -74,23 +73,23 @@ const Upload = () => {
     const fieldCheck = [
       {
         condition: !image,
-        message: "Please select an image"
+        message: "Please select an image",
       },
       {
-        condition: (!title || !description || !price), 
-        message: "Please fill in all fields"
+        condition: !title || !description || !price,
+        message: "Please fill in all fields",
       },
       {
-        condition: (isNaN(price_val) || !isFinite(price_val)), 
-        message:  "Please enter a valid number for price"
+        condition: isNaN(price_val) || !isFinite(price_val),
+        message: "Please enter a valid number for price",
       },
       {
         condition: !category,
-        message: "Please select a category"
+        message: "Please select a category",
       },
       {
-        condition: (description.length > 30),
-        message: "Description cannot be longer than 30 characters"
+        condition: description.length > 30,
+        message: "Description cannot be longer than 30 characters",
       },
     ];
 
@@ -99,25 +98,26 @@ const Upload = () => {
         return message;
       }
     }
-  }
+    return null;
+  };
 
   /*
     prepare form data to upload on cloud 
   */
   const prepareFormData = async () => {
     const data = new FormData();
-    
-    if (Platform.OS === 'web') {
+
+    if (Platform.OS === "web") {
       // Web-specific logic: Convert base64 to Blob for web uploads
-      const base64String = image.uri.split(',')[1];
-      const imageBlob = base64ToBlob(base64String, 'image/jpeg');
+      const base64String = image.uri.split(",")[1];
+      const imageBlob = base64ToBlob(base64String, "image/jpeg");
       data.append("file", imageBlob, "upload_image.jpg");
     } else {
       // Mobile-specific logic: Directly append image URI
       data.append("file", {
         uri: image.uri, // Use the URI directly for mobile
         name: title, // Filename (Cloudinary expects a filename)
-        type: 'image/jpeg' // Adjust based on the image format (e.g., 'image/png' if PNG)
+        type: "image/jpeg", // Adjust based on the image format (e.g., 'image/png' if PNG)
       });
     }
 
@@ -127,8 +127,8 @@ const Upload = () => {
     data.append("description", description);
     data.append("price", price);
     data.append("category", category);
-    data.append('folder', 'artwork');
-  
+    data.append("folder", "artwork");
+
     return data;
   };
 
@@ -144,7 +144,7 @@ const Upload = () => {
       }
     );
     return response.json();
-  }
+  };
 
   /*
     handler when user select img
@@ -161,7 +161,7 @@ const Upload = () => {
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
-      base64: false
+      base64: false,
     });
 
     console.log("Picker Result:", pickerResult);
@@ -179,25 +179,33 @@ const Upload = () => {
 
   /*
     handler when user upload img
-  */
+    */
   const handleUpload = async () => {
     const errorMsg = validateFields();
-    if(errorMsg){
+    if (errorMsg) {
       displayError(errorMsg);
       return;
     }
-  
+
+    setIsLoading(true);
+    console.log("triggering loading state");
+
     try {
+      console.log("inside try block, preparing form data");
       const data = await prepareFormData();
+
+      console.log("Form data prepared, uploading to Cloudinary...");
       const result = await uploadImageToCloud(data);
-      if(!result.secure_url){
+      if (!result.secure_url) {
         displayError(result.error.message || "Image upload failed");
         return;
       }
 
+      // loading animation while fetching
+
       const userId = userData.user.user._id,
-            userName = userData.user.user.name,
-            token = userData.token;
+        userName = userData.user.user.name,
+        token = userData.token;
 
       const imageData = {
         userId: userId,
@@ -209,21 +217,23 @@ const Upload = () => {
         category: category,
       };
 
+      console.log("Upload successful, processing response...");
       const response = await uploadImage(imageData, token);
-      if(response.success){
+      if (response.success) {
         resetForm();
         Alert.alert("Success", "Image uploaded successfully!");
+      } else {
+        displayError(response.data?.error || "Image upload failed");
       }
-      else{
-        displayError(response.data?.error || "Image upload failed")
-      }
-    }
-    catch (error) {
+    } catch (error) {
       console.error("Upload Error:", error);
-      displayError("An error occurred while uploading the image")
+      displayError("An error occurred while uploading the image");
+    } finally {
+      setIsLoading(false);
+      console.log("upload complete, turn off loading animation");
     }
   };
-  
+
   const renderContent = () => (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
@@ -278,39 +288,44 @@ const Upload = () => {
         }}
       />
       <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
-        <Text style={styles.uploadButtonText}>
-        Upload
-        </Text>
+        <Text style={styles.uploadButtonText}>Upload</Text>
       </TouchableOpacity>
     </View>
   );
 
   return (
     <View style={styles.everything}>
-       <ImageBackground
+      <>
+        <ImageBackground
           source={require("../assets/backgrounds/navbar_bg_blue.png")} // Replace with your image path
           style={styles.navbarBackgroundImage}
         >
           <Navbar />
         </ImageBackground>
-      
+
         <FlatList
           data={[{}]} // Use a FlatList with a single element to render the form
           renderItem={renderContent}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.scrollContainer}
         />
-      
-      <FooterNavbar style={styles.footer} />
+
+        <FooterNavbar style={styles.footer} />
+      </>
+
+      {isLoading && (
+        <View style={styles.loadingOverlay}>
+          <LoadingSection loadingMsg={"Uploading Your Art!"} size={"large"} />
+        </View>
+      )}
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   everything: {
     flex: 1,
     justifyContent: "space-between",
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   backgroundImage: {
     flex: 1,
@@ -327,8 +342,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginVertical: 16,
-    backgroundColor: "white"
-    
+    backgroundColor: "white",
   },
   imagePlaceholderContainer: {
     flex: 1,
@@ -342,8 +356,7 @@ const styles = StyleSheet.create({
     borderColor: "#5f669c",
     borderStyle: "dotted",
     borderRadius: 2,
-    backgroundColor: "white"
-
+    backgroundColor: "white",
   },
   imagePlaceholderText: {
     color: "#7c809c",
@@ -352,14 +365,14 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     borderRadius: 8,
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   exampleImage: {
     width: "50%",
     height: 250,
     resizeMode: "stretch",
     marginRight: 0,
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   input: {
     height: 38,
@@ -377,7 +390,7 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     backgroundColor: "white",
     borderStyle: "solid",
-    borderWeight: "2"
+    borderWeight: "2",
   },
   uploadButton: {
     height: 40,
@@ -396,17 +409,32 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: "white"
+    backgroundColor: "white",
+  },
+  loadingOverlay: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, .7)",
+    zIndex: 10,
+  },
+  LoadingGif: {
+    width: 100,
+    height: 100,
+    resizeMode: "contain",
   },
 });
 
 export default Upload;
 
 // Helper function to convert base64 to Blob
-const base64ToBlob = (base64Data, contentType = 'image/jpeg') => {
+const base64ToBlob = (base64Data, contentType = "image/jpeg") => {
   const byteCharacters = atob(base64Data);
   const byteArrays = [];
-
 
   for (let offset = 0; offset < byteCharacters.length; offset += 512) {
     const slice = byteCharacters.slice(offset, offset + 512);
