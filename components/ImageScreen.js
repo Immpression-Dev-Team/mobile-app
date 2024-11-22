@@ -16,11 +16,13 @@ import { useAuth } from "../state/AuthProvider";
 const share = require ("../assets/icons/share-button.png")
 const like = require ("../assets/icons/like-button.png")
 const { width } = Dimensions.get("window");
+
 // Helper function to calculate responsive font size
 const getResponsiveFontSize = (size) => {
   const scale = width / 375; // Base scale on a typical screen width (375 for iPhone 6/7/8)
   return Math.round(size * scale);
 };
+
 const ImageScreen = ({ route, navigation }) => {
   const { images, initialIndex } = route.params;
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -105,11 +107,14 @@ const ImageScreen = ({ route, navigation }) => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.buyNowButton}
-          onPress={() => navigation.navigate("DeliveryDetails")}
+          onPress={() =>
+            navigation.navigate("DeliveryDetails", {
+              artName: images[currentIndex]?.name, // Pass only the art name
+            })
+          }
         >
           <Text style={styles.buyNowButtonText}>BUY NOW</Text>
         </TouchableOpacity>
-
       </View>
       <FooterNavbar />
     </View>
@@ -135,7 +140,7 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     alignItems: "flex-start",
     paddingHorizontal: 20,
-    width: "65%", // Adjust width for more space for text and description
+    width: "65%",
   },
   artTitle: {
     color: "#333",
@@ -185,24 +190,24 @@ const styles = StyleSheet.create({
   },
   buyNowButtonText: {
     color: "#FFF",
-    fontSize: 18, // Increased font size
+    fontSize: 18,
     fontFamily: "Calibri",
     fontWeight: "bold",
     textTransform: "uppercase",
   },
   descriptionButtonContainer: {
-    flexDirection: 'row', // Align the description and buttons in a row
-    justifyContent: 'space-between', // Create space between description and buttons
-    alignItems: 'flex-start', // Align both to the top
-    marginTop: 10, // Add some space between the description and buttons
-    width: "100%", // Make it take the full width of the container
-    paddingHorizontal: 20, // Add some padding on the sides for spacing
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginTop: 10,
+    width: "100%",
+    paddingHorizontal: 20,
   },
   shareLikeButton: {
-    flexDirection: 'column', // Align buttons vertically
-    justifyContent: 'flex-start', // Align buttons to the top
-    width: "30%", // Take up 30% of the width for the buttons container
-    alignItems: 'flex-end', // Align buttons to the right
+    flexDirection: "column",
+    justifyContent: "flex-start",
+    width: "30%",
+    alignItems: "flex-end",
   },
   shareButton: {
     flexDirection:'row',
@@ -220,13 +225,13 @@ const styles = StyleSheet.create({
   },
 
   shareText: {
-    color: '#333',
+    color: "#333",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   likeButton: {
     paddingVertical: 10,
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
     borderRadius: 5,
     flexDirection:'row',
     alignItems: 'center',
@@ -239,9 +244,9 @@ const styles = StyleSheet.create({
   marginRight:8,
   },
   likeText: {
-    color: '#FFF',
+    color: "#FFF",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
 });
 
