@@ -110,6 +110,9 @@ const ImageScreen = ({ route, navigation }) => {
           onPress={() =>
             navigation.navigate("DeliveryDetails", {
               artName: images[currentIndex]?.name, // Pass only the art name
+              imageLink: images[currentIndex]?.imageLink, // Pass the image link
+              artistName: images[currentIndex]?.artistName, // Pass the artist's name
+              price: images[currentIndex]?.price, // Pass the price
             })
           }
         >
