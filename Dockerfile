@@ -11,7 +11,7 @@ COPY . .
 RUN npm install -g expo-cli @expo/ngrok@latest eas-cli
 
 # Update and install dependencies
-RUN npm install && npm update
+RUN npm install
 
 # Expose Expo and Metro ports
 EXPOSE 19000
