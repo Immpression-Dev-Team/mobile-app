@@ -45,7 +45,6 @@ const DeliveryDetails = ({ navigation, route }) => {
     { label: "Arkansas", value: "Arkansas" },
     { label: "California", value: "California" },
     { label: "Colorado", value: "Colorado" },
-    // Add more states as needed
   ];
 
   const handleSubmit = async () => {
@@ -69,13 +68,16 @@ const DeliveryDetails = ({ navigation, route }) => {
         deliveryDetails,
       };
 
-      const response = await createOrder(orderData, token);
-
-      Alert.alert("Success", "Order placed successfully!");
-      navigation.goBack();
+      // Save order and navigate to PaymentScreen
+      await createOrder(orderData, token);
+      navigation.navigate("PaymentScreen", {
+        artName,
+        price,
+        deliveryDetails,
+      });
     } catch (error) {
       console.error("Error placing order:", error);
-      Alert.alert("Error", "Failed to place the order.");
+      Alert.alert("Error", "Failed to proceed to payment.");
     }
   };
 
@@ -91,15 +93,27 @@ const DeliveryDetails = ({ navigation, route }) => {
         </ImageBackground>
       </View>
 
+      {/* Header Section */}
+      <View style={styles.headerContainer}>
+        <TouchableOpacity
+          style={styles.goBackButton}
+          onPress={() => navigation.goBack()}
+        >
+          <Text style={styles.arrow}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.header}>Delivery Details</Text>
+      </View>
+
       <KeyboardAvoidingView style={styles.content} behavior="padding">
         <FlatList
           data={[{ key: "form" }]}
-          scrollEnabled={true} // Always allow scrolling
+          scrollEnabled={true}
           keyboardShouldPersistTaps="handled"
           keyboardDismissMode="on-drag"
           renderItem={() => (
             <View style={styles.content}>
-              <View style={styles.headerContainer}>
+              <View style={styles.spacingBelowHeader} />
+              <View style={styles.detailsContainer}>
                 {imageLink && (
                   <Image
                     source={{ uri: imageLink }}
@@ -107,13 +121,12 @@ const DeliveryDetails = ({ navigation, route }) => {
                     resizeMode="cover"
                   />
                 )}
-                <View style={styles.detailsContainer}>
+                <View style={styles.textDetails}>
                   <Text style={styles.artName}>{artName}</Text>
                   {artistName && <Text style={styles.artistName}>By: {artistName}</Text>}
                   {price && <Text style={styles.price}>Price: ${price}</Text>}
                 </View>
               </View>
-              <Text style={styles.header}>Delivery Details</Text>
               <View style={styles.formContainer}>
                 <TextInput
                   style={styles.input}
@@ -176,9 +189,7 @@ const DeliveryDetails = ({ navigation, route }) => {
       </KeyboardAvoidingView>
 
       {/* Footer Section */}
-      <View style={styles.footer}>
-        <FooterNavbar />
-      </View>
+      <FooterNavbar />
     </View>
   );
 };
@@ -187,21 +198,59 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#FFF" },
   navbarContainer: { width: "100%", height: "15%", backgroundColor: "#FFF" },
   navbarBackgroundImage: { width: "100%", height: "100%", resizeMode: "cover" },
-  content: { flexGrow: 1, alignItems: "center" },
-  headerContainer: { flexDirection: "row", alignItems: "center", width: "90%", marginVertical: 20 },
-  header: { fontSize: 24, fontWeight: "bold", marginVertical: 10, width: "90%" },
-  image: { width: 80, height: 80, marginRight: 15 },
-  detailsContainer: { flexShrink: 1 },
-  artName: { fontSize: 20, fontWeight: "bold", marginBottom: 5 },
-  artistName: { fontSize: 16, color: "#555", marginBottom: 5 },
-  price: { fontSize: 16, color: "#007AFF" },
-  formContainer: { width: "90%", marginTop: 20 },
-  input: { borderWidth: 1, borderColor: "#CCC", borderRadius: 5, padding: 10, marginBottom: 15, fontSize: 16 },
-  dropdown: { borderWidth: 1, borderColor: "#CCC", borderRadius: 5, marginBottom: 15, padding: 10 },
-  dropdownContainer: { borderColor: "#CCC", borderRadius: 5, zIndex: 1000 },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    marginTop: 10,
+  },
+  goBackButton: {
+    marginRight: 10,
+  },
+  arrow: {
+    fontSize: 24,
+    color: "#007AFF",
+    fontWeight: "bold",
+  },
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  content: { flexGrow: 1, alignItems: "flex-start", paddingHorizontal: 20 },
+  spacingBelowHeader: {
+    marginVertical: 20, // Add spacing between the header and the art
+  },
+  detailsContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  textDetails: {
+    marginLeft: 10,
+  },
+  image: {
+    width: 80,
+    height: 80,
+  },
+  artName: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  artistName: {
+    fontSize: 16,
+    color: "#555",
+  },
+  price: {
+    fontSize: 16,
+    color: "#007AFF",
+  },
+  formContainer: { width: "100%" },
+  input: { borderWidth: 1, borderColor: "#CCC", borderRadius: 5, padding: 10, marginBottom: 15 },
+  dropdown: { borderWidth: 1, borderColor: "#CCC", borderRadius: 5, marginBottom: 15 },
+  dropdownContainer: { borderColor: "#CCC", borderRadius: 5 },
   button: { backgroundColor: "#007AFF", padding: 15, borderRadius: 5, alignItems: "center" },
   buttonText: { color: "#FFF", fontWeight: "bold", fontSize: 16 },
-  footer: { width: "100%" },
 });
 
 export default DeliveryDetails;
