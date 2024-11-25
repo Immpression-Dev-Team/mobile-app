@@ -6,6 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -21,7 +22,9 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.immpression.Immpression",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -42,7 +45,19 @@
       [
         "expo-font",
         {
-          "fonts": ["path/to/file.ttf"]
+          "fonts": [
+            "./assets/fonts/BriemHand-Black.ttf",
+            "./assets/fonts/BriemHand-Bold.ttf",
+            "./assets/fonts/BriemHand-Medium.ttf",
+            "./assets/fonts/BriemHand-Regular.ttf",
+            "./assets/fonts/LEMONMILK-Bold.otf"
+          ]
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ]
     ]
