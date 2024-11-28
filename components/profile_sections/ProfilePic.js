@@ -184,7 +184,7 @@ const ProfilePic = () => {
           source={
             image
               ? { uri: image.uri }
-              : require('../../assets/defaultProfile.png')
+              : require('../../assets/defaultProfile.jpeg')
           }
           style={styles.profilePicture}
         />
