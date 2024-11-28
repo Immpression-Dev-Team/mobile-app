@@ -23,8 +23,8 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.immpression.Immpression",
-      "versionCode": 2
+      "package": "com.immpression.art",
+      "versionCode": 8
     },
     "web": {
       "favicon": "./assets/favicon.png"
