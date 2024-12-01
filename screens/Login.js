@@ -113,7 +113,7 @@ const Login = () => {
             </View>
             <View style={styles.buttonContainer}>
               <Pressable onPress={handleSubmit} style={styles.button}>
-                <Text style={styles.buttonText}>Login</Text>
+                <Text style={styles.buttonText}>Log in</Text>
               </Pressable>
               <Pressable
                 onPress={() => navigateTo("SignUp")}

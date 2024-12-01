@@ -55,10 +55,8 @@ const SignUp = () => {
   // TODO: set up frontend confirmPassword logic before calling handleSubmit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Reset error state
     setError('');
 
-    // Perform client-side validation and stop at the first failure
     if (name.length < 4) {
       setError('Name must be at least 4 characters long.');
       return;
@@ -72,7 +70,7 @@ const SignUp = () => {
       return;
     }
 
-    setIsLoading(true); // Start loading. block user from creating another request.
+    setIsLoading(true);
     try {
       const response = await axios.post(`${API_URL}/signup`, {
         name,
@@ -81,19 +79,31 @@ const SignUp = () => {
       });
 
       if (response.data.success) {
+<<<<<<< HEAD
+        navigation.navigate('Login');
+=======
         const result = await handleLogin(email, password, login);
 
         if (result.success) {
           navigation.navigate('AccountType');
         }
+>>>>>>> main
       } else {
         console.log('Signup failed');
         showToast('Signup Failed');
       }
     } catch (err) {
+<<<<<<< HEAD
+      showToast('Error during signup');
+      console.log('Error during signup:', err.response);
+      setError(
+          err.response?.data?.message || 'An unexpected error occurred. Please try again.'
+      );
+=======
       showToast('Error during login');
       console.log('Error during login:', err.response.data);
       setError(err.response.data.error);
+>>>>>>> main
     } finally {
       setIsLoading(false);
     }
@@ -173,7 +183,7 @@ const SignUp = () => {
                 : ''}
             </Text>
             <Text style={{ color: 'red', textAlign: 'center' }}>
-              {error && error}
+              {error ? error : ''}
             </Text>
             {/* <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={text => setConfirmPassword(text)} style={styles.input} secureTextEntry /> */}
           </View>
