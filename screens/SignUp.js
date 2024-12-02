@@ -79,31 +79,19 @@ const SignUp = () => {
       });
 
       if (response.data.success) {
-<<<<<<< HEAD
-        navigation.navigate('Login');
-=======
         const result = await handleLogin(email, password, login);
 
         if (result.success) {
           navigation.navigate('AccountType');
         }
->>>>>>> main
       } else {
         console.log('Signup failed');
         showToast('Signup Failed');
       }
     } catch (err) {
-<<<<<<< HEAD
-      showToast('Error during signup');
-      console.log('Error during signup:', err.response);
-      setError(
-          err.response?.data?.message || 'An unexpected error occurred. Please try again.'
-      );
-=======
       showToast('Error during login');
       console.log('Error during login:', err.response.data);
       setError(err.response.data.error);
->>>>>>> main
     } finally {
       setIsLoading(false);
     }
