@@ -26,7 +26,7 @@ const StatisticsScreen = () => {
     { path: require('../assets/photos/deer.jpg'), artistName: '@Artist16', views: 1506 },
     { path: require('../assets/art/superman.png'), artistName: '@Clark Kent', views: 1607 },
     { path: require('../assets/art/spiderman.png'), artistName: '@PeterParker', views: 1708 },
-    { path: require('../assets/art/tajmahal.png'), artistName: '@NavjotKaur', views: 1809 },
+    { path: require('../assets/art/tajmahal.jpeg'), artistName: '@NavjotKaur', views: 1809 },
   ];
 
   return (
