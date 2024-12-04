@@ -21,7 +21,7 @@ const Profile = () => {
   const { userData } = useAuth(); // Use the useAuth hook to get the user data
   const token = userData?.token; // Extract the token from userData
   const [profileName, setProfileName] = useState(''); // Initialize as an empty string
-  const profilePicSource = require('../assets/artists/flight.png'); // Example profile picture
+  const profilePicSource = require('../assets/arrow.jpeg'); // Example profile picture
   const [viewsCount, setViewsCount] = useState(0);
 
   useEffect(() => {
