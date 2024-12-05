@@ -12,6 +12,10 @@ import {
 } from "react-native";
 import Navbar from "../components/Navbar";
 import FooterNavbar from "../components/FooterNavbar";
+import {
+  CardField,
+  useStripe,
+} from '@stripe/stripe-react-native';
 
 const PaymentScreen = ({ navigation, route }) => {
   const { orderId } = route.params; // Order ID passed from the DeliveryDetails screen
@@ -20,6 +24,8 @@ const PaymentScreen = ({ navigation, route }) => {
   const [cvv, setCvv] = useState("");
   const [nameOnCard, setNameOnCard] = useState("");
 
+  const { confirmPayment } = useStripe();
+
   const handlePayment = async () => {
     if (!cardNumber || !expiryDate || !cvv || !nameOnCard) {
       Alert.alert("Missing Fields", "Please fill in all payment fields.");
@@ -27,14 +33,37 @@ const PaymentScreen = ({ navigation, route }) => {
     }
 
     try {
-      // Simulate a payment process
-      Alert.alert("Payment Successful", "Your payment has been processed!");
-
-      // Navigate to the Review/Summary Screen
-      navigation.navigate("ReviewScreen", { orderId });
+      // Call your backend to create a PaymentIntent
+      const response = await fetch(`${API_URL}/create-payment-intent`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: 1099, // The amount in the smallest currency unit (e.g., cents for USD)
+          currency: 'usd',
+        }),
+      });
+      const { clientSecret } = await response.json();
+  
+      // Confirm the payment with Stripe
+      const { error, paymentIntent } = await confirmPayment(clientSecret, {
+        type: 'Card',
+      });
+  
+      if (error) {
+        console.error('Payment confirmation error:', error);
+        Alert.alert('Payment Failed', error.message);
+      } else if (paymentIntent) {
+        console.log('Payment successful:', paymentIntent);
+        Alert.alert('Payment Successful', 'Your payment has been processed!');
+  
+        // Navigate to the Review/Summary Screen
+        navigation.navigate('ReviewScreen', { orderId });
+      }
     } catch (error) {
-      console.error("Payment Error:", error);
-      Alert.alert("Payment Failed", "An error occurred while processing payment.");
+      console.error('Payment Error:', error);
+      Alert.alert('Payment Failed', 'An error occurred while processing payment.');
     }
   };
 
