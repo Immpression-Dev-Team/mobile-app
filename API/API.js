@@ -320,6 +320,21 @@ async function getImageViews(imageId, token) {
     return error.response;
   }
 }
+async function createOrder(orderData, token) {
+  try {
+    const response = await axios.post(`${API_URL}/order`, orderData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add token to headers
+        "Content-Type": "application/json", // Ensure the content type is set correctly
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error creating order:", error.response?.data || error);
+    throw error;
+  }
+}
+
 
 export {
   getAllImages,
@@ -339,4 +354,5 @@ export {
   updateAccountType,
   incrementImageViews,
   getImageViews,
+  createOrder,
 };
