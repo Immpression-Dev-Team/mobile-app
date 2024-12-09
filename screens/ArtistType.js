@@ -63,7 +63,7 @@ const ArtistType = () => {
               key={type.id}
               onPress={() =>
                 handleSelection(
-                  `${type.name}${type.secondaryName && type.secondaryName}`
+                  `${type.name}${type.secondaryName ? type.secondaryName : ''}`
                 )
               }
             >
