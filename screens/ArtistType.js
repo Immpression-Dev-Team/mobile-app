@@ -8,10 +8,35 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { ArtistTypes } from '../utils/constants';
+import { useAuth } from '../state/AuthProvider';
+import { useNavigation } from '@react-navigation/native';
+import { updateArtistType } from '../API/API';
 const backgroundImage = require('../assets/backgrounds/navbar_bg_blue.png');
 const loadingGif = require('../assets/loading-gif.gif');
 
 const ArtistType = () => {
+  const { userData } = useAuth();
+  const token = userData?.token;
+  const navigation = useNavigation();
+
+  const handleSelection = async (type) => {
+    try {
+      const response = await updateArtistType(type, token);
+      console.log('response from updating artist type: ' + response);
+      // Check if the response indicates a successful operation
+      if (response.success) {
+        navigation.navigate('Home');
+      } else {
+        console.warn(
+          'Update failed with message:',
+          response.message || 'Unknown error'
+        );
+      }
+    } catch (error) {
+      console.error('Error updating artist type:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
       {/* header */}
@@ -36,7 +61,11 @@ const ArtistType = () => {
             <TouchableOpacity
               style={styles.button}
               key={type.id}
-              onPress={() => handleSelection(type.id)}
+              onPress={() =>
+                handleSelection(
+                  `${type.name}${type.secondaryName && type.secondaryName}`
+                )
+              }
             >
               <Text style={styles.buttonText}>
                 <Text style={styles.primaryName}>{type.name}</Text> {'\n'}

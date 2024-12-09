@@ -61,7 +61,7 @@ async function updateArtistType(artistType, token) {
   } catch (error) {
     console.error('Error updating artist type:', error);
     console.error('Server response:', error.response?.data); // Log server response for more details
-    return error;
+    return error.response?.data || error;
   }
 }
 
@@ -264,8 +264,6 @@ async function incrementViews(userId, token) {
 
 // Function to update accountType for a specific user by ID
 async function updateAccountType(accountType, token) {
-  console.log('update account type is called', accountType);
-  console.log('token for update account type request', token);
   try {
     const response = await axios.post(
       `${API_URL}/accountType`,
@@ -280,12 +278,13 @@ async function updateAccountType(accountType, token) {
       }
     );
 
-    console.log('result from account type: ', response.data);
+    return response.data;
   } catch (error) {
     console.error('Error updating account type:', error);
     return error.response?.data || error;
   }
 }
+
 // Function to increment views for a specific image by ID
 async function incrementImageViews(imageId, token) {
   try {
@@ -325,16 +324,15 @@ async function createOrder(orderData, token) {
     const response = await axios.post(`${API_URL}/order`, orderData, {
       headers: {
         Authorization: `Bearer ${token}`, // Add token to headers
-        "Content-Type": "application/json", // Ensure the content type is set correctly
+        'Content-Type': 'application/json', // Ensure the content type is set correctly
       },
     });
     return response.data;
   } catch (error) {
-    console.error("Error creating order:", error.response?.data || error);
+    console.error('Error creating order:', error.response?.data || error);
     throw error;
   }
 }
-
 
 export {
   getAllImages,
