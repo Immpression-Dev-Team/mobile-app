@@ -11,6 +11,9 @@ import Login from '../screens/Login';
 import CategoriesScreen from '../screens/CategoriesScreen';
 import CategoryView from '../screens/CategoryView';
 import AccountTypeScreen from '../screens/AccountType';
+import ArtistType from '../screens/ArtistType';
+import DeliveryDetails from '../screens/DeliveryDetails';
+import PaymentScreen from '../screens/PaymentScreen';
 
 export const UserNavigation = [
   {
@@ -61,6 +64,18 @@ export const UserNavigation = [
     name: 'AccountType',
     component: AccountTypeScreen,
   },
+  {
+    name: 'ArtistType',
+    component: ArtistType,
+  },
+  {
+    name: 'DeliveryDetails',
+    component: DeliveryDetails,
+  },
+  {
+    name: 'PaymentScreen',
+    component: PaymentScreen,
+  },
 ];
 
 export const GuestNavigation = [
@@ -79,5 +94,49 @@ export const GuestNavigation = [
   {
     name: 'AccountType',
     component: AccountTypeScreen,
+  },
+];
+
+export const ArtistTypes = [
+  {
+    id: 1,
+    name: 'Painter',
+    icon: require('../assets/artisteemoji.png'),
+  },
+  {
+    id: 2,
+    name: 'Photographer',
+    icon: require('../assets/artisteemoji.png'),
+  },
+  {
+    id: 3,
+    name: 'Graphic ',
+    secondaryName: 'Designer',
+    icon: require('../assets/artisteemoji.png'),
+  },
+  {
+    id: 4,
+    name: 'Illustrator',
+    icon: require('../assets/artisteemoji.png'),
+  },
+  {
+    id: 5,
+    name: 'Sculptor',
+    icon: require('../assets/artisteemoji.png'),
+  },
+  {
+    id: 6,
+    name: 'WoodWorker',
+    icon: require('../assets/artisteemoji.png'),
+  },
+  {
+    id: 7,
+    name: 'Graffitist',
+    icon: require('../assets/artisteemoji.png'),
+  },
+  {
+    id: 8,
+    name: 'Stenciler',
+    icon: require('../assets/artisteemoji.png'),
   },
 ];

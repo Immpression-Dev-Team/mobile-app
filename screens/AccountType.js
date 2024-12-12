@@ -24,7 +24,11 @@ const AccountTypeScreen = () => {
       const response = await updateAccountType(type, token);
       console.log('response from updating account type: ' + response);
 
-      navigation.navigate('Home');
+      if (type === 'artist') {
+        navigation.navigate('ArtistType');
+      } else {
+        navigation.navigate('Home');
+      }
     } catch (error) {
       console.error('Error updating account type:', error);
     }

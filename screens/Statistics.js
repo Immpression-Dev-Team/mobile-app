@@ -5,29 +5,29 @@ import statsBrush from '../assets/icons/stats_brush.png';
 import FooterNavbar from '../components/FooterNavbar';
 
 const StatisticsScreen = () => {
-  const imagePaths = [
-    { uri: 'https://via.placeholder.com/150', artistName: '@OnlineArtist', views: 123 },
-    { path: require('../assets/art/art5.png'), artistName: '@Artist1', views: 456 },
-    { path: require('../assets/art/art2.png'), artistName: '@Artist2', views: 789 },
-    { path: require('../assets/art/batman.png'), artistName: '@BruceWayne', views: 101 },
-    { path: require('../assets/art/art3.png'), artistName: '@Artist3', views: 202 },
-    { path: require('../assets/art/art4.png'), artistName: '@Artist4', views: 303 },
-    { path: require('../assets/art/art1.jpg'), artistName: '@Artist5', views: 404 },
-    { path: require('../assets/art/art6.png'), artistName: '@Artist6', views: 505 },
-    { path: require('../assets/photos/mountain.jpg'), artistName: '@Artist7', views: 606 },
-    { path: require('../assets/photos/grass.jpg'), artistName: '@Artist8', views: 707 },
-    { path: require('../assets/photos/building.jpg'), artistName: '@Artist9', views: 808 },
-    { path: require('../assets/photos/man.jpg'), artistName: '@Artist10', views: 909 },
-    { path: require('../assets/photos/hand.jpg'), artistName: '@Artist11', views: 1001 },
-    { path: require('../assets/photos/gray.jpg'), artistName: '@Artist12', views: 1102 },
-    { path: require('../assets/photos/path.jpg'), artistName: '@Artist13', views: 1203 },
-    { path: require('../assets/photos/animal.jpg'), artistName: '@Artist14', views: 1304 },
-    { path: require('../assets/photos/sunset.jpg'), artistName: '@Artist15', views: 1405 },
-    { path: require('../assets/photos/deer.jpg'), artistName: '@Artist16', views: 1506 },
-    { path: require('../assets/art/superman.png'), artistName: '@Clark Kent', views: 1607 },
-    { path: require('../assets/art/spiderman.png'), artistName: '@PeterParker', views: 1708 },
-    { path: require('../assets/art/tajmahal.png'), artistName: '@NavjotKaur', views: 1809 },
-  ];
+  // const imagePaths = [
+  //   { uri: 'https://via.placeholder.com/150', artistName: '@OnlineArtist', views: 123 },
+  //   { path: require('../assets/art/art5.png'), artistName: '@Artist1', views: 456 },
+  //   { path: require('../assets/art/art2.png'), artistName: '@Artist2', views: 789 },
+  //   { path: require('../assets/art/batman.png'), artistName: '@BruceWayne', views: 101 },
+  //   { path: require('../assets/art/art3.png'), artistName: '@Artist3', views: 202 },
+  //   { path: require('../assets/art/art4.png'), artistName: '@Artist4', views: 303 },
+  //   { path: require('../assets/art/art1.jpg'), artistName: '@Artist5', views: 404 },
+  //   { path: require('../assets/art/art6.png'), artistName: '@Artist6', views: 505 },
+  //   { path: require('../assets/photos/mountain.jpg'), artistName: '@Artist7', views: 606 },
+  //   { path: require('../assets/photos/grass.jpg'), artistName: '@Artist8', views: 707 },
+  //   { path: require('../assets/photos/building.jpg'), artistName: '@Artist9', views: 808 },
+  //   { path: require('../assets/photos/man.jpg'), artistName: '@Artist10', views: 909 },
+  //   { path: require('../assets/photos/hand.jpg'), artistName: '@Artist11', views: 1001 },
+  //   { path: require('../assets/photos/gray.jpg'), artistName: '@Artist12', views: 1102 },
+  //   { path: require('../assets/photos/path.jpg'), artistName: '@Artist13', views: 1203 },
+  //   { path: require('../assets/photos/animal.jpg'), artistName: '@Artist14', views: 1304 },
+  //   { path: require('../assets/photos/sunset.jpg'), artistName: '@Artist15', views: 1405 },
+  //   { path: require('../assets/photos/deer.jpg'), artistName: '@Artist16', views: 1506 },
+  //   { path: require('../assets/art/superman.png'), artistName: '@Clark Kent', views: 1607 },
+  //   { path: require('../assets/art/spiderman.png'), artistName: '@PeterParker', views: 1708 },
+  //   { path: require('../assets/art/tajmahal.jpeg'), artistName: '@NavjotKaur', views: 1809 },
+  // ];
 
   return (
     <>

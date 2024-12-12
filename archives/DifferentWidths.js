@@ -2,20 +2,20 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 
 const imagePaths = [
-    { path: require('../../assets/photos/path.jpg'), title: 'Path', profilePic: require('../../assets/artists/artist5.png'), width: 155 },
-    { path: require('../../assets/photos/animal.jpg'), title: 'Animal', profilePic: require('../../assets/artists/artist4.png'), width: 150 },
-    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', profilePic: require('../../assets/artists/artist3.png'), width: 110 },
-    { path: require('../../assets/photos/deer.jpg'), title: 'Deer', profilePic: require('../../assets/artists/artist1.png'), width: 90 },
-    { path: require('../../assets/art/art1.jpg'), title: 'Art 1', profilePic: require('../../assets/artists/artist2.png'), width: 130 },
-    { path: require('../../assets/art/art2.png'), title: 'Art 2', profilePic: require('../../assets/artists/artist6.png'), width: 115 },
-    { path: require('../../assets/art/art3.png'), title: 'Art 3', profilePic: require('../../assets/artists/artist7.png'), width: 95 },
-    { path: require('../../assets/art/art4.png'), title: 'Art 4', profilePic: require('../../assets/artists/artist8.png'), width: 170 },
-    { path: require('../../assets/art/art5.png'), title: 'Art 5', profilePic: require('../../assets/artists/artist9.png'), width: 125 },
-    { path: require('../../assets/art/art6.png'), title: 'Art 6', profilePic: require('../../assets/artists/artist10.png'), width: 100 },
-    { path: require('../../assets/photos/building.jpg'), title: 'Building', profilePic: require('../../assets/artists/artist11.png'), width: 110 },
-    { path: require('../../assets/photos/man.jpg'), title: 'Man', profilePic: require('../../assets/artists/artist12.png'), width: 105 },
-    { path: require('../../assets/photos/hand.jpg'), title: 'Hand', profilePic: require('../../assets/artists/artist13.png'), width: 115 },
-    { path: require('../../assets/photos/gray.jpg'), title: 'Gray', profilePic: require('../../assets/artists/artist14.png'), width: 120 },
+    { path: require('../../assets/photos/path.jpg'), title: 'Path', profilePic: require('../assets/artists/artist5.png'), width: 155 },
+    { path: require('../../assets/photos/animal.jpg'), title: 'Animal', profilePic: require('../assets/artists/artist4.jpeg'), width: 150 },
+    { path: require('../../assets/photos/sunset.jpg'), title: 'Sunset', profilePic: require('../assets/artists/artist3.jpeg'), width: 110 },
+    { path: require('../../assets/photos/deer.jpg'), title: 'Deer', profilePic: require('../assets/artists/artist1.jpeg'), width: 90 },
+    { path: require('../../assets/art/art1.jpg'), title: 'Art 1', profilePic: require('../assets/artists/artist2.jpeg'), width: 130 },
+    { path: require('../../assets/art/art2.png'), title: 'Art 2', profilePic: require('../assets/artists/artist6.jpeg'), width: 115 },
+    { path: require('../../assets/art/art3.png'), title: 'Art 3', profilePic: require('../assets/artists/artist7.jpeg'), width: 95 },
+    { path: require('../../assets/art/art4.png'), title: 'Art 4', profilePic: require('../assets/artists/artist8.jpeg'), width: 170 },
+    { path: require('../../assets/art/art5.png'), title: 'Art 5', profilePic: require('../assets/artists/artist9.jpeg'), width: 125 },
+    { path: require('../../assets/art/art6.png'), title: 'Art 6', profilePic: require('../assets/artists/artist10.jpeg'), width: 100 },
+    { path: require('../../assets/photos/building.jpg'), title: 'Building', profilePic: require('../assets/artists/artist11.jpeg'), width: 110 },
+    { path: require('../../assets/photos/man.jpg'), title: 'Man', profilePic: require('../assets/artists/artist12.jpeg'), width: 105 },
+    { path: require('../../assets/photos/hand.jpg'), title: 'Hand', profilePic: require('../assets/artists/artist13.jpeg'), width: 115 },
+    { path: require('../../assets/photos/gray.jpg'), title: 'Gray', profilePic: require('../assets/artists/artist14.jpeg'), width: 120 },
     // Add more images and profile pictures if needed
 ];
 

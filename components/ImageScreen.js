@@ -137,7 +137,17 @@ const ImageScreen = ({ route, navigation }) => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.buyNowButton}>
+        <TouchableOpacity
+          style={styles.buyNowButton}
+          onPress={() =>
+            navigation.navigate("DeliveryDetails", {
+              artName: images[currentIndex]?.name, // Pass only the art name
+              imageLink: images[currentIndex]?.imageLink, // Pass the image link
+              artistName: images[currentIndex]?.artistName, // Pass the artist's name
+              price: images[currentIndex]?.price, // Pass the price
+            })
+          }
+        >
           <Text style={styles.buyNowButtonText}>BUY NOW</Text>
         </TouchableOpacity>
       </View>

@@ -64,7 +64,7 @@ const StatisticsScreen = () => {
           <Text>Jean-Michel Basquiat</Text>
           <View style={{ display: 'flex', flexDirection: 'row' }}>
             <Image 
-              source={require('../assets/up-arrow.png')}
+              source={require('../assets/up-arrow.jpeg')}
               style={styles.logo}
             />
             <Text>
