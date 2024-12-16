@@ -57,10 +57,32 @@ async function updateArtistType(artistType, token) {
         },
       }
     );
+
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Error updating artist type:', error);
-    console.error('Server response:', error.response?.data); // Log server response for more details
+    return error.response?.data || error;
+  }
+}
+
+// Function to update the user's art types (art-lover)
+async function updateArtType(artTypes, token) {
+  try {
+    const response = await axios.put(
+      `${API_URL}/set-art-categories`,
+      artTypes,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating art-lover art types: ', error);
     return error.response?.data || error;
   }
 }
@@ -344,6 +366,7 @@ export {
   getAllProfilePictures,
   updateBio,
   updateArtistType,
+  updateArtType,
   getBio,
   getArtistType,
   getUserProfile,
