@@ -16,7 +16,10 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -24,8 +27,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.immpression.art",
-      "versionCode": 8
-    },
+      "versionCode": 8,
     "web": {
       "favicon": "./assets/favicon.png"
     },
@@ -60,6 +62,12 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ]
-    ]
+    ],
+    "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4"
+        }
+    }
+  }
   }
 }
