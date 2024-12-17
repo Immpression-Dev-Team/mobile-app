@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,9 @@ import Navbar from "../components/Navbar";
 import FooterNavbar from "../components/FooterNavbar";
 import { useAuth } from "../state/AuthProvider";
 import axios from "axios";
+import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
+
+const apiKey = "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4";
 
 const DeliveryDetails = ({ navigation, route }) => {
   const { artName, imageLink, artistName, price } = route.params;
@@ -32,12 +35,13 @@ const DeliveryDetails = ({ navigation, route }) => {
   const [state, setState] = useState("");
   const [openState, setOpenState] = useState(false);
   const [zipCode, setZipCode] = useState("");
+  const mapRef = useRef(null);
 
   const [validationError, setValidationError] = useState(null);
   const [addressSuggestions, setAddressSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [suggestedAddress, setSuggestedAddress] = useState(null);
-  const [coordinates, setCoordinates] = useState({ lat: 0, lng: 0});
+  const [coordinates, setCoordinates] = useState({ lat: 40.734240, lng: -73.817039 });
   const [selectedAddress, setSelectedAddress] = useState(null);
 
   const countries = [
@@ -111,7 +115,7 @@ const DeliveryDetails = ({ navigation, route }) => {
   ];
 
   const validateAddress = async (address, city, state, zipCode, country) => {
-    const apiKey = "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4";
+    
     
     const url = `https://addressvalidation.googleapis.com/v1:validateAddress?key=${apiKey}`;
     const regionCode = countryCodeMapping[country];
@@ -147,82 +151,6 @@ const DeliveryDetails = ({ navigation, route }) => {
   }
 };
 
-// const handleVerifyAddress = async () => {
-//   console.log("Verifying address...");
-
-//   if (!address || !city || !zipCode || (country === "United States" && !state)) {
-//     Alert.alert("Error", "Please fill out all required address fields.");
-//     return;
-//   }
-
-//   try {
-//     const validationResult = await validateAddress(address, city, state, zipCode, country);
-//     console.log("Validation Result:", validationResult);
-
-//     if (validationResult && validationResult.address) {
-
-//       const location = validationResult.address.location;
-//       const suggested = validationResult.address.formattedAddress || "Suggested Address Unavailable";
-//       const lat = location.latitude || 40.734240;
-//       const lng = location.longitude || -73.817039;
-
-//       setSuggestedAddress(suggested);
-//       setCoordinates({ lat, lng });
-
-//       console.log("Suggested Address:", suggested);
-//       console.log("Coordinates Updated:", { lat, lng });
-//       Alert.alert("Success", "Suggested address retrieved. Please select an option.");
-//     } else {
-//       Alert.alert("Error", "No suggested address found. Please try again.");
-//     }
-//   } catch (error) {
-//     console.error("Error validating address:", error.response?.data || error.message);
-//     Alert.alert("Error", "Address validation failed. Please try again.");
-//   }
-// };
-
-// const handleVerifyAddress = async () => {
-//   console.log("Verifying address...");
-
-//   if (!address || !city || !zipCode || (country === "United States" && !state)) {
-//     Alert.alert("Error", "Please fill out all required address fields.");
-//     return;
-//   }
-
-//   try {
-//     const validationResult = await validateAddress(address, city, state, zipCode, country);
-//     console.log("Validation Result:", validationResult);
-
-//     if (validationResult && validationResult.address) {
-//       const location = validationResult.address.location;
-
-//       if (location && location.latitude && location.longitude) {
-//         // Location exists - update coordinates
-//         const suggested = validationResult.address.formattedAddress || "Suggested Address Unavailable";
-//         const lat = location.latitude;
-//         const lng = location.longitude;
-
-//         setSuggestedAddress(suggested);
-//         setCoordinates({ lat, lng });
-
-//         console.log("Suggested Address:", suggested);
-//         console.log("Coordinates Updated:", { lat, lng });
-//         Alert.alert("Success", "Suggested address retrieved. Please select an option.");
-//       } else {
-//         // Location is missing
-//         console.warn("Location data is missing from the API response.");
-//         Alert.alert("Warning", "Location data is unavailable. Please refine your address.");
-//         setSuggestedAddress(null);
-//         setCoordinates({ lat: 40.734240, lng: -73.817039 }); // Default fallback
-//       }
-//     } else {
-//       Alert.alert("Error", "No suggested address found. Please try again.");
-//     }
-//   } catch (error) {
-//     console.error("Error validating address:", error.response?.data || error.message);
-//     Alert.alert("Error", "Address validation failed. Please check your input and try again.");
-//   }
-// };
 
 const handleVerifyAddress = async () => {
   console.log("Verifying address...");
@@ -236,77 +164,95 @@ const handleVerifyAddress = async () => {
     const validationResult = await validateAddress(address, city, state, zipCode, country);
     console.log("Validation Result:", validationResult);
 
-    // Access the location under geocode
-    if (validationResult && validationResult.geocode && validationResult.geocode.location) {
-      const suggested = validationResult.address.formattedAddress || "Suggested Address Unavailable";
+    // Safely extract latitude and longitude
+    if (validationResult?.geocode?.location) {
       const lat = validationResult.geocode.location.latitude;
       const lng = validationResult.geocode.location.longitude;
 
-      setSuggestedAddress(suggested);
+      // Update coordinates and focus map
       setCoordinates({ lat, lng });
 
-      console.log("Suggested Address:", suggested);
+      // Animate map on Android
+      if (mapRef.current) {
+        mapRef.current.animateToRegion({
+          latitude: lat,
+          longitude: lng,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }, 1000);
+      }
+
       console.log("Coordinates Updated:", { lat, lng });
-      Alert.alert("Success", "Suggested address retrieved. Please select an option.");
     } else {
-      console.warn("Location data is missing from the API response.");
-      Alert.alert("Warning", "Location data is unavailable. Please refine your address.");
-      setSuggestedAddress(null);
-      setCoordinates({ lat: 40.734240, lng: -73.817039 }); // Default fallback
+      console.warn("Location data missing.");
+      Alert.alert("Warning", "Location data unavailable. Please refine your address.");
     }
   } catch (error) {
-    console.error("Error validating address:", error.response?.data || error.message);
-    Alert.alert("Error", "Address validation failed. Please check your input and try again.");
+    console.error("Error validating address:", error.message || error.response?.data);
+    Alert.alert("Error", "Address validation failed.");
   }
 };
 
-
-
-
-
-
-const handleSubmit = async () => {
-  console.log("Continue button pressed");
-
-  if (!name || !country || !address || !city || (country === "United States" && !state) || !zipCode) {
-    console.log("Validation failed:", { name, country, address, city, state, zipCode });
-    Alert.alert("Error", "Please fill out all fields.");
-    return;
+const validateInputs = () => {
+  if (!address || !city || !state || !zipCode || !country) {
+    Alert.alert("Error", "Please fill out all fields before continuing.");
+    return false;
   }
+  return true;
+};
 
-  const deliveryDetails = { name, country, address, city, state, zipCode };
-  const finalAddress = selectedAddress === "suggested" ? suggestedAddress : address;
-  try {
-    const orderData = {
-      artName: route.params.artName,
-      userAccountName: userData.user.user.name,
-      deliveryDetails,
-    };
-    console.log("Creating order:", orderData);
-    await createOrder(orderData, token);
-    console.log("Order created successfully, navigating to PaymentScreen");
-    navigation.navigate("PaymentScreen", {
-      artName: route.params.artName,
-      price: route.params.price,
-      deliveryDetails: {
-        address: finalAddress,
-        city,
-        state,
-        zipCode,
-        country,
+// Submit Handler
+const handleSubmit = () => {
+  if (!validateInputs()) return;
+
+  // Pass information to the next page (e.g., Payment Page)
+  navigation.navigate("PaymentScreen", {
+    deliveryDetails: {
+      address,
+      city,
+      state,
+      zipCode,
+      country,
+      coordinates,
+    },
+  });
+};
+
+useEffect(() => {
+  if (mapRef.current && coordinates.lat && coordinates.lng) {
+    mapRef.current.animateToRegion(
+      {
+        latitude: coordinates.lat,
+        longitude: coordinates.lng,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
       },
-    });
-  } catch (error) {
-    console.error("Error placing order:", error);
-    Alert.alert("Error", "Failed to proceed to payment.");
+      1000 // Duration in milliseconds
+    );
   }
-};
+}, [coordinates]);
+
 
 useEffect(() => {
   console.log("Updated Suggested Address:", suggestedAddress);
   console.log("Updated Coordinates:", coordinates);
   console.log("Coordinates Updated:", coordinates);
 }, [suggestedAddress, coordinates]);
+
+useEffect(() => {
+  if (mapRef.current && coordinates.lat && coordinates.lng) {
+    mapRef.current.animateToRegion(
+      {
+        latitude: coordinates.lat,
+        longitude: coordinates.lng,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      },
+      1000 // Duration in milliseconds
+    );
+  }
+}, [coordinates]);
+
 
 const debounce = (func, delay) => {
   let timeoutId;
@@ -371,26 +317,72 @@ const debouncedValidateAddress = debounce(validateAddress, 500);
                   value={name}
                   onChangeText={setName}
                 />
-                <View style={{ zIndex: openCountry ? 1000 : 1 }}>
-                  <DropDownPicker
-                    open={openCountry}
-                    value={country}
-                    items={countries}
-                    setOpen={setOpenCountry}
-                    setValue={setCountry}
-                    placeholder="Select Country"
-                    style={styles.dropdown}
-                    dropDownContainerStyle={styles.dropdownContainer}
-                  />
-                </View>
-                <TextInput
-                  style={styles.input}
-                  placeholder="Address"
-                  value={address}
-                  onChangeText={(text) => {setAddress(text);
-                    debouncedValidateAddress(text, city, state, zipCode, country);
+                <GooglePlacesAutocomplete
+                  placeholder="Enter Address"
+                  minLength={2} // Minimum characters to trigger suggestions
+                  fetchDetails={true} // Fetch full details (structured components)
+                  onPress={(data, details = null) => {
+                    if (details) {
+                      // Parse address components
+                      const addressComponents = details.address_components;
+                      const formattedAddress = details.formatted_address;
+
+                      let country = "";
+                      let city = "";
+                      let state = "";
+                      let zipCode = "";
+
+                      // Extract fields from address components
+                      addressComponents.forEach((component) => {
+                        const types = component.types;
+
+                        if (types.includes("country")) {
+                          country = component.long_name; // Full country name
+                        }
+                        if (types.includes("locality")) {
+                          city = component.long_name; // City
+                        }
+                        if (types.includes("administrative_area_level_1")) {
+                          state = component.short_name; // State (short form like NY)
+                        }
+                        if (types.includes("postal_code")) {
+                          zipCode = component.long_name; // Zip code
+                        }
+                      });
+
+                      // Extract coordinates
+                      const lat = details.geometry.location.lat;
+                      const lng = details.geometry.location.lng;
+
+                      // Update state for all fields
+                      setAddress(formattedAddress);
+                      setCity(city);
+                      setState(state);
+                      setZipCode(zipCode);
+                      setCountry(country);
+                      setCoordinates({ lat, lng });
+
+                      // Log for debugging
+                      console.log("Selected Address:", formattedAddress);
+                      console.log("City:", city, "State:", state, "Zip Code:", zipCode, "Country:", country);
+                      console.log("Coordinates Updated:", { lat, lng });
+                    }
                   }}
+                  query={{
+                    key: apiKey, // Replace with your Google API Key
+                    language: "en",
+                    components: "country:us", // Restrict to US
+                  }}
+                  styles={{
+                    textInputContainer: { width: "100%" },
+                    textInput: styles.input,
+                    listView: { backgroundColor: "#FFF", marginTop: 2 },
+                  }}
+                  enablePoweredByContainer={false}
+                  debounce={200} // Delay to optimize API calls
                 />
+
+                
                 <TextInput
                   style={styles.input}
                   placeholder="City"
@@ -421,115 +413,51 @@ const debouncedValidateAddress = debounce(validateAddress, 500);
                   onChangeText={setZipCode}
                 />
 
-                <View style={styles.lineBreak} />
-                
-                  {/* <MapView
-                    key={`${coordinates.lat}-${coordinates.lng}`}
-                    style={styles.miniMap}
-                    region={{
-                      latitude: coordinates.lat || 40.734240, // Default to Queens College if no coordinates
-                      longitude: coordinates.lng || -73.817039,
-                      latitudeDelta: 0.01,
-                      longitudeDelta: 0.01,
-                    }}
-                  >
-                    {console.log("Mini Map Coordinates:", coordinates)}
-                      <Marker
-                        coordinate={{
-                          latitude: coordinates.lat || 40.734240,
-                          longitude: coordinates.lng || -73.817039,
-                        }}
-                        title="Suggested Location"
-                        description={suggestedAddress || "No address selected"}
-                      />
-                  </MapView> */}
+                <View style={{ zIndex: openCountry ? 1000 : 1 }}>
+                  <DropDownPicker
+                    open={openCountry}
+                    value={country}
+                    items={countries}
+                    setOpen={setOpenCountry}
+                    setValue={setCountry}
+                    placeholder="Select Country"
+                    style={styles.dropdown}
+                    dropDownContainerStyle={styles.dropdownContainer}
+                  />
+                </View>
 
-                  <MapView
-                    key={`${coordinates.lat}-${coordinates.lng}`} // Forces re-render when coordinates change
-                    style={styles.miniMap}
-                    region={{
-                      latitude: coordinates.lat || 40.734240, // Default to Queens College if no coordinates
-                      longitude: coordinates.lng || -73.817039,
-                      latitudeDelta: 0.01,
-                      longitudeDelta: 0.01,
-                    }}
-                  >
+                <View style={styles.lineBreak} />
+
+
+                <MapView
+                  ref={mapRef} // Attach ref for animateToRegion
+                  style={styles.miniMap}
+                  region={{
+                    latitude: coordinates.lat || 40.734240, // Default fallback
+                    longitude: coordinates.lng || -73.817039,
+                    latitudeDelta: 0.01,
+                    longitudeDelta: 0.01,
+                  }}
+                >
+                  {coordinates.lat && coordinates.lng && (
                     <Marker
                       coordinate={{
-                        latitude: coordinates.lat || 40.734240,
-                        longitude: coordinates.lng || -73.817039,
+                        latitude: coordinates.lat,
+                        longitude: coordinates.lng,
                       }}
-                      title="Suggested Location"
-                      description={suggestedAddress || "No address selected"}
+                      title="Selected Location"
                     />
-                  </MapView>
+                  )}
+                </MapView>
+
+
 
 
               <View style={styles.lineBreak} />
 
-              <View style={styles.radioContainer}>
-                  <Text style={styles.radioTitle}>Choose Address</Text>
-
-                  {/* {Suggested Address} */}
-                  <TouchableOpacity
-                    style={[styles.radioOption,
-                      selectedAddress === "suggested" && styles.selectedOption,
-                    ]}
-                    onPress={() => setSelectedAddress("suggested")}
-                  >
-                    <Text style={styles.radioText}>
-                      {suggestedAddress
-                        ? `• Suggested Address: ${suggestedAddress}`
-                        : "• Suggested Address: Not Available"
-                      }
-                    </Text>
-                  </TouchableOpacity>
-
-                  {/* User entered Address */}
-                  <TouchableOpacity
-                    style={[
-                      styles.radioOption,
-                      selectedAddress === "manual" && styles.selectedOption,
-                    ]}
-                    onPress={() => setSelectedAddress("manual")}
-                  >
-                    <Text style={styles.radioText}>
-                      {`• Entered Address: ${address}`}
-                    </Text>
-                  </TouchableOpacity>
-              </View>
-              {/* Address validation error and suggestions */}
-              {validationError && <Text style={styles.errorText}>{validationError}</Text>}
-                  {addressSuggestions.length > 0 && (
-                    <View>
-                      <Text style={styles.suggestionText}>Did you mean:</Text>
-                      {addressSuggestions.map((suggestion, index) => (
-                        <TouchableOpacity
-                          key={index}
-                          onPress={() => {
-                            setAddress(suggestion); // Update address field with suggestion
-                            setValidationError(null);
-                            setAddressSuggestions([]); // Clear suggestions
-                          }}
-                        >
-                          <Text style={styles.suggestion}>{suggestion}</Text>
-                        </TouchableOpacity>
-                      ))}
-                    </View>
-                  )}
-            <TouchableOpacity style={styles.verifyButton} onPress={handleVerifyAddress}>
-              <Text style={styles.buttonText}>Verify Address</Text>
-            </TouchableOpacity>
-
-                <TouchableOpacity style={[styles.button, {backgroundColor: selectedAddress ? "#007AFF" : "#CCCCCC"},]} onPress={handleSubmit} disabled={!selectedAddress}>
-                  <Text style={styles.buttonText}>
-                    {
-                      selectedAddress === "suggested"
-                      ? "Continue with Suggested"
-                      : "Continue with Manual"
-                    }
-                  </Text>
-                </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                <Text style={styles.buttonText}>Continue</Text>
+              </TouchableOpacity>
               </View>
             </View>
           )}
@@ -539,50 +467,6 @@ const debouncedValidateAddress = debounce(validateAddress, 500);
         {console.log("Modal Visibility:", showSuggestions)}
         {console.log("Modal Coordinates:", coordinates)}
         {console.log("Suggested Address:", suggestedAddress)}
-
-        <Modal visible={showSuggestions} animationType="slide" transparent={true}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Address Suggestion</Text>
-              <MapView
-                style={styles.map}
-                region={{
-                  latitude: coordinates.lat || 40.734240,
-                  longitude: coordinates.lng || -73.817039,
-                  latitudeDelta: 0.01,
-                  longitudeDelta: 0.01,
-                }}
-              >
-                <Marker
-                  coordinate={{
-                    latitude: coordinates.lat || 40.734240,
-                    longitude: coordinates.lng || -73.817039,
-                  }}
-                  title="Suggested Address"
-                  description={suggestedAddress}
-                />
-              </MapView>
-              <Text style={styles.suggestionText}>{suggestedAddress}</Text>
-              <View style={styles.buttonRow}>
-                <TouchableOpacity
-                  style={styles.modalButton}
-                  onPress={() => {
-                    setAddress(suggestedAddress);
-                    setShowSuggestions(false);
-                  }}
-                >
-                  <Text style={styles.buttonText}>Use Suggested</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.modalButton}
-                  onPress={() => setShowSuggestions(false)}
-                >
-                  <Text style={styles.buttonText}>Keep Current</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
 
       </KeyboardAvoidingView>
 
@@ -721,30 +605,6 @@ const styles = StyleSheet.create({
     color: "#f0f0f0",
     height: 20,
   },
-  radioContainer:{
-    marginVertical: 10,
-    paddingHorizontal: 10,
-  },
-  radioTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  radioOption: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 5,
-  },
-  radioText: {
-    fontSize: 14,
-  },
-  verifyButton: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 5,
-    marginBottom: 10,
-    alignItems: "center",
-  },
   button:{
     backgroundColor: "#007AFF",
     padding: 15,
@@ -754,16 +614,6 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#FFF",
     fontWeight: "bold",
-  },
-  radioOption:{
-    borderWidth: 1,
-    borderColor: "#DDD",
-    borderRadius: 5,
-    padding: 10, 
-    marginVertical: 5,
-  },
-  selectedOption: {
-    borderColor: "#007AFF",
   },
 });
 

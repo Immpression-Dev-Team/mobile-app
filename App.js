@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { AuthProvider, useAuth } from "./state/AuthProvider";
 import { guestStackScreen, userStackScreen } from "./utils/helpers";
+import 'react-native-get-random-values';
 
 const Stack = createStackNavigator();
 
