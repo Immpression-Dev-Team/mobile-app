@@ -21,8 +21,6 @@ import { useAuth } from "../state/AuthProvider";
 import axios from "axios";
 import { GooglePlacesAutocomplete } from "react-native-google-places-autocomplete";
 
-const apiKey = "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4";
-
 const DeliveryDetails = ({ navigation, route }) => {
   const { artName, imageLink, artistName, price } = route.params;
   const { userData, token } = useAuth();
