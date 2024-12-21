@@ -19,6 +19,7 @@
     "@react-navigation/native": "^7.0.12",
     "@react-navigation/stack": "^7.0.17",
     "axios": "^1.7.8",
+    "commitlint": "^19.6.0",
     "expo": "^52.0.11",
     "expo-font": "~13.0.1",
     "expo-image-manipulator": "~13.0.5",
@@ -44,9 +45,13 @@
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
-    "@commitlint/cli": "^19.6.0",
+    "@commitlint/cli": "^19.6.1",
     "@commitlint/config-conventional": "^19.6.0",
     "husky": "^9.1.7"
   },
-  "private": true
+  "private": true,
+  "description": "*An up-and-coming innovative social media-based platform that aims to revolutionize the art world.*\r This will be focused on the client side of the application\r ## Get Started\r Run command `npm i` to",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
