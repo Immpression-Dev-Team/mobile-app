@@ -354,42 +354,6 @@ async function createPaymentIntent(paymentData, token) {
   }
 }
 
-async function confirmPayment(paymentIntentId, token) {
-  try {
-    const response = await axios.post(
-      `${API_URL}/confirm-payment`,
-      { paymentIntentId },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-    return response.data; // Contains confirmation result
-  } catch (error) {
-    console.error('Error confirming payment:', error.response?.data || error);
-    throw error;
-  }
-}
-
-async function getPaymentStatus(paymentIntentId, token) {
-  try {
-    const response = await axios.get(
-      `${API_URL}/payment-status/${paymentIntentId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return response.data; // Contains the PaymentIntent status
-  } catch (error) {
-    console.error('Error fetching payment status:', error.response?.data || error);
-    throw error;
-  }
-}
-
 export {
   getAllImages,
   uploadImage,
@@ -410,6 +374,4 @@ export {
   getImageViews,
   createOrder,
   createPaymentIntent,
-  confirmPayment,
-  getPaymentStatus,
 };

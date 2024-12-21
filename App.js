@@ -4,10 +4,11 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { AuthProvider, useAuth } from "./state/AuthProvider";
 import { guestStackScreen, userStackScreen } from "./utils/helpers";
-import PaymentScreen from './screens/PaymentScreen'
 import { StripeProvider } from '@stripe/stripe-react-native';
 
 const Stack = createStackNavigator();
+
+const STRIPE_KEY = "provide-stripe-key"
 
 const AppContent = () => {
   const { userData, loading } = useAuth();
