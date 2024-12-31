@@ -15,10 +15,10 @@ import FooterNavbar from "../components/FooterNavbar";
 import { incrementImageViews } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
 
-const share = require("../assets/icons/share-button.png");
-const like = require("../assets/icons/like-button.png");
+const share = require("../assets/icons/share-button.jpg");
+const like = require("../assets/icons/like-button.jpg");
 const likesIcon = require("../assets/icons/likes_icon.png");
-const viewsIcon = require("../assets/icons/views_icon.png");
+const viewsIcon = require("../assets/icons/views_icon.jpg");
 const { width } = Dimensions.get("window");
 
 // Helper function to calculate responsive font size
