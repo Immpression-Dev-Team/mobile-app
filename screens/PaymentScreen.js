@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import Navbar from "../components/Navbar";
 import FooterNavbar from "../components/FooterNavbar";
+import { CardField, useStripe } from '@stripe/stripe-react-native';
 
 const PaymentScreen = ({ navigation, route }) => {
   const { orderId } = route.params; // Order ID passed from the DeliveryDetails screen
@@ -19,6 +20,7 @@ const PaymentScreen = ({ navigation, route }) => {
   const [expiryDate, setExpiryDate] = useState("");
   const [cvv, setCvv] = useState("");
   const [nameOnCard, setNameOnCard] = useState("");
+  const { confirmPayment } = useStripe();
 
   const handlePayment = async () => {
     if (!cardNumber || !expiryDate || !cvv || !nameOnCard) {
