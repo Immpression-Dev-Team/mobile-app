@@ -8,6 +8,9 @@ import {
 } from "react-native";
 
 export default function FeaturedArtistsContent({artists, navigate}) {
+    // truncated if the username is too long
+    const maxLen = 10;
+
     return(
         <ScrollView
             horizontal
@@ -32,7 +35,10 @@ export default function FeaturedArtistsContent({artists, navigate}) {
                         source={{ uri: item.profilePictureLink }}
                         style={styles.image}
                     />
-                    <Text style={styles.artistName}>{item.name}</Text>
+                    <Text style={styles.artistName}>{
+                        (item.name.length > maxLen) ? item.name.substring(0, maxLen) + "..." :
+                        item.name
+                    }</Text>
                     <Text style={styles.artistType}>{(item.artistType)? item.artistType : 'artistType'}</Text>
                 </TouchableOpacity>
             ))}

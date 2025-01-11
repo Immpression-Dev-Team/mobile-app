@@ -9,46 +9,53 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 
+import homeIcon from '../assets/icons/Home_white.png';
+import sellIcon from '../assets/icons/Sell_green.png';
+import profileIcon from '../assets/icons/Profile_white.png';
+
 const FooterNavbar = () => {
   const navigation = useNavigation();
+  const navBtns = [
+    {
+      navLink: 'Home',
+      imgLink: homeIcon,
+      imgText: 'HOME',
+    },
+    {
+      navLink: 'Upload',
+      imgLink: sellIcon,
+      imgText: 'SELL',
+    },
+    {
+      navLink: 'Profile',
+      imgLink: profileIcon,
+      imgText: 'ME',
+    },
+  ]
 
   return (
     <ImageBackground
-      source={require("../assets/Bottom_Nav_Container_blue.png")} // Update path if needed
+      source={require("../assets/Bottom_Nav_Container_blue.png")}
       style={styles.backgroundImage}
     >
       <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Home")}
-        >
-          <Image
-            source={require("../assets/icons/Home_white.png")}
-            style={styles.icon}
-          />
-          <Text style={styles.text}>HOME</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.sellButton}
-          onPress={() => navigation.navigate("Upload")}
-        >
-          <Image
-            source={require("../assets/icons/Sell_green.png")}
-            style={styles.icon}
-          />
-          <Text style={styles.sellText}>SELL</Text>
-          {/* Removed the circular style and adjusted to be like other buttons */}
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate("Profile")}
-        >
-          <Image
-            source={require("../assets/icons/Profile_white.png")}
-            style={styles.icon}
-          />
-          <Text style={styles.text}>ME</Text>
-        </TouchableOpacity>
+        {
+          navBtns.map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.button}
+              onPress={() => navigation.navigate(item.navLink)}
+            >
+              <Image
+                source={item.imgLink}
+                style={styles.icon}
+              />
+              <Text style={[styles.text, { marginTop: (item.imgText === 'SELL') ?  `10` : `-10` }]}>
+                {item.imgText}
+              </Text>
+            </TouchableOpacity>
+          ))
+        }
       </View>
     </ImageBackground>
   );
@@ -57,44 +64,31 @@ const FooterNavbar = () => {
 const styles = StyleSheet.create({
   backgroundImage: {
     width: "100%",
-    height: 90, // Adjust height as needed based on your image
-    resizeMode: "cover", // Ensures the image covers the container
+    height: 90,
+    resizeMode: "cover",
     backgroundColor: "white",
   },
   container: {
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    height: "100%", // Ensures the container stretches to fill the background image
+    height: "100%",
     paddingBottom: 0,
     paddingHorizontal: 0,
   },
   button: {
     alignItems: "center",
-  },
-  sellButton: {
-    alignItems: "center",
-    paddingBottom: 0,
+    width: 100,
   },
   text: {
     color: "#fff",
     fontSize: 10,
-    marginTop: -10,
-    // fontWeight: 'bold',
-    textAlign: "center",
-    fontFamily: "LEMON MILK Bold",
-  },
-  sellText: {
-    color: "#fff",
-    fontSize: 10,
-    marginTop: 10,
-    // fontWeight: 'bold',
     textAlign: "center",
     fontFamily: "LEMON MILK Bold",
   },
   icon: {
-    width: 40,
-    height: 40,
+    width: 45,
+    height: 45,
     resizeMode: "contain",
   },
 });

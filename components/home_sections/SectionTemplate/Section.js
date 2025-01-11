@@ -4,10 +4,13 @@ import {
     Image,
 } from "react-native";
 
-import backgroundHeader from "../../../assets/foryou_assets/background_top.png";
-import backgroundFooter from "../../../assets/foryou_assets/background_bottom.png";
-  
-export default function SectionTemplate({renderSection, height, headerHeight=null, footerHeight=null}) {
+import forYouBgHeader from "../../../assets/foryou_assets/background_top.png";
+import forYouBgFooter from "../../../assets/foryou_assets/background_bottom.png";
+
+import discoverBgHeader from "../../../assets/discover_assets/background_top.png";
+import discoverBgFooter from "../../../assets/discover_assets/background_bottom.png";
+
+export default function SectionTemplate({sectionName, renderSection, height, headerHeight, footerHeight}) {
     return(
         <View
             style={[
@@ -16,7 +19,7 @@ export default function SectionTemplate({renderSection, height, headerHeight=nul
             ]}
         >
             <Image
-                source={backgroundHeader}
+                source={sectionName === 'ArtForYou'? forYouBgHeader : discoverBgHeader}
                 style={[
                     styles.bgHeader,
                     (headerHeight) ? { height: `${headerHeight}%` } : {}
@@ -28,7 +31,7 @@ export default function SectionTemplate({renderSection, height, headerHeight=nul
                 }
             </View>
             <Image
-                source={backgroundFooter}
+                source={sectionName === 'ArtForYou'? forYouBgFooter : discoverBgFooter}
                 style={[
                     styles.bgFooter,
                     (footerHeight) ? { height: `${footerHeight}%` } : {}

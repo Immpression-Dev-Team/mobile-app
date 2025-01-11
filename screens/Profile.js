@@ -34,6 +34,7 @@ const Profile = () => {
             setViewsCount(data.user.views || 0); // Set views count if available
           } else {
             console.error('Error: user data is undefined in fetchProfileData');
+            console.error(data)
           }
         } catch (error) {
           console.error('Error fetching profile data:', error);

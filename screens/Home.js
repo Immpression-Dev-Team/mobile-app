@@ -64,13 +64,14 @@ const styles = StyleSheet.create({
   },
   navbarBackgroundImage: {
     width: "100%",
-    height: "100%",
+    height: "90%",
     resizeMode: "cover",
   },
   scrollContainer: {
     flex: 1,
     alignItems: "center",
     justifyContent: 'space-between',
+    // marginHorizontal: 5,
   },
   footer: {
     zIndex: 1000,

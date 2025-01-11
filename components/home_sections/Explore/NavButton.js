@@ -28,7 +28,8 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         shadowOffset: { width: 0, height: 4 }, // Shadow offset (width and height closer to zero for centered shadow)
         elevation: 8, // Elevation increased for a stronger shadow effect on Android
-  },
+        paddingHorizontal: 1,
+    },
     buttonText: {
         color: '#FFF',
         fontSize: 15,

@@ -4,10 +4,11 @@ import FeaturedArtists from "./FeaturedArtists";
 export default function FeaturedArtistsSection(){
     return(
         <SectionTemplate
+            sectionName='FeaturedArtists'
             renderSection={<FeaturedArtists/>}
-            height={36}
+            height={37}
             headerHeight={10}
-            footerHeight={2.5}
+            footerHeight={10}
         />
     )
 }
