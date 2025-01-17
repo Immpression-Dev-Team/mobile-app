@@ -6,7 +6,7 @@ export default function CategoryNavSection(){
         <SectionTemplate
             sectionName='CategoryNavBar'
             renderSection={<CategoryNavBar/>}
-            headerHeight={12.5}
+            headerHeight={13}
             footerHeight={20}
         />
     )

@@ -6,7 +6,7 @@ export default function CategoryNavSection(){
         <SectionTemplate
             sectionName='ArtForYou'
             renderSection={<ArtForYou/>}
-            height={50}
+            height={49}
         />
     )
 }
