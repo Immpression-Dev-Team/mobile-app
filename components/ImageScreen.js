@@ -6,14 +6,12 @@ import {
   Text,
   FlatList,
   Dimensions,
-  ImageBackground,
   TouchableOpacity,
 } from "react-native";
 
-import Navbar from "./Navbar";
-import FooterNavbar from "../components/FooterNavbar";
 import { incrementImageViews } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
+import ScreenTemplate from "../screens/ScreenTemplate";
 
 const share = require("../assets/icons/share-button.jpg");
 const like = require("../assets/icons/like-button.jpg");
@@ -56,13 +54,7 @@ const ImageScreen = ({ route, navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require("../assets/backgrounds/navbar_bg_blue.png")}
-        style={styles.navbarBackgroundImage}
-      >
-        <Navbar />
-      </ImageBackground>
+    <ScreenTemplate>
       <FlatList
         ref={flatListRef}
         data={images}
@@ -151,16 +143,11 @@ const ImageScreen = ({ route, navigation }) => {
           <Text style={styles.buyNowButtonText}>BUY NOW</Text>
         </TouchableOpacity>
       </View>
-      <FooterNavbar />
-    </View>
+    </ScreenTemplate>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
   imageContainer: {
     width,
     justifyContent: "center",

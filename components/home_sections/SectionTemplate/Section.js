@@ -4,13 +4,27 @@ import {
     Image,
 } from "react-native";
 
-import forYouBgHeader from "../../../assets/foryou_assets/background_top.png";
-import forYouBgFooter from "../../../assets/foryou_assets/background_bottom.png";
+import navBgHeader from "../../../assets/foryou_assets/background_top.png";
+import navBgFooter from "../../../assets/foryou_assets/background_bottom.png";
 
 import discoverBgHeader from "../../../assets/discover_assets/background_top.png";
 import discoverBgFooter from "../../../assets/discover_assets/background_bottom.png";
 
-export default function SectionTemplate({sectionName, renderSection, height, headerHeight, footerHeight}) {
+export default function SectionTemplate({sectionName, renderSection, height=null, headerHeight=null, footerHeight=null}) {
+    // a section may or may not include top & bottom banner
+    const hasBanner = headerHeight && footerHeight;
+    const RenderBanner = ({ imgLink, style, height }) => {
+        if (!hasBanner)
+            return null;
+
+        return (
+          <Image
+            source={imgLink}
+            style={[style, { height: `${height}%` }]}
+          />
+        );
+      };
+
     return(
         <View
             style={[
@@ -18,24 +32,25 @@ export default function SectionTemplate({sectionName, renderSection, height, hea
                 (height) ? { height: `${height}%` } : { flex: 1 }
             ]}
         >
-            <Image
-                source={sectionName === 'ArtForYou'? forYouBgHeader : discoverBgHeader}
-                style={[
-                    styles.bgHeader,
-                    (headerHeight) ? { height: `${headerHeight}%` } : {}
-                ]}
+            {/* render banner header if required */}
+            <RenderBanner 
+                imgLink={sectionName === 'CategoryNavBar' ? navBgHeader : discoverBgHeader} 
+                style={styles.bgHeader} 
+                height={headerHeight} 
             />
-            <View style={styles.viewContainer}>
+
+            {/* render section content */}
+            <View style={[styles.viewContainer, { marginVertical: (!hasBanner) ?  12.5 : 0 }]}>
                 {
                     renderSection
                 }
             </View>
-            <Image
-                source={sectionName === 'ArtForYou'? forYouBgFooter : discoverBgFooter}
-                style={[
-                    styles.bgFooter,
-                    (footerHeight) ? { height: `${footerHeight}%` } : {}
-                ]}
+
+            {/* render footer header if required */}
+            <RenderBanner 
+                imgLink={sectionName === 'CategoryNavBar' ? navBgFooter : discoverBgFooter} 
+                style={styles.bgFooter} 
+                height={footerHeight} 
             />
         </View>
     )

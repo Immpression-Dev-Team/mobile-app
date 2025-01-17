@@ -1,5 +1,7 @@
 import {
-    StyleSheet, TouchableOpacity, Text
+    StyleSheet,
+    TouchableOpacity,
+    Text
 } from 'react-native';
 
 export default function NavButton({btnText, handler}) {
@@ -17,22 +19,18 @@ export default function NavButton({btnText, handler}) {
 
 const styles = StyleSheet.create({
     button: {
-        flex: 1,
-        height: 55,
-        borderRadius: 5,
+        borderWidth: 2,
+        borderColor: '#007AFF',
         backgroundColor: '#007AFF',
-        alignItems: 'center',
-        justifyContent: 'space-around',
-        shadowColor: '#000',
-        shadowOpacity: 0.9,
-        shadowRadius: 4,
-        shadowOffset: { width: 0, height: 4 }, // Shadow offset (width and height closer to zero for centered shadow)
-        elevation: 8, // Elevation increased for a stronger shadow effect on Android
-        paddingHorizontal: 1,
+        paddingVertical: 6,
+        paddingHorizontal: 21,
+        borderRadius: 25,
+        marginHorizontal: 3,
     },
     buttonText: {
-        color: '#FFF',
-        fontSize: 15,
-        fontFamily: 'LEMON MILK Bold',
+        color: '#fff',
+        fontSize: 13,
+        fontWeight: 'bold',
+        textAlign: 'center',
     },
 });

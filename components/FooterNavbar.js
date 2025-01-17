@@ -19,7 +19,7 @@ const FooterNavbar = () => {
     {
       navLink: 'Home',
       imgLink: homeIcon,
-      imgText: 'HOME',
+      imgText: '',
     },
     {
       navLink: 'Upload',
@@ -29,7 +29,7 @@ const FooterNavbar = () => {
     {
       navLink: 'Profile',
       imgLink: profileIcon,
-      imgText: 'ME',
+      imgText: '',
     },
   ]
 
@@ -48,7 +48,7 @@ const FooterNavbar = () => {
             >
               <Image
                 source={item.imgLink}
-                style={styles.icon}
+                style={(item.imgText === 'SELL') ? styles.sellIcon : styles.icon }
               />
               <Text style={[styles.text, { marginTop: (item.imgText === 'SELL') ?  `10` : `-10` }]}>
                 {item.imgText}
@@ -63,8 +63,8 @@ const FooterNavbar = () => {
 
 const styles = StyleSheet.create({
   backgroundImage: {
+    flex: 1,
     width: "100%",
-    height: 90,
     resizeMode: "cover",
     backgroundColor: "white",
   },
@@ -82,13 +82,18 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "#fff",
-    fontSize: 10,
+    fontSize: 12,
     textAlign: "center",
     fontFamily: "LEMON MILK Bold",
   },
   icon: {
-    width: 45,
-    height: 45,
+    width: 47.5,
+    height: 47.5,
+    resizeMode: "contain",
+  },
+  sellIcon: {
+    width: 50,
+    height: 50,
     resizeMode: "contain",
   },
 });

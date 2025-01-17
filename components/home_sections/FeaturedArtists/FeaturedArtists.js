@@ -54,8 +54,8 @@ export default function FeaturedArtists() {
   if (isLoading) {
     return(
       <LoadingSection
-        loadingMsg={'LOADING DISCOVER ARTISTS'}
-        size={'medium'}
+        loadingMsg='LOADING DISCOVER ARTISTS'
+        size='medium'
       />
     );
   }
