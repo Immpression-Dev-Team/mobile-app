@@ -1,11 +1,9 @@
 import {
     StyleSheet,
-    View,
-    ImageBackground,
+    Platform,
 } from "react-native";
-import Navbar from "../components/Navbar";
-import FooterNavbar from "../components/FooterNavbar";
 import CategoryContent from "../components/category_sections/CategoryContent";
+import ScreenTemplate from "./ScreenTemplate";
 
 import Paintings from '../assets/categories/Paintings.jpg';
 import Photography from '../assets/categories/Photography.jpg';
@@ -30,19 +28,12 @@ export default function CategoriesScreen() {
     ]
 
     return(
-        <View style={styles.container}>
-            <ImageBackground
-                source={require("../assets/backgrounds/navbar_bg_blue.png")} // Replace with your image path
-                style={styles.navbarBackgroundImage}
-            >
-            <Navbar />
-        </ImageBackground>
+        <ScreenTemplate>
             <CategoryContent
                 title='Categories'
                 images={images}
             />
-            <FooterNavbar/>
-        </View>
+        </ScreenTemplate>
     )
 }
 
@@ -54,5 +45,10 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-between',
         backgroundColor: 'white',
+    },
+    footer: {
+        width: "100%",
+        height: (Platform.OS === 'web') ? "10%" : "8%",
+        zIndex: 1000,
     },
 })

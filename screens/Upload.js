@@ -8,17 +8,15 @@ import {
   StyleSheet,
   Alert,
   FlatList,
-  ImageBackground,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import DropDownPicker from "react-native-dropdown-picker";
-import Navbar from "../components/Navbar";
-import FooterNavbar from "../components/FooterNavbar";
 import { useAuth } from "../state/AuthProvider";
 import { uploadImage } from "../API/API";
 import { Platform } from "react-native";
 import LoadingSection from "../components/home_sections/SectionTemplate/LoadingSection";
+import ScreenTemplate from "./ScreenTemplate";
 
 const Upload = () => {
   const { userData } = useAuth(); // Retrieve userData from AuthProvider, including token
@@ -294,45 +292,24 @@ const Upload = () => {
   );
 
   return (
-    <View style={styles.everything}>
-      <>
-        <ImageBackground
-          source={require("../assets/backgrounds/navbar_bg_blue.png")} // Replace with your image path
-          style={styles.navbarBackgroundImage}
-        >
-          <Navbar />
-        </ImageBackground>
-
-        <FlatList
-          data={[{}]} // Use a FlatList with a single element to render the form
-          renderItem={renderContent}
-          keyExtractor={(item, index) => index.toString()}
-          contentContainerStyle={styles.scrollContainer}
-        />
-
-        <FooterNavbar style={styles.footer} />
-      </>
-
+    <ScreenTemplate>
+      <FlatList
+        data={[{}]} // Use a FlatList with a single element to render the form
+        renderItem={renderContent}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={styles.scrollContainer}
+      />
       {isLoading && (
         <View style={styles.loadingOverlay}>
-          <LoadingSection loadingMsg={"Uploading Your Art!"} size={"large"} />
+          <LoadingSection loadingMsg="Uploading Your Art!" size="large" />
         </View>
       )}
-    </View>
+    </ScreenTemplate>
   );
 };
 const styles = StyleSheet.create({
-  everything: {
-    flex: 1,
-    justifyContent: "space-between",
-    backgroundColor: "white",
-  },
-  backgroundImage: {
-    flex: 1,
-    resizeMode: "cover",
-  },
   scrollContainer: {
-    paddingBottom: 100,
+    paddingBottom: 50,
   },
   container: {
     padding: 16,
@@ -403,13 +380,6 @@ const styles = StyleSheet.create({
   uploadButtonText: {
     color: "#fff",
     fontWeight: "bold",
-  },
-  footer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: "white",
   },
   loadingOverlay: {
     position: "absolute",
