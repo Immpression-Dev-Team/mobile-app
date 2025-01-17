@@ -108,9 +108,8 @@ export default function Navbar() {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 50,
-    paddingBottom: 5,
     zIndex: 99,
+    width: '100%',
   },
   navbar: {
     flexDirection: 'row',

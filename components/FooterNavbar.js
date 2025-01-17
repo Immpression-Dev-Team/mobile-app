@@ -19,7 +19,7 @@ const FooterNavbar = () => {
     {
       navLink: 'Home',
       imgLink: homeIcon,
-      imgText: '',
+      imgText: null,
     },
     {
       navLink: 'Upload',
@@ -29,7 +29,7 @@ const FooterNavbar = () => {
     {
       navLink: 'Profile',
       imgLink: profileIcon,
-      imgText: '',
+      imgText: null,
     },
   ]
 
@@ -50,9 +50,12 @@ const FooterNavbar = () => {
                 source={item.imgLink}
                 style={(item.imgText === 'SELL') ? styles.sellIcon : styles.icon }
               />
-              <Text style={[styles.text, { marginTop: (item.imgText === 'SELL') ?  `10` : `-10` }]}>
-                {item.imgText}
-              </Text>
+              {
+                item.imgText && 
+                <Text style={styles.text}>
+                  {item.imgText}
+                </Text>
+              }
             </TouchableOpacity>
           ))
         }
@@ -73,27 +76,27 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     height: "100%",
-    paddingBottom: 0,
-    paddingHorizontal: 0,
   },
   button: {
     alignItems: "center",
     width: 100,
+    paddingVertical: 5,
   },
   text: {
     color: "#fff",
     fontSize: 12,
     textAlign: "center",
     fontFamily: "LEMON MILK Bold",
+    marginTop: '7.5%',
   },
   icon: {
-    width: 47.5,
-    height: 47.5,
+    width: "55%",
+    height: "55%",
     resizeMode: "contain",
   },
   sellIcon: {
-    width: 50,
-    height: 50,
+    width: "58%",
+    height: "58%",
     resizeMode: "contain",
   },
 });

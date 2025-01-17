@@ -61,7 +61,8 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        height: (Platform.OS === 'web') ? 200 : 95,
+        height: '67.5%',
+        resizeMode: 'cover',
         marginBottom: 3.5,
         borderRadius: 3,
     },
