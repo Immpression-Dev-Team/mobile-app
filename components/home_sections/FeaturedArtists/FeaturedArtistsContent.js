@@ -50,21 +50,21 @@ const styles = StyleSheet.create({
     scrollView: {
         flex: 1,
         flexDirection: "row",
-        padding: '0.75%',
+        paddingHorizontal: '0.75%',
     },
     artistContainer: {
         flexDirection: 'column',
         textAlign: 'left',
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         width: (Platform.OS === 'web') ? 200 : 95,
         marginRight: (Platform.OS === 'web') ? 20 : 2.5,
     },
     image: {
         width: '100%',
         height: '67.5%',
-        resizeMode: 'cover',
-        marginBottom: 3.5,
+        marginBottom: '5%',
         borderRadius: 3,
+        resizeMode: 'cover',
     },
     artistName: {
         fontSize: 10,

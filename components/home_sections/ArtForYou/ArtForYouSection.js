@@ -4,9 +4,9 @@ import ArtForYou from "./ArtForYou";
 export default function CategoryNavSection(){
     return(
         <SectionTemplate
-            sectionName='ArtForYou'
             renderSection={<ArtForYou/>}
-            height={49}
+            height={48}
+            marginHeight={1.5}
         />
     )
 }

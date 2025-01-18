@@ -19,12 +19,13 @@ export default function NavButton({btnText, handler}) {
 
 const styles = StyleSheet.create({
     button: {
+        height: '100%',
         borderWidth: 2,
+        borderRadius: 25,
         borderColor: '#007AFF',
         backgroundColor: '#007AFF',
-        paddingVertical: 6,
-        paddingHorizontal: 21,
-        borderRadius: 25,
+        paddingVertical: '1%',
+        paddingHorizontal: '3.5%',
         marginHorizontal: 3,
     },
     buttonText: {

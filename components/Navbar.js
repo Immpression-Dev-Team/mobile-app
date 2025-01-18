@@ -142,6 +142,6 @@ const styles = StyleSheet.create({
   },
   logoAndTitle: {
     flexDirection: 'row',
-    alignItems: 'center', // Ensure items are centered vertically
+    alignItems: 'center',
   },
 });
