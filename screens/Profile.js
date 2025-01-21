@@ -3,19 +3,18 @@ import {
   View,
   StyleSheet,
   ScrollView,
-  ImageBackground,
   TouchableOpacity,
 } from 'react-native';
-import Navbar from '../components/Navbar';
 import ProfilePic from '../components/profile_sections/ProfilePic';
 import ProfileName from '../components/profile_sections/ProfileName';
 import ProfileGallery from '../components/profile_sections/ProfileGallery';
 import ProfileViews from '../components/profile_sections/ProfileViews';
-import FooterNavbar from '../components/FooterNavbar';
 import ProfileBio from '../components/profile_sections/ProfileBio';
 import ProfileArtistType from '../components/profile_sections/ProfileArtistType';
 import { getUserProfile } from '../API/API';
 import { useAuth } from '../state/AuthProvider';
+
+import ScreenTemplate from './Template/ScreenTemplate';
 
 const Profile = () => {
   const { userData } = useAuth(); // Use the useAuth hook to get the user data
@@ -45,15 +44,7 @@ const Profile = () => {
   }, [token]);
 
   return (
-    <View style={styles.everything}>
-      <View style={styles.navbarContainer}>
-        <ImageBackground
-          source={require('../assets/backgrounds/navbar_bg_blue.png')}
-          style={styles.navbarBackgroundImage}
-        >
-          <Navbar />
-        </ImageBackground>
-      </View>
+    <ScreenTemplate>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.profileContainer}>
           <TouchableOpacity onPress={() => {}}>
@@ -74,30 +65,11 @@ const Profile = () => {
           <ProfileGallery />
         </View>
       </ScrollView>
-      <View style={styles.footer}>
-        <FooterNavbar />
-      </View>
-    </View>
+    </ScreenTemplate>
   );
 };
 
 const styles = StyleSheet.create({
-  everything: {
-    flex: 1, // Ensure the main container takes up the full height
-    paddingTop: 60,
-  },
-  navbarContainer: {
-    position: 'absolute',
-    top: 0,
-    width: '100%',
-    zIndex: 1000,
-    backdropFilter: 'blur(10px)',
-  },
-  navbarBackgroundImage: {
-    width: '100%',
-    resizeMode: 'cover',
-    opacity: 0.9,
-  },
   profileContainer: {
     alignItems: 'center',
     marginTop: 55,
@@ -154,14 +126,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.15,
     shadowRadius: 10,
     elevation: 3,
-  },
-  footer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderTopColor: '#dfe6e9',
-    borderTopWidth: 1,
-    position: 'absolute', // Stick the footer to the bottom
-    bottom: 0,
-    width: '100%',
   },
 });
 

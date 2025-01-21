@@ -1,12 +1,12 @@
 import SectionTemplate from "../SectionTemplate/Section";
-import ArtForYou from "./ArtForYou";
+import CategoryNavBar from "./CategoryNavBar";
 
 export default function CategoryNavSection(){
     return(
         <SectionTemplate
-            renderSection={<ArtForYou/>}
-            height={48}
-            marginHeight={1.5}
+            renderSection={<CategoryNavBar/>}
+            height={8}
+            marginHeight={1}
         />
     )
 }

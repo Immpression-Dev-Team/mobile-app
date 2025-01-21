@@ -5,7 +5,7 @@ import {
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 
-import NoContent from "./NoContent";
+import NoContent from "../NoContent";
 import CategoryLayout from "./CategoryLayout";
 
 // renders either 8 categories / an empty content view / all artworks within a selected category
@@ -39,7 +39,7 @@ export default function CategoryContent({title, images}){
             <Text style={styles.title}>{title}</Text>
             {
                 (!images || images.length === 0) ?
-                    <NoContent/> :
+                    <NoContent size='large'/> :
                     <CategoryLayout
                         images={images}
                         categorySelected={categorySelected}

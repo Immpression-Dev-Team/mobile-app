@@ -1,39 +1,23 @@
 import {
     View,
     StyleSheet,
-    Image,
 } from "react-native";
 
-import backgroundHeader from "../../../assets/foryou_assets/background_top.png";
-import backgroundFooter from "../../../assets/foryou_assets/background_bottom.png";
-  
-export default function SectionTemplate({renderSection, height, headerHeight=null, footerHeight=null}) {
+export default function SectionTemplate({renderSection, height, marginHeight}) {
     return(
         <View
             style={[
-                styles.sectionContainer,
-                (height) ? { height: `${height}%` } : { flex: 1 }
+                styles.sectionContainer, { height: `${height}%` }
             ]}
         >
-            <Image
-                source={backgroundHeader}
-                style={[
-                    styles.bgHeader,
-                    (headerHeight) ? { height: `${headerHeight}%` } : {}
-                ]}
-            />
-            <View style={styles.viewContainer}>
+            {/* render section content */}
+            <View style={[
+                styles.viewContainer, { marginVertical : `${marginHeight}%` }
+            ]}>
                 {
                     renderSection
                 }
             </View>
-            <Image
-                source={backgroundFooter}
-                style={[
-                    styles.bgFooter,
-                    (footerHeight) ? { height: `${footerHeight}%` } : {}
-                ]}
-            />
         </View>
     )
 }
@@ -50,15 +34,5 @@ const styles = StyleSheet.create({
         width: "100%",
         alignItems: "center",
         justifyContent: 'center',
-    },
-    bgHeader: {
-        height: "9%",
-        width: "100%",
-        resizeMode: "cover",
-    },
-    bgFooter: {
-        height: "8.5%",
-        width: "100%",
-        resizeMode: "cover",
     },
 })

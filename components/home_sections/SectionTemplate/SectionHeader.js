@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         marginBottom: '1%',
-        paddingHorizontal: '0.5%',
+        paddingHorizontal: '1%',
     },
     headerText: {
         fontSize: 20,

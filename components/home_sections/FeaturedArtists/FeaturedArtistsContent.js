@@ -8,6 +8,9 @@ import {
 } from "react-native";
 
 export default function FeaturedArtistsContent({artists, navigate}) {
+    // truncated if the username is too long
+    const maxLen = 10;
+
     return(
         <ScrollView
             horizontal
@@ -32,7 +35,10 @@ export default function FeaturedArtistsContent({artists, navigate}) {
                         source={{ uri: item.profilePictureLink }}
                         style={styles.image}
                     />
-                    <Text style={styles.artistName}>{item.name}</Text>
+                    <Text style={styles.artistName}>{
+                        (item.name.length > maxLen) ? item.name.substring(0, maxLen) + "..." :
+                        item.name
+                    }</Text>
                     <Text style={styles.artistType}>{(item.artistType)? item.artistType : 'artistType'}</Text>
                 </TouchableOpacity>
             ))}
@@ -44,20 +50,21 @@ const styles = StyleSheet.create({
     scrollView: {
         flex: 1,
         flexDirection: "row",
-        padding: '0.75%',
+        paddingHorizontal: '0.75%',
     },
     artistContainer: {
         flexDirection: 'column',
         textAlign: 'left',
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         width: (Platform.OS === 'web') ? 200 : 95,
         marginRight: (Platform.OS === 'web') ? 20 : 2.5,
     },
     image: {
         width: '100%',
-        height: (Platform.OS === 'web') ? 200 : 95,
-        marginBottom: 3.5,
+        height: '67.5%',
+        marginBottom: '5%',
         borderRadius: 3,
+        resizeMode: 'cover',
     },
     artistName: {
         fontSize: 10,

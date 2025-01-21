@@ -16,6 +16,7 @@ import axios from 'axios';
 import { API_URL } from '../config';
 import { useAuth } from "../state/AuthProvider";
 
+import ScreenNoFooterTemplate from './Template/ScreenNoFooterTemplate';
 
 const options = [
   {
@@ -105,49 +106,20 @@ const SettingsScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
-       <ImageBackground
-          source={require("../assets/backgrounds/navbar_bg_blue.png")} // Replace with your image path
-          style={styles.navbarBackgroundImage}
-        >
-          <NavBar />
-        </ImageBackground>
-      
-      <View style={styles.settingsContainer}>
-        <FlatList
-          data={options}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.label}
-          contentContainerStyle={styles.listContent}
-        />
-      </View>
-    </View>
+    <ScreenNoFooterTemplate>
+      <FlatList
+        data={options}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.label}
+        contentContainerStyle={styles.listContent}
+      />
+    </ScreenNoFooterTemplate>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f0f0f0',
-  },
-  settingsContainer: {
-    marginTop: 30,
-    flex: 1,
-    paddingHorizontal: 10,
-  },
-  horizontalDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'lightgray',
-    marginVertical: 10,
-  },
-  title: {
-    fontSize: 18,
-    marginBottom: 10,
-    fontWeight: 'bold',
-    paddingHorizontal: 10,
-  },
   listContent: {
-    paddingBottom: 20,
+    paddingTop: 20,
   },
 });
 

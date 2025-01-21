@@ -4,15 +4,15 @@ import { Pressable, Text, StyleSheet } from 'react-native';
 const DiscoverButton = ({ onPress }) => {
   return (
     <Pressable style={styles.button} onPress={onPress}>
-      <Text style={styles.buttonText}>ALL</Text>
+      <Text style={styles.buttonText}>VIEW ALL</Text>
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    paddingVertical: 5,
-    paddingHorizontal: 15,
+    paddingVertical: 6,
+    paddingHorizontal: 17.5,
     backgroundColor: '#000', // Button background color
     borderRadius: 3,
     alignSelf: 'center',
