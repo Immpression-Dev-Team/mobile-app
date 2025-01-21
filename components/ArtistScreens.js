@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image, FlatList, Dimensions, ImageBackground } 
 import { useNavigation } from '@react-navigation/native';
 import { incrementViews } from '../API/API'; // Import the incrementViews function
 import { useAuth } from '../state/AuthProvider';
-import ScreenTemplate from '../screens/ScreenTemplate';
+import ScreenTemplate from '../screens/Template/ScreenTemplate';
 const { width } = Dimensions.get('window');
 
 const ArtistScreen = ({ route }) => {

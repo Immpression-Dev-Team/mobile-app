@@ -14,7 +14,7 @@ import ProfileArtistType from '../components/profile_sections/ProfileArtistType'
 import { getUserProfile } from '../API/API';
 import { useAuth } from '../state/AuthProvider';
 
-import ScreenTemplate from './ScreenTemplate';
+import ScreenTemplate from './Template/ScreenTemplate';
 
 const Profile = () => {
   const { userData } = useAuth(); // Use the useAuth hook to get the user data

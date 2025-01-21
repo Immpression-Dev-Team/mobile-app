@@ -9,7 +9,7 @@ import FeaturedArtistsSection from "../components/home_sections/FeaturedArtists/
 import CategoryNavSection from "../components/home_sections/Explore/CategoryNavSection";
 
 import SectionBanner from "../components/home_sections/SectionTemplate/SectionBanner";
-import ScreenTemplate from "./ScreenTemplate";
+import ScreenTemplate from "./Template/ScreenTemplate";
 
 import navBgHeader from "../assets/foryou_assets/background_top.png";
 import discoverBgHeader from "../assets/discover_assets/background_top.png";

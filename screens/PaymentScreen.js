@@ -10,7 +10,7 @@ import {
   Image,
 } from "react-native";
 import { CardField, useStripe } from '@stripe/stripe-react-native';
-import ScreenTemplate from "./ScreenTemplate";
+import ScreenTemplate from "./Template/ScreenTemplate";
 
 const PaymentScreen = ({ navigation, route }) => {
   const { orderId } = route.params; // Order ID passed from the DeliveryDetails screen

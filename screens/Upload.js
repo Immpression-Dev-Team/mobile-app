@@ -16,7 +16,7 @@ import { useAuth } from "../state/AuthProvider";
 import { uploadImage } from "../API/API";
 import { Platform } from "react-native";
 import LoadingSection from "../components/home_sections/SectionTemplate/LoadingSection";
-import ScreenTemplate from "./ScreenTemplate";
+import ScreenTemplate from "./Template/ScreenTemplate";
 
 const Upload = () => {
   const { userData } = useAuth(); // Retrieve userData from AuthProvider, including token

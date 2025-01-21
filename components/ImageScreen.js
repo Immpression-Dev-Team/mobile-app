@@ -11,7 +11,7 @@ import {
 
 import { incrementImageViews } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
-import ScreenTemplate from "../screens/ScreenTemplate";
+import ScreenTemplate from "../screens/Template/ScreenTemplate";
 
 const share = require("../assets/icons/share-button.jpg");
 const like = require("../assets/icons/like-button.jpg");
@@ -21,7 +21,7 @@ const { width } = Dimensions.get("window");
 
 // Helper function to calculate responsive font size
 const getResponsiveFontSize = (size) => {
-  const scale = width / 375; // Base scale on a typical screen width (375 for iPhone 6/7/8)
+  const scale = width / 375; // Base scale on a typical ScreenTemplate width (375 for iPhone 6/7/8)
   return Math.round(size * scale);
 };
 

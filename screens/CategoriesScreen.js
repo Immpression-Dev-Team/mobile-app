@@ -3,7 +3,7 @@ import {
     Platform,
 } from "react-native";
 import CategoryContent from "../components/category_sections/CategoryContent";
-import ScreenTemplate from "./ScreenTemplate";
+import ScreenTemplate from "./Template/ScreenTemplate";
 
 import Paintings from '../assets/categories/Paintings.jpg';
 import Photography from '../assets/categories/Photography.jpg';

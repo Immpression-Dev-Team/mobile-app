@@ -10,7 +10,7 @@ import { useAuth } from "../state/AuthProvider";
 import { showToast } from "../utils/toastNotification";
 
 import CategoryContent from "../components/category_sections/CategoryContent";
-import ScreenTemplate from "./ScreenTemplate";
+import ScreenTemplate from "./Template/ScreenTemplate";
 
 export default function CategoryView() {
     const { token } = useAuth();
