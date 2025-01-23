@@ -1,6 +1,5 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Image, ImageBackground } from 'react-native';
-import NavBar from '../components/Navbar';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, FlatList } from 'react-native';
 import SettingsItem from '../components/SettingsItem';
 import helpIcon from '../assets/question.png';
 import deviceIcon from '../assets/device.png';
@@ -18,62 +17,28 @@ import { useAuth } from "../state/AuthProvider";
 
 import ScreenNoFooterTemplate from './Template/ScreenNoFooterTemplate';
 
-const options = [
-  {
-    label: 'Log out',
-    iconUrl: logoutIcon,
-    onPress: 'handleSubmit',
-  },
-  {
-    label: 'Add Account',
-    iconUrl: addAccountIcon,
-    onPress: 'handleAddAccount',
-  },
-  {
-    label: 'Account',
-    iconUrl: userIcon,
-  },
-  {
-    label: 'Privacy',
-    iconUrl: lockIcon,
-  },
-  {
-    label: 'Notifications',
-    iconUrl: notificationIcon,
-  },
-  {
-    label: 'App Language',
-    iconUrl: webIcon,
-  },
-  {
-    label: 'Device Permissions',
-    iconUrl: deviceIcon,
-  },
-  {
-    label: 'Help',
-    iconUrl: helpIcon,
-  },
-  {
-    label: 'Invite a friend',
-    iconUrl: friendsIcon,
-  },
-];
-
 const SettingsScreen = () => {
   const navigation = useNavigation();
-  const { logout } = useAuth();
+  const { logout, userData } = useAuth();
 
-  const handleSubmit = async () => {
+  // only navigate when userData is not null (that means already logged in)
+  useEffect(() => {
+    if(!userData){
+      console.log('Now back to guest login');
+      navigation.navigate('Login');
+    }
+  }, [userData]);
+
+  // handler for log out, add account
+  const handleLogout = async () => {
     try {
-      const response = await axios.post(
-        `${API_URL}/logout`,
-        {},
-        { withCredentials: true }
-      );
+      console.log('handleLogout');
+      const response = await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
       if (response.data.success) {
-        logout();
-        navigation.navigate('Login');
-      } else {
+        await logout();
+        console.log('Logged out successfully:', userData);
+      }
+      else {
         console.log('Logout failed');
       }
     } catch (err) {
@@ -85,18 +50,61 @@ const SettingsScreen = () => {
     console.log('Add Account');
   };
 
+  // options on setting screen
+  const options = [
+    {
+      label: 'Log out',
+      iconUrl: logoutIcon,
+      onPress: "handleLogout",
+    },
+    {
+      label: 'Add Account',
+      iconUrl: addAccountIcon,
+      onPress: "handleAddAccount",
+    },
+    {
+      label: 'Account',
+      iconUrl: userIcon,
+    },
+    {
+      label: 'Privacy',
+      iconUrl: lockIcon,
+    },
+    {
+      label: 'Notifications',
+      iconUrl: notificationIcon,
+    },
+    {
+      label: 'App Language',
+      iconUrl: webIcon,
+    },
+    {
+      label: 'Device Permissions',
+      iconUrl: deviceIcon,
+    },
+    {
+      label: 'Help',
+      iconUrl: helpIcon,
+    },
+    {
+      label: 'Invite a friend',
+      iconUrl: friendsIcon,
+    },
+  ];
+
   const handleNavigation = (label) => {
     console.log(`Navigate to ${label}`);
   };
 
+  // either call handler or just navigate by item label
   const renderItem = ({ item }) => (
     <>
       <SettingsItem
         item={item}
         handleClick={
           item.onPress
-            ? item.onPress === 'handleSubmit'
-              ? handleSubmit
+            ? item.onPress === 'handleLogout'
+              ? handleLogout
               : handleAddAccount
             : () => handleNavigation(item.label)
         }
