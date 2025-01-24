@@ -20,9 +20,9 @@ export default function NavButton({btnText, handler}) {
 const styles = StyleSheet.create({
     button: {
         height: '100%',
-        borderWidth: 2,
+        borderWidth: 1,
         borderRadius: 25,
-        borderColor: '#007AFF',
+        borderColor: '#000',
         backgroundColor: '#007AFF',
         paddingVertical: '1%',
         paddingHorizontal: '3.5%',
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: '#fff',
-        fontSize: 13,
+        fontSize: 11,
         fontWeight: 'bold',
         textAlign: 'center',
     },

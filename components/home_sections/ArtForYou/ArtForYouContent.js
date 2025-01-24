@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import {
     View,
     StyleSheet,
@@ -5,14 +6,37 @@ import {
     Pressable,
     Image,
     Animated,
-    Text,
-    Platform
+    Platform,
 } from "react-native";
 
 const slideLeftGif = require("../../../assets//slideLeft.gif");
 
-export default function ArtForYouContent({ fadeAnim, imageChunks, scrollViewRef, isOverlayVisible, handleScrollEnd, handleImagePress, handleUserActivity }) {
-    return(
+export default function ArtForYouContent({
+    fadeAnim,
+    imageChunks,
+    scrollViewRef,
+    isOverlayVisible,
+    handleScrollEnd,
+    handleImagePress,
+    handleUserActivity,
+}) {
+    useEffect(() => {
+        if (isOverlayVisible) {
+            Animated.timing(fadeAnim, {
+                toValue: 1, // Fully visible
+                duration: 500, // Duration of the fade-in
+                useNativeDriver: true,
+            }).start();
+        } else {
+            Animated.timing(fadeAnim, {
+                toValue: 0, // Fully hidden
+                duration: 500, // Duration of the fade-out
+                useNativeDriver: true,
+            }).start();
+        }
+    }, [isOverlayVisible]);
+
+    return (
         <View style={styles.imageContainer}>
             <ScrollView
                 horizontal
@@ -24,92 +48,85 @@ export default function ArtForYouContent({ fadeAnim, imageChunks, scrollViewRef,
                 style={styles.scrollView}
             >
                 {imageChunks.map((chunk, chunkIndex) => (
-                    <View
-                        key={chunkIndex}
-                        style={styles.column}
-                    >
-                        {
-                            chunk.map((art, index) => (
-                                <Pressable
-                                    key={index}
-                                    onPress={() => handleImagePress(chunkIndex * 2 + index)}
-                                    style={styles.imgContainer}
-                                >
-                                    <Image source={{ uri: art.imageLink }} style={styles.image} />
-                                </Pressable>
-                            ))
-                        }
+                    <View key={chunkIndex} style={styles.column}>
+                        {chunk.map((art, index) => (
+                            <Pressable
+                                key={index}
+                                onPress={() =>
+                                    handleImagePress(chunkIndex * 2 + index)
+                                }
+                                style={styles.imgContainer}
+                            >
+                                <Image
+                                    source={{ uri: art.imageLink }}
+                                    style={styles.image}
+                                />
+                            </Pressable>
+                        ))}
                     </View>
                 ))}
             </ScrollView>
 
             {isOverlayVisible && (
                 <Animated.View style={[styles.overlay, { opacity: fadeAnim }]}>
-                    <View style={styles.card}>
-                        <Image source={slideLeftGif} style={styles.cardImage}/>
-                        <Text style={styles.cardText}>Scroll</Text>
-                    </View>
+                    <Animated.View
+                        style={[
+                            styles.gifContainer,
+                            { opacity: fadeAnim }, // Apply fade-in to the GIF as well
+                        ]}
+                    >
+                        <Image source={slideLeftGif} style={styles.cardImage} />
+                    </Animated.View>
                 </Animated.View>
             )}
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
     imageContainer: {
         flex: 1,
-        width: '100%',
-        padding: '0.75%',
+        width: "100%",
+        padding: "0.75%",
     },
     column: {
-        height: '100%',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        width: (Platform.OS === 'web') ? 200 : 110,
-        marginRight: (Platform.OS === 'web') ? 20 : 4,
-        gap: (Platform.OS === 'web') ? 20 : 4,
+        height: "100%",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        width: Platform.OS === "web" ? 200 : 110,
+        marginRight: Platform.OS === "web" ? 20 : 4,
+        gap: Platform.OS === "web" ? 20 : 4,
     },
-    imgContainer:{
+    imgContainer: {
         flex: 1,
     },
     image: {
-        width: '100%',
-        height: '100%',
+        width: "100%",
+        height: "100%",
         borderRadius: 0,
-        borderColor: 'black',
+        borderColor: "black",
         borderWidth: 1,
     },
     overlay: {
         position: "absolute",
-        bottom: 10,
-        right: -5,
-        width: "60%",
-        height: 50,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0, 0, 0, 0.31)", // Dark semi-transparent background
         justifyContent: "center",
-        alignItems: "flex-end",
     },
-    card: {
-        flexDirection: "row",
+    gifContainer: {
+        position: "absolute",
         backgroundColor: "white",
-        borderRadius: 3,
-        paddingHorizontal: 5,
-        paddingVertical: 2,
-        alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 5,
+        borderRadius: 10,
+        top: "50%",
+        right: 10, // Positions the GIF on the right side
+        transform: [{ translateY: -25 }], // Centers the GIF vertically
     },
     cardImage: {
-        width: 30,
-        height: 30,
-        marginRight: 5,
+        width: 50,
+        height: 50,
         resizeMode: "contain",
-    },
-    cardText: {
-        fontSize: 12,
-        fontWeight: "bold",
-        color: "#333",
     },
 });

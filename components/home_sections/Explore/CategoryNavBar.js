@@ -9,14 +9,14 @@ import { useNavigation } from "@react-navigation/native";
 export default function CategoryNavBar() {
     const navigation = useNavigation();
     const buttons = [
-        { text: "Paintings", link: 'Paintings' },
-        { text: "Photography", link: 'Photography' },
-        { text: "Graphic Design", link: 'Graphic Design' },
-        { text: "Illustrations", link: 'Illustrations' },
-        { text: "Sculptures", link: 'Sculptures' },
-        { text: "Woodwork", link: 'Woodwork' },
-        { text: "Graffiti", link: 'Graffiti' },
-        { text: "Stencil", link: 'Stencil' },
+        { text: "PAINTINGS", link: 'Paintings' },
+        { text: "PHOTOGRAPHY", link: 'Photography' },
+        { text: "GRAPHIC DESIGN", link: 'Graphic Design' },
+        { text: "ILLUSTRATIONS", link: 'Illustrations' },
+        { text: "SCULPTURES", link: 'Sculptures' },
+        // { text: "Woodwork", link: 'Woodwork' },
+        // { text: "Graffiti", link: 'Graffiti' },
+        // { text: "Stencil", link: 'Stencil' },
     ]
 
     // navigate to individual category screen

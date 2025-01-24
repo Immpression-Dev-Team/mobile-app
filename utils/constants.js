@@ -86,6 +86,10 @@ export const UserNavigation = [
     name: 'DeleteAccount',
     component: DeleteAccount,
   },
+  {
+    name: 'Login',
+    component: Login,
+  },
 ];
 
 export const GuestNavigation = [
