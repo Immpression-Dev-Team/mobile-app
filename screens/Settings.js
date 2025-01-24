@@ -23,13 +23,13 @@ const SettingsScreen = () => {
 
   // only navigate when userData is not null (that means already logged in)
   useEffect(() => {
-    if(!userData){
+    if (!userData) {
       console.log('Now back to guest login');
       navigation.navigate('Login');
     }
   }, [userData]);
 
-  // handler for log out, add account
+  // handler for log out
   const handleLogout = async () => {
     try {
       console.log('handleLogout');
@@ -37,8 +37,7 @@ const SettingsScreen = () => {
       if (response.data.success) {
         await logout();
         console.log('Logged out successfully:', userData);
-      }
-      else {
+      } else {
         console.log('Logout failed');
       }
     } catch (err) {
@@ -55,12 +54,12 @@ const SettingsScreen = () => {
     {
       label: 'Log out',
       iconUrl: logoutIcon,
-      onPress: "handleLogout",
+      onPress: handleLogout,
     },
     {
       label: 'Add Account',
       iconUrl: addAccountIcon,
-      onPress: "handleAddAccount",
+      onPress: handleAddAccount,
     },
     {
       label: 'Account',
@@ -90,24 +89,17 @@ const SettingsScreen = () => {
       label: 'Invite a friend',
       iconUrl: friendsIcon,
     },
+    {
+      label: 'Delete Account',
+      onPress: () => navigation.navigate('DeleteAccount'),
+    },
   ];
 
-  const handleNavigation = (label) => {
-    console.log(`Navigate to ${label}`);
-  };
-
-  // either call handler or just navigate by item label
   const renderItem = ({ item }) => (
     <>
       <SettingsItem
         item={item}
-        handleClick={
-          item.onPress
-            ? item.onPress === 'handleLogout'
-              ? handleLogout
-              : handleAddAccount
-            : () => handleNavigation(item.label)
-        }
+        handleClick={item.onPress || (() => console.log(`Navigate to ${item.label}`))}
       />
       {item.label === 'Add Account' && <View style={styles.horizontalDivider} />}
     </>

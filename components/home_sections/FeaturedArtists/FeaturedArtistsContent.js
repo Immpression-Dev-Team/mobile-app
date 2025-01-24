@@ -63,8 +63,10 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '67.5%',
         marginBottom: '5%',
-        borderRadius: 3,
+        borderRadius: 0,
         resizeMode: 'cover',
+        borderColor: 'black',
+        borderWidth: 1,
     },
     artistName: {
         fontSize: 10,

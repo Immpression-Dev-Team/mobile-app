@@ -4,32 +4,21 @@ import { Pressable, Text, StyleSheet } from 'react-native';
 const DiscoverButton = ({ onPress }) => {
   return (
     <Pressable style={styles.button} onPress={onPress}>
-      <Text style={styles.buttonText}>VIEW ALL</Text>
+      <Text style={styles.optionsIcon}>⋮</Text>
     </Pressable>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
-    paddingVertical: 6,
-    paddingHorizontal: 17.5,
-    backgroundColor: '#000', // Button background color
-    borderRadius: 3,
+    padding: 8,
     alignSelf: 'center',
-    // Shadow properties for iOS
-    shadowColor: '#000', // Shadow color
-    shadowOffset: { width: 0, height: 2 }, // Offset of shadow
-    shadowOpacity: 0.25, // Opacity of shadow
-    shadowRadius: 3.84, // Radius of shadow blur
-    // Shadow property for Android
-    elevation: 5, // Elevation for Android shadow
   },
-  buttonText: {
-    color: '#FFF', // Text color
-    fontSize: 10, // Font size
-    // fontWeight: 'bold',
-    fontFamily: 'LEMON MILK Bold',
-    textAlign: 'center', // Center text alignment
+  optionsIcon: {
+    color: '#000', // Icon color
+    fontSize: 20, // Font size for the vertical dots
+    textAlign: 'center', // Center the dots within the button
+    transform: [{ rotate: '0deg' }], // Rotate the "..." to make it vertical
   },
 });
 

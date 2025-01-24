@@ -15,6 +15,7 @@ import ArtistType from '../screens/ArtistType';
 import DeliveryDetails from '../screens/DeliveryDetails';
 import PaymentScreen from '../screens/PaymentScreen';
 import ArtPreferences from '../screens/ArtPreferences';
+import DeleteAccount from '../screens/DeleteAccount';
 
 export const UserNavigation = [
   {
@@ -80,6 +81,10 @@ export const UserNavigation = [
   {
     name: 'PaymentScreen',
     component: PaymentScreen,
+  },
+  {
+    name: 'DeleteAccount',
+    component: DeleteAccount,
   },
 ];
 
