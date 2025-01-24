@@ -410,6 +410,22 @@ async function getPaymentStatus(paymentIntentId, token) {
   }
 }
 
+// Function to delete a user's account
+async function deleteAccount(token) {
+  try {
+    const response = await axios.delete(`${API_URL}/delete-account`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add token to headers for authentication
+      },
+    });
+    return response.data; // Return the response from the server
+  } catch (error) {
+    console.error('Error deleting account:', error.response?.data || error);
+    return error.response?.data || error;
+  }
+}
+
+
 export {
   getAllImages,
   uploadImage,
@@ -433,4 +449,5 @@ export {
   createPaymentIntent,
   confirmPayment,
   getPaymentStatus,
+  deleteAccount,
 };

@@ -2,16 +2,14 @@ import React, { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   StyleSheet,
+  TextInput,
   TouchableOpacity,
   Alert,
-  ScrollView,
 } from "react-native";
-import ScreenTemplate from "./Template/ScreenTemplate";
 import { useAuth } from "../state/AuthProvider";
-import axios from "axios";
-import { API_URL } from "../config";
+import { deleteAccount } from "../API/API";
+import ScreenTemplate from "./Template/ScreenTemplate";
 
 const DeleteAccountScreen = ({ navigation }) => {
   const { logout, userData } = useAuth();
@@ -30,17 +28,14 @@ const DeleteAccountScreen = ({ navigation }) => {
     setLoading(true);
 
     try {
-      const response = await axios.delete(`${API_URL}/delete-account`, {
-        data: { userId: userData._id },
-        withCredentials: true,
-      });
+      const response = await deleteAccount(userData.token);
 
-      if (response.data.success) {
+      if (response.success) {
         Alert.alert("Account Deleted", "Your account has been deleted.");
-        await logout();
+        await logout(); // Log the user out after deletion
         navigation.navigate("Login");
       } else {
-        Alert.alert("Error", response.data.message || "Deletion failed.");
+        Alert.alert("Error", response.error || "Account deletion failed.");
       }
     } catch (error) {
       console.error("Error deleting account:", error);
@@ -52,23 +47,11 @@ const DeleteAccountScreen = ({ navigation }) => {
 
   return (
     <ScreenTemplate>
-      {/* Header Section */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.goBackButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.arrow}>←</Text>
-        </TouchableOpacity>
+      <View style={styles.container}>
         <Text style={styles.header}>Delete Account</Text>
-      </View>
-
-      {/* Main Content */}
-      <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.description}>
-          Deleting your account is permanent and cannot be undone. All your data
-          will be removed from our systems. If you are sure, type "delete my
-          account" below and confirm.
+          Deleting your account is permanent and cannot be undone. If you’re
+          sure, type “delete my account” below to confirm.
         </Text>
         <TextInput
           style={styles.input}
@@ -85,61 +68,48 @@ const DeleteAccountScreen = ({ navigation }) => {
             {loading ? "Deleting..." : "Delete My Account"}
           </Text>
         </TouchableOpacity>
-      </ScrollView>
+      </View>
     </ScreenTemplate>
   );
 };
 
 const styles = StyleSheet.create({
-  headerContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    marginTop: 10,
-  },
-  goBackButton: {
-    marginRight: 15,
-  },
-  arrow: {
-    fontSize: 24,
-    color: "#007AFF",
-    fontWeight: "bold",
+  container: {
+    flex: 1,
+    padding: 20,
+    justifyContent: "center",
   },
   header: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#333",
-  },
-  content: {
-    flexGrow: 1,
-    padding: 20,
+    color: "#d9534f",
+    textAlign: "center",
+    marginBottom: 16,
   },
   description: {
     fontSize: 16,
+    color: "#6c757d",
     textAlign: "center",
     marginBottom: 20,
-    color: "#6c757d",
   },
   input: {
     borderWidth: 1,
-    borderColor: "#CCC",
+    borderColor: "#ced4da",
     borderRadius: 5,
     padding: 10,
-    marginBottom: 15,
-    fontSize: 16,
-    backgroundColor: "#FFF",
+    marginBottom: 20,
+    backgroundColor: "#fff",
   },
   button: {
     backgroundColor: "#d9534f",
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: "center",
-    marginTop: 20,
   },
   buttonText: {
-    color: "#FFF",
-    fontWeight: "bold",
+    color: "#fff",
     fontSize: 16,
+    fontWeight: "bold",
   },
   disabledButton: {
     backgroundColor: "#e0aeb1",
