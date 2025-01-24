@@ -18,7 +18,7 @@ export default function SectionBanner({imgLink, bannerHeight}){
 const styles = StyleSheet.create({
     container: {
         width: '100%',
-        paddingHorizontal: 2.5,
+        paddingHorizontal: 3.5,
     },
     banner: {
         width: '100%',
