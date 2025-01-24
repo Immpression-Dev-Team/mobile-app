@@ -1,6 +1,6 @@
 import {
   StyleSheet,
-  ScrollView,
+  View,
 } from "react-native";
 import { useAuth } from "../state/AuthProvider";
 
@@ -27,26 +27,24 @@ export default function HomeScreen() {
 
   return (
     <ScreenTemplate>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.container}>
+        <CategoryNavSection />
+        <SectionBanner imgLink={navBgHeader} bannerHeight={3} />
 
-        <CategoryNavSection/>
-        <SectionBanner imgLink={navBgHeader} bannerHeight={3}/>
+        <ArtForYouSection />
+        <SectionBanner imgLink={discoverBgHeader} bannerHeight={3.5} />
 
-        <ArtForYouSection/>
-        <SectionBanner imgLink={discoverBgHeader} bannerHeight={3.5}/>
-
-        <FeaturedArtistsSection/>
-        <SectionBanner imgLink={discoverBgFooter} bannerHeight={3.5}/>
-
-      </ScrollView>
+        <FeaturedArtistsSection />
+        <SectionBanner imgLink={discoverBgFooter} bannerHeight={3.5} />
+      </View>
     </ScreenTemplate>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  scrollContainer: {
+  container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
-})
+});
