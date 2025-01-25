@@ -36,6 +36,7 @@ export default function ArtForYouContent({
         }
     }, [isOverlayVisible]);
 
+
     return (
         <View style={styles.imageContainer}>
             <ScrollView

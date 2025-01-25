@@ -426,13 +426,14 @@ async function deleteAccount(token) {
 }
 
 // Function to get a limited number of images (e.g., 20)
-async function getLimitedImages(token, limit = 20) {
+// changed hard coded limit = 20
+async function getLimitedImages(token, limit) {
   try {
     const response = await axios.get(`${API_URL}/limit_images`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      params: { limit }, // Pass the limit parameter if needed
+      // params: { limit }, // Pass the limit parameter if needed
     });
     return response.data;
   } catch (error) {

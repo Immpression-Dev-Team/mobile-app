@@ -23,6 +23,15 @@ const chunkArray = (arr, chunkSize) => {
   return chunks;
 };
 
+const shuffleArray = (array) => {
+  let shuffled = [...array]; // Create a copy to avoid mutating the original array
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1)); // Get a random index
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; // Swap elements
+    }
+    return shuffled;
+}
+
 export default function ArtForYou() {
   const { token } = useAuth();
   const navigation = useNavigation();
@@ -39,14 +48,19 @@ export default function ArtForYou() {
   const [hasMoreImages, setHasMoreImages] = useState(true); // Check if there are more images
 
   const fetchArtData = async (pageNumber) => {
+    // 9/10 we probably dont need the limit parameter
     try {
-      const response = await getLimitedImages(token, 52, pageNumber); // Fetch 52 images for the given page
+      const response = await getLimitedImages(token, 20, pageNumber); // Fetch 52 images for the given page
       if (!response.success) {
         console.error("Error fetching art data:", response.message);
         return;
       }
+      // console.log(response.images)
+      const images = shuffleArray(response.images);
+      
+      console.log(images)
+      
 
-      const images = response.images;
 
       if (images.length === 0) {
         setHasMoreImages(false); // No more images to load
@@ -65,6 +79,7 @@ export default function ArtForYou() {
         setArtData((prev) => [...prev, ...displayedImages]);
         setStoredArtData(storedImages);
       }
+      // console.log(displayedImages)
     } catch (error) {
       console.error("Error fetching art data:", error);
     } finally {
