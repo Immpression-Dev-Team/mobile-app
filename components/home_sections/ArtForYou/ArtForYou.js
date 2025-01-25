@@ -13,17 +13,7 @@ import FontLoader from "../../../utils/FontLoader";
 import ArtForYouHeader from "./ArtForYouHeader";
 import ArtForYouContent from "./ArtForYouContent";
 import LoadingSection from "../SectionTemplate/LoadingSection";
-import { getAllImages, incrementImageViews } from "../../../API/API"; // Import incrementImageViews
-
-
-const shuffleArray = (array) => {
-  let shuffledArray = [...array];
-  for (let i = shuffledArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
-  }
-  return shuffledArray;
-};
+import { getLimitedImages, incrementImageViews } from "../../../API/API";
 
 const chunkArray = (arr, chunkSize) => {
   const chunks = [];
@@ -39,107 +29,62 @@ export default function ArtForYou() {
   const fontsLoaded = FontLoader();
 
   const scrollViewRef = useRef(null);
-  const scrollDistance = 150;
-  const inactivityTimeoutRef = useRef(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const [artData, setArtData] = useState([]);
-  const [originalArtData, setOriginalArtData] = useState([]);
-
+  const [artData, setArtData] = useState([]); // Displayed images
+  const [storedArtData, setStoredArtData] = useState([]); // Stored images
   const [isLoading, setIsLoading] = useState(true);
-  const [isOverlayVisible, setOverlayVisible] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [page, setPage] = useState(1); // Track the current page
+  const [hasMoreImages, setHasMoreImages] = useState(true); // Check if there are more images
 
-  // auto scroll once when landing on pages
-  const startAutoScrollOnce = () => {
-    setTimeout(() => {
-      if (scrollViewRef.current) {
-        scrollViewRef?.current?.scrollTo({
-          x: scrollDistance,
-          animated: true,
-        });
-
-        setTimeout(() => {
-          scrollViewRef?.current?.scrollTo({
-            x: 0,
-            animated: true,
-          });
-        }, 500);
-      }
-    }, 2000);
-  };
-
-  // fade in/out animation
-  const fadeInOverlay = () => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const fadeOutOverlay = () => {
-    Animated.timing(fadeAnim, {
-      toValue: 0,
-      duration: 500,
-      useNativeDriver: true,
-    }).start(() => {
-      setOverlayVisible(false);
-    });
-  };
-
-  // resets inactivity timer & shows overlay after 5s
-  const resetInactivityTimer = () => {
-    if (inactivityTimeoutRef.current) {
-      clearTimeout(inactivityTimeoutRef.current);
-    }
-
-    setOverlayVisible(false);
-
-    inactivityTimeoutRef.current = setTimeout(() => {
-      setOverlayVisible(true);
-      fadeInOverlay();
-    }, 5000);
-  };
-
-  // resets inactivity timer & hide overlay when moving
-  const handleUserActivity = () => {
-    resetInactivityTimer();
-    fadeOutOverlay();
-  };
-
-  const fetchArtData = async (token) => {
+  const fetchArtData = async (pageNumber) => {
     try {
-      const response = await getAllImages(token);
-      if(!response.success){
+      const response = await getLimitedImages(token, 52, pageNumber); // Fetch 52 images for the given page
+      if (!response.success) {
         console.error("Error fetching art data:", response.message);
         return;
       }
 
-      const shuffledData = shuffleArray(response.images);
-      setOriginalArtData(shuffledData);
-      setArtData(shuffledData);
+      const images = response.images;
 
+      if (images.length === 0) {
+        setHasMoreImages(false); // No more images to load
+        return;
+      }
+
+      const displayedImages = images.slice(0, 26); // First 25 images
+      const storedImages = images.slice(26); // Next 25 images
+
+      if (pageNumber === 1) {
+        // Initial load
+        setArtData(displayedImages);
+        setStoredArtData(storedImages);
+      } else {
+        // Append new images
+        setArtData((prev) => [...prev, ...displayedImages]);
+        setStoredArtData(storedImages);
+      }
     } catch (error) {
       console.error("Error fetching art data:", error);
     } finally {
       setIsLoading(false);
+      setIsFetchingMore(false);
     }
   };
 
-  // Function to handle image press and increment views
   const handleImagePress = async (imageIndex) => {
     const selectedImage = artData[imageIndex];
-  
+
     if (selectedImage && selectedImage._id) {
       try {
-        // Increment view count for the image and get updated views
         const updatedImage = await incrementImageViews(selectedImage._id, token);
-        
         if (updatedImage.success) {
-          const updatedViewCount = updatedImage.views; // Get new views from response
-          console.log(`Updated views for image ID: ${selectedImage._id}: ${updatedViewCount}`);
-          
-          // Navigate to ImageScreen with updated view count
+          const updatedViewCount = updatedImage.views;
+          console.log(
+            `Updated views for image ID: ${selectedImage._id}: ${updatedViewCount}`
+          );
+
           navigation.navigate("ImageScreen", {
             images: artData,
             initialIndex: imageIndex,
@@ -153,73 +98,62 @@ export default function ArtForYou() {
   };
 
   const handleScrollEnd = () => {
-    setArtData((prevData) => [...prevData, ...originalArtData]);
+    if (!isFetchingMore && storedArtData.length > 0) {
+      // Lazy load the stored images
+      setArtData((prev) => [...prev, ...storedArtData]);
+      setStoredArtData([]);
+    } else if (!isFetchingMore && hasMoreImages) {
+      // Fetch next page of images if no stored images are available
+      setIsFetchingMore(true);
+      setPage((prev) => prev + 1); // Increment the page number
+    }
   };
 
-  // fetch art & auto scroll when land page
   useEffect(() => {
     if (token) {
-      fetchArtData(token);
-      startAutoScrollOnce();
-      resetInactivityTimer();
+      fetchArtData(1); // Fetch the first page of images initially
     }
-
-    return () => {
-      if (inactivityTimeoutRef.current) {
-        clearTimeout(inactivityTimeoutRef.current);
-      }
-    };
   }, [token]);
 
-  // render animation if still loading images
+  useEffect(() => {
+    if (page > 1) {
+      fetchArtData(page); // Fetch new page of images on page change
+    }
+  }, [page]);
+
   if (isLoading) {
-    return(
-      <LoadingSection
-        loadingMsg='LOADING ART FOR YOU!'
-        size='large'
-      />
+    return (
+      <LoadingSection loadingMsg="LOADING ART FOR YOU!" size="large" />
     );
   }
 
-  const imageChunks = chunkArray(artData, 2);
+  const imageChunks = chunkArray(artData, 2); // Group images into chunks for display
 
   return (
-    <TouchableWithoutFeedback onPress={handleUserActivity}>
+    <TouchableWithoutFeedback>
       <LinearGradient
         colors={["white", "#acb3bf", "white"]}
         style={styles.container}
       >
-        <ArtForYouHeader/>
+        <ArtForYouHeader />
         <ArtForYouContent
           fadeAnim={fadeAnim}
           imageChunks={imageChunks}
           scrollViewRef={scrollViewRef}
-          isOverlayVisible={isOverlayVisible}
+          isOverlayVisible={isFetchingMore}
           handleScrollEnd={handleScrollEnd}
           handleImagePress={handleImagePress}
-          handleUserActivity={handleUserActivity}
         />
       </LinearGradient>
     </TouchableWithoutFeedback>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: '100%',
-    width: '100%',
-    padding: '1.75%',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "transparent",
-  },
-  loadingGif: {
-    width: 50,
-    height: 50,
-    resizeMode: "contain",
+    height: "100%",
+    width: "100%",
+    padding: "1.75%",
   },
 });

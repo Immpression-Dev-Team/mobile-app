@@ -27,6 +27,7 @@ const styles = StyleSheet.create({
     },
     headerText: {
         fontSize: 20,
+        //fontWeight:
         fontFamily: "LEMON MILK Bold",
     },
 })

@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: "center",
     fontFamily: "LEMON MILK Bold",
-    marginTop: '7.5%',
+    marginTop: '0%',
   },
   icon: {
     width: "55%",
@@ -97,6 +97,7 @@ const styles = StyleSheet.create({
   sellIcon: {
     width: "58%",
     height: "58%",
+    paddingBottom: 5,
     resizeMode: "contain",
   },
 });
