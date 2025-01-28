@@ -11,12 +11,20 @@ import {
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
-import { API_URL } from "../config";
 import Icon from "react-native-vector-icons/FontAwesome"; // Import your preferred icon set
 import { handleLogin } from "../utils/handleLogin.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from '@react-native-google-signin/google-signin';
+import { GoogleSignin } from '@react-native-google-signin/google-signin';
+import { statusCodes } from "@react-native-google-signin/google-signin";
+import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 import { useAuth } from "../state/AuthProvider";
+import { API_URL, GOOGLE_CONFIG } from "../config";
 import SignUp from "./SignUp";
+import { makeRedirectUri } from "expo-auth-session";
+
+WebBrowser.maybeCompleteAuthSession();
 
 const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
 const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image
@@ -29,24 +37,197 @@ const Login = () => {
   const { login } = useAuth();
   const navigation = useNavigation();
   const [error, setError] = useState("");
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    setError(''); // Clear previous errors
-
-    const result = await handleLogin(email, password, login);
-
-    if (result.success) {
-      navigation.navigate('Home');
-    } else {
-      setError("Invalid email or password");
-    }
-  };
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigateTo = (screenName) => {
     navigation.navigate(screenName);
   };
+  
+    const checkPlayServices = async () => {
+      try {
+        await Google.GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+        return true;
+      } catch (error) {
+        console.error('Play services check failed:', error);
+        if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+          setError('Google Play Services required for sign in');
+        }
+        return false;
+      }
+    };
+    
+    // Replace your current useEffect with this enhanced version
+    useEffect(() => {
+      const initializeGoogleSignin = async () => {
+        try {
+          await Google.GoogleSignin.configure({
+            webClientId: '709309106647-pb9k612u1pe4olikmvfaaktkauj3bjts.apps.googleusercontent.com',
+            iosClientId: '709309106647-rqnlk0i13qkb6qc901aoj3tapaskuu8t.apps.googleusercontent.com',
+            androidClientId: '709309106647-rfamr61c8baek898du9jlqf0ccfoof85.apps.googleusercontent.com',
+            offlineAccess: true
+          });
+          console.log('Google Sign-In configured successfully');
+        } catch (error) {
+          console.error('Google Sign-In configuration failed:', error);
+        }
+      };
+    
+      initializeGoogleSignin();
+    }, []);
+
+    const handleFacebookSignIn = async () => {
+      if (isLoading) return;
+    
+      try {
+        setIsLoading(true); // Start loading state
+        setError(''); // Clear any previous errors
+        console.log('Attempting Facebook login...'); // Debug log
+    
+        // Configure login behavior
+        LoginManager.setLoginBehavior('native_with_fallback');
+    
+        // Request permissions with validation
+        const result = await LoginManager.logInWithPermissions([
+          'public_profile',
+          'email'
+        ]);
+    
+        console.log('Facebook permission result:', result); // Debug log
+    
+        // Validate permissions result
+        if (result.isCancelled) {
+          throw new Error('Login cancelled by user');
+        }
+    
+        // Validate permissions granted
+        if (!result.grantedPermissions?.includes('email')) {
+          throw new Error('Email permission is required');
+        }
+    
+        // Get access token with validation
+        const data = await AccessToken.getCurrentAccessToken();
+        console.log('Facebook access token received:', !!data); // Debug log
+        
+        // Validate access token
+        if (!data?.accessToken) {
+          throw new Error('Failed to get access token');
+        }
+    
+        // Attempt server authentication with validation
+        const response = await axios.post(`${API_URL}/auth/facebook`, {
+          accessToken: data.accessToken,
+        });
+    
+        console.log('Server response:', response.data); // Debug log
+    
+        // Validate server response structure
+        if (!response?.data) {
+          throw new Error('Invalid server response');
+        }
+    
+        // Validate authentication success and token presence
+        if (!response.data.success || !response.data.token) {
+          throw new Error(response.data.message || 'Server authentication failed');
+        }
+    
+        // If we get here, we have a valid token
+        await login(response.data.token);
+        navigation.navigate('Home');
+    
+      } catch (error) {
+        console.error('Detailed Facebook Sign-In Error:', error);
+        
+        // Enhanced error handling with specific messages
+        if (error.message.includes('cancelled')) {
+          setError('Login was cancelled');
+        } else if (error.message.includes('permission')) {
+          setError('Required permissions were not granted');
+        } else if (error.response?.data?.message) {
+          // Server provided error message
+          setError(`Authentication failed: ${error.response.data.message}`);
+        } else {
+          // Generic error with additional debug info
+          setError(`Login failed: ${error.message || 'Unknown error occurred'}`);
+        }
+      } finally {
+        setIsLoading(false); // End loading state
+      }
+    };
+
+  
+    const handleGoogleSignin = async () => {
+      if (isLoading) return;
+
+      try {
+        setError(''); // Clear any previous errors
+        
+        // Check Play Services on Android
+        const servicesAvailable = await checkPlayServices();
+        if (!servicesAvailable) {
+          return;
+        }
+    
+        console.log('Attempting Google sign in...'); // Debug log
+        const userInfo = await Google.GoogleSignin.signIn();
+        console.log('Google sign in successful:', userInfo); // Debug log
+        
+        if (!userInfo?.idToken || !userInfo?.user?.email) {
+          throw new Error('Incomplete authentication data received from Google');
+        }
+    
+        // Attempt server authentication with validation
+        const response = await axios.post(`${API_URL}/auth/google`, {
+          token: userInfo.idToken,
+          email: userInfo.user.email,
+        });
+    
+        // Validate server response
+        if (!response?.data) {
+          throw new Error('Invalid server response');
+        }
+    
+        // Check for success and token presence
+        if (!response.data.success || !response.data.token) {
+          throw new Error(response.data.message || 'Server authentication failed');
+        }
+    
+        // If we get here, we have a valid token
+        await login(response.data.token);
+        navigation.navigate('Home');
+    
+      } catch (error) {
+        console.error('Detailed Google Sign-In Error:', error);
+        
+        // Enhanced error messages based on error type
+        if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+          setError('Sign in was cancelled');
+        } else if (error.code === statusCodes.IN_PROGRESS) {
+          setError('Sign in is already in progress');
+        } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+          setError('Play services are not available');
+        } else if (error.response?.data?.message) {
+          // Server provided error message
+          setError(`Authentication failed: ${error.response.data.message}`);
+        } else {
+          // Generic error with additional debug info
+          setError(`Sign in failed: ${error.message || 'Unknown error occurred'}`);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      setError('');
+  
+      const result = await handleLogin(email, password, login);
+      if (result.success) {
+        navigation.navigate('Home');
+      } else {
+        setError("Invalid email or password");
+      }
+    };
 
   return (
     <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
@@ -111,6 +292,31 @@ const Login = () => {
                 Forgot Password?
               </Text>
             </View>
+
+            <View style={styles.socialButtonsContainer}>
+              <Pressable 
+                onPress={handleGoogleSignin} 
+                style={styles.socialButton}
+              >
+                <Icon name="google" size={20} color="#DB4437" />
+                <Text style={styles.socialButtonText}>Continue with Google</Text>
+              </Pressable>
+
+              <Pressable 
+                onPress={handleFacebookSignIn} 
+                style={styles.socialButton}
+              >
+                <Icon name="facebook" size={20} color="#4267B2" />
+                <Text style={styles.socialButtonText}>Continue with Facebook</Text>
+              </Pressable>
+            </View>
+
+            <View style={styles.dividerContainer}>
+              <View style={styles.divider} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.divider} />
+            </View>
+
             <View style={styles.buttonContainer}>
               <Pressable onPress={handleSubmit} style={styles.button}>
                 <Text style={styles.buttonText}>Log in</Text>
@@ -234,5 +440,35 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 15,
     textAlign: "center",
+  },
+  socialButtonsContainer: {
+    width: '100%',
+    marginTop: 20,
+    paddingHorizontal: 15,
+  },
+  socialButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 20,
+    marginVertical: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  socialButtonText: {
+    marginLeft: 12,
+    fontSize: 16,
+    color: '#333',
+    fontWeight: '500',
   },
 });

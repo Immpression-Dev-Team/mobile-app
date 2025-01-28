@@ -15,8 +15,13 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { handleLogin } from '../utils/handleLogin';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import your preferred icon set
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+import * as Facebook from 'expo-auth-session/providers/facebook';
 import { showToast } from '../utils/toastNotification';
 import { useAuth } from '../state/AuthProvider';
+
+WebBrowser.maybeCompleteAuthSession();
 
 const logoImage = require('../assets/Logo_T.png'); // Adjust the path to your logo image
 const headerImage = require('../assets/headers/Immpression_multi.png'); // Adjust the path to your header image
@@ -116,6 +121,31 @@ const SignUp = () => {
                 <Image source={headerImage} style={styles.headerImage} />
               </View>
             </View>
+
+            <View style={styles.socialButtonsContainer}>
+              <Pressable 
+                onPress={() => promptAsync()} 
+                style={styles.socialButton}
+              >
+                <Icon name="google" size={20} color="#DB4437" />
+                <Text style={styles.socialButtonText}>Sign up with Google</Text>
+              </Pressable>
+
+              <Pressable 
+                onPress={handleFacebookLogin} 
+                style={styles.socialButton}
+              >
+                <Icon name="facebook" size={20} color="#4267B2" />
+                <Text style={styles.socialButtonText}>Sign up with Facebook</Text>
+              </Pressable>
+            </View>
+
+            <View style={styles.dividerContainer}>
+              <View style={styles.divider} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.divider} />
+            </View>
+
             {/* <Text style={styles.title}>Sign Up to Impression</Text> */}
             <View style={styles.contentContainer}>
               <View style={styles.inputContainer}>
@@ -188,6 +218,7 @@ const SignUp = () => {
               {isLoading ? `Signing Up${ellipsis}` : 'Sign Up'}
             </Text>
           </Pressable>
+
           <Pressable
             onPress={handleBack}
             style={[styles.button, styles.buttonOutline2]}
@@ -305,5 +336,39 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
+  },
+  socialButtonsContainer: {
+    width: '100%',
+    marginTop: 20,
+  },
+  socialButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
+    padding: 12,
+    borderRadius: 20,
+    marginVertical: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+  },
+  socialButtonText: {
+    marginLeft: 10,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  dividerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 20,
+  },
+  divider: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#ddd',
+  },
+  dividerText: {
+    marginHorizontal: 10,
+    color: '#666',
   },
 });

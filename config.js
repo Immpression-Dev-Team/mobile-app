@@ -1,6 +1,25 @@
 // config.js
+const DEV_IP = '192.168.1.246';
+const DEV_PORT = 4000;
 
-export const API_URL = "https://immpression-backend.vercel.app";
+const isProduction = process.env.NODE_ENV === 'production';
+
+export const API_URL = isProduction 
+  ? "https://immpression-backend.vercel.app"
+  : `http://${DEV_IP}:${DEV_PORT}`;
+
+export const GOOGLE_CONFIG = {
+    expoClientId: '709309106647-pb9k612u1pe4olikmvfaaktkauj3bjts.apps.googleusercontent.com',
+    iosClientId: '709309106647-rqnlk0i13qkb6qc901aoj3tapaskuu8t.apps.googleusercontent.com',
+    androidClientId: '709309106647-rfamr61c8baek898du9jlqf0ccfoof85.apps.googleusercontent.com',
+    webClientId: '709309106647-pb9k612u1pe4olikmvfaaktkauj3bjts.apps.googleusercontent.com',
+  };
+
+  export const AUTH_CONFIG = {
+    // The redirect URL should match what's configured in your Google Cloud Console
+    redirectUri: 'https://auth.expo.io/@alexis2995/immpression',
+    // Add any additional auth-related configuration here
+  };
 
 // export const API_URL = `http://192.168.8.121:4000`;
 //export const API_URL = `http://10.55.16.90:4000`;
