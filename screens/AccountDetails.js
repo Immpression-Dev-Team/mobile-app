@@ -1,39 +1,32 @@
 import React, { useState, useEffect } from "react";
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  ActivityIndicator, 
-  TouchableOpacity 
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import { useAuth } from "../state/AuthProvider";
 import { getUserProfile } from "../API/API";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons"; // Icons for back button & arrow
+import { Ionicons } from "@expo/vector-icons";
 
 import ScreenTemplate from "./Template/ScreenTemplate";
 
 const AccountDetailsScreen = () => {
-  const navigation = useNavigation(); // Get navigation prop
-  const { userData } = useAuth(); // Get auth state
-  const token = userData?.token; // Extract token
-  const [profileName, setProfileName] = useState(""); // Default to empty string
-  const [email, setEmail] = useState(""); // Default to empty string
-  const [loading, setLoading] = useState(true); // Loading state
+  const navigation = useNavigation();
+  const { userData } = useAuth();
+  const token = userData?.token;
+  const [profileName, setProfileName] = useState("");
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      if (!token) return; // Ensure token exists before making the API call
-
+      if (!token) return;
       try {
         console.log("Fetching user profile...");
         const data = await getUserProfile(token);
         if (data?.user) {
           console.log("User profile data:", data.user);
-          setProfileName(data.user.name || "N/A"); // Set profile name
-          setEmail(data.user.email || "N/A"); // Set email
+          setProfileName(data.user.name || "N/A");
+          setEmail(data.user.email || "N/A");
         } else {
-          console.error("Error: user data is undefined in fetchProfileData");
+          console.error("Error: user data is undefined");
         }
       } catch (error) {
         console.error("Error fetching profile data:", error);
@@ -66,15 +59,16 @@ const AccountDetailsScreen = () => {
           <Text style={styles.header}>Account Management</Text>
         </View>
 
-        <Text style={styles.subHeader}>
-          Make changes to your personal information or account type
-        </Text>
+        <Text style={styles.subHeader}>Make changes to your personal information or account type</Text>
 
         {/* Section Title */}
         <Text style={styles.sectionTitle}>Your Account</Text>
 
         {/* Name Row */}
-        <TouchableOpacity style={styles.infoRow}>
+        <TouchableOpacity 
+          style={styles.infoRow} 
+          onPress={() => navigation.navigate("EditAccountField", { field: "Name", value: profileName })}
+        >
           <Text style={styles.label}>Name</Text>
           <View style={styles.rightContainer}>
             <Text style={styles.text}>{profileName}</Text>
@@ -83,7 +77,10 @@ const AccountDetailsScreen = () => {
         </TouchableOpacity>
 
         {/* Email Row */}
-        <TouchableOpacity style={styles.infoRow}>
+        <TouchableOpacity 
+          style={styles.infoRow} 
+          onPress={() => navigation.navigate("EditAccountField", { field: "Email", value: email })}
+        >
           <Text style={styles.label}>Email</Text>
           <View style={styles.rightContainer}>
             <Text style={styles.text}>{email}</Text>
@@ -91,8 +88,11 @@ const AccountDetailsScreen = () => {
           </View>
         </TouchableOpacity>
 
-        {/* Password Change Option */}
-        <TouchableOpacity style={styles.infoRow}>
+        {/* Password Row */}
+        <TouchableOpacity 
+          style={styles.infoRow} 
+          onPress={() => navigation.navigate("EditAccountField", { field: "Password", value: "" })}
+        >
           <Text style={styles.label}>Password</Text>
           <View style={styles.rightContainer}>
             <Text style={styles.text}>Change password</Text>
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
-    backgroundColor: "#FFF", // Changed back to white
+    backgroundColor: "#FFF",
   },
   headerContainer: {
     flexDirection: "row",
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#000", // Changed back to black
+    color: "#000",
   },
   subHeader: {
     fontSize: 14,
@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 15,
     borderBottomWidth: 1,
-    borderBottomColor: "#E0E0E0", // Light gray divider
+    borderBottomColor: "#E0E0E0",
   },
   label: {
     fontSize: 16,
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
-    color: "#888", // Gray color for secondary text
+    color: "#888",
     marginRight: 10,
   },
 });

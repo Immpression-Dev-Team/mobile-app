@@ -17,6 +17,7 @@ import PaymentScreen from '../screens/PaymentScreen';
 import ArtPreferences from '../screens/ArtPreferences';
 import DeleteAccount from '../screens/DeleteAccount';
 import AccountDetails from '../screens/AccountDetails';
+import EditAccountFieldScreen from '../screens/EditAccountField';
 
 export const UserNavigation = [
   {
@@ -90,6 +91,10 @@ export const UserNavigation = [
   {
     name: 'AccountDetails',
     component: AccountDetails,
+  },
+  {
+    name: 'EditAccountField',
+    component: EditAccountFieldScreen,
   }
 ];
 
