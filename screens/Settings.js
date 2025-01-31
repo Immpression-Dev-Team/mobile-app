@@ -56,39 +56,40 @@ const SettingsScreen = () => {
       iconUrl: logoutIcon,
       onPress: handleLogout,
     },
+    // {
+    //   label: 'Add Account',
+    //   iconUrl: addAccountIcon,
+    //   onPress: handleAddAccount,
+    // },
     {
-      label: 'Add Account',
-      iconUrl: addAccountIcon,
-      onPress: handleAddAccount,
-    },
-    {
-      label: 'Account',
+      label: 'Account Details', // Changed from 'Account' to 'Account Details'
       iconUrl: userIcon,
+      onPress: () => navigation.navigate('AccountDetails'), // Navigate to the new screen
     },
-    {
-      label: 'Privacy',
-      iconUrl: lockIcon,
-    },
-    {
-      label: 'Notifications',
-      iconUrl: notificationIcon,
-    },
-    {
-      label: 'App Language',
-      iconUrl: webIcon,
-    },
-    {
-      label: 'Device Permissions',
-      iconUrl: deviceIcon,
-    },
-    {
-      label: 'Help',
-      iconUrl: helpIcon,
-    },
-    {
-      label: 'Invite a friend',
-      iconUrl: friendsIcon,
-    },
+    // {
+    //   label: 'Privacy',
+    //   iconUrl: lockIcon,
+    // },
+    // {
+    //   label: 'Notifications',
+    //   iconUrl: notificationIcon,
+    // },
+    // {
+    //   label: 'App Language',
+    //   iconUrl: webIcon,
+    // },
+    // {
+    //   label: 'Device Permissions',
+    //   iconUrl: deviceIcon,
+    // },
+    // {
+    //   label: 'Help',
+    //   iconUrl: helpIcon,
+    // },
+    // {
+    //   label: 'Invite a friend',
+    //   iconUrl: friendsIcon,
+    // },
     {
       label: 'Delete Account',
       onPress: () => navigation.navigate('DeleteAccount'),

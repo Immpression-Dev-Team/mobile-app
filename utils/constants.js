@@ -16,6 +16,7 @@ import DeliveryDetails from '../screens/DeliveryDetails';
 import PaymentScreen from '../screens/PaymentScreen';
 import ArtPreferences from '../screens/ArtPreferences';
 import DeleteAccount from '../screens/DeleteAccount';
+import AccountDetails from '../screens/AccountDetails';
 
 export const UserNavigation = [
   {
@@ -86,6 +87,10 @@ export const UserNavigation = [
     name: 'DeleteAccount',
     component: DeleteAccount,
   },
+  {
+    name: 'AccountDetails',
+    component: AccountDetails,
+  }
 ];
 
 export const GuestNavigation = [
