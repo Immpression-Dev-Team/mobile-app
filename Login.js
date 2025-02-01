@@ -32,17 +32,10 @@ const backgroundImage = require("../assets/backgrounds/paint_background.png"); /
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, userData } = useAuth();
+  const [userData, setUserData] = useState(null);
+  const { login } = useAuth();
   const navigation = useNavigation();
   const [error, setError] = useState("");
-
-  // only navigate when userData turns back to null
-  useEffect(() => {
-    if(userData){
-      console.log('Log in success. Now going to home screen');
-      navigation.navigate('Home');
-    }
-  }, [userData]);
   const [isLoading, setIsLoading] = useState(false);
 
   const navigateTo = (screenName) => {
@@ -237,19 +230,17 @@ const Login = () => {
       }
     };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    setError(''); // Clear previous errors
-
-    const result = await handleLogin(email, password, login);
-
-    if (result.success) {
-      navigation.navigate('Home');
-    } else {
-      setError("Invalid email or password");
-    }
-  };
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      setError('');
+  
+      const result = await handleLogin(email, password, login);
+      if (result.success) {
+        navigation.navigate('Home');
+      } else {
+        setError("Invalid email or password");
+      }
+    };
 
   return (
     <ImageBackground source={backgroundImage} style={styles.backgroundImage}>

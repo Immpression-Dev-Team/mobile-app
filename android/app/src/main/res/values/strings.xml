@@ -1,0 +1,9 @@
+<resources>
+  <string name="app_name">Immpression</string>
+  <string name="expo_splash_screen_resize_mode" translatable="false">contain</string>
+  <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <string name="expo_runtime_version">1.0.0</string>
+  <string name="facebook_app_id">583106331023708</string>
+  <string name="facebook_client_token">8dc289ecd8500fd67917d5a7c90767a3</string>
+  <string name="fb_login_protocol_scheme">fb583106331023708</string>
+</resources>
