@@ -425,6 +425,22 @@ async function deleteAccount(token) {
   }
 }
 
+// Function to update user profile fields (name, email, password)
+async function updateUserProfile(updatedData, token) {
+  try {
+    const response = await axios.put(`${API_URL}/update-profile`, updatedData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add token for authentication
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data; // Return success message and updated user info
+  } catch (error) {
+    console.error("Error updating profile:", error.response?.data || error);
+    return error.response?.data || error;
+  }
+}
 
 export {
   getAllImages,
@@ -450,4 +466,5 @@ export {
   confirmPayment,
   getPaymentStatus,
   deleteAccount,
+  updateUserProfile,
 };

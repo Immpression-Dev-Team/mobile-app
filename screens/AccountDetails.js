@@ -1,42 +1,50 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { 
+  View, 
+  Text, 
+  StyleSheet, 
+  TouchableOpacity, 
+  ActivityIndicator 
+} from "react-native";
 import { useAuth } from "../state/AuthProvider";
 import { getUserProfile } from "../API/API";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-
+import { useFocusEffect } from "@react-navigation/native"; // Auto-refresh when navigating back
 import ScreenTemplate from "./Template/ScreenTemplate";
 
 const AccountDetailsScreen = () => {
   const navigation = useNavigation();
-  const { userData } = useAuth();
+  const { userData, setUserData } = useAuth(); // Access auth state & update function
   const token = userData?.token;
-  const [profileName, setProfileName] = useState("");
-  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      if (!token) return;
-      try {
-        console.log("Fetching user profile...");
-        const data = await getUserProfile(token);
-        if (data?.user) {
-          console.log("User profile data:", data.user);
-          setProfileName(data.user.name || "N/A");
-          setEmail(data.user.email || "N/A");
-        } else {
-          console.error("Error: user data is undefined");
-        }
-      } catch (error) {
-        console.error("Error fetching profile data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Fetch user profile data
+  const fetchProfileData = async () => {
+    if (!token) return;
+    try {
+      console.log("Fetching updated user profile...");
+      const data = await getUserProfile(token);
 
-    fetchProfileData();
-  }, [token]);
+      if (data && data.success && data.user) {
+        console.log("Updated profile data:", data.user);
+        setUserData((prev) => ({ ...prev, ...data.user })); // Merge updated user data
+      } else {
+        console.error("Error: user data is missing or invalid", data);
+      }
+    } catch (error) {
+      console.error("Error fetching profile data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Auto-refresh when returning to the screen
+  useFocusEffect(
+    useCallback(() => {
+      fetchProfileData();
+    }, [token])
+  );
 
   if (loading) {
     return (
@@ -67,11 +75,11 @@ const AccountDetailsScreen = () => {
         {/* Name Row */}
         <TouchableOpacity 
           style={styles.infoRow} 
-          onPress={() => navigation.navigate("EditAccountField", { field: "Name", value: profileName })}
+          onPress={() => navigation.navigate("EditAccountField", { field: "Name", value: userData?.name || "N/A" })}
         >
           <Text style={styles.label}>Name</Text>
           <View style={styles.rightContainer}>
-            <Text style={styles.text}>{profileName}</Text>
+            <Text style={styles.text}>{userData?.name || "N/A"}</Text>
             <Ionicons name="chevron-forward" size={18} color="#888" />
           </View>
         </TouchableOpacity>
@@ -79,11 +87,11 @@ const AccountDetailsScreen = () => {
         {/* Email Row */}
         <TouchableOpacity 
           style={styles.infoRow} 
-          onPress={() => navigation.navigate("EditAccountField", { field: "Email", value: email })}
+          onPress={() => navigation.navigate("EditAccountField", { field: "Email", value: userData?.email || "N/A" })}
         >
           <Text style={styles.label}>Email</Text>
           <View style={styles.rightContainer}>
-            <Text style={styles.text}>{email}</Text>
+            <Text style={styles.text}>{userData?.email || "N/A"}</Text>
             <Ionicons name="chevron-forward" size={18} color="#888" />
           </View>
         </TouchableOpacity>

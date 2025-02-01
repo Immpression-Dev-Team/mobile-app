@@ -4,10 +4,13 @@ import {
   Text, 
   TextInput, 
   StyleSheet, 
-  TouchableOpacity 
+  TouchableOpacity, 
+  Alert 
 } from "react-native";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../state/AuthProvider"; 
+import { updateUserProfile } from "../API/API"; // Import the update API function
 import ScreenTemplate from "./Template/ScreenTemplate"; 
 
 const EditAccountFieldScreen = () => {
@@ -15,6 +18,37 @@ const EditAccountFieldScreen = () => {
   const route = useRoute();
   const { field, value } = route.params;
   const [input, setInput] = useState(value);
+  const { userData, setUserData } = useAuth(); // Get auth state and updater function
+  const token = userData?.token;
+
+  // Handle profile update
+  const handleUpdate = async () => {
+    if (!input.trim()) {
+      Alert.alert("Error", `${field} cannot be empty.`);
+      return;
+    }
+
+    try {
+      const updatedData = { [field.toLowerCase()]: input }; // Create dynamic payload
+      const response = await updateUserProfile(updatedData, token);
+
+      if (response.success) {
+        Alert.alert("Success", `${field} updated successfully.`);
+        
+        // Update the local user state with the new value
+        setUserData((prev) => ({
+          ...prev,
+          [field.toLowerCase()]: input,
+        }));
+
+        navigation.goBack(); // Navigate back to Account Details
+      } else {
+        Alert.alert("Error", response.error || "Failed to update profile.");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Something went wrong. Please try again.");
+    }
+  };
 
   return (
     <ScreenTemplate>
@@ -25,7 +59,7 @@ const EditAccountFieldScreen = () => {
             <Ionicons name="arrow-back" size={24} color="#000" />
           </TouchableOpacity>
           <Text style={styles.header}>{field}</Text>
-          <TouchableOpacity style={styles.nextButton}>
+          <TouchableOpacity onPress={handleUpdate} style={styles.nextButton}>
             <Text style={styles.nextText}>Next</Text>
           </TouchableOpacity>
         </View>
