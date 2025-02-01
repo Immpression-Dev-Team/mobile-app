@@ -95,7 +95,11 @@ export const UserNavigation = [
   {
     name: 'EditAccountField',
     component: EditAccountFieldScreen,
-  }
+  },
+  {
+    name: 'Login',
+    component: Login,
+  },
 ];
 
 export const GuestNavigation = [
