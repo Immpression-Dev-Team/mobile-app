@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { API_URL } from '../config';
 import { useAuth } from "../state/AuthProvider";
-import ScreenNoFooterTemplate from './Template/ScreenNoFooterTemplate';
+import ScreenTemplate from './Template/ScreenTemplate';
 
 // Import icons
 import userIcon from '../assets/user.png';
@@ -73,14 +73,14 @@ const SettingsScreen = () => {
   );
 
   return (
-    <ScreenNoFooterTemplate>
+    <ScreenTemplate>
       <FlatList
         data={options}
         renderItem={renderItem}
         keyExtractor={(item) => item.label}
         contentContainerStyle={styles.listContent}
       />
-    </ScreenNoFooterTemplate>
+    </ScreenTemplate>
   );
 };
 
