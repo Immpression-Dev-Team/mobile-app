@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../state/AuthProvider";
 import { deleteAccount } from "../API/API";
 import ScreenTemplate from "./Template/ScreenTemplate";
@@ -48,7 +49,14 @@ const DeleteAccountScreen = ({ navigation }) => {
   return (
     <ScreenTemplate>
       <View style={styles.container}>
-        <Text style={styles.header}>Delete Account</Text>
+        {/* Header with Back Button */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+          <Text style={styles.header}>Delete Account</Text>
+        </View>
+
         <Text style={styles.description}>
           Deleting your account is permanent and cannot be undone. If you’re
           sure, type “delete my account” below to confirm.
@@ -77,14 +85,20 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    justifyContent: "center",
+  },
+  headerContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  backButton: {
+    padding: 5,
+    marginRight: 10,
   },
   header: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "bold",
     color: "#d9534f",
-    textAlign: "center",
-    marginBottom: 16,
   },
   description: {
     fontSize: 16,

@@ -1,27 +1,22 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
-import SettingsItem from '../components/SettingsItem';
-import helpIcon from '../assets/question.png';
-import deviceIcon from '../assets/device.png';
-import friendsIcon from '../assets/friends.png';
-import lockIcon from '../assets/lock.png';
-import notificationIcon from '../assets/notification.png';
-import userIcon from '../assets/user.png';
-import webIcon from '../assets/web.png';
-import logoutIcon from '../assets/logout.png';
-import addAccountIcon from '../assets/add_account.png';
+import { View, StyleSheet, FlatList, TouchableOpacity, Text, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { API_URL } from '../config';
 import { useAuth } from "../state/AuthProvider";
+import ScreenTemplate from './Template/ScreenTemplate';
 
-import ScreenNoFooterTemplate from './Template/ScreenNoFooterTemplate';
+// Import icons
+import userIcon from '../assets/user.png';
+import logoutIcon from '../assets/logout.png';
+import deleteIcon from '../assets/icons/delete_icon.png';
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
   const { logout, userData } = useAuth();
 
-  // only navigate when userData is not null (that means already logged in)
+  // Navigate to login if user is not authenticated
   useEffect(() => {
     if (!userData) {
       console.log('Now back to guest login');
@@ -29,7 +24,7 @@ const SettingsScreen = () => {
     }
   }, [userData]);
 
-  // handler for log out
+  // Logout handler
   const handleLogout = async () => {
     try {
       console.log('handleLogout');
@@ -45,81 +40,81 @@ const SettingsScreen = () => {
     }
   };
 
-  const handleAddAccount = () => {
-    console.log('Add Account');
-  };
-
-  // options on setting screen
+  // Settings options
   const options = [
     {
-      label: 'Log out',
+      label: 'Account Details',
+      iconUrl: userIcon,
+      onPress: () => navigation.navigate('AccountDetails'),
+    },
+    {
+      label: 'Log Out',
       iconUrl: logoutIcon,
       onPress: handleLogout,
     },
     {
-      label: 'Add Account',
-      iconUrl: addAccountIcon,
-      onPress: handleAddAccount,
-    },
-    {
-      label: 'Account',
-      iconUrl: userIcon,
-    },
-    {
-      label: 'Privacy',
-      iconUrl: lockIcon,
-    },
-    {
-      label: 'Notifications',
-      iconUrl: notificationIcon,
-    },
-    {
-      label: 'App Language',
-      iconUrl: webIcon,
-    },
-    {
-      label: 'Device Permissions',
-      iconUrl: deviceIcon,
-    },
-    {
-      label: 'Help',
-      iconUrl: helpIcon,
-    },
-    {
-      label: 'Invite a friend',
-      iconUrl: friendsIcon,
-    },
-    {
       label: 'Delete Account',
+      iconUrl: deleteIcon,
       onPress: () => navigation.navigate('DeleteAccount'),
+      isDelete: true, // Special flag for styling
     },
   ];
 
   const renderItem = ({ item }) => (
-    <>
-      <SettingsItem
-        item={item}
-        handleClick={item.onPress || (() => console.log(`Navigate to ${item.label}`))}
-      />
-      {item.label === 'Add Account' && <View style={styles.horizontalDivider} />}
-    </>
+    <TouchableOpacity style={styles.optionContainer} onPress={item.onPress}>
+      <View style={styles.optionContent}>
+        <Image source={item.iconUrl} style={styles.icon} />
+        <Text style={[styles.optionLabel, item.isDelete && styles.deleteLabel]}>
+          {item.label}
+        </Text>
+      </View>
+      <Ionicons name="chevron-forward" size={18} color={item.isDelete ? "red" : "#888"} />
+    </TouchableOpacity>
   );
 
   return (
-    <ScreenNoFooterTemplate>
+    <ScreenTemplate>
       <FlatList
         data={options}
         renderItem={renderItem}
         keyExtractor={(item) => item.label}
         contentContainerStyle={styles.listContent}
       />
-    </ScreenNoFooterTemplate>
+    </ScreenTemplate>
   );
 };
 
 const styles = StyleSheet.create({
   listContent: {
     paddingTop: 20,
+  },
+  optionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  optionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    width: 24, // Ensure all icons are the same size
+    height: 24,
+    marginRight: 10,
+    resizeMode: 'contain',
+  },
+  optionLabel: {
+    fontSize: 16,
+    color: '#000',
+  },
+  deleteLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'red',
   },
 });
 
