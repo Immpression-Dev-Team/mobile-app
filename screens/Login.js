@@ -8,6 +8,7 @@ import {
   Pressable,
   Image,
   ImageBackground, // Import ImageBackground component
+  Platform,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
@@ -15,9 +16,7 @@ import Icon from "react-native-vector-icons/FontAwesome"; // Import your preferr
 import { handleLogin } from "../utils/handleLogin.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as WebBrowser from 'expo-web-browser';
-import * as Google from '@react-native-google-signin/google-signin';
-import { GoogleSignin } from '@react-native-google-signin/google-signin';
-import { statusCodes } from "@react-native-google-signin/google-signin";
+import { GoogleSignin, statusCodes } from "@react-native-google-signin/google-signin";
 import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
 import { useAuth } from "../state/AuthProvider";
 import { API_URL, GOOGLE_CONFIG } from "../config";
@@ -45,7 +44,7 @@ const Login = () => {
   
     const checkPlayServices = async () => {
       try {
-        await Google.GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+        await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
         return true;
       } catch (error) {
         console.error('Play services check failed:', error);
@@ -58,21 +57,35 @@ const Login = () => {
     
     // Replace your current useEffect with this enhanced version
     useEffect(() => {
-      const initializeGoogleSignin = async () => {
+      const initializeGoogleSignIn = async () => {
         try {
-          await Google.GoogleSignin.configure({
+          // Basic configuration
+          const configOptions = {
             webClientId: '709309106647-pb9k612u1pe4olikmvfaaktkauj3bjts.apps.googleusercontent.com',
             iosClientId: '709309106647-rqnlk0i13qkb6qc901aoj3tapaskuu8t.apps.googleusercontent.com',
-            androidClientId: '709309106647-rfamr61c8baek898du9jlqf0ccfoof85.apps.googleusercontent.com',
             offlineAccess: true
-          });
+          };
+    
+          // If we're on iOS, we need to add the presenting view controller
+          if (Platform.OS === 'ios') {
+            GoogleSignin.configure({
+              ...configOptions,
+              // This tells iOS which screen should present the sign-in interface
+              iosClientId: configOptions.iosClientId,
+              openIdRealm: 'com.immpression.art', // Your bundle identifier
+            });
+          } else {
+            // On Android, we can use the basic configuration
+            GoogleSignin.configure(configOptions);
+          }
+    
           console.log('Google Sign-In configured successfully');
         } catch (error) {
           console.error('Google Sign-In configuration failed:', error);
         }
       };
     
-      initializeGoogleSignin();
+      initializeGoogleSignIn();
     }, []);
 
     const handleFacebookSignIn = async () => {
@@ -168,7 +181,7 @@ const Login = () => {
         }
     
         console.log('Attempting Google sign in...'); // Debug log
-        const userInfo = await Google.GoogleSignin.signIn();
+        const userInfo = await GoogleSignin.signIn();
         console.log('Google sign in successful:', userInfo); // Debug log
         
         if (!userInfo?.idToken || !userInfo?.user?.email) {
