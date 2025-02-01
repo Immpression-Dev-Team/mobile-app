@@ -27,7 +27,7 @@ const AccountTypeScreen = () => {
       if (type === 'artist') {
         navigation.navigate('ArtistType');
       } else {
-        navigation.navigate('Home');
+        navigation.navigate('ArtPreferences');
       }
     } catch (error) {
       console.error('Error updating account type:', error);

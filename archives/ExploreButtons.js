@@ -1,7 +1,7 @@
 import { View, StyleSheet, Platform } from 'react-native';
 import { useNavigation } from "@react-navigation/native";
 
-import NavButton from './NavButton';
+import NavButton from '../components/home_sections/Explore/NavButton';
 
 export default function ExploreButtons() {
   const navigation = useNavigation();

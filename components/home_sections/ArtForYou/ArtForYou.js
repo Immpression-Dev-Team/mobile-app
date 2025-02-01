@@ -175,8 +175,8 @@ export default function ArtForYou() {
   if (isLoading) {
     return(
       <LoadingSection
-        loadingMsg={'LOADING ART FOR YOU!'}
-        size={'large'}
+        loadingMsg='LOADING ART FOR YOU!'
+        size='large'
       />
     );
   }

@@ -1,18 +1,19 @@
 import {
-  View,
   StyleSheet,
-  ScrollView,
-  ImageBackground,
-  Platform,
+  View,
 } from "react-native";
 import { useAuth } from "../state/AuthProvider";
 
-import Navbar from "../components/Navbar";
-import navBackground from "../assets/backgrounds/navbar_bg_blue.png";
-import FooterNavbar from "../components/FooterNavbar";
-import ExploreButtons from "../components/home_sections/Explore/ExploreButtons";
 import ArtForYouSection from "../components/home_sections/ArtForYou/ArtForYouSection";
 import FeaturedArtistsSection from "../components/home_sections/FeaturedArtists/FeaturedArtistsSection";
+import CategoryNavSection from "../components/home_sections/Explore/CategoryNavSection";
+
+import SectionBanner from "../components/home_sections/SectionTemplate/SectionBanner";
+import ScreenTemplate from "./Template/ScreenTemplate";
+
+import navBgHeader from "../assets/foryou_assets/background_top.png";
+import discoverBgHeader from "../assets/discover_assets/background_top.png";
+import discoverBgFooter from "../assets/discover_assets/background_bottom.png";
 
 // import ArtOfTheDay from "../components/home_sections/ArtOfTheDay";
 // import InviteFriends from "../components/home_sections/InviteFriends";
@@ -25,54 +26,25 @@ export default function HomeScreen() {
   console.log("useAuth response: ", name);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.navbar}>
-        <ImageBackground
-          source={navBackground}
-          style={styles.navbarBackgroundImage}
-        >
-          <Navbar/>
-        </ImageBackground>
-      </View>
-      
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <ArtForYouSection/>
-        <ExploreButtons/>
-        <FeaturedArtistsSection/>
-      </ScrollView>
+    <ScreenTemplate>
+      <View style={styles.container}>
+        <CategoryNavSection />
+        <SectionBanner imgLink={navBgHeader} bannerHeight={3} />
 
-      <View style={styles.footer}>
-        <FooterNavbar/>
+        <ArtForYouSection />
+        <SectionBanner imgLink={discoverBgHeader} bannerHeight={3.5} />
+
+        <FeaturedArtistsSection />
+        <SectionBanner imgLink={discoverBgFooter} bannerHeight={3.5} />
       </View>
-    </View>
+    </ScreenTemplate>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
-    height: '100%',
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    backgroundColor: 'white',
-  },
-  navbar: {
-    width: "100%",
-    height: (Platform.OS === 'web') ? "10%" : "15%",
-    zIndex: 1000,
-  },
-  navbarBackgroundImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
-  scrollContainer: {
-    flex: 1,
     alignItems: "center",
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
-  footer: {
-    zIndex: 1000,
-  },
-})
+});

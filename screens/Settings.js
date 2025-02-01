@@ -1,77 +1,37 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, Pressable, Image, ImageBackground } from 'react-native';
-import NavBar from '../components/Navbar';
-import SettingsItem from '../components/SettingsItem';
-import helpIcon from '../assets/question.png';
-import deviceIcon from '../assets/device.png';
-import friendsIcon from '../assets/friends.png';
-import lockIcon from '../assets/lock.png';
-import notificationIcon from '../assets/notification.png';
-import userIcon from '../assets/user.png';
-import webIcon from '../assets/web.png';
-import logoutIcon from '../assets/logout.png';
-import addAccountIcon from '../assets/add_account.png';
+import React, { useEffect } from 'react';
+import { View, StyleSheet, FlatList, TouchableOpacity, Text, Image } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import { API_URL } from '../config';
 import { useAuth } from "../state/AuthProvider";
+import ScreenTemplate from './Template/ScreenTemplate';
 
-
-const options = [
-  {
-    label: 'Log out',
-    iconUrl: logoutIcon,
-    onPress: 'handleSubmit',
-  },
-  {
-    label: 'Add Account',
-    iconUrl: addAccountIcon,
-    onPress: 'handleAddAccount',
-  },
-  {
-    label: 'Account',
-    iconUrl: userIcon,
-  },
-  {
-    label: 'Privacy',
-    iconUrl: lockIcon,
-  },
-  {
-    label: 'Notifications',
-    iconUrl: notificationIcon,
-  },
-  {
-    label: 'App Language',
-    iconUrl: webIcon,
-  },
-  {
-    label: 'Device Permissions',
-    iconUrl: deviceIcon,
-  },
-  {
-    label: 'Help',
-    iconUrl: helpIcon,
-  },
-  {
-    label: 'Invite a friend',
-    iconUrl: friendsIcon,
-  },
-];
+// Import icons
+import userIcon from '../assets/user.png';
+import logoutIcon from '../assets/logout.png';
+import deleteIcon from '../assets/icons/delete_icon.png';
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
-  const { logout } = useAuth();
+  const { logout, userData } = useAuth();
 
-  const handleSubmit = async () => {
+  // Navigate to login if user is not authenticated
+  useEffect(() => {
+    if (!userData) {
+      console.log('Now back to guest login');
+      navigation.navigate('Login');
+    }
+  }, [userData]);
+
+  // Logout handler
+  const handleLogout = async () => {
     try {
-      const response = await axios.post(
-        `${API_URL}/logout`,
-        {},
-        { withCredentials: true }
-      );
+      console.log('handleLogout');
+      const response = await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
       if (response.data.success) {
-        logout();
-        navigation.navigate('Login');
+        await logout();
+        console.log('Logged out successfully:', userData);
       } else {
         console.log('Logout failed');
       }
@@ -80,74 +40,81 @@ const SettingsScreen = () => {
     }
   };
 
-  const handleAddAccount = () => {
-    console.log('Add Account');
-  };
-
-  const handleNavigation = (label) => {
-    console.log(`Navigate to ${label}`);
-  };
+  // Settings options
+  const options = [
+    {
+      label: 'Account Details',
+      iconUrl: userIcon,
+      onPress: () => navigation.navigate('AccountDetails'),
+    },
+    {
+      label: 'Log Out',
+      iconUrl: logoutIcon,
+      onPress: handleLogout,
+    },
+    {
+      label: 'Delete Account',
+      iconUrl: deleteIcon,
+      onPress: () => navigation.navigate('DeleteAccount'),
+      isDelete: true, // Special flag for styling
+    },
+  ];
 
   const renderItem = ({ item }) => (
-    <>
-      <SettingsItem
-        item={item}
-        handleClick={
-          item.onPress
-            ? item.onPress === 'handleSubmit'
-              ? handleSubmit
-              : handleAddAccount
-            : () => handleNavigation(item.label)
-        }
-      />
-      {item.label === 'Add Account' && <View style={styles.horizontalDivider} />}
-    </>
+    <TouchableOpacity style={styles.optionContainer} onPress={item.onPress}>
+      <View style={styles.optionContent}>
+        <Image source={item.iconUrl} style={styles.icon} />
+        <Text style={[styles.optionLabel, item.isDelete && styles.deleteLabel]}>
+          {item.label}
+        </Text>
+      </View>
+      <Ionicons name="chevron-forward" size={18} color={item.isDelete ? "red" : "#888"} />
+    </TouchableOpacity>
   );
 
   return (
-    <View style={styles.container}>
-       <ImageBackground
-          source={require("../assets/backgrounds/navbar_bg_blue.png")} // Replace with your image path
-          style={styles.navbarBackgroundImage}
-        >
-          <NavBar />
-        </ImageBackground>
-      
-      <View style={styles.settingsContainer}>
-        <FlatList
-          data={options}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.label}
-          contentContainerStyle={styles.listContent}
-        />
-      </View>
-    </View>
+    <ScreenTemplate>
+      <FlatList
+        data={options}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.label}
+        contentContainerStyle={styles.listContent}
+      />
+    </ScreenTemplate>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f0f0f0',
-  },
-  settingsContainer: {
-    marginTop: 30,
-    flex: 1,
-    paddingHorizontal: 10,
-  },
-  horizontalDivider: {
-    borderBottomWidth: 1,
-    borderBottomColor: 'lightgray',
-    marginVertical: 10,
-  },
-  title: {
-    fontSize: 18,
-    marginBottom: 10,
-    fontWeight: 'bold',
-    paddingHorizontal: 10,
-  },
   listContent: {
-    paddingBottom: 20,
+    paddingTop: 20,
+  },
+  optionContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  optionContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon: {
+    width: 24, // Ensure all icons are the same size
+    height: 24,
+    marginRight: 10,
+    resizeMode: 'contain',
+  },
+  optionLabel: {
+    fontSize: 16,
+    color: '#000',
+  },
+  deleteLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: 'red',
   },
 });
 

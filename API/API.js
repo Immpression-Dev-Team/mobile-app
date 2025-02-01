@@ -57,10 +57,32 @@ async function updateArtistType(artistType, token) {
         },
       }
     );
+
+    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error('Error updating artist type:', error);
-    console.error('Server response:', error.response?.data); // Log server response for more details
+    return error.response?.data || error;
+  }
+}
+
+// Function to update the user's art types (art-lover)
+async function updateArtType(artTypes, token) {
+  try {
+    const response = await axios.put(
+      `${API_URL}/set-art-categories`,
+      artTypes,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    console.log(response);
+    return response.data;
+  } catch (error) {
+    console.error('Error updating art-lover art types: ', error);
     return error.response?.data || error;
   }
 }
@@ -334,6 +356,92 @@ async function createOrder(orderData, token) {
   }
 }
 
+async function createPaymentIntent(paymentData, token) {
+  try {
+    const response = await axios.post(
+      `${API_URL}/create-payment-intent`,
+      paymentData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data; // Contains the client_secret and other payment details
+  } catch (error) {
+    console.error('Error creating payment intent:', error.response?.data || error);
+    throw error;
+  }
+}
+
+async function confirmPayment(paymentIntentId, token) {
+  try {
+    const response = await axios.post(
+      `${API_URL}/confirm-payment`,
+      { paymentIntentId },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    return response.data; // Contains confirmation result
+  } catch (error) {
+    console.error('Error confirming payment:', error.response?.data || error);
+    throw error;
+  }
+}
+async function getPaymentStatus(paymentIntentId, token) {
+  try {
+    const response = await axios.get(
+      `${API_URL}/payment-status/${paymentIntentId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data; // Contains the PaymentIntent status
+  } catch (error) {
+    console.error('Error fetching payment status:', error.response?.data || error);
+    throw error;
+  }
+}
+
+// Function to delete a user's account
+async function deleteAccount(token) {
+  try {
+    const response = await axios.delete(`${API_URL}/delete-account`, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add token to headers for authentication
+      },
+    });
+    return response.data; // Return the response from the server
+  } catch (error) {
+    console.error('Error deleting account:', error.response?.data || error);
+    return error.response?.data || error;
+  }
+}
+
+// Function to update user profile fields (name, email, password)
+async function updateUserProfile(updatedData, token) {
+  try {
+    const response = await axios.put(`${API_URL}/update-profile`, updatedData, {
+      headers: {
+        Authorization: `Bearer ${token}`, // Add token for authentication
+        "Content-Type": "application/json",
+      },
+    });
+
+    return response.data; // Return success message and updated user info
+  } catch (error) {
+    console.error("Error updating profile:", error.response?.data || error);
+    return error.response?.data || error;
+  }
+}
+
 export {
   getAllImages,
   uploadImage,
@@ -344,6 +452,7 @@ export {
   getAllProfilePictures,
   updateBio,
   updateArtistType,
+  updateArtType,
   getBio,
   getArtistType,
   getUserProfile,
@@ -353,4 +462,9 @@ export {
   incrementImageViews,
   getImageViews,
   createOrder,
+  createPaymentIntent,
+  confirmPayment,
+  getPaymentStatus,
+  deleteAccount,
+  updateUserProfile,
 };

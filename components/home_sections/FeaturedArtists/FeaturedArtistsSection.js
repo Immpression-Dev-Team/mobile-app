@@ -5,9 +5,8 @@ export default function FeaturedArtistsSection(){
     return(
         <SectionTemplate
             renderSection={<FeaturedArtists/>}
-            height={36}
-            headerHeight={10}
-            footerHeight={2.5}
+            height={30}
+            marginHeight={1.25}
         />
     )
 }

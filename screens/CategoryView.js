@@ -1,7 +1,6 @@
 import {
     StyleSheet,
-    View,
-    ImageBackground,
+    Platform,
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useRoute } from "@react-navigation/native";
@@ -10,9 +9,8 @@ import { getAllImages } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
 import { showToast } from "../utils/toastNotification";
 
-import Navbar from "../components/Navbar";
-import FooterNavbar from "../components/FooterNavbar";
 import CategoryContent from "../components/category_sections/CategoryContent";
+import ScreenTemplate from "./Template/ScreenTemplate";
 
 export default function CategoryView() {
     const { token } = useAuth();
@@ -46,19 +44,12 @@ export default function CategoryView() {
     }, [])
 
     return(
-        <View style={styles.container}>
-            <ImageBackground
-                source={require("../assets/backgrounds/navbar_bg_blue.png")} // Replace with your image path
-                style={styles.navbarBackgroundImage}
-            >
-                <Navbar />
-            </ImageBackground>
+        <ScreenTemplate>
             <CategoryContent
                 title={category}
                 images={categoryArts}
             />
-            <FooterNavbar/>
-        </View>
+        </ScreenTemplate>
     );
 }
 
@@ -71,5 +62,10 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'space-between',
         backgroundColor: 'white',
+    },
+    footer: {
+        width: "100%",
+        height: (Platform.OS === 'web') ? "10%" : "8%",
+        zIndex: 1000,
     },
 })

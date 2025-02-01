@@ -3,13 +3,13 @@
     "name": "Immpression",
     "slug": "Immpression",
     "scheme": "immpression",
-    "version": "1.0.0",
+    "version": "2.0.6",
     "orientation": "portrait",
     "icon": "./assets/Logo_T.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/Logo_T.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -92,62 +92,51 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/Logo_T.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.immpression.art",
-      "versionCode": 12,
-      "extra": {
-        "eas": {
-          "projectId": "f013e252-c529-4ba4-afbe-9f233d8f28fc"
-        }
-      },
-      "runtimeVersion": {
-        "policy": "appVersion"
-      },
-      "updates": {
-        "url": "https://u.expo.dev/f013e252-c529-4ba4-afbe-9f233d8f28fc"
-      },
-      "owner": "immpression",
-      "plugins": [
-        [
-          "expo-font",
-          {
-            "fonts": [
-              "./assets/fonts/BriemHand-Black.ttf",
-              "./assets/fonts/BriemHand-Bold.ttf",
-              "./assets/fonts/BriemHand-Medium.ttf",
-              "./assets/fonts/BriemHand-Regular.ttf",
-              "./assets/fonts/LEMONMILK-Bold.otf"
-            ]
-          }
-        ],
-        [
-          "expo-image-picker",
-          {
-            "photosPermission": "The app accesses your photos to let you share them with your friends."
-          }
-        ]
-      ],
-      "config": {
-        "googleSignIn": {
-          "webClientId": "709309106647-pb9k612u1pe4olikmvfaaktkauj3bjts.apps.googleusercontent.com"
-        },
-        "googleMaps": {
-          "apiKey": "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4"
-        },
-        "auth": {
-          "proxyUrl": "https://auth.expo.io/@alexis2995/immpression"
-        }
-      }
+      "versionCode": 8,
+    "web": {
+      "favicon": "./assets/favicon.png"
     },
-    "facebookScheme": "583106331023708",
-    "facebookAppId": "583106331023708",
-    "facebookDisplayName": "Immpression",
     "extra": {
       "eas": {
-        "projectId": "cbaa6a27-9b6b-4f60-b122-2507c5d265db"
+        "projectId": "f013e252-c529-4ba4-afbe-9f233d8f28fc"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/f013e252-c529-4ba4-afbe-9f233d8f28fc"
+    },
+    "owner": "immpression",
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/BriemHand-Black.ttf",
+            "./assets/fonts/BriemHand-Bold.ttf",
+            "./assets/fonts/BriemHand-Medium.ttf",
+            "./assets/fonts/BriemHand-Regular.ttf",
+            "./assets/fonts/LEMONMILK-Bold.otf"
+          ]
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
+    ],
+    "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4"
+        }
     }
+  }
   }
 }

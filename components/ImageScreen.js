@@ -6,24 +6,22 @@ import {
   Text,
   FlatList,
   Dimensions,
-  ImageBackground,
   TouchableOpacity,
 } from "react-native";
 
-import Navbar from "./Navbar";
-import FooterNavbar from "../components/FooterNavbar";
 import { incrementImageViews } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
+import ScreenTemplate from "../screens/Template/ScreenTemplate";
 
-const share = require("../assets/icons/share-button.png");
-const like = require("../assets/icons/like-button.png");
+const share = require("../assets/icons/share-button.jpg");
+const like = require("../assets/icons/like-button.jpg");
 const likesIcon = require("../assets/icons/likes_icon.png");
-const viewsIcon = require("../assets/icons/views_icon.png");
+const viewsIcon = require("../assets/icons/views_icon.jpg");
 const { width } = Dimensions.get("window");
 
 // Helper function to calculate responsive font size
 const getResponsiveFontSize = (size) => {
-  const scale = width / 375; // Base scale on a typical screen width (375 for iPhone 6/7/8)
+  const scale = width / 375; // Base scale on a typical ScreenTemplate width (375 for iPhone 6/7/8)
   return Math.round(size * scale);
 };
 
@@ -56,13 +54,7 @@ const ImageScreen = ({ route, navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
-      <ImageBackground
-        source={require("../assets/backgrounds/navbar_bg_blue.png")}
-        style={styles.navbarBackgroundImage}
-      >
-        <Navbar />
-      </ImageBackground>
+    <ScreenTemplate>
       <FlatList
         ref={flatListRef}
         data={images}
@@ -140,7 +132,7 @@ const ImageScreen = ({ route, navigation }) => {
         <TouchableOpacity
           style={styles.buyNowButton}
           onPress={() =>
-            navigation.navigate("DeliveryDetails", {
+            navigation.navigate("PaymentScreen", {
               artName: images[currentIndex]?.name, // Pass only the art name
               imageLink: images[currentIndex]?.imageLink, // Pass the image link
               artistName: images[currentIndex]?.artistName, // Pass the artist's name
@@ -151,16 +143,11 @@ const ImageScreen = ({ route, navigation }) => {
           <Text style={styles.buyNowButtonText}>BUY NOW</Text>
         </TouchableOpacity>
       </View>
-      <FooterNavbar />
-    </View>
+    </ScreenTemplate>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "white",
-  },
   imageContainer: {
     width,
     justifyContent: "center",

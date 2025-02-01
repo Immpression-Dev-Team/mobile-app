@@ -8,10 +8,9 @@ import {
   Alert,
   ScrollView,
   Image,
-  ImageBackground,
 } from "react-native";
-import Navbar from "../components/Navbar";
-import FooterNavbar from "../components/FooterNavbar";
+import { CardField, useStripe } from '@stripe/stripe-react-native';
+import ScreenTemplate from "./Template/ScreenTemplate";
 
 const PaymentScreen = ({ navigation, route }) => {
   const { orderId } = route.params; // Order ID passed from the DeliveryDetails screen
@@ -19,6 +18,7 @@ const PaymentScreen = ({ navigation, route }) => {
   const [expiryDate, setExpiryDate] = useState("");
   const [cvv, setCvv] = useState("");
   const [nameOnCard, setNameOnCard] = useState("");
+  const { confirmPayment } = useStripe();
 
   const handlePayment = async () => {
     if (!cardNumber || !expiryDate || !cvv || !nameOnCard) {
@@ -39,17 +39,7 @@ const PaymentScreen = ({ navigation, route }) => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* Navbar Section */}
-      <View style={styles.navbarContainer}>
-        <ImageBackground
-          source={require("../assets/backgrounds/navbar_bg_blue.png")}
-          style={styles.navbarBackgroundImage}
-        >
-          <Navbar />
-        </ImageBackground>
-      </View>
-
+    <ScreenTemplate>
       {/* Header Section */}
       <View style={styles.headerContainer}>
         <TouchableOpacity
@@ -106,28 +96,11 @@ const PaymentScreen = ({ navigation, route }) => {
           <Text style={styles.buttonText}>Pay Now</Text>
         </TouchableOpacity>
       </ScrollView>
-
-      {/* Footer Section */}
-      <FooterNavbar />
-    </View>
+    </ScreenTemplate>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#FFF",
-  },
-  navbarContainer: {
-    width: "100%",
-    height: "15%",
-    backgroundColor: "#FFF",
-  },
-  navbarBackgroundImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "cover",
-  },
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",

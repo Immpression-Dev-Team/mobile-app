@@ -14,6 +14,10 @@ import AccountTypeScreen from '../screens/AccountType';
 import ArtistType from '../screens/ArtistType';
 import DeliveryDetails from '../screens/DeliveryDetails';
 import PaymentScreen from '../screens/PaymentScreen';
+import ArtPreferences from '../screens/ArtPreferences';
+import DeleteAccount from '../screens/DeleteAccount';
+import AccountDetails from '../screens/AccountDetails';
+import EditAccountFieldScreen from '../screens/EditAccountField';
 
 export const UserNavigation = [
   {
@@ -69,12 +73,32 @@ export const UserNavigation = [
     component: ArtistType,
   },
   {
+    name: 'ArtPreferences',
+    component: ArtPreferences,
+  },
+  {
     name: 'DeliveryDetails',
     component: DeliveryDetails,
   },
   {
     name: 'PaymentScreen',
     component: PaymentScreen,
+  },
+  {
+    name: 'DeleteAccount',
+    component: DeleteAccount,
+  },
+  {
+    name: 'AccountDetails',
+    component: AccountDetails,
+  },
+  {
+    name: 'EditAccountField',
+    component: EditAccountFieldScreen,
+  },
+  {
+    name: 'Login',
+    component: Login,
   },
 ];
 
@@ -137,6 +161,50 @@ export const ArtistTypes = [
   {
     id: 8,
     name: 'Stenciler',
+    icon: require('../assets/artisteemoji.png'),
+  },
+];
+
+export const ArtTypes = [
+  {
+    id: 1,
+    name: 'Paintings',
+    icon: require('../assets/artisteemoji.png'),
+  },
+  {
+    id: 2,
+    name: 'Photography',
+    icon: require('../assets/artisteemoji.png'),
+  },
+  {
+    id: 3,
+    name: 'Graphic ',
+    secondaryName: 'Design',
+    icon: require('../assets/artisteemoji.png'),
+  },
+  {
+    id: 4,
+    name: 'Illustrations',
+    icon: require('../assets/artisteemoji.png'),
+  },
+  {
+    id: 5,
+    name: 'Sculptures',
+    icon: require('../assets/artisteemoji.png'),
+  },
+  {
+    id: 6,
+    name: 'WoodWork',
+    icon: require('../assets/artisteemoji.png'),
+  },
+  {
+    id: 7,
+    name: 'Graffiti',
+    icon: require('../assets/artisteemoji.png'),
+  },
+  {
+    id: 8,
+    name: 'Stencils',
     icon: require('../assets/artisteemoji.png'),
   },
 ];
