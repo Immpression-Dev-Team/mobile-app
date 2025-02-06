@@ -12,7 +12,7 @@ import logoutIcon from '../assets/logout.png';
 import addAccountIcon from '../assets/add_account.png';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import { API_URL } from '../config';
+import { API_URL } from '../API_URL';
 import { useAuth } from "../state/AuthProvider";
 
 import ScreenNoFooterTemplate from './Template/ScreenNoFooterTemplate';

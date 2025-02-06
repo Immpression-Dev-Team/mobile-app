@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { API_URL } from '../config';
+import { API_URL } from '../API_URL';
 
 // Function to update the user's bio
 async function updateBio(bio, token) {
