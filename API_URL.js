@@ -1,9 +1,19 @@
+// Change between production and development backend services
+// "dev" for local OR "prod" for remote
+const ENV = "dev";
+
+
+// TODO: REPLACE WITH *YOUR* HOST IP "192.1.x.x" for most local networks
+// Linux run - ip addr
+// Windows run - ipconfig
+// Mac run - ifconfig | grep "inet "
+const HOST_IP = "192.168.1.6";
+
 const PROD_URL = "https://immpression-backend.vercel.app"
-const ENV = process.env.VITE_APP_ENV;
 const API_URL =
     ENV === "prod"
         ? PROD_URL
-        : `http://localhost:${process.env.BACKEND_PORT || "4000"}`;
+        : `http://${HOST_IP}:4000`;
 
 console.log("API URL:", API_URL);
 
