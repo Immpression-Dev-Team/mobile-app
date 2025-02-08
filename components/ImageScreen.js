@@ -12,6 +12,7 @@ import {
 import { incrementImageViews } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
 import ScreenTemplate from "../screens/Template/ScreenTemplate";
+import PriceSliders from './PriceSliders'
 
 const share = require("../assets/icons/share-button.jpg");
 const like = require("../assets/icons/like-button.jpg");
@@ -111,6 +112,10 @@ const ImageScreen = ({ route, navigation }) => {
             <Text style={styles.likeText}>LIKE</Text>
           </TouchableOpacity>
         </View>
+      </View>
+
+      <View>
+        <PriceSliders />
       </View>
 
       <View style={styles.likeViewCountCotainer}>
