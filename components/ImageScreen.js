@@ -115,8 +115,9 @@ const ImageScreen = ({ route, navigation }) => {
       </View>
 
       <View>
-        <PriceSliders />
+        {images[currentIndex]?._id && <PriceSliders imageId={images[currentIndex]._id} />}
       </View>
+
 
       <View style={styles.likeViewCountCotainer}>
         <View style={styles.count}>
