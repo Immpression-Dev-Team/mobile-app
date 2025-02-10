@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import Slider from "@react-native-community/slider";
 import { getCurrentBid, placeBid } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
+const arrowIcon = require("../assets/icons/arrow-down.png");
 
 const PriceSliders = ({ imageId }) => {
   const [bidPrice, setBidPrice] = useState(0);
@@ -64,11 +65,20 @@ const PriceSliders = ({ imageId }) => {
       />
 
       <View style={styles.bidButtonContainer}>
-        <Text style={styles.newBidText}>Your New Bid: ${bidPrice.toFixed(2)}</Text>
+        <View style={styles.bidTextContainer}>
+          <Text style={styles.newBidText}>YOUR NEW BID: ${bidPrice.toFixed(2)}</Text>
+          <Text style={styles.buyInstantlyText}>BUY IT INSTANTLY.</Text>
+
+          {/* Overlay Arrow Image */}
+          <Image source={arrowIcon} style={styles.arrowDown} />
+        </View>
+
         <TouchableOpacity style={styles.placeBidButton} onPress={handleBidSubmit}>
           <Text style={styles.placeBidText}>PLACE BID</Text>
         </TouchableOpacity>
       </View>
+
+
     </View>
   );
 };
@@ -116,17 +126,38 @@ const styles = StyleSheet.create({
   newBidText: {
     fontSize: 13,
     fontWeight: "bold",
-    color: "#4CAF50",
+    color: "blue",
+    backgroundColor: '#E0E0E0',
+    paddingVertical: 2,
   },
   placeBidButton: {
     backgroundColor: "#007AFF",
     paddingVertical: 8,
     paddingHorizontal: 15,
-    borderRadius: 6,
+    borderRadius: 2,
+    borderWidth: 1,
   },
   placeBidText: {
     color: "#FFF",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  buyInstantlyContainer: {
+    width: "100%", // Ensures it spans the full width
+  },
+
+  buyInstantlyText: {
+    fontSize: 12,
+    color: "#333",
+
+  },
+
+  arrowDown: {
+    width: 30, // Adjust size as needed
+    height: 30,
+    position: "absolute",
+    right: -30, // Moves it slightly outside the text for an overlay effect
+    top: "70%", // Adjust vertical position
+    transform: [{ translateY: -8 }], // Fine-tune exact positioning
   },
 });
