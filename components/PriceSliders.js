@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Slider from "@react-native-community/slider";
 import { getCurrentBid, placeBid } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
 
 const PriceSliders = ({ imageId }) => {
   const [bidPrice, setBidPrice] = useState(0);
-  const [currentBid, setCurrentBid] = useState(0);
+  const [topBid, setTopBid] = useState(0);
+  const [myBid, setMyBid] = useState(0);
   const { token } = useAuth();
 
   useEffect(() => {
@@ -15,44 +16,117 @@ const PriceSliders = ({ imageId }) => {
     const fetchBid = async () => {
       const data = await getCurrentBid(imageId, token);
       if (data.currentBid !== undefined) {
-        setCurrentBid(data.currentBid);
+        setTopBid(data.currentBid);
+        setMyBid(data.myBid || 0);
+        setBidPrice(data.currentBid + 1);
       }
     };
 
     fetchBid();
-  }, [imageId]);
+  }, [imageId, token]);
 
   const handleBidSubmit = async () => {
     if (!imageId) return;
 
     const data = await placeBid(imageId, bidPrice, token);
     if (data.newBid !== undefined) {
-      setCurrentBid(data.newBid);
+      setTopBid(data.newBid);
+      setMyBid(data.newBid);
     }
   };
 
   return (
-    <View style={{ alignItems: "center", padding: 10 }}>
-      <Text style={{ fontSize: 20, fontWeight: "bold", marginBottom: 10 }}>
-        Current Bid: ${currentBid.toFixed(2)}
-      </Text>
-      <Text style={{ fontSize: 18, marginBottom: 10 }}>
-        Your Bid: ${bidPrice.toFixed(2)}
-      </Text>
+    <View style={styles.container}>
+      {/* Top Bid & My Bid - Side by Side with Auto-Sized Gray Blocks */}
+      <View style={styles.bidInfoContainer}>
+        <View style={styles.bidBox}>
+          <Text style={styles.bidValue}>${topBid.toFixed(2)}</Text>
+          <Text style={styles.bidLabel}>TOP BID</Text>
+        </View>
+        <View style={styles.bidBox}>
+          <Text style={styles.bidValue}>
+            ${myBid > 0 ? myBid.toFixed(2) : "0"}
+          </Text>
+          <Text style={styles.bidLabel}>MY BID</Text>
+        </View>
+      </View>
+
       <Slider
-        style={{ width: 300, height: 40 }}
-        minimumValue={currentBid + 1}
-        maximumValue={10000}
+        style={styles.slider}
+        minimumValue={topBid + 1}
+        maximumValue={150}
         step={1}
-        minimumTrackTintColor="#4CAF50"
+        minimumTrackTintColor="#007AFF"
         maximumTrackTintColor="#d3d3d3"
-        thumbTintColor="#4CAF50"
+        thumbTintColor="#e3a702"
         value={bidPrice}
         onValueChange={(value) => setBidPrice(value)}
       />
-      <Button title="Place Bid" onPress={handleBidSubmit} />
+
+      <View style={styles.bidButtonContainer}>
+        <Text style={styles.newBidText}>Your New Bid: ${bidPrice.toFixed(2)}</Text>
+        <TouchableOpacity style={styles.placeBidButton} onPress={handleBidSubmit}>
+          <Text style={styles.placeBidText}>PLACE BID</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 export default PriceSliders;
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 10,
+    width: "100%",
+  },
+  bidInfoContainer: {
+    flexDirection: "row", // Side by side
+    alignItems: "center",
+    justifyContent: "flex-start", // Align everything to the left
+    gap: 5, // Space between Top Bid and My Bid
+  },
+  bidBox: {
+    backgroundColor: "#E0E0E0", // Gray background
+    paddingVertical: 1,
+    paddingHorizontal: 3,
+    alignItems: "flex-start", // Align text to the left
+    justifyContent: "center",
+  },
+  bidValue: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  bidLabel: {
+    fontSize: 10,
+    fontWeight: "bold",
+    color: "gray",
+    marginTop: 3,
+  },
+  slider: {
+    width: "100%",
+    height: 30,
+  },
+  bidButtonContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 5,
+  },
+  newBidText: {
+    fontSize: 13,
+    fontWeight: "bold",
+    color: "#4CAF50",
+  },
+  placeBidButton: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 6,
+  },
+  placeBidText: {
+    color: "#FFF",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});

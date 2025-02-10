@@ -119,7 +119,7 @@ const ImageScreen = ({ route, navigation }) => {
       </View>
 
 
-      <View style={styles.likeViewCountCotainer}>
+      <View style={styles.likeViewCountContainer}>
         <View style={styles.count}>
           <Image source={likesIcon} style={styles.likesIcon} />
           <Text style={styles.viewsCount}>
@@ -133,6 +133,7 @@ const ImageScreen = ({ route, navigation }) => {
           </Text>
         </View>
       </View>
+
 
       <View style={styles.buttonContainer}>
         <TouchableOpacity
@@ -231,6 +232,7 @@ const styles = StyleSheet.create({
     marginTop: 10, // Add some space between the description and buttons
     width: "100%", // Make it take the full width of the container
     paddingHorizontal: 15, // Add some padding on the sides for spacing
+    marginBottom: -120,
   },
   shareLikeButton: {
     flexDirection: "column", // Align buttons vertically
@@ -279,32 +281,37 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
   },
-  likeViewCountCotainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 5,
-  },
-  count: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginHorizontal: 10,
-  },
-  likesIcon: {
-    width: 20,
-    height: 20,
-    margin: 8,
-  },
-  viewsIcon: {
-    width: 20,
-    height: 20,
-    margin: 8,
-  },
-  viewsCount: {
-    color: "gray",
-    fontSize: 16,
-    fontFamily: "Calibri",
-  },
+  likeViewCountContainer: {
+  position: "absolute",
+  top: 10, // Adjust this value to fine-tune placement
+  left: 10, // Adjust for left alignment
+  backgroundColor: "rgba(0,0,0,0.5)", // Semi-transparent black for visibility
+  padding: 3,
+  borderRadius: 3,
+  flexDirection: "row",
+  alignItems: "center",
+},
+count: {
+  flexDirection: "row",
+  alignItems: "center",
+  marginRight: 7,
+},
+likesIcon: {
+  width: 15,
+  height: 15,
+  marginRight: 2,
+  marginLeft: 4,
+},
+viewsIcon: {
+  width: 15,
+  height: 15,
+  marginRight: 2,
+},
+viewsCount: {
+  color: "white",
+  fontSize: 12,
+  fontWeight: "bold",
+},
 });
 
 export default ImageScreen;
