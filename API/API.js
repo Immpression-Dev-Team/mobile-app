@@ -442,6 +442,34 @@ async function updateUserProfile(updatedData, token) {
   }
 }
 
+// Function to fetch the current bid for an image
+async function getCurrentBid(imageId, token) {
+  try {
+    const response = await axios.get(`${API_URL}/current-bid/${imageId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching current bid:", error);
+    return error.response?.data || error;
+  }
+}
+
+// Function to place a bid on an image
+async function placeBid(imageId, bidAmount, token) {
+  try {
+    const response = await axios.post(
+      `${API_URL}/place-bid/${imageId}`,
+      { bidAmount },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error placing bid:", error);
+    return error.response?.data || error;
+  }
+}
+
 export {
   getAllImages,
   uploadImage,
@@ -467,4 +495,6 @@ export {
   getPaymentStatus,
   deleteAccount,
   updateUserProfile,
+  getCurrentBid,
+  placeBid,
 };

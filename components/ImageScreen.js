@@ -12,6 +12,7 @@ import {
 import { incrementImageViews } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
 import ScreenTemplate from "../screens/Template/ScreenTemplate";
+import PriceSliders from './PriceSliders'
 
 const share = require("../assets/icons/share-button.jpg");
 const like = require("../assets/icons/like-button.jpg");
@@ -113,7 +114,12 @@ const ImageScreen = ({ route, navigation }) => {
         </View>
       </View>
 
-      <View style={styles.likeViewCountCotainer}>
+      <View>
+        {images[currentIndex]?._id && <PriceSliders imageId={images[currentIndex]._id} />}
+      </View>
+
+
+      <View style={styles.likeViewCountContainer}>
         <View style={styles.count}>
           <Image source={likesIcon} style={styles.likesIcon} />
           <Text style={styles.viewsCount}>
@@ -128,21 +134,28 @@ const ImageScreen = ({ route, navigation }) => {
         </View>
       </View>
 
-      <View style={styles.buttonContainer}>
+      <View style={styles.priceButtonContainer}>
+        <View style={styles.priceContainer}>
+          <Text style={styles.priceText}>
+            ${images[currentIndex]?.price ? images[currentIndex].price.toFixed(2) : "N/A"}
+          </Text>
+        </View>
         <TouchableOpacity
           style={styles.buyNowButton}
           onPress={() =>
             navigation.navigate("PaymentScreen", {
-              artName: images[currentIndex]?.name, // Pass only the art name
-              imageLink: images[currentIndex]?.imageLink, // Pass the image link
-              artistName: images[currentIndex]?.artistName, // Pass the artist's name
-              price: images[currentIndex]?.price, // Pass the price
+              artName: images[currentIndex]?.name,
+              imageLink: images[currentIndex]?.imageLink,
+              artistName: images[currentIndex]?.artistName,
+              price: images[currentIndex]?.price,
             })
           }
         >
           <Text style={styles.buyNowButtonText}>BUY NOW</Text>
         </TouchableOpacity>
       </View>
+
+
     </ScreenTemplate>
   );
 };
@@ -204,20 +217,45 @@ const styles = StyleSheet.create({
   },
   buyNowButton: {
     backgroundColor: "#007AFF",
-    paddingVertical: 5,
-    paddingHorizontal: 5,
-    borderRadius: 6,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 2,
+    borderWidth: 1,
     alignItems: "center",
-    width: "95%",
+    flex: 1, // Allow button to take remaining space
     elevation: 8,
   },
+  
   buyNowButtonText: {
     color: "#FFF",
-    fontSize: 30, // Increased font size
-    fontFamily: "Calibri",
+    fontSize: 20,
     fontWeight: "bold",
     textTransform: "uppercase",
   },
+  priceButtonContainer: {
+    flexDirection: "row", // Arrange price and button side by side
+    alignItems: "center", // Align them vertically
+    justifyContent: "space-between", // Distribute space
+    width: "95%", // Make it responsive
+    alignSelf: "center",
+    marginVertical: 10,
+  },
+  
+  priceContainer: {
+    backgroundColor: "#D3D3D3", // Light gray background
+    paddingVertical: 8,
+    paddingHorizontal: 5,
+    borderRadius: 0,
+    borderWidth: 0,
+    marginRight: 5, // Space between price and button
+  },
+  
+  priceText: {
+    fontSize: 22,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  
   descriptionButtonContainer: {
     flexDirection: "row", // Align the description and buttons in a row
     justifyContent: "space-between", // Create space between description and buttons
@@ -225,6 +263,7 @@ const styles = StyleSheet.create({
     marginTop: 10, // Add some space between the description and buttons
     width: "100%", // Make it take the full width of the container
     paddingHorizontal: 15, // Add some padding on the sides for spacing
+    marginBottom: -120,
   },
   shareLikeButton: {
     flexDirection: "column", // Align buttons vertically
@@ -273,31 +312,36 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "bold",
   },
-  likeViewCountCotainer: {
+  likeViewCountContainer: {
+    position: "absolute",
+    top: 10, // Adjust this value to fine-tune placement
+    left: 10, // Adjust for left alignment
+    backgroundColor: "rgba(0,0,0,0.5)", // Semi-transparent black for visibility
+    padding: 3,
+    borderRadius: 3,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 5,
   },
   count: {
     flexDirection: "row",
     alignItems: "center",
-    marginHorizontal: 10,
+    marginRight: 7,
   },
   likesIcon: {
-    width: 20,
-    height: 20,
-    margin: 8,
+    width: 15,
+    height: 15,
+    marginRight: 2,
+    marginLeft: 4,
   },
   viewsIcon: {
-    width: 20,
-    height: 20,
-    margin: 8,
+    width: 15,
+    height: 15,
+    marginRight: 2,
   },
   viewsCount: {
-    color: "gray",
-    fontSize: 16,
-    fontFamily: "Calibri",
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
   },
 });
 
