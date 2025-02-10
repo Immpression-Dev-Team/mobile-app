@@ -18,6 +18,7 @@ import ArtPreferences from '../screens/ArtPreferences';
 import DeleteAccount from '../screens/DeleteAccount';
 import AccountDetails from '../screens/AccountDetails';
 import EditAccountFieldScreen from '../screens/EditAccountField';
+import EditProfile from '../screens/EditProfile';
 
 export const UserNavigation = [
   {
@@ -100,6 +101,10 @@ export const UserNavigation = [
     name: 'Login',
     component: Login,
   },
+  {
+    name: 'EditProfile',
+    component: EditProfile,
+  }
 ];
 
 export const GuestNavigation = [
