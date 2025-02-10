@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Image,
@@ -8,30 +8,61 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-
 import { incrementImageViews } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
+import axios from "axios";
+import { API_URL } from "../config";
 import ScreenTemplate from "../screens/Template/ScreenTemplate";
-import PriceSliders from './PriceSliders'
+import PriceSliders from "./PriceSliders";
 
 const share = require("../assets/icons/share-button.jpg");
 const like = require("../assets/icons/like-button.jpg");
+const likedIcon = require("../assets/icons/like-button.jpg"); // Ensure this is a different icon
 const likesIcon = require("../assets/icons/likes_icon.png");
 const viewsIcon = require("../assets/icons/views_icon.jpg");
-const { width } = Dimensions.get("window");
 
-// Helper function to calculate responsive font size
-const getResponsiveFontSize = (size) => {
-  const scale = width / 375; // Base scale on a typical ScreenTemplate width (375 for iPhone 6/7/8)
-  return Math.round(size * scale);
-};
+const { width } = Dimensions.get("window");
 
 const ImageScreen = ({ route, navigation }) => {
   const { images, initialIndex } = route.params;
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const flatListRef = useRef(null);
   const { token } = useAuth();
+  const [likes, setLikes] = useState(0);
+  const [hasLiked, setHasLiked] = useState(false);
 
+  useEffect(() => {
+    if (images[currentIndex]?._id) {
+      fetchLikeData(images[currentIndex]._id);
+    }
+  }, [currentIndex]);
+
+  const fetchLikeData = async (imageId) => {
+    try {
+      const response = await axios.get(`${API_URL}/image/${imageId}/likes`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setLikes(response.data.likesCount);
+      setHasLiked(response.data.hasLiked);
+    } catch (error) {
+      console.error("Error fetching like data:", error);
+    }
+  };
+
+  const toggleLike = async () => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/image/${images[currentIndex]._id}/like`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setLikes(response.data.likesCount);
+      setHasLiked(response.data.hasLiked);
+    } catch (error) {
+      console.error("Error liking/unliking image:", error);
+    }
+  };
+  
   const handleViewIncrement = async (index) => {
     const currentImage = images[index];
     if (currentImage && currentImage._id) {
@@ -74,6 +105,7 @@ const ImageScreen = ({ route, navigation }) => {
           const index = Math.round(event.nativeEvent.contentOffset.x / width);
           if (index !== currentIndex) {
             setCurrentIndex(index);
+            fetchLikeData(images[index]._id);
             handleViewIncrement(index);
           }
         }}
@@ -107,9 +139,9 @@ const ImageScreen = ({ route, navigation }) => {
             <Image source={share} style={styles.shareIcon} />
             <Text style={styles.shareText}>SHARE</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.likeButton}>
-            <Image source={like} style={styles.likeIcon} />
-            <Text style={styles.likeText}>LIKE</Text>
+          <TouchableOpacity style={styles.likeButton} onPress={toggleLike}>
+            <Image source={hasLiked ? likedIcon : like} style={styles.likeIcon} />
+            <Text style={styles.likeText}>{hasLiked ? "UNLIKE" : "LIKE"}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -118,13 +150,10 @@ const ImageScreen = ({ route, navigation }) => {
         {images[currentIndex]?._id && <PriceSliders imageId={images[currentIndex]._id} />}
       </View>
 
-
       <View style={styles.likeViewCountContainer}>
         <View style={styles.count}>
           <Image source={likesIcon} style={styles.likesIcon} />
-          <Text style={styles.viewsCount}>
-            {images[currentIndex]?.likes || 0}
-          </Text>
+          <Text style={styles.viewsCount}>{likes}</Text>
         </View>
         <View style={styles.count}>
           <Image source={viewsIcon} style={styles.viewsIcon} />
@@ -154,11 +183,10 @@ const ImageScreen = ({ route, navigation }) => {
           <Text style={styles.buyNowButtonText}>BUY NOW</Text>
         </TouchableOpacity>
       </View>
-
-
     </ScreenTemplate>
   );
 };
+
 
 const styles = StyleSheet.create({
   imageContainer: {
@@ -185,12 +213,13 @@ const styles = StyleSheet.create({
   },
   artTitle: {
     color: "#333",
-    fontSize: getResponsiveFontSize(25),
+    fontSize: 25,  // Removed getResponsiveFontSize
     fontFamily: "Calibri",
     fontWeight: "bold",
     textAlign: "left",
     textTransform: "uppercase",
-  },
+},
+
   artistName: {
     color: "black",
     fontSize: 15,
