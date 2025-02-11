@@ -8,10 +8,8 @@ import {
   Dimensions,
   TouchableOpacity,
 } from "react-native";
-import { incrementImageViews } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
-import axios from "axios";
-import { API_URL } from "../config";
+import { toggleLike, fetchLikeData, incrementImageViews } from "../API/API";
 import ScreenTemplate from "../screens/Template/ScreenTemplate";
 import PriceSliders from "./PriceSliders";
 
@@ -33,31 +31,27 @@ const ImageScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (images[currentIndex]?._id) {
-      fetchLikeData(images[currentIndex]._id);
+      handleFetchLikeData(images[currentIndex]._id);
     }
   }, [currentIndex]);
 
-  const fetchLikeData = async (imageId) => {
+  const handleFetchLikeData = async (imageId) => {
+    if (!imageId) return;
     try {
-      const response = await axios.get(`${API_URL}/image/${imageId}/likes`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setLikes(response.data.likesCount);
-      setHasLiked(response.data.hasLiked);
+      const data = await fetchLikeData(imageId, token);
+      setLikes(data.likesCount);
+      setHasLiked(data.hasLiked);
     } catch (error) {
       console.error("Error fetching like data:", error);
     }
   };
 
-  const toggleLike = async () => {
+  const handleToggleLike = async () => {
+    if (!images[currentIndex]?._id) return;
     try {
-      const response = await axios.post(
-        `${API_URL}/image/${images[currentIndex]._id}/like`,
-        {},
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setLikes(response.data.likesCount);
-      setHasLiked(response.data.hasLiked);
+      const data = await toggleLike(images[currentIndex]._id, token);
+      setLikes(data.likesCount);
+      setHasLiked(data.hasLiked);
     } catch (error) {
       console.error("Error liking/unliking image:", error);
     }
@@ -105,7 +99,7 @@ const ImageScreen = ({ route, navigation }) => {
           const index = Math.round(event.nativeEvent.contentOffset.x / width);
           if (index !== currentIndex) {
             setCurrentIndex(index);
-            fetchLikeData(images[index]._id);
+            handleFetchLikeData(images[index]._id);
             handleViewIncrement(index);
           }
         }}
@@ -139,7 +133,7 @@ const ImageScreen = ({ route, navigation }) => {
             <Image source={share} style={styles.shareIcon} />
             <Text style={styles.shareText}>SHARE</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.likeButton} onPress={toggleLike}>
+          <TouchableOpacity style={styles.likeButton} onPress={handleToggleLike}>
             <Image source={hasLiked ? likedIcon : like} style={styles.likeIcon} />
             <Text style={styles.likeText}>{hasLiked ? "UNLIKE" : "LIKE"}</Text>
           </TouchableOpacity>
