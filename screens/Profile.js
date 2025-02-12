@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import ProfilePic from '../components/profile_sections/ProfilePic';
 import ProfileName from '../components/profile_sections/ProfileName';
 import ProfileGallery from '../components/profile_sections/ProfileGallery';
 import ProfileViews from '../components/profile_sections/ProfileViews';
+import ProfileLikes from '../components/profile_sections/ProfileLikes'; // Import ProfileLikes
 import ProfileBio from '../components/profile_sections/ProfileBio';
 import ProfileArtistType from '../components/profile_sections/ProfileArtistType';
 import { getUserProfile } from '../API/API';
 import { useAuth } from '../state/AuthProvider';
+import { useNavigation } from '@react-navigation/native';
 
 import ScreenTemplate from './Template/ScreenTemplate';
 
 const Profile = () => {
-  const { userData } = useAuth(); // Use the useAuth hook to get the user data
-  const token = userData?.token; // Extract the token from userData
-  const [profileName, setProfileName] = useState(''); // Initialize as an empty string
-  const profilePicSource = require('../assets/arrow.jpeg'); // Example profile picture
+  const navigation = useNavigation();
+  const { userData } = useAuth();
+  const token = userData?.token;
+  const [profileName, setProfileName] = useState('');
+  const profilePicSource = require('../assets/arrow.jpeg'); 
   const [viewsCount, setViewsCount] = useState(0);
+  const [likesCount, setLikesCount] = useState(0); // New state for likes
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -29,8 +28,9 @@ const Profile = () => {
         try {
           const data = await getUserProfile(token);
           if (data?.user) {
-            setProfileName(data.user.name || ''); // Set profile name if available
-            setViewsCount(data.user.views || 0); // Set views count if available
+            setProfileName(data.user.name || '');
+            setViewsCount(data.user.views || 0);
+            setLikesCount(data.user.likes || 0); // Fetch likes count
           } else {
             console.error('Error: user data is undefined in fetchProfileData');
           }
@@ -46,21 +46,35 @@ const Profile = () => {
   return (
     <ScreenTemplate>
       <ScrollView contentContainerStyle={styles.container}>
+        {/* Edit Profile Button */}
+        <TouchableOpacity 
+          style={styles.editProfileButton} 
+          onPress={() => navigation.navigate('EditProfile')}
+        >
+          <Text style={styles.editProfileText}>Edit Profile</Text>
+        </TouchableOpacity>
+
         <View style={styles.profileContainer}>
+          <View style={styles.nameArtistContainer}>
+            <ProfileName name={profileName} />
+            <ProfileArtistType />
+          </View>
+
           <TouchableOpacity onPress={() => {}}>
             <ProfilePic source={profilePicSource} />
           </TouchableOpacity>
-          <ProfileName name={profileName} />
-          <ProfileViews views={viewsCount} />
-          <View style={styles.bioArtistContainer}>
-            <View style={styles.bioContainer}>
-              <ProfileBio />
-            </View>
-            <View style={styles.artistTypeContainer}>
-              <ProfileArtistType />
-            </View>
+
+          {/* Views and Likes Row */}
+          <View style={styles.viewsLikesContainer}>
+            <ProfileViews views={viewsCount} />
+            <ProfileLikes likes={likesCount} />
+          </View>
+
+          <View style={styles.bioContainer}>
+            <ProfileBio />
           </View>
         </View>
+
         <View style={styles.galleryContainer}>
           <ProfileGallery />
         </View>
@@ -70,62 +84,44 @@ const Profile = () => {
 };
 
 const styles = StyleSheet.create({
+  editProfileButton: {
+    position: 'absolute',
+    top: 10,
+    left: 10,
+    backgroundColor: '#007BFF',
+    paddingVertical: 6,
+    paddingHorizontal: 15,
+    borderRadius: 5,
+  },
+  editProfileText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
   profileContainer: {
     alignItems: 'center',
     marginTop: 55,
-    position: 'relative',
     backgroundColor: 'white',
   },
-  profilePic: {
-    borderRadius: 50,
-    borderColor: '#e0e0e0',
-    borderWidth: 2,
+  nameArtistContainer: {
+    alignItems: 'center',
+    marginBottom: 10,
   },
-  profileName: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#2c3e50',
-    marginVertical: 8,
-  },
-  profileViews: {
-    fontSize: 14,
-    color: '#7f8c8d',
-    marginBottom: 15,
-  },
-  bioArtistContainer: {
-    width: '90%', // Reduce width to center better
-    flexDirection: 'column', // Stack items vertically
-    justifyContent: 'center', // Center vertically
-    alignItems: 'center', // Center horizontally
-    marginVertical: 20, // Adjust margin for spacing
-    padding: 10,
-    borderRadius: 10,
+  viewsLikesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
   },
   bioContainer: {
-    width: '100%', // Take full width
-    marginBottom: 10, // Add space between bio and artist type
-    alignItems: 'center', // Ensure contents of bio are centered
-  },
-  artistTypeContainer: {
-    width: '100%', // Take full width
-    alignItems: 'center', // Ensure contents of artist type are centered
+    width: '90%',
+    alignItems: 'center',
+    marginVertical: 20,
   },
   galleryContainer: {
     marginTop: 20,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-  },
-  galleryItem: {
-    width: '45%',
-    margin: 8,
-    borderRadius: 15,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 5 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 3,
   },
 });
 

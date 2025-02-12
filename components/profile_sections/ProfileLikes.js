@@ -1,18 +1,18 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 
-const ProfileViews = ({ views }) => {
+const ProfileLikes = ({ likes }) => {
     return (
         <View style={styles.container}>
-            <Image source={require('../../assets/icons/views_icon.jpg')} style={styles.icon} />
-            <Text style={styles.viewsCount}>{views}</Text>
+            <Image source={require('../../assets/icons/likes_icon.png')} style={styles.icon} />
+            <Text style={styles.likesCount}>{likes}</Text>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'row', // Display icon and views count horizontally
+        flexDirection: 'row', // Icon and count displayed in a row
         alignItems: 'center',
         marginTop: 10,
         bottom: -20,
@@ -22,12 +22,11 @@ const styles = StyleSheet.create({
         height: 16,
         marginRight: 3, // Spacing between icon and text
     },
-    viewsCount: {
+    likesCount: {
         fontSize: 12,
         fontWeight: 'bold',
         color: 'black',
-        marginRight: 7,
     },
 });
 
-export default ProfileViews;
+export default ProfileLikes;

@@ -470,6 +470,35 @@ async function placeBid(imageId, bidAmount, token) {
   }
 }
 
+// Function to fetch likes data
+async function fetchLikeData(imageId, token) {
+  try {
+    const response = await axios.get(`${API_URL}/image/${imageId}/likes`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching like data:", error);
+    return { likesCount: 0, hasLiked: false };
+  }
+}
+
+// Function to toggle like/unlike
+async function toggleLike(imageId, token) {
+  try {
+    const response = await axios.post(
+      `${API_URL}/image/${imageId}/like`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error liking/unliking image:", error);
+    return { likesCount: 0, hasLiked: false };
+  }
+}
+
+
 export {
   getAllImages,
   uploadImage,
@@ -497,4 +526,6 @@ export {
   updateUserProfile,
   getCurrentBid,
   placeBid,
+  fetchLikeData,
+  toggleLike,
 };
