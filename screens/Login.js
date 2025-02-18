@@ -35,7 +35,7 @@ const Login = () => {
       console.log('Log in success. Now going to home screen');
       navigation.navigate('Home');
     }
-  }, [userData]);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
