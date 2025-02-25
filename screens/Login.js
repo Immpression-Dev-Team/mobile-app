@@ -17,6 +17,10 @@ import { handleLogin } from "../utils/handleLogin.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../state/AuthProvider";
 import SignUp from "./SignUp";
+import {
+  GoogleSignin,
+  statusCodes,
+} from "@react-native-google-signin/google-signin";
 
 const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
 const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image
@@ -31,15 +35,37 @@ const Login = () => {
 
   // only navigate when userData turns back to null
   useEffect(() => {
-    if(userData){
-      console.log('Log in success. Now going to home screen');
-      navigation.navigate('Home');
+    if (userData) {
+      console.log("Log in success. Now going to home screen");
+      navigation.navigate("Home");
     }
   }, []);
 
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        "633936981185-de39dtiqk9rntfsuo9foujo35igfugcs.apps.googleusercontent.com",
+      offlineAccess: true,
+    });
+  }, []);
+
+  const signInWithGoogle = async () => {
+    try {
+      const res = await GoogleSignin.signIn();
+      console.log("Google Sign-In Success:", res);
+      const token = res.data.idToken;
+      console.log("Token:", token);
+      const response = await axios.post(`${API_URL}/google-login`, { token });
+      await login(response?.data?.user);
+      showToast("Login Successful");
+    } catch (error) {
+      showToast("Google Sign-In Error");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
+    setError(""); // Clear previous errors
 
     const result = await handleLogin(email, password, login);
     if (!result.success) {
@@ -118,6 +144,20 @@ const Login = () => {
               <Pressable onPress={handleSubmit} style={styles.button}>
                 <Text style={styles.buttonText}>Log in</Text>
               </Pressable>
+
+              <Pressable
+                onPress={signInWithGoogle}
+                style={[styles.button, styles.googleButton]}
+              >
+                <Icon
+                  name="google"
+                  size={20}
+                  color="white"
+                  style={styles.googleIcon}
+                />
+                <Text style={styles.buttonText}>Sign in with Google</Text>
+              </Pressable>
+
               <Pressable
                 onPress={() => navigateTo("SignUp")}
                 style={[styles.button, styles.buttonOutline]}
@@ -237,5 +277,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 15,
     textAlign: "center",
+  },
+  googleButton: {
+    backgroundColor: "#DB4437",
+    marginTop: 10,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  googleIcon: {
+    marginRight: 10,
   },
 });
