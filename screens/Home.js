@@ -1,7 +1,4 @@
-import {
-  StyleSheet,
-  View,
-} from "react-native";
+import { StyleSheet, View } from "react-native";
 import { useAuth } from "../state/AuthProvider";
 
 import ArtForYouSection from "../components/home_sections/ArtForYou/ArtForYouSection";
@@ -22,7 +19,7 @@ import discoverBgFooter from "../assets/discover_assets/background_bottom.png";
 
 export default function HomeScreen() {
   const name = useAuth();
-  console.log("username: ", name.userData.user.user.name);
+  // console.log("username: ", name.userData.user.user.name);
   console.log("useAuth response: ", name);
 
   return (

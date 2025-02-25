@@ -4,9 +4,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { AuthProvider, useAuth } from "./state/AuthProvider";
 import { guestStackScreen, userStackScreen } from "./utils/helpers";
-import PaymentScreen from './screens/PaymentScreen';
-import { StripeProvider } from '@stripe/stripe-react-native';
-import 'react-native-get-random-values';
+import PaymentScreen from "./screens/PaymentScreen";
+import { StripeProvider } from "@stripe/stripe-react-native";
+import "react-native-get-random-values";
 
 const STRIPE_KEY = "your-stripe-publishable-key"; // Replace with your Stripe publishable key
 
@@ -60,4 +60,3 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
 });
-
