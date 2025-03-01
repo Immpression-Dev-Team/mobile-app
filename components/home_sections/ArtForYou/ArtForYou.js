@@ -1,20 +1,15 @@
-import React, { useRef, useState, useEffect } from "react";
-import {
-  StyleSheet,
-  Animated,
-  TouchableWithoutFeedback,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { LinearGradient } from "expo-linear-gradient";
+import React, { useRef, useState, useEffect } from 'react';
+import { StyleSheet, Animated, TouchableWithoutFeedback } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 
-import { useAuth } from "../../../state/AuthProvider";
-import FontLoader from "../../../utils/FontLoader";
+import { useAuth } from '../../../state/AuthProvider';
+import FontLoader from '../../../utils/FontLoader';
 
-import ArtForYouHeader from "./ArtForYouHeader";
-import ArtForYouContent from "./ArtForYouContent";
-import LoadingSection from "../SectionTemplate/LoadingSection";
-import { getAllImages, incrementImageViews } from "../../../API/API"; // Import incrementImageViews
-
+import ArtForYouHeader from './ArtForYouHeader';
+import ArtForYouContent from './ArtForYouContent';
+import LoadingSection from '../SectionTemplate/LoadingSection';
+import { getAllImages, incrementImageViews } from '../../../API/API'; // Import incrementImageViews
 
 const shuffleArray = (array) => {
   let shuffledArray = [...array];
@@ -44,7 +39,9 @@ export default function ArtForYou() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   const [artData, setArtData] = useState([]);
+  const [page, setPage] = useState(1);
   const [originalArtData, setOriginalArtData] = useState([]);
+  const [hasMore, setHasMore] = useState(true); // track if more data is available
 
   const [isLoading, setIsLoading] = useState(true);
   const [isOverlayVisible, setOverlayVisible] = useState(false);
@@ -109,55 +106,94 @@ export default function ArtForYou() {
 
   const fetchArtData = async (token) => {
     try {
-      const response = await getAllImages(token);
-      if(!response.success){
-        console.error("Error fetching art data:", response.message);
+      const response = await getAllImages(token, page, 50);
+      if (!response.success) {
+        console.error('Error fetching art data:', response.data);
         return;
       }
-
+      console.log('images length =', response.images.length);
       const shuffledData = shuffleArray(response.images);
       setOriginalArtData(shuffledData);
-      setArtData(shuffledData);
-
+      setHasMore(true);
     } catch (error) {
-      console.error("Error fetching art data:", error);
+      console.error('Error fetching art data:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Function to handle image press and increment views
-  const handleImagePress = async (imageIndex) => {
-    const selectedImage = artData[imageIndex];
-  
-    if (selectedImage && selectedImage._id) {
-      try {
-        // Increment view count for the image and get updated views
-        const updatedImage = await incrementImageViews(selectedImage._id, token);
-        
-        if (updatedImage.success) {
-          const updatedViewCount = updatedImage.views; // Get new views from response
-          console.log(`Updated views for image ID: ${selectedImage._id}: ${updatedViewCount}`);
-          
-          // Navigate to ImageScreen with updated view count
-          navigation.navigate("ImageScreen", {
-            images: artData,
-            initialIndex: imageIndex,
-            views: updatedViewCount,
-          });
-        }
-      } catch (error) {
-        console.error("Error incrementing image views:", error);
+  const fetchMoreArtData = async (token) => {
+    try {
+      const response = await getAllImages(token, page + 1, 50);
+
+      if (!response.success) {
+        console.error('Error fetching art data:', response.data);
+        return;
       }
+
+      console.log('images length =', response.images.length);
+
+      if (response.images.length === 0) {
+        setOriginalArtData((prevData) => [
+          ...prevData,
+          ...shuffleArray(prevData),
+        ]);
+
+        setPage((prevPage) => prevPage + 1);
+        setHasMore(true);
+      } else {
+        const shuffledData = shuffleArray(response.images);
+        setOriginalArtData((prevData) => [...prevData, ...shuffledData]);
+        setPage((prevPage) => prevPage + 1);
+        setHasMore(true);
+      }
+    } catch (error) {
+      console.error(
+        'Error fetching more art data:',
+        error?.response || error?.message || error
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleScrollEnd = () => {
-    setArtData((prevData) => [...prevData, ...originalArtData]);
+  const handleImagePress = async (imageIndex) => {
+    const selectedImage = originalArtData[imageIndex];
+
+    if (selectedImage && selectedImage._id) {
+      let updatedViewCount = selectedImage.views; // Default to existing count
+
+      try {
+        const updatedImage = await incrementImageViews(
+          selectedImage._id,
+          token
+        );
+        if (updatedImage.success) {
+          updatedViewCount = updatedImage.views;
+        }
+      } catch (error) {
+        console.error('Error incrementing image views:', error);
+      }
+
+      // Navigate even if update fails
+      navigation.navigate('ImageScreen', {
+        images: originalArtData,
+        initialIndex: imageIndex,
+        views: updatedViewCount,
+      });
+    }
+  };
+
+  const handleScrollEnd = async () => {
+    if (hasMore && !isLoading) {
+      await fetchMoreArtData(token);
+    }
   };
 
   // fetch art & auto scroll when land page
   useEffect(() => {
+    let isMounted = true;
+
     if (token) {
       fetchArtData(token);
       startAutoScrollOnce();
@@ -165,6 +201,7 @@ export default function ArtForYou() {
     }
 
     return () => {
+      isMounted = false;
       if (inactivityTimeoutRef.current) {
         clearTimeout(inactivityTimeoutRef.current);
       }
@@ -173,23 +210,18 @@ export default function ArtForYou() {
 
   // render animation if still loading images
   if (isLoading) {
-    return(
-      <LoadingSection
-        loadingMsg='LOADING ART FOR YOU!'
-        size='large'
-      />
-    );
+    return <LoadingSection loadingMsg="LOADING ART FOR YOU!" size="large" />;
   }
 
-  const imageChunks = chunkArray(artData, 2);
+  const imageChunks = chunkArray(originalArtData, 2);
 
   return (
     <TouchableWithoutFeedback onPress={handleUserActivity}>
       <LinearGradient
-        colors={["white", "#acb3bf", "white"]}
+        colors={['white', '#acb3bf', 'white']}
         style={styles.container}
       >
-        <ArtForYouHeader/>
+        <ArtForYouHeader />
         <ArtForYouContent
           fadeAnim={fadeAnim}
           imageChunks={imageChunks}
@@ -202,7 +234,7 @@ export default function ArtForYou() {
       </LinearGradient>
     </TouchableWithoutFeedback>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -213,13 +245,13 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "transparent",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
   },
   loadingGif: {
     width: 50,
     height: 50,
-    resizeMode: "contain",
+    resizeMode: 'contain',
   },
 });
