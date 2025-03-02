@@ -40,10 +40,8 @@ const Login = () => {
   const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
 
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    androidClientId:
-      "633936981185-qdf6bk6j2nc938mmbf0ehjid70isadt0.apps.googleusercontent.com",
-    webClientId:
-      "633936981185-de39dtiqk9rntfsuo9foujo35igfugcs.apps.googleusercontent.com",
+    androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID,
     redirectUri: makeRedirectUri(),
     shouldAutoExchangeCode:
       Constants.executionEnvironment !== ExecutionEnvironment.StoreClient
