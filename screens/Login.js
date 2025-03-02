@@ -17,14 +17,19 @@ import { handleLogin } from "../utils/handleLogin.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../state/AuthProvider";
 import SignUp from "./SignUp";
-import {
-  GoogleSignin,
-  statusCodes,
-} from "@react-native-google-signin/google-signin";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import { makeRedirectUri } from "expo-auth-session";
+import { showToast } from "../utils/toastNotification";
+import * as AuthSession from "expo-auth-session";
+import Constants, { ExecutionEnvironment } from "expo-constants";
 
 const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
 const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image
 const backgroundImage = require("../assets/backgrounds/paint_background.png"); // Adjust the path to your background image
+
+// Initialize WebBrowser
+WebBrowser.maybeCompleteAuthSession();
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -32,6 +37,19 @@ const Login = () => {
   const { login, userData } = useAuth();
   const navigation = useNavigation();
   const [error, setError] = useState("");
+  const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
+
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    androidClientId:
+      "633936981185-qdf6bk6j2nc938mmbf0ehjid70isadt0.apps.googleusercontent.com",
+    webClientId:
+      "633936981185-de39dtiqk9rntfsuo9foujo35igfugcs.apps.googleusercontent.com",
+    redirectUri: makeRedirectUri(),
+    shouldAutoExchangeCode:
+      Constants.executionEnvironment !== ExecutionEnvironment.StoreClient
+        ? true
+        : undefined,
+  });
 
   // only navigate when userData turns back to null
   useEffect(() => {
@@ -42,24 +60,35 @@ const Login = () => {
   }, []);
 
   useEffect(() => {
-    GoogleSignin.configure({
-      webClientId:
-        "633936981185-de39dtiqk9rntfsuo9foujo35igfugcs.apps.googleusercontent.com",
-      offlineAccess: true,
-    });
-  }, []);
+    if (response?.type === "success") {
+      console.log("Google response:", response);
+      const { authentication } = response;
+      handleGoogleLogin(authentication.idToken);
+    }
+  }, [response]);
+
+  const handleGoogleLogin = async (idToken) => {
+    try {
+      const apiResponse = await axios.post(`${API_URL}/google-login`, {
+        token: idToken,
+      });
+      await login(apiResponse?.data?.user);
+    } catch (error) {
+      console.error("Google login error:", error);
+      setError("Failed to login with Google");
+      showToast("Login Error");
+    }
+  };
 
   const signInWithGoogle = async () => {
+    console.log(request);
     try {
-      const res = await GoogleSignin.signIn();
-      console.log("Google Sign-In Success:", res);
-      const token = res.data.idToken;
-      console.log("Token:", token);
-      const response = await axios.post(`${API_URL}/google-login`, { token });
-      await login(response?.data?.user);
-      showToast("Login Successful");
+      setError(""); // Clear previous errors
+      await promptAsync();
     } catch (error) {
-      showToast("Google Sign-In Error");
+      console.error("Google Sign-In Error:", error);
+      setError("Failed to start Google Sign-In");
+      showToast("Sign-In Error");
     }
   };
 
@@ -146,6 +175,7 @@ const Login = () => {
               </Pressable>
 
               <Pressable
+                disabled={!request}
                 onPress={signInWithGoogle}
                 style={[styles.button, styles.googleButton]}
               >

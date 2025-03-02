@@ -1,16 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  TouchableOpacity, 
-  Image
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { useAuth } from "../state/AuthProvider";
 import { getUserProfile } from "../API/API";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import { useFocusEffect } from "@react-navigation/native"; 
+import { useFocusEffect } from "@react-navigation/native";
 import ScreenTemplate from "./Template/ScreenTemplate";
 import loadingGif from "../assets/loading-gif.gif"; // Import GIF
 
@@ -49,10 +43,10 @@ const AccountDetailsScreen = () => {
     return (
       <ScreenTemplate>
         <View style={styles.loadingContainer}>
-          <Image 
-            source={loadingGif} 
-            style={styles.loadingGif} 
-            resizeMode="contain" 
+          <Image
+            source={loadingGif}
+            style={styles.loadingGif}
+            resizeMode="contain"
           />
         </View>
       </ScreenTemplate>
@@ -63,19 +57,29 @@ const AccountDetailsScreen = () => {
     <ScreenTemplate>
       <View style={styles.container}>
         <View style={styles.headerContainer}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
             <Ionicons name="arrow-back" size={24} color="#000" />
           </TouchableOpacity>
           <Text style={styles.header}>Account Management</Text>
         </View>
 
-        <Text style={styles.subHeader}>Make changes to your personal information or account type</Text>
+        <Text style={styles.subHeader}>
+          Make changes to your personal information or account type
+        </Text>
 
         <Text style={styles.sectionTitle}>Your Account</Text>
 
-        <TouchableOpacity 
-          style={styles.infoRow} 
-          onPress={() => navigation.navigate("EditAccountField", { field: "Name", value: userData?.name || "N/A" })}
+        <TouchableOpacity
+          style={styles.infoRow}
+          onPress={() =>
+            navigation.navigate("EditAccountField", {
+              field: "Name",
+              value: userData?.name || "N/A",
+            })
+          }
         >
           <Text style={styles.label}>Name</Text>
           <View style={styles.rightContainer}>
@@ -84,9 +88,14 @@ const AccountDetailsScreen = () => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.infoRow} 
-          onPress={() => navigation.navigate("EditAccountField", { field: "Email", value: userData?.email || "N/A" })}
+        <TouchableOpacity
+          style={styles.infoRow}
+          onPress={() =>
+            navigation.navigate("EditAccountField", {
+              field: "Email",
+              value: userData?.email || "N/A",
+            })
+          }
         >
           <Text style={styles.label}>Email</Text>
           <View style={styles.rightContainer}>
@@ -95,9 +104,14 @@ const AccountDetailsScreen = () => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          style={styles.infoRow} 
-          onPress={() => navigation.navigate("EditAccountField", { field: "Password", value: "" })}
+        <TouchableOpacity
+          style={styles.infoRow}
+          onPress={() =>
+            navigation.navigate("EditAccountField", {
+              field: "Password",
+              value: "",
+            })
+          }
         >
           <Text style={styles.label}>Password</Text>
           <View style={styles.rightContainer}>
