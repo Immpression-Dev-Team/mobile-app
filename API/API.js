@@ -105,15 +105,21 @@ async function getArtistType(token) {
 }
 
 // Existing API functions
-async function getAllImages(token, category = null) {
+async function getAllImages(token, page = 1, limit = 25, category = null) {
   try {
     // set up header w/ token & optional param in request
+    const params = {
+      page,
+      limit,
+      ...(category && { category: category.toLowerCase() }),
+    };
     const response = await axios.get(`${API_URL}/all_images`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      params: category ? { category: category.toLowerCase() } : {},
+      params,
     });
+
     return response.data;
   } catch (error) {
     // console.error('Error fetching images:', error.response);
@@ -370,7 +376,10 @@ async function createPaymentIntent(paymentData, token) {
     );
     return response.data; // Contains the client_secret and other payment details
   } catch (error) {
-    console.error('Error creating payment intent:', error.response?.data || error);
+    console.error(
+      'Error creating payment intent:',
+      error.response?.data || error
+    );
     throw error;
   }
 }
@@ -405,7 +414,10 @@ async function getPaymentStatus(paymentIntentId, token) {
     );
     return response.data; // Contains the PaymentIntent status
   } catch (error) {
-    console.error('Error fetching payment status:', error.response?.data || error);
+    console.error(
+      'Error fetching payment status:',
+      error.response?.data || error
+    );
     throw error;
   }
 }
@@ -431,13 +443,13 @@ async function updateUserProfile(updatedData, token) {
     const response = await axios.put(`${API_URL}/update-profile`, updatedData, {
       headers: {
         Authorization: `Bearer ${token}`, // Add token for authentication
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
     return response.data; // Return success message and updated user info
   } catch (error) {
-    console.error("Error updating profile:", error.response?.data || error);
+    console.error('Error updating profile:', error.response?.data || error);
     return error.response?.data || error;
   }
 }
@@ -450,7 +462,7 @@ async function getCurrentBid(imageId, token) {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching current bid:", error);
+    console.error('Error fetching current bid:', error);
     return error.response?.data || error;
   }
 }
@@ -465,7 +477,7 @@ async function placeBid(imageId, bidAmount, token) {
     );
     return response.data;
   } catch (error) {
-    console.error("Error placing bid:", error);
+    console.error('Error placing bid:', error);
     return error.response?.data || error;
   }
 }
@@ -478,7 +490,7 @@ async function fetchLikeData(imageId, token) {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching like data:", error);
+    console.error('Error fetching like data:', error);
     return { likesCount: 0, hasLiked: false };
   }
 }
@@ -493,11 +505,10 @@ async function toggleLike(imageId, token) {
     );
     return response.data;
   } catch (error) {
-    console.error("Error liking/unliking image:", error);
+    console.error('Error liking/unliking image:', error);
     return { likesCount: 0, hasLiked: false };
   }
 }
-
 
 export {
   getAllImages,
