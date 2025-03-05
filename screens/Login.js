@@ -9,7 +9,7 @@ import {
   Image,
   ImageBackground, // Import ImageBackground component
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useNavigationContainerRef } from "@react-navigation/native";
 import axios from "axios";
 import { API_URL } from "../config";
 import Icon from "react-native-vector-icons/FontAwesome"; // Import your preferred icon set
@@ -23,6 +23,7 @@ import { makeRedirectUri } from "expo-auth-session";
 import { showToast } from "../utils/toastNotification";
 import * as AuthSession from "expo-auth-session";
 import Constants, { ExecutionEnvironment } from "expo-constants";
+
 
 const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
 const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image
@@ -38,6 +39,7 @@ const Login = () => {
   const navigation = useNavigation();
   const [error, setError] = useState("");
   const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
+  const navigationRef = useNavigationContainerRef();
 
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
@@ -49,13 +51,15 @@ const Login = () => {
         : undefined,
   });
 
-  // only navigate when userData turns back to null
   useEffect(() => {
-    if (userData) {
+    if (userData && navigationRef.isReady()) {
       console.log("Log in success. Now going to home screen");
-      navigation.navigate("Home");
+      navigationRef.reset({
+        index: 0,
+        routes: [{ name: "Home" }],
+      });
     }
-  }, []);
+  }, [userData]);
 
   useEffect(() => {
     if (response?.type === "success") {
@@ -93,12 +97,29 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(""); // Clear previous errors
-
+  
     const result = await handleLogin(email, password, login);
+  
     if (!result.success) {
       setError("Invalid email or password");
+      return;
     }
+  
+    // Force update the auth state
+    const storedUser = await AsyncStorage.getItem("userData");
+    if (storedUser) {
+      login(JSON.parse(storedUser)); // Ensure `login` updates state
+    }
+  
+    // Small delay to ensure `userData` updates before navigation
+    setTimeout(() => {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Home" }],
+      });
+    }, 500); // Adjust delay if needed
   };
+  
 
   const navigateTo = (screenName) => {
     navigation.navigate(screenName);
