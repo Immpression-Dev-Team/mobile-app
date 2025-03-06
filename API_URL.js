@@ -1,6 +1,6 @@
 // Change between production and development backend services
 // "dev" for local OR "prod" for remote
-const ENV = "dev";
+const ENV = "prod";
 
 
 // TODO: REPLACE WITH *YOUR* HOST IP "192.1.x.x" for most local networks
@@ -17,4 +17,4 @@ const API_URL =
 
 console.log("API URL:", API_URL);
 
-export { API_URL };
+export { API_URL, HOST_IP };
