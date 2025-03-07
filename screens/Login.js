@@ -44,6 +44,7 @@ const Login = () => {
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
     webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID,
+    iosClientId: 'hello world',
     redirectUri: makeRedirectUri(),
     shouldAutoExchangeCode:
       Constants.executionEnvironment !== ExecutionEnvironment.StoreClient
