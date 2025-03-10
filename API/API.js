@@ -510,6 +510,28 @@ async function toggleLike(imageId, token) {
   }
 }
 
+// Function to update image stage (for approving/rejecting images)
+async function updateImageStage(imageId, stage, token) {
+  try {
+    const response = await axios.patch(
+      `${API_URL}/image/${imageId}/review`,
+      { stage },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Error updating image stage:", error);
+    return error.response?.data || error;
+  }
+}
+
+
 export {
   getAllImages,
   uploadImage,
@@ -539,4 +561,5 @@ export {
   placeBid,
   fetchLikeData,
   toggleLike,
+  updateImageStage,
 };
