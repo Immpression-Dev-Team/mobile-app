@@ -111,8 +111,13 @@ export default function ArtForYou() {
         console.error('Error fetching art data:', response.data);
         return;
       }
-      console.log('images length =', response.images.length);
-      const shuffledData = shuffleArray(response.images);
+      console.log('Fetched images length =', response.images.length);
+  
+      // Filter out only approved artworks
+      const approvedArt = response.images.filter((image) => image.stage === 'approved');
+      console.log('Approved images length =', approvedArt.length);
+  
+      const shuffledData = shuffleArray(approvedArt);
       setOriginalArtData(shuffledData);
       setHasMore(true);
     } catch (error) {
@@ -121,41 +126,36 @@ export default function ArtForYou() {
       setIsLoading(false);
     }
   };
-
+  
   const fetchMoreArtData = async (token) => {
     try {
       const response = await getAllImages(token, page + 1, 50);
-
       if (!response.success) {
-        console.error('Error fetching art data:', response.data);
+        console.error('Error fetching more art data:', response.data);
         return;
       }
-
-      console.log('images length =', response.images.length);
-
+  
+      console.log('Fetched images length =', response.images.length);
+  
       if (response.images.length === 0) {
-        setOriginalArtData((prevData) => [
-          ...prevData,
-          ...shuffleArray(prevData),
-        ]);
-
-        setPage((prevPage) => prevPage + 1);
-        setHasMore(true);
+        setHasMore(false);
       } else {
-        const shuffledData = shuffleArray(response.images);
+        // Filter out only approved artworks
+        const approvedArt = response.images.filter((image) => image.stage === 'approved');
+        console.log('Approved images length =', approvedArt.length);
+  
+        const shuffledData = shuffleArray(approvedArt);
         setOriginalArtData((prevData) => [...prevData, ...shuffledData]);
         setPage((prevPage) => prevPage + 1);
         setHasMore(true);
       }
     } catch (error) {
-      console.error(
-        'Error fetching more art data:',
-        error?.response || error?.message || error
-      );
+      console.error('Error fetching more art data:', error);
     } finally {
       setIsLoading(false);
     }
   };
+  
 
   const handleImagePress = async (imageIndex) => {
     const selectedImage = originalArtData[imageIndex];
