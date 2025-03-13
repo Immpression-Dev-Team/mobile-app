@@ -199,8 +199,6 @@ const Upload = () => {
         return;
       }
 
-      // loading animation while fetching
-
       const userId = userData.user.user._id,
         userName = userData.user.user.name,
         token = userData.token;
@@ -213,13 +211,14 @@ const Upload = () => {
         price: price,
         description: description,
         category: category,
+        stage: "review", // <-- Mark newly uploaded images as "review"
       };
 
       console.log("Upload successful, processing response...");
       const response = await uploadImage(imageData, token);
       if (response.success) {
         resetForm();
-        Alert.alert("Success", "Image uploaded successfully!");
+        Alert.alert("Success", "Your artwork has been submitted for review!");
       } else {
         displayError(response.data?.error || "Image upload failed");
       }
@@ -231,6 +230,7 @@ const Upload = () => {
       console.log("upload complete, turn off loading animation");
     }
   };
+
 
   const renderContent = () => (
     <View style={styles.container}>
