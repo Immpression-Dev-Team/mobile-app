@@ -12,7 +12,10 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "scheme": "com.immpression.artapp",
     "ios": {
       "supportsTablet": true,
       "config": {
@@ -25,13 +28,15 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.immpression.artapp",
-      "versionCode": 10,
+      "versionCode": 18,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4"
         }
       },
-      "permissions": ["android.permission.INTERNET"]
+      "permissions": [
+        "android.permission.INTERNET"
+      ]
     },
     "web": {
       "favicon": "./assets/Logo_T.png"
@@ -65,7 +70,9 @@
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
       ],
-      ["@react-native-google-signin/google-signin"]
+      [
+        "@react-native-google-signin/google-signin"
+      ]
     ]
   }
 }
