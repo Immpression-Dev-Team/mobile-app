@@ -33,10 +33,10 @@ const ImageScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     console.log("Current Image Data:", images[currentIndex]); // Debugging log
-  
+
     if (images[currentIndex]?.userId) {
       console.log(`Fetching profile picture for userId: ${images[currentIndex].userId}`);
-  
+
       fetchUserProfilePicture(images[currentIndex].userId, token)
         .then((profilePic) => {
           console.log("Received profile picture link:", profilePic);
@@ -49,8 +49,8 @@ const ImageScreen = ({ route, navigation }) => {
       console.warn("No userId found for the current image.");
     }
   }, [currentIndex]);
-  
-  
+
+
 
 
   const handleFetchLikeData = async (imageId) => {
@@ -100,16 +100,17 @@ const ImageScreen = ({ route, navigation }) => {
   return (
     <ScreenTemplate>
       <View style={styles.artistContainer}>
-        {profilePicture && (
-          <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
-        )}
-
         <Text style={styles.artistName}>
           <Text style={styles.boldText}>
             {images[currentIndex]?.artistName || "Unknown Artist"}
           </Text>
         </Text>
+
+        {profilePicture && (
+          <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
+        )}
       </View>
+
 
       <FlatList
         ref={flatListRef}
@@ -154,10 +155,10 @@ const ImageScreen = ({ route, navigation }) => {
           </Text>
         </View>
         <View style={styles.shareLikeButton}>
-          <TouchableOpacity style={styles.shareButton}>
+          {/* <TouchableOpacity style={styles.shareButton}>
             <Image source={share} style={styles.shareIcon} />
             <Text style={styles.shareText}>SHARE</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity style={styles.likeButton} onPress={handleToggleLike}>
             <Image source={hasLiked ? likedIcon : like} style={styles.likeIcon} />
             <Text style={styles.likeText}>{hasLiked ? "UNLIKE" : "LIKE"}</Text>
@@ -165,9 +166,9 @@ const ImageScreen = ({ route, navigation }) => {
         </View>
       </View>
 
-      <View>
+      {/* <View>
         {images[currentIndex]?._id && <PriceSliders imageId={images[currentIndex]._id} />}
-      </View>
+      </View> */}
 
       <View style={styles.likeViewCountContainer}>
         <View style={styles.count}>
@@ -214,17 +215,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   fullImage: {
-    width: "100%",
+    width: "98%",
     height: 400,
     resizeMode: "cover",
+    marginTop: -20,
   },
   textContainer: {
     paddingTop: 0,
     paddingRight: 0,
     paddingBottom: 20,
     paddingLeft: 0,
-    top: 0,
-    left: 0,
+    top: -31,
+    left: -7,
     alignItems: "flex-start",
     paddingHorizontal: 20,
     width: "65%", // Adjust width for more space for text and description
@@ -239,25 +241,26 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   artistContainer: {
-    flexDirection: "row", // Align profile picture and artist name in a row
-    alignItems: "center", // Vertically center items
-    marginLeft: 10, // Add some spacing from the left
+    flexDirection: "row", // Align items in a row
+    alignItems: "center", // Center vertically
+    justifyContent: "flex-end", // Push items to the right
+    marginRight: 3.5, // Add some spacing from the right edge
     marginTop: 10, // Adjust spacing from the top
   },
-
+  
   profilePicture: {
-    width: 35, // Adjust profile picture size
-    height: 35,
-    borderRadius: 17.5, // Makes it circular
-    marginRight: 10, // Adds space between the image and text
+    width: 40, // Square profile picture
+    height: 40,
+    marginLeft: 10, // Adds space between the text and the profile picture
   },
-
+  
   artistName: {
     color: "black",
     fontSize: 15,
     fontFamily: "Calibri",
     textTransform: "uppercase",
   },
+  
 
   labelText: {
     color: "black",
@@ -356,12 +359,14 @@ const styles = StyleSheet.create({
   likeButton: {
     paddingVertical: 5,
     backgroundColor: "#007AFF",
-    borderRadius: 5,
+    borderRadius: 0,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    width: 80,
-    height: 30,
+    width: 90,
+    height: 35,
+    top: -30,
+    left: 11,
   },
   likeIcon: {
     width: 15,
@@ -375,11 +380,12 @@ const styles = StyleSheet.create({
   },
   likeViewCountContainer: {
     position: "absolute",
-    top: 10, // Adjust this value to fine-tune placement
-    left: 10, // Adjust for left alignment
-    backgroundColor: "rgba(0,0,0,0.5)", // Semi-transparent black for visibility
-    padding: 3,
-    borderRadius: 3,
+    top: 23, // Adjust this value to fine-tune placement
+    left: 4, // Adjust for left alignment
+    backgroundColor: "rgba(0, 0, 0, 0.22)", // Semi-transparent black for visibility
+    paddingHorizontal: 3,
+    paddingVertical: 5,
+    borderRadius: 0,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -400,8 +406,8 @@ const styles = StyleSheet.create({
     marginRight: 2,
   },
   viewsCount: {
-    color: "white",
-    fontSize: 12,
+    color: "#000",
+    fontSize: 14,
     fontWeight: "bold",
   },
 });
