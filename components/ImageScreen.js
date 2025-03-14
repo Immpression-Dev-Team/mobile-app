@@ -28,6 +28,8 @@ const ImageScreen = ({ route, navigation }) => {
   const { token } = useAuth();
   const [likes, setLikes] = useState(0);
   const [hasLiked, setHasLiked] = useState(false);
+  const [profilePicture, setProfilePicture] = useState(null);
+
 
   useEffect(() => {
     if (images[currentIndex]?._id) {
@@ -56,7 +58,7 @@ const ImageScreen = ({ route, navigation }) => {
       console.error("Error liking/unliking image:", error);
     }
   };
-  
+
   const handleViewIncrement = async (index) => {
     const currentImage = images[index];
     if (currentImage && currentImage._id) {
@@ -81,6 +83,20 @@ const ImageScreen = ({ route, navigation }) => {
 
   return (
     <ScreenTemplate>
+      <View style={styles.artistContainer}>
+        {images[currentIndex]?.profilePictureLink && (
+          <Image
+            source={{ uri: images[currentIndex].profilePictureLink }}
+            style={styles.profilePicture}
+          />
+        )}
+        <Text style={styles.artistName}>
+          <Text style={styles.boldText}>
+            {images[currentIndex]?.artistName || "Unknown Artist"}
+          </Text>
+        </Text>
+      </View>
+
       <FlatList
         ref={flatListRef}
         data={images}
@@ -109,12 +125,7 @@ const ImageScreen = ({ route, navigation }) => {
           <Text style={styles.artTitle}>
             {images[currentIndex]?.name || "Untitled"}
           </Text>
-          <Text style={styles.artistName}>
-            BY:{" "}
-            <Text style={styles.boldText}>
-              {images[currentIndex]?.artistName || "Unknown Artist"}
-            </Text>
-          </Text>
+
           <Text style={styles.labelText}>
             CATEGORY:{" "}
             <Text style={styles.boldText}>
@@ -212,15 +223,28 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "left",
     textTransform: "uppercase",
-},
+  },
+  artistContainer: {
+    flexDirection: "row", // Align profile picture and artist name in a row
+    alignItems: "center", // Vertically center items
+    marginLeft: 10, // Add some spacing from the left
+    marginTop: 10, // Adjust spacing from the top
+  },
+
+  profilePicture: {
+    width: 35, // Adjust profile picture size
+    height: 35,
+    borderRadius: 17.5, // Makes it circular
+    marginRight: 10, // Adds space between the image and text
+  },
 
   artistName: {
     color: "black",
     fontSize: 15,
     fontFamily: "Calibri",
-    textAlign: "left",
     textTransform: "uppercase",
   },
+
   labelText: {
     color: "black",
     fontSize: 9,
@@ -248,7 +272,7 @@ const styles = StyleSheet.create({
     flex: 1, // Allow button to take remaining space
     elevation: 8,
   },
-  
+
   buyNowButtonText: {
     color: "#FFF",
     fontSize: 20,
@@ -263,7 +287,7 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginVertical: 10,
   },
-  
+
   priceContainer: {
     backgroundColor: "#D3D3D3", // Light gray background
     paddingVertical: 8,
@@ -272,13 +296,13 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     marginRight: 5, // Space between price and button
   },
-  
+
   priceText: {
     fontSize: 22,
     fontWeight: "bold",
     color: "#333",
   },
-  
+
   descriptionButtonContainer: {
     flexDirection: "row", // Align the description and buttons in a row
     justifyContent: "space-between", // Create space between description and buttons

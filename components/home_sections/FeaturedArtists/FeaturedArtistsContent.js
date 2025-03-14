@@ -7,46 +7,65 @@ import {
     Platform,
 } from "react-native";
 
-export default function FeaturedArtistsContent({artists, navigate}) {
-    // truncated if the username is too long
+export default function FeaturedArtistsContent({ artists = [], navigate }) { // Default to an empty array
     const maxLen = 10;
 
-    return(
+    if (!artists || artists.length === 0) {
+        return <Text style={styles.noArtists}>No featured artists available.</Text>;
+    }
+
+    return (
         <ScrollView
             horizontal
             style={styles.scrollView}
             showsHorizontalScrollIndicator={false}
         >
-            {artists?.map((item, index) => (
+            {artists.map((item, index) => (
                 <TouchableOpacity
                     key={index}
                     style={styles.artistContainer}
                     onPress={() =>
                         navigate(
-                            item.name,
-                            item.profilePictureLink,
-                            item.artistType,
+                            item?.name || "Unknown",
+                            item?.profilePictureLink || "",
+                            item?.artistType || "artistType",
                             index,
-                            item._id // Assuming `_id` is the user's unique identifier
+                            item?._id || ""
                         )
                     }
                 >
-                    <Image
-                        source={{ uri: item.profilePictureLink }}
-                        style={styles.image}
-                    />
-                    <Text style={styles.artistName}>{
-                        (item.name.length > maxLen) ? item.name.substring(0, maxLen) + "..." :
-                        item.name
-                    }</Text>
-                    <Text style={styles.artistType}>{(item.artistType)? item.artistType : 'artistType'}</Text>
+                    {item?.profilePictureLink ? (
+                        <Image
+                            source={{ uri: item.profilePictureLink }}
+                            style={styles.image}
+                        />
+                    ) : (
+                        <Text style={styles.noImage}>No Image</Text>
+                    )}
+                    <Text style={styles.artistName}>
+                        {item?.name?.length > maxLen ? item.name.substring(0, maxLen) + "..." : item.name}
+                    </Text>
+                    <Text style={styles.artistType}>
+                        {item?.artistType || "artistType"}
+                    </Text>
                 </TouchableOpacity>
             ))}
         </ScrollView>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
+    noArtists: {
+        fontSize: 14,
+        color: "gray",
+        textAlign: "center",
+        marginTop: 20,
+    },
+    noImage: {
+        fontSize: 12,
+        color: "gray",
+        textAlign: "center",
+    },
     scrollView: {
         flex: 1,
         flexDirection: "row",
