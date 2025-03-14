@@ -531,6 +531,25 @@ async function updateImageStage(imageId, stage, token) {
   }
 }
 
+async function fetchUserProfilePicture(userId, token) {
+  console.log(`Fetching profile picture for userId: ${userId}`);
+  try {
+    const response = await axios.get(`${API_URL}/profile-picture/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    console.log("Profile picture response:", response.data);
+
+    return response.data.profilePictureLink || null;
+  } catch (error) {
+    console.error("Error fetching user profile picture:", error.response?.data || error);
+    return null; // Return null if there's an error
+  }
+}
+
+
 
 export {
   getAllImages,
@@ -562,4 +581,5 @@ export {
   fetchLikeData,
   toggleLike,
   updateImageStage,
+  fetchUserProfilePicture,
 };

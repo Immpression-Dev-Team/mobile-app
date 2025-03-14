@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useAuth } from "../state/AuthProvider";
-import { toggleLike, fetchLikeData, incrementImageViews } from "../API/API";
+import { toggleLike, fetchLikeData, incrementImageViews, fetchUserProfilePicture } from "../API/API";
 import ScreenTemplate from "../screens/Template/ScreenTemplate";
 import PriceSliders from "./PriceSliders";
 
@@ -32,10 +32,26 @@ const ImageScreen = ({ route, navigation }) => {
 
 
   useEffect(() => {
-    if (images[currentIndex]?._id) {
-      handleFetchLikeData(images[currentIndex]._id);
+    console.log("Current Image Data:", images[currentIndex]); // Debugging log
+  
+    if (images[currentIndex]?.userId) {
+      console.log(`Fetching profile picture for userId: ${images[currentIndex].userId}`);
+  
+      fetchUserProfilePicture(images[currentIndex].userId, token)
+        .then((profilePic) => {
+          console.log("Received profile picture link:", profilePic);
+          setProfilePicture(profilePic);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch profile picture:", error);
+        });
+    } else {
+      console.warn("No userId found for the current image.");
     }
   }, [currentIndex]);
+  
+  
+
 
   const handleFetchLikeData = async (imageId) => {
     if (!imageId) return;
@@ -84,12 +100,10 @@ const ImageScreen = ({ route, navigation }) => {
   return (
     <ScreenTemplate>
       <View style={styles.artistContainer}>
-        {images[currentIndex]?.profilePictureLink && (
-          <Image
-            source={{ uri: images[currentIndex].profilePictureLink }}
-            style={styles.profilePicture}
-          />
+        {profilePicture && (
+          <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
         )}
+
         <Text style={styles.artistName}>
           <Text style={styles.boldText}>
             {images[currentIndex]?.artistName || "Unknown Artist"}
