@@ -9,17 +9,17 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useAuth } from "../state/AuthProvider";
-import { toggleLike, fetchLikeData, incrementImageViews } from "../API/API";
+import { toggleLike, fetchLikeData, incrementImageViews, fetchUserProfilePicture } from "../API/API";
 import ScreenTemplate from "../screens/Template/ScreenTemplate";
 import PriceSliders from "./PriceSliders";
 
 const share = require("../assets/icons/share-button.jpg");
 const like = require("../assets/icons/like-button.jpg");
-const likedIcon = require("../assets/icons/like-button.jpg"); // Ensure this is a different icon
+const likedIcon = require("../assets/icons/like-button.jpg");
 const likesIcon = require("../assets/icons/likes_icon.png");
 const viewsIcon = require("../assets/icons/views_icon.jpg");
 
-const { width } = Dimensions.get("window");
+const { width, height } = Dimensions.get("window");
 
 const ImageScreen = ({ route, navigation }) => {
   const { images, initialIndex } = route.params;
@@ -30,10 +30,29 @@ const ImageScreen = ({ route, navigation }) => {
   const [hasLiked, setHasLiked] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
 
+  useEffect(() => {
+    console.log("Current Image Data:", images[currentIndex]);
+
+    if (images[currentIndex]?.userId) {
+      console.log(`Fetching profile picture for userId: ${images[currentIndex].userId}`);
+
+      fetchUserProfilePicture(images[currentIndex].userId, token)
+        .then((profilePic) => {
+          console.log("Received profile picture link:", profilePic);
+          setProfilePicture(profilePic);
+        })
+        .catch((error) => {
+          console.error("Failed to fetch profile picture:", error);
+        });
+    } else {
+      console.warn("No userId found for the current image.");
+    }
+  }, [currentIndex]);
 
   useEffect(() => {
     if (images[currentIndex]?._id) {
       handleFetchLikeData(images[currentIndex]._id);
+      handleViewIncrement(currentIndex);
     }
   }, [currentIndex]);
 
@@ -63,108 +82,99 @@ const ImageScreen = ({ route, navigation }) => {
     const currentImage = images[index];
     if (currentImage && currentImage._id) {
       try {
-        console.log(
-          `Attempting to increment views for image ID: ${currentImage._id}`
-        );
+        console.log(`Incrementing views for image ID: ${currentImage._id}`);
         await incrementImageViews(currentImage._id, token);
       } catch (error) {
         console.error("Error incrementing image views:", error);
       }
-    } else {
-      console.warn("No valid image ID (_id) to increment views.");
     }
   };
 
-  const renderItem = ({ item }) => (
-    <View style={styles.imageContainer}>
-      <Image source={{ uri: item.imageLink }} style={styles.fullImage} />
-    </View>
-  );
-
   return (
     <ScreenTemplate>
-      <View style={styles.artistContainer}>
-        {images[currentIndex]?.profilePictureLink && (
-          <Image
-            source={{ uri: images[currentIndex].profilePictureLink }}
-            style={styles.profilePicture}
-          />
-        )}
-        <Text style={styles.artistName}>
-          <Text style={styles.boldText}>
-            {images[currentIndex]?.artistName || "Unknown Artist"}
-          </Text>
-        </Text>
-      </View>
+      <View style={styles.container}>
+        {/* Artist Info + Likes/Views */}
+        <View style={styles.headerContainer}>
+          {/* Likes & Views Section - Now on the Left */}
+          <View style={styles.likeViewCountContainer}>
+            <View style={styles.count}>
+              <Image source={likesIcon} style={styles.likesIcon} />
+              <Text style={styles.viewsCount}>{likes}</Text>
+            </View>
+            <View style={styles.count}>
+              <Image source={viewsIcon} style={styles.viewsIcon} />
+              <Text style={styles.viewsCount}>
+                {images[currentIndex]?.views || 0}
+              </Text>
+            </View>
+          </View>
 
-      <FlatList
-        ref={flatListRef}
-        data={images}
-        renderItem={renderItem}
-        horizontal
-        pagingEnabled
-        keyExtractor={(item, index) => index.toString()}
-        showsHorizontalScrollIndicator={false}
-        initialScrollIndex={initialIndex}
-        getItemLayout={(data, index) => ({
-          length: width,
-          offset: width * index,
-          index,
-        })}
-        onMomentumScrollEnd={(event) => {
-          const index = Math.round(event.nativeEvent.contentOffset.x / width);
-          if (index !== currentIndex) {
-            setCurrentIndex(index);
-            handleFetchLikeData(images[index]._id);
-            handleViewIncrement(index);
-          }
-        }}
-      />
-      <View style={styles.descriptionButtonContainer}>
-        <View style={styles.textContainer}>
-          <Text style={styles.artTitle}>
-            {images[currentIndex]?.name || "Untitled"}
-          </Text>
-
-          <Text style={styles.labelText}>
-            CATEGORY:{" "}
-            <Text style={styles.boldText}>
-              {images[currentIndex]?.category || "No Category"}
+          {/* Artist Info - Now on the Right */}
+          <View style={styles.artistContainer}>
+            <Text style={styles.artistName}>
+              <Text style={styles.boldText}>
+                {images[currentIndex]?.artistName || "Unknown Artist"}
+              </Text>
             </Text>
-          </Text>
-          <Text style={styles.labelText}>
-            DESCRIPTION:{" "}
-            <Text style={styles.boldText}>
-              {images[currentIndex]?.description || "No Description Available"}
-            </Text>
-          </Text>
+            {profilePicture && (
+              <Image source={{ uri: profilePicture }} style={[styles.profilePicture, { marginLeft: 10, marginRight: 0 }]} />
+            )}
+          </View>
         </View>
-        <View style={styles.shareLikeButton}>
-          <TouchableOpacity style={styles.shareButton}>
-            <Image source={share} style={styles.shareIcon} />
-            <Text style={styles.shareText}>SHARE</Text>
-          </TouchableOpacity>
+
+        {/* Image List */}
+        <FlatList
+          ref={flatListRef}
+          data={images}
+          renderItem={({ item }) => (
+            <View style={styles.imageContainer}>
+              <Image source={{ uri: item.imageLink }} style={styles.fullImage} />
+            </View>
+          )}
+          horizontal
+          pagingEnabled
+          keyExtractor={(item, index) => index.toString()}
+          showsHorizontalScrollIndicator={false}
+          initialScrollIndex={initialIndex}
+          getItemLayout={(data, index) => ({
+            length: width,
+            offset: width * index,
+            index,
+          })}
+          onMomentumScrollEnd={(event) => {
+            const index = Math.round(event.nativeEvent.contentOffset.x / width);
+            if (index !== currentIndex) {
+              setCurrentIndex(index);
+              handleFetchLikeData(images[index]._id);
+              handleViewIncrement(index);
+            }
+          }}
+        />
+
+        {/* Description & Like Button */}
+        <View style={styles.descriptionButtonContainer}>
+          <View style={styles.textContainer}>
+            <Text style={styles.artTitle}>
+              {images[currentIndex]?.name || "Untitled"}
+            </Text>
+
+            <Text style={styles.labelText}>
+              CATEGORY:{" "}
+              <Text style={styles.boldText}>
+                {images[currentIndex]?.category || "No Category"}
+              </Text>
+            </Text>
+            <Text style={styles.labelText}>
+              DESCRIPTION:{" "}
+              <Text style={styles.boldText}>
+                {images[currentIndex]?.description || "No Description Available"}
+              </Text>
+            </Text>
+          </View>
           <TouchableOpacity style={styles.likeButton} onPress={handleToggleLike}>
             <Image source={hasLiked ? likedIcon : like} style={styles.likeIcon} />
             <Text style={styles.likeText}>{hasLiked ? "UNLIKE" : "LIKE"}</Text>
           </TouchableOpacity>
-        </View>
-      </View>
-
-      <View>
-        {images[currentIndex]?._id && <PriceSliders imageId={images[currentIndex]._id} />}
-      </View>
-
-      <View style={styles.likeViewCountContainer}>
-        <View style={styles.count}>
-          <Image source={likesIcon} style={styles.likesIcon} />
-          <Text style={styles.viewsCount}>{likes}</Text>
-        </View>
-        <View style={styles.count}>
-          <Image source={viewsIcon} style={styles.viewsIcon} />
-          <Text style={styles.viewsCount}>
-            {images[currentIndex]?.views || 0}
-          </Text>
         </View>
       </View>
 
@@ -192,50 +202,28 @@ const ImageScreen = ({ route, navigation }) => {
   );
 };
 
-
 const styles = StyleSheet.create({
-  imageContainer: {
-    width,
-    justifyContent: "center",
+  container: {
+    flex: 1,
+  },
+
+  headerContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
+    paddingHorizontal: 3.5,
+    paddingVertical: 5,
+    backgroundColor: "#FFF",
   },
-  fullImage: {
-    width: "100%",
-    height: 400,
-    resizeMode: "cover",
-  },
-  textContainer: {
-    paddingTop: 0,
-    paddingRight: 0,
-    paddingBottom: 20,
-    paddingLeft: 0,
-    top: 0,
-    left: 0,
-    alignItems: "flex-start",
-    paddingHorizontal: 20,
-    width: "65%", // Adjust width for more space for text and description
-    height: 200,
-  },
-  artTitle: {
-    color: "#333",
-    fontSize: 25,  // Removed getResponsiveFontSize
-    fontFamily: "Calibri",
-    fontWeight: "bold",
-    textAlign: "left",
-    textTransform: "uppercase",
-  },
+
   artistContainer: {
-    flexDirection: "row", // Align profile picture and artist name in a row
-    alignItems: "center", // Vertically center items
-    marginLeft: 10, // Add some spacing from the left
-    marginTop: 10, // Adjust spacing from the top
+    flexDirection: "row",
+    alignItems: "center",
   },
 
   profilePicture: {
-    width: 35, // Adjust profile picture size
-    height: 35,
-    borderRadius: 17.5, // Makes it circular
-    marginRight: 10, // Adds space between the image and text
+    width: 40,
+    height: 40,
   },
 
   artistName: {
@@ -243,25 +231,104 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: "Calibri",
     textTransform: "uppercase",
+    marginBottom: -10,
+  },
+
+  likeViewCountContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: -10,
+  },
+
+  count: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginLeft: 10,
+  },
+
+  likesIcon: {
+    width: 15,
+    height: 15,
+    marginRight: 2,
+  },
+
+  viewsIcon: {
+    width: 15,
+    height: 15,
+    marginRight: 2,
+  },
+
+  viewsCount: {
+    color: "black",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+
+  imageContainer: {
+    width,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  fullImage: {
+    width: "98.5%",
+    height: height * 0.5, // 50% of the screen height for responsiveness
+    resizeMode: "cover",
+  },
+
+  descriptionButtonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: "#FFF",
+    borderTopWidth: 1,
+    borderColor: "#ccc",
+  },
+
+  textContainer: {
+    flex: 1,
+  },
+
+  artTitle: {
+    color: "#333",
+    fontSize: 20,
+    fontWeight: "bold",
+    textTransform: "uppercase",
   },
 
   labelText: {
-    color: "black",
-    fontSize: 9,
-    fontFamily: "Calibri",
-    textAlign: "left",
+    color: "#000",
+    fontSize: 12,
     textTransform: "uppercase",
   },
+
   boldText: {
     fontWeight: "bold",
   },
 
-  buttonContainer: {
-    paddingHorizontal: 0,
-    marginHorizontal: 0,
-    paddingVertical: 10,
+  likeButton: {
+    flexDirection: "row",
     alignItems: "center",
+    backgroundColor: "#007AFF",
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 5,
   },
+
+  likeIcon: {
+    width: 15,
+    height: 15,
+    marginRight: 5,
+  },
+
+  likeText: {
+    color: "#FFF",
+    fontSize: 12,
+    fontWeight: "bold",
+  },
+
   buyNowButton: {
     backgroundColor: "#007AFF",
     paddingVertical: 8,
@@ -279,6 +346,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textTransform: "uppercase",
   },
+  
   priceButtonContainer: {
     flexDirection: "row", // Arrange price and button side by side
     alignItems: "center", // Align them vertically
@@ -301,94 +369,6 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     color: "#333",
-  },
-
-  descriptionButtonContainer: {
-    flexDirection: "row", // Align the description and buttons in a row
-    justifyContent: "space-between", // Create space between description and buttons
-    alignItems: "flex-start", // Align both to the top
-    marginTop: 10, // Add some space between the description and buttons
-    width: "100%", // Make it take the full width of the container
-    paddingHorizontal: 15, // Add some padding on the sides for spacing
-    marginBottom: -120,
-  },
-  shareLikeButton: {
-    flexDirection: "column", // Align buttons vertically
-    justifyContent: "flex-start", // Align buttons to the top
-    width: "30%", // Take up 30% of the width for the buttons container
-    alignItems: "flex-end", // Align buttons to the right
-  },
-  shareButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 5, // Add margin between the buttons
-    paddingVertical: 5,
-    borderRadius: 3,
-    width: 80,
-    height: 30,
-  },
-  shareIcon: {
-    width: 15,
-    height: 20,
-    margin: 5,
-  },
-
-  shareText: {
-    color: "#333",
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-  likeButton: {
-    paddingVertical: 5,
-    backgroundColor: "#007AFF",
-    borderRadius: 5,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    width: 80,
-    height: 30,
-  },
-  likeIcon: {
-    width: 15,
-    height: 15,
-    marginRight: 5,
-  },
-  likeText: {
-    color: "#FFF",
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-  likeViewCountContainer: {
-    position: "absolute",
-    top: 10, // Adjust this value to fine-tune placement
-    left: 10, // Adjust for left alignment
-    backgroundColor: "rgba(0,0,0,0.5)", // Semi-transparent black for visibility
-    padding: 3,
-    borderRadius: 3,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  count: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginRight: 7,
-  },
-  likesIcon: {
-    width: 15,
-    height: 15,
-    marginRight: 2,
-    marginLeft: 4,
-  },
-  viewsIcon: {
-    width: 15,
-    height: 15,
-    marginRight: 2,
-  },
-  viewsCount: {
-    color: "white",
-    fontSize: 12,
-    fontWeight: "bold",
   },
 });
 
