@@ -3,7 +3,7 @@
 const ENV = "prod";
 
 
-// TODO: REPLACE WITH *YOUR* HOST IP "192.1.x.x" for most local networks. You must also add your ip in the root .env file.
+// TODO: REPLACE WITH *YOUR* HOST IP "192.1.x.x" for most local networks. You must also add your ip in the root .env file
 // Linux run - ip addr
 // Windows run - ipconfig
 // Mac run - ifconfig | grep "inet "
