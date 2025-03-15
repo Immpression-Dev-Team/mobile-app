@@ -1,7 +1,8 @@
-import axios from "axios";
-import { API_URL } from "../config";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { showToast } from "../utils/toastNotification";
+import axios from 'axios';
+import { API_URL } from '../API_URL';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { showToast } from '../utils/toastNotification';
+
 
 export const handleLogin = async (
   email,

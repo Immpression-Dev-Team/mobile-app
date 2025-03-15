@@ -16,14 +16,24 @@ import LoadingSection from "../SectionTemplate/LoadingSection";
 export default function FeaturedArtists() {
   const { token } = useAuth();
   const navigation = useNavigation();
-  
+
   const [artists, setArtists] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchArtists = async () => {
       try {
+        console.log("Fetching artists from API...");
         const data = await getAllProfilePictures(token);
+
+        console.log("Artists API Response:", data);
+
+        if (!Array.isArray(data)) {
+          console.error("Error: `artists` is not an array!", data);
+          setArtists([]);
+          return;
+        }
+
         setArtists(data);
       } catch (error) {
         console.error("Error fetching artist data:", error);
@@ -52,29 +62,29 @@ export default function FeaturedArtists() {
   };
 
   if (isLoading) {
-    return(
-      <LoadingSection
-        loadingMsg='LOADING DISCOVER ARTISTS'
-        size='medium'
-      />
+    return (
+        <LoadingSection
+            loadingMsg="LOADING DISCOVER ARTISTS"
+            size="medium"
+        />
     );
   }
 
   return (
-    <View style={styles.container}>
-      <FeaturedArtistsHeader/>
-      <FeaturedArtistsContent
-        artists={artists}
-        navigate={navigateToArtistScreen}
-      />
-    </View>
+      <View style={styles.container}>
+        <FeaturedArtistsHeader />
+        <FeaturedArtistsContent
+            artists={artists}
+            navigate={navigateToArtistScreen}
+        />
+      </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
-    padding: (Platform.OS === 'web') ? '1%' : '1.75%',
+    width: "100%",
+    padding: Platform.OS === "web" ? "1%" : "1.75%",
   },
 });

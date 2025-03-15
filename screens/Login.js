@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useNavigation, useNavigationContainerRef } from "@react-navigation/native";
 import axios from "axios";
-import { API_URL } from "../config";
+import { API_URL } from "../API_URL";
 import Icon from "react-native-vector-icons/FontAwesome"; // Import your preferred icon set
 import { handleLogin } from "../utils/handleLogin.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
