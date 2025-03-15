@@ -9,7 +9,7 @@ import {
   Image,
   ImageBackground, // Import ImageBackground component
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useNavigationContainerRef } from "@react-navigation/native";
 import axios from "axios";
 import { API_URL } from "../API_URL";
 import Icon from "react-native-vector-icons/FontAwesome"; // Import your preferred icon set
@@ -17,10 +17,20 @@ import { handleLogin } from "../utils/handleLogin.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../state/AuthProvider";
 import SignUp from "./SignUp";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import { makeRedirectUri } from "expo-auth-session";
+import { showToast } from "../utils/toastNotification";
+import * as AuthSession from "expo-auth-session";
+import Constants, { ExecutionEnvironment } from "expo-constants";
+
 
 const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
 const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image
 const backgroundImage = require("../assets/backgrounds/paint_background.png"); // Adjust the path to your background image
+
+// Initialize WebBrowser
+WebBrowser.maybeCompleteAuthSession();
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -28,24 +38,89 @@ const Login = () => {
   const { login, userData } = useAuth();
   const navigation = useNavigation();
   const [error, setError] = useState("");
+  const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
+  const navigationRef = useNavigationContainerRef();
 
-  // only navigate when userData turns back to null
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
+    webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID,
+    iosClientId: 'hello world',
+    redirectUri: makeRedirectUri(),
+    shouldAutoExchangeCode:
+      Constants.executionEnvironment !== ExecutionEnvironment.StoreClient
+        ? true
+        : undefined,
+  });
+
   useEffect(() => {
-    if(userData){
-      console.log('Log in success. Now going to home screen');
-      navigation.navigate('Home');
+    if (userData && navigationRef.isReady()) {
+      console.log("Log in success. Now going to home screen");
+      navigationRef.reset({
+        index: 0,
+        routes: [{ name: "Home" }],
+      });
     }
   }, [userData]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(''); // Clear previous errors
+  useEffect(() => {
+    if (response?.type === "success") {
+      console.log("Google response:", response);
+      const { authentication } = response;
+      handleGoogleLogin(authentication.idToken);
+    }
+  }, [response]);
 
-    const result = await handleLogin(email, password, login);
-    if (!result.success) {
-      setError("Invalid email or password");
+  const handleGoogleLogin = async (idToken) => {
+    try {
+      const apiResponse = await axios.post(`${API_URL}/google-login`, {
+        token: idToken,
+      });
+      await login(apiResponse?.data?.user);
+    } catch (error) {
+      console.error("Google login error:", error);
+      setError("Failed to login with Google");
+      showToast("Login Error");
     }
   };
+
+  const signInWithGoogle = async () => {
+    console.log(request);
+    try {
+      setError(""); // Clear previous errors
+      await promptAsync();
+    } catch (error) {
+      console.error("Google Sign-In Error:", error);
+      setError("Failed to start Google Sign-In");
+      showToast("Sign-In Error");
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(""); // Clear previous errors
+  
+    const result = await handleLogin(email, password, login);
+  
+    if (!result.success) {
+      setError("Invalid email or password");
+      return;
+    }
+  
+    // Force update the auth state
+    const storedUser = await AsyncStorage.getItem("userData");
+    if (storedUser) {
+      login(JSON.parse(storedUser)); // Ensure `login` updates state
+    }
+  
+    // Small delay to ensure `userData` updates before navigation
+    setTimeout(() => {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Home" }],
+      });
+    }, 500); // Adjust delay if needed
+  };
+  
 
   const navigateTo = (screenName) => {
     navigation.navigate(screenName);
@@ -118,6 +193,21 @@ const Login = () => {
               <Pressable onPress={handleSubmit} style={styles.button}>
                 <Text style={styles.buttonText}>Log in</Text>
               </Pressable>
+
+              <Pressable
+                disabled={!request}
+                onPress={signInWithGoogle}
+                style={[styles.button, styles.googleButton]}
+              >
+                <Icon
+                  name="google"
+                  size={20}
+                  color="white"
+                  style={styles.googleIcon}
+                />
+                <Text style={styles.buttonText}>Sign in with Google</Text>
+              </Pressable>
+
               <Pressable
                 onPress={() => navigateTo("SignUp")}
                 style={[styles.button, styles.buttonOutline]}
@@ -237,5 +327,15 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontSize: 15,
     textAlign: "center",
+  },
+  googleButton: {
+    backgroundColor: "#DB4437",
+    marginTop: 10,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  googleIcon: {
+    marginRight: 10,
   },
 });
