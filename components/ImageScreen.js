@@ -211,8 +211,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
+    paddingHorizontal: 3.5,
+    paddingVertical: 5,
     backgroundColor: "#FFF",
   },
 
@@ -224,7 +224,6 @@ const styles = StyleSheet.create({
   profilePicture: {
     width: 40,
     height: 40,
-    marginLeft: 10,
   },
 
   artistName: {
@@ -232,11 +231,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontFamily: "Calibri",
     textTransform: "uppercase",
+    marginBottom: -10,
   },
 
   likeViewCountContainer: {
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: -10,
   },
 
   count: {
@@ -270,7 +271,7 @@ const styles = StyleSheet.create({
   },
 
   fullImage: {
-    width: "100%",
+    width: "98.5%",
     height: height * 0.5, // 50% of the screen height for responsiveness
     resizeMode: "cover",
   },
