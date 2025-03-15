@@ -7,6 +7,7 @@ import {
     Platform,
 } from "react-native";
 
+
 export default function FeaturedArtistsContent({ artists = [], navigate }) { // Default to an empty array
     const maxLen = 10;
 
@@ -69,22 +70,22 @@ const styles = StyleSheet.create({
     scrollView: {
         flex: 1,
         flexDirection: "row",
-        paddingHorizontal: '0.75%',
+        paddingHorizontal: "0.75%",
     },
     artistContainer: {
-        flexDirection: 'column',
-        textAlign: 'left',
-        justifyContent: 'flex-end',
-        width: (Platform.OS === 'web') ? 200 : 95,
-        marginRight: (Platform.OS === 'web') ? 20 : 2.5,
+        flexDirection: "column",
+        textAlign: "left",
+        justifyContent: "flex-end",
+        width: Platform.OS === "web" ? 200 : 95,
+        marginRight: Platform.OS === "web" ? 20 : 2.5,
     },
     image: {
-        width: '100%',
-        height: '67.5%',
-        marginBottom: '5%',
+        width: "100%",
+        height: "67.5%",
+        marginBottom: "5%",
         borderRadius: 0,
-        resizeMode: 'cover',
-        borderColor: 'black',
+        resizeMode: "cover",
+        borderColor: "black",
         borderWidth: 1,
     },
     artistName: {

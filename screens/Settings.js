@@ -3,7 +3,7 @@ import { View, StyleSheet, FlatList, TouchableOpacity, Text, Image } from 'react
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
-import { API_URL } from '../config';
+import { API_URL } from '../API_URL';
 import { useAuth } from "../state/AuthProvider";
 import ScreenTemplate from './Template/ScreenTemplate';
 

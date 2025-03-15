@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import NavBar from '../components/Navbar';
-import { API_URL } from '../config';
+import { API_URL } from '../API_URL';
 import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { handleLogin } from '../utils/handleLogin';

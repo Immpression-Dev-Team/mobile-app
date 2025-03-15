@@ -9,8 +9,6 @@ import {
 } from "react-native";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import axios from "axios";
-import { API_URL } from '../config';
 import Icon from "react-native-vector-icons/FontAwesome"; 
 
 function PasswordReset() {
