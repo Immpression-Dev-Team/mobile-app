@@ -12,7 +12,7 @@ import React, { useEffect, useState } from 'react';
 import NavBar from '../components/Navbar';
 import { API_URL } from '../API_URL';
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { handleLogin } from '../utils/handleLogin';
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import your preferred icon set
 import { showToast } from '../utils/toastNotification';
@@ -23,12 +23,14 @@ const headerImage = require('../assets/headers/Immpression_multi.png'); // Adjus
 const backgroundImage = require('../assets/backgrounds/babyBlue.png'); // Adjust the path to your background image
 
 const SignUp = () => {
-  const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [passwordLengthError, setPasswordLengthError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [ellipsis, setEllipsis] = useState('');
+
+  const route = useRoute();
+  const { email } = route.params; // Get the email passed from request otp screen
 
   const [error, setError] = useState('');
 
@@ -40,7 +42,7 @@ const SignUp = () => {
   useEffect(() => {
     if (isLoading) {
       const intervalId = setInterval(() => {
-        setEllipsis((prev) => (prev.length < 3 ? prev + '.' : ''));
+        setEllipsis((prev) => (prev.length < 3 ? `${prev}.` : ''));
       }, 500); // Adjust the speed as desired
 
       return () => clearInterval(intervalId); // Clear interval on unmount or stop loading
@@ -143,7 +145,7 @@ const SignUp = () => {
                   <TextInput
                     placeholder="Email"
                     value={email}
-                    onChangeText={(text) => setEmail(text)}
+                    // onChangeText={(text) => setEmail(text)}
                     style={styles.input}
                   />
                 </View>

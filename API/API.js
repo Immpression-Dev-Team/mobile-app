@@ -1,6 +1,53 @@
 import axios from 'axios';
 import { API_URL } from '../API_URL';
 
+async function requestOtp(email) {
+  try {
+    const response = await axios.post(
+      `${API_URL}/request-otp`,
+      { email },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      'Error requesting OTP',
+      error?.response || error?.message || error
+    );
+    return error;
+  }
+}
+
+async function verifyOtp(email, code) {
+  try {
+    const response = await axios.post(
+      `${API_URL}/verify-otp`,
+      {
+        email,
+        otp: code,
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error(
+      'Error verifying code',
+      error?.response || error?.message || error
+    );
+    return error;
+  }
+}
+
 // Function to update the user's bio
 async function updateBio(bio, token) {
   // Removed userId parameter from the function
@@ -519,14 +566,14 @@ async function updateImageStage(imageId, stage, token) {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
 
     return response.data;
   } catch (error) {
-    console.error("Error updating image stage:", error);
+    console.error('Error updating image stage:', error);
     return error.response?.data || error;
   }
 }
@@ -540,18 +587,21 @@ async function fetchUserProfilePicture(userId, token) {
       },
     });
 
-    console.log("Profile picture response:", response.data);
+    console.log('Profile picture response:', response.data);
 
     return response.data.profilePictureLink || null;
   } catch (error) {
-    console.error("Error fetching user profile picture:", error.response?.data || error);
+    console.error(
+      'Error fetching user profile picture:',
+      error.response?.data || error
+    );
     return null; // Return null if there's an error
   }
 }
 
-
-
 export {
+  requestOtp,
+  verifyOtp,
   getAllImages,
   uploadImage,
   uploadProfilePicture,

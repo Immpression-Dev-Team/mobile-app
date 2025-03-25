@@ -19,6 +19,8 @@ import DeleteAccount from '../screens/DeleteAccount';
 import AccountDetails from '../screens/AccountDetails';
 import EditAccountFieldScreen from '../screens/EditAccountField';
 import EditProfile from '../screens/EditProfile';
+import RequestOtp from '../screens/RequestOtp';
+import VerifyOtp from '../screens/VerifyOtp';
 
 export const UserNavigation = [
   {
@@ -104,13 +106,21 @@ export const UserNavigation = [
   {
     name: 'EditProfile',
     component: EditProfile,
-  }
+  },
 ];
 
 export const GuestNavigation = [
   {
     name: 'Login',
     component: Login,
+  },
+  {
+    name: 'RequestOtp',
+    component: RequestOtp,
+  },
+  {
+    name: 'VerifyOtp',
+    component: VerifyOtp,
   },
   {
     name: 'SignUp',
