@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { API_URL } from '../API_URL';
 
-async function requestOtp(email) {
+async function requestOtp(email, password) {
   try {
     const response = await axios.post(
       `${API_URL}/request-otp`,
-      { email },
+      { email, password },
       {
         headers: {
           'Content-Type': 'application/json',

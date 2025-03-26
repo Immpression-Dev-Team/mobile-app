@@ -24,13 +24,11 @@ const backgroundImage = require('../assets/backgrounds/babyBlue.png'); // Adjust
 
 const SignUp = () => {
   const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
-  const [passwordLengthError, setPasswordLengthError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [ellipsis, setEllipsis] = useState('');
 
   const route = useRoute();
-  const { email } = route.params; // Get the email passed from request otp screen
+  const { email, password } = route.params; // Get the email passed from request otp screen
 
   const [error, setError] = useState('');
 
@@ -67,19 +65,16 @@ const SignUp = () => {
       setError('Please enter a valid email address.');
       return;
     }
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters long.');
-      return;
-    }
 
     setIsLoading(true);
     try {
       const response = await axios.post(`${API_URL}/signup`, {
         name,
         email,
-        password,
       });
 
+      console.log('this is signup response', response.data);
+      console.log('this is the password we have', password, route.params);
       if (response.data.success) {
         const result = await handleLogin(email, password, login);
 
@@ -98,7 +93,6 @@ const SignUp = () => {
       setIsLoading(false);
     }
   };
-  console.log(passwordLengthError);
 
   const handleBack = () => {
     navigation.navigate('Login');
@@ -118,9 +112,37 @@ const SignUp = () => {
                 <Image source={headerImage} style={styles.headerImage} />
               </View>
             </View>
+
             {/* <Text style={styles.title}>Sign Up to Impression</Text> */}
             <View style={styles.contentContainer}>
               <View style={styles.inputContainer}>
+                <Text
+                  style={{
+                    color: '#1E90FF',
+                    textAlign: 'center',
+                    marginTop: 45,
+                    marginBottom: 12,
+                    fontWeight: 'bold',
+                    letterSpacing: 0.3,
+                  }}
+                >
+                  Almost there! Choose a username.
+                </Text>
+                <View style={styles.inputWrapper}>
+                  <Icon
+                    name="envelope"
+                    size={14}
+                    color="#000"
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    placeholder="Email"
+                    value={email}
+                    // onChangeText={(text) => setEmail(text)}
+                    disabled
+                    style={styles.input}
+                  />
+                </View>
                 <View style={styles.inputWrapper}>
                   <Icon
                     name="user"
@@ -135,47 +157,11 @@ const SignUp = () => {
                     style={styles.input}
                   />
                 </View>
-                <View style={styles.inputWrapper}>
-                  <Icon
-                    name="envelope"
-                    size={14}
-                    color="#000"
-                    style={styles.inputIcon}
-                  />
-                  <TextInput
-                    placeholder="Email"
-                    value={email}
-                    // onChangeText={(text) => setEmail(text)}
-                    style={styles.input}
-                  />
-                </View>
-                <View style={styles.inputWrapper}>
-                  <Icon
-                    name="lock"
-                    size={20}
-                    marginLeft={1}
-                    color="#000"
-                    style={styles.inputIcon}
-                  />
-                  <TextInput
-                    placeholder="Password"
-                    value={password}
-                    onChangeText={(text) => setPassword(text)}
-                    style={styles.input}
-                    secureTextEntry
-                  />
-                </View>
               </View>
             </View>
             <Text style={{ color: 'red', textAlign: 'center' }}>
-              {passwordLengthError
-                ? 'Password must be at least 6 characters'
-                : ''}
-            </Text>
-            <Text style={{ color: 'red', textAlign: 'center' }}>
               {error ? error : ''}
             </Text>
-            {/* <TextInput placeholder="Confirm Password" value={confirmPassword} onChangeText={text => setConfirmPassword(text)} style={styles.input} secureTextEntry /> */}
           </View>
           <Pressable
             onPress={handleSubmit}

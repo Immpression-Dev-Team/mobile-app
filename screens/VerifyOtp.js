@@ -23,7 +23,9 @@ const VerifyOtp = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const route = useRoute();
-  const { email } = route.params; // Get the email passed from request otp screen
+  console.log('Route Params:', route.params);
+
+  const { email, password } = route.params; // Get the email passed from request otp screen
 
   const navigation = useNavigation();
 
@@ -49,7 +51,7 @@ const VerifyOtp = () => {
         throw new Error('Invalid OTP. Please try again.');
       }
 
-      navigation.navigate('SignUp', { email });
+      navigation.navigate('SignUp', { email, password });
     } catch (error) {
       setError(error.message || 'An unexpected error occurred');
     } finally {

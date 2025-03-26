@@ -19,6 +19,7 @@ const backgroundImage = require('../assets/backgrounds/paint_background.png');
 
 const RequestOtp = () => {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -35,7 +36,7 @@ const RequestOtp = () => {
 
     try {
       setIsLoading(true);
-      const result = await requestOtp(email);
+      const result = await requestOtp(email, password);
 
       if (!result?.success) {
         throw new Error(
@@ -43,12 +44,16 @@ const RequestOtp = () => {
         );
       }
 
-      navigation.navigate('VerifyOtp', { email });
+      navigation.navigate('VerifyOtp', { email, password });
     } catch (error) {
       setError(error.message || 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const navigateTo = (screenName) => {
+    navigation.navigate(screenName);
   };
 
   return (
@@ -62,17 +67,6 @@ const RequestOtp = () => {
             <Image source={headerImage} style={styles.headerImage} />
           </View>
         </View>
-
-        <Text
-          style={{
-            color: 'blue',
-            fontWeight: 700,
-            textAlign: 'center',
-            marginTop: 10,
-          }}
-        >
-          Request OTP
-        </Text>
 
         <View style={styles.contentContainer}>
           <KeyboardAvoidingView
@@ -95,6 +89,23 @@ const RequestOtp = () => {
                 />
               </View>
 
+              <View style={styles.inputWrapper}>
+                <Icon
+                  name="key"
+                  size={20}
+                  marginLeft={1}
+                  color="#000"
+                  style={styles.inputIcon}
+                />
+                <TextInput
+                  placeholder="Password"
+                  value={password}
+                  onChangeText={(text) => setPassword(text)}
+                  style={styles.input}
+                  secureTextEntry
+                />
+              </View>
+
               <Text
                 style={{
                   color: 'red',
@@ -109,6 +120,13 @@ const RequestOtp = () => {
             <View style={styles.buttonContainer}>
               <Pressable onPress={handleSubmit} style={styles.button}>
                 <Text style={styles.buttonText}>Get Verification Code</Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => navigateTo('SignUp')}
+                style={[styles.button, styles.buttonOutline]}
+              >
+                <Text style={styles.buttonOutlineText}>Log in?</Text>
               </Pressable>
             </View>
           </KeyboardAvoidingView>
