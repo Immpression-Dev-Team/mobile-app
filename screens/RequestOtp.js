@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,120 +7,49 @@ import {
   TextInput,
   Pressable,
   Image,
-  ImageBackground, // Import ImageBackground component
+  ImageBackground,
 } from 'react-native';
-import {
-  useNavigation,
-  useNavigationContainerRef,
-} from '@react-navigation/native';
-import axios from 'axios';
-import { API_URL } from '../API_URL';
-import Icon from 'react-native-vector-icons/FontAwesome'; // Import your preferred icon set
-import { handleLogin } from '../utils/handleLogin.js';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useAuth } from '../state/AuthProvider';
-import SignUp from './SignUp';
-import * as WebBrowser from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
-import { makeRedirectUri } from 'expo-auth-session';
-import { showToast } from '../utils/toastNotification';
-import * as AuthSession from 'expo-auth-session';
-import Constants, { ExecutionEnvironment } from 'expo-constants';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { requestOtp } from '../API/API';
+import { useNavigation } from '@react-navigation/native';
 
-const logoImage = require('../assets/Logo_T.png'); // Adjust the path to your logo image
-const headerImage = require('../assets/headers/Immpression_multi.png'); // Adjust the path to your header image
-const backgroundImage = require('../assets/backgrounds/paint_background.png'); // Adjust the path to your background image
+const logoImage = require('../assets/Logo_T.png');
+const headerImage = require('../assets/headers/Immpression_multi.png');
+const backgroundImage = require('../assets/backgrounds/paint_background.png');
 
-// Initialize WebBrowser
-WebBrowser.maybeCompleteAuthSession();
-
-const Login = () => {
+const RequestOtp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login, userData } = useAuth();
-  const navigation = useNavigation();
   const [error, setError] = useState('');
-  const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
-  const navigationRef = useNavigationContainerRef();
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    androidClientId: process.env.EXPO_PUBLIC_ANDROID_CLIENT_ID,
-    webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID,
-    iosClientId: 'hello world',
-    redirectUri: makeRedirectUri(),
-    shouldAutoExchangeCode:
-      Constants.executionEnvironment !== ExecutionEnvironment.StoreClient
-        ? true
-        : undefined,
-  });
-
-  useEffect(() => {
-    if (userData && navigationRef.isReady()) {
-      console.log('Log in success. Now going to home screen');
-      navigationRef.reset({
-        index: 0,
-        routes: [{ name: 'Home' }],
-      });
-    }
-  }, [userData]);
-
-  useEffect(() => {
-    if (response?.type === 'success') {
-      console.log('Google response:', response);
-      const { authentication } = response;
-      handleGoogleLogin(authentication.idToken);
-    }
-  }, [response]);
-
-  const handleGoogleLogin = async (idToken) => {
-    try {
-      const apiResponse = await axios.post(`${API_URL}/google-login`, {
-        token: idToken,
-      });
-      await login(apiResponse?.data?.user);
-    } catch (error) {
-      console.error('Google login error:', error);
-      setError('Failed to login with Google');
-      showToast('Login Error');
-    }
-  };
-
-  const signInWithGoogle = async () => {
-    console.log(request);
-    try {
-      setError(''); // Clear previous errors
-      await promptAsync();
-    } catch (error) {
-      console.error('Google Sign-In Error:', error);
-      setError('Failed to start Google Sign-In');
-      showToast('Sign-In Error');
-    }
-  };
+  const navigation = useNavigation();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
+    setError('');
 
-    const result = await handleLogin(email, password, login);
-
-    if (!result.success) {
-      setError('Invalid email or password');
+    if (!email.trim()) {
+      setError('Please enter your email address');
       return;
     }
 
-    // Force update the auth state
-    const storedUser = await AsyncStorage.getItem('userData');
-    if (storedUser) {
-      login(JSON.parse(storedUser)); // Ensure `login` updates state
-    }
+    try {
+      setIsLoading(true);
+      const result = await requestOtp(email, password);
 
-    // Small delay to ensure `userData` updates before navigation
-    setTimeout(() => {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Home' }],
-      });
-    }, 500); // Adjust delay if needed
+      if (!result?.success) {
+        throw new Error(
+          'Failed to send email verification code. Try again later'
+        );
+      }
+
+      navigation.navigate('VerifyOtp', { email, password });
+    } catch (error) {
+      setError(error.message || 'An unexpected error occurred');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const navigateTo = (screenName) => {
@@ -138,6 +67,7 @@ const Login = () => {
             <Image source={headerImage} style={styles.headerImage} />
           </View>
         </View>
+
         <View style={styles.contentContainer}>
           <KeyboardAvoidingView
             style={styles.keyboardAvoidingContainer}
@@ -152,15 +82,16 @@ const Login = () => {
                   style={styles.inputIcon}
                 />
                 <TextInput
-                  placeholder="Email"
+                  placeholder="Input your email"
                   value={email}
                   onChangeText={(text) => setEmail(text)}
                   style={styles.input}
                 />
               </View>
+
               <View style={styles.inputWrapper}>
                 <Icon
-                  name="lock"
+                  name="key"
                   size={20}
                   marginLeft={1}
                   color="#000"
@@ -174,6 +105,7 @@ const Login = () => {
                   secureTextEntry
                 />
               </View>
+
               <Text
                 style={{
                   color: 'red',
@@ -183,37 +115,18 @@ const Login = () => {
               >
                 {error && error}
               </Text>
-              <Text
-                onPress={() => navigateTo('PasswordReset')}
-                style={styles.forgotPasswordText}
-              >
-                Forgot Password?
-              </Text>
             </View>
+
             <View style={styles.buttonContainer}>
               <Pressable onPress={handleSubmit} style={styles.button}>
-                <Text style={styles.buttonText}>Log in</Text>
+                <Text style={styles.buttonText}>Get Verification Code</Text>
               </Pressable>
 
               <Pressable
-                disabled={!request}
-                onPress={signInWithGoogle}
-                style={[styles.button, styles.googleButton]}
-              >
-                <Icon
-                  name="google"
-                  size={20}
-                  color="white"
-                  style={styles.googleIcon}
-                />
-                <Text style={styles.buttonText}>Sign in with Google</Text>
-              </Pressable>
-
-              <Pressable
-                onPress={() => navigateTo('RequestOtp')}
+                onPress={() => navigateTo('SignUp')}
                 style={[styles.button, styles.buttonOutline]}
               >
-                <Text style={styles.buttonOutlineText}>Sign Up</Text>
+                <Text style={styles.buttonOutlineText}>Log in?</Text>
               </Pressable>
             </View>
           </KeyboardAvoidingView>
@@ -223,7 +136,7 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default RequestOtp;
 
 const styles = StyleSheet.create({
   backgroundImage: {
@@ -304,7 +217,7 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 50, // Adjust this value to bring buttons higher up
+    marginTop: 20,
   },
   button: {
     backgroundColor: 'blue',
@@ -312,6 +225,7 @@ const styles = StyleSheet.create({
     padding: 11,
     borderRadius: 20,
     marginTop: 10,
+    minHeight: 50,
   },
   buttonText: {
     textAlign: 'center',
