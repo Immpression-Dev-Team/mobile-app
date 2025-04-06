@@ -8,24 +8,28 @@ import {
   StyleSheet,
   Alert,
   FlatList,
+  Switch,
+  Platform,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useAuth } from "../state/AuthProvider";
 import { uploadImage } from "../API/API";
-import { Platform } from "react-native";
 import LoadingSection from "../components/home_sections/SectionTemplate/LoadingSection";
 import ScreenTemplate from "./Template/ScreenTemplate";
 
 const Upload = () => {
-  const { userData } = useAuth(); // Retrieve userData from AuthProvider, including token
-  // console.log(`id: ${userData?.user?.user?._id}`);  // Log user ID to verify
+  const { userData } = useAuth();
 
   const [image, setImage] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [height, setHeight] = useState("");
+  const [width, setWidth] = useState("");
+  const [isSigned, setIsSigned] = useState(false);
+  const [isFramed, setIsFramed] = useState(false);
   const [category, setCategory] = useState("");
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([
@@ -40,22 +44,19 @@ const Upload = () => {
   ]);
   const [isLoading, setIsLoading] = useState(false);
 
-  /*
-    clear form after uploaded image successfully
-  */
   const resetForm = () => {
     setImage(null);
     setTitle("");
     setDescription("");
     setPrice("");
     setCategory("");
+    setHeight("");
+    setWidth("");
+    setIsSigned(false);
+    setIsFramed(false);
   };
 
-  /*
-    show error modal on screen when encounter any errors
-  */
   const displayError = (message) => {
-    console.log(`Error: ${message}`);
     if (Platform.OS === "web") {
       alert(message);
     } else {
@@ -63,59 +64,52 @@ const Upload = () => {
     }
   };
 
-  /*
-    validate each field & return error msg if sth is invalidate
-  */
   const validateFields = () => {
-    const price_val = parseFloat(price);
+    const priceVal = parseFloat(price);
+    const heightVal = parseFloat(height);
+    const widthVal = parseFloat(width);
     const fieldCheck = [
+      { condition: !image, message: "Please select an image" },
       {
-        condition: !image,
-        message: "Please select an image",
-      },
-      {
-        condition: !title || !description || !price,
+        condition: !title || !description || !price || !height || !width,
         message: "Please fill in all fields",
       },
       {
-        condition: isNaN(price_val) || !isFinite(price_val),
+        condition: isNaN(priceVal) || priceVal <= 0,
         message: "Please enter a valid number for price",
+      },
+      {
+        condition: isNaN(heightVal) || isNaN(widthVal),
+        message: "Please enter valid dimensions for height and width",
       },
       {
         condition: !category,
         message: "Please select a category",
       },
       {
-        condition: description.length > 30,
-        message: "Description cannot be longer than 30 characters",
+        condition: description.length > 1000,
+        message: "Description cannot be longer than 1000 characters",
       },
     ];
 
     for (const { condition, message } of fieldCheck) {
-      if (condition) {
-        return message;
-      }
+      if (condition) return message;
     }
     return null;
   };
 
-  /*
-    prepare form data to upload on cloud 
-  */
   const prepareFormData = async () => {
     const data = new FormData();
 
     if (Platform.OS === "web") {
-      // Web-specific logic: Convert base64 to Blob for web uploads
       const base64String = image.uri.split(",")[1];
       const imageBlob = base64ToBlob(base64String, "image/jpeg");
       data.append("file", imageBlob, "upload_image.jpg");
     } else {
-      // Mobile-specific logic: Directly append image URI
       data.append("file", {
-        uri: image.uri, // Use the URI directly for mobile
-        name: title, // Filename (Cloudinary expects a filename)
-        type: "image/jpeg", // Adjust based on the image format (e.g., 'image/png' if PNG)
+        uri: image.uri,
+        name: title,
+        type: "image/jpeg",
       });
     }
 
@@ -130,9 +124,6 @@ const Upload = () => {
     return data;
   };
 
-  /*
-    upload img to cloud & return url
-  */
   const uploadImageToCloud = async (data) => {
     const response = await fetch(
       "https://api.cloudinary.com/v1_1/dttomxwev/image/upload",
@@ -144,9 +135,6 @@ const Upload = () => {
     return response.json();
   };
 
-  /*
-    handler when user select img
-  */
   const selectImage = async () => {
     let result = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (result.granted === false) {
@@ -162,8 +150,6 @@ const Upload = () => {
       base64: false,
     });
 
-    console.log("Picker Result:", pickerResult);
-
     if (!pickerResult.canceled) {
       const selectedImage = pickerResult.assets[0];
       const resizedImage = await ImageManipulator.manipulateAsync(
@@ -175,9 +161,6 @@ const Upload = () => {
     }
   };
 
-  /*
-    handler when user upload img
-    */
   const handleUpload = async () => {
     const errorMsg = validateFields();
     if (errorMsg) {
@@ -186,35 +169,36 @@ const Upload = () => {
     }
 
     setIsLoading(true);
-    console.log("triggering loading state");
 
     try {
-      console.log("inside try block, preparing form data");
       const data = await prepareFormData();
-
-      console.log("Form data prepared, uploading to Cloudinary...");
       const result = await uploadImageToCloud(data);
       if (!result.secure_url) {
         displayError(result.error.message || "Image upload failed");
         return;
       }
 
-      const userId = userData.user.user._id,
-        userName = userData.user.user.name,
-        token = userData.token;
+      const userId = userData.user.user._id;
+      const userName = userData.user.user.name;
+      const token = userData.token;
 
       const imageData = {
-        userId: userId,
+        userId,
         artistName: userName,
         name: title,
         imageLink: result.secure_url,
-        price: price,
-        description: description,
-        category: category,
-        stage: "review", // <-- Mark newly uploaded images as "review"
+        price: parseFloat(price),
+        description,
+        category,
+        stage: "review",
+        dimensions: {
+          height: parseFloat(height),
+          width: parseFloat(width),
+        },
+        isSigned,
+        isFramed,
       };
 
-      console.log("Upload successful, processing response...");
       const response = await uploadImage(imageData, token);
       if (response.success) {
         resetForm();
@@ -227,10 +211,8 @@ const Upload = () => {
       displayError("An error occurred while uploading the image");
     } finally {
       setIsLoading(false);
-      console.log("upload complete, turn off loading animation");
     }
   };
-
 
   const renderContent = () => (
     <View style={styles.container}>
@@ -252,6 +234,7 @@ const Upload = () => {
           </TouchableOpacity>
         </View>
       </View>
+
       <TextInput
         style={styles.input}
         placeholder="Title"
@@ -271,6 +254,31 @@ const Upload = () => {
         onChangeText={setPrice}
         keyboardType="numeric"
       />
+      <TextInput
+        style={styles.input}
+        placeholder="Height (in)"
+        value={height}
+        onChangeText={setHeight}
+        keyboardType="numeric"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Width (in)"
+        value={width}
+        onChangeText={setWidth}
+        keyboardType="numeric"
+      />
+
+      <View style={styles.switchContainer}>
+        <Text>Signed:</Text>
+        <Switch value={isSigned} onValueChange={setIsSigned} />
+      </View>
+
+      <View style={styles.switchContainer}>
+        <Text>Framed:</Text>
+        <Switch value={isFramed} onValueChange={setIsFramed} />
+      </View>
+
       <DropDownPicker
         open={open}
         value={category}
@@ -281,10 +289,9 @@ const Upload = () => {
         placeholder="Category"
         style={styles.dropdown}
         listMode="SCROLLVIEW"
-        dropDownContainerStyle={{
-          maxHeight: 150,
-        }}
+        dropDownContainerStyle={{ maxHeight: 150 }}
       />
+
       <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
         <Text style={styles.uploadButtonText}>Upload</Text>
       </TouchableOpacity>
@@ -294,7 +301,7 @@ const Upload = () => {
   return (
     <ScreenTemplate>
       <FlatList
-        data={[{}]} // Use a FlatList with a single element to render the form
+        data={[{}]}
         renderItem={renderContent}
         keyExtractor={(item, index) => index.toString()}
         contentContainerStyle={styles.scrollContainer}
@@ -307,6 +314,7 @@ const Upload = () => {
     </ScreenTemplate>
   );
 };
+
 const styles = StyleSheet.create({
   scrollContainer: {
     paddingBottom: 50,
@@ -348,7 +356,6 @@ const styles = StyleSheet.create({
     width: "50%",
     height: 250,
     resizeMode: "stretch",
-    marginRight: 0,
     backgroundColor: "white",
   },
   input: {
@@ -366,8 +373,6 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     marginVertical: 4,
     backgroundColor: "white",
-    borderStyle: "solid",
-    borderWeight: "2",
   },
   uploadButton: {
     height: 40,
@@ -392,16 +397,16 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, .7)",
     zIndex: 10,
   },
-  LoadingGif: {
-    width: 100,
-    height: 100,
-    resizeMode: "contain",
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 4,
+    justifyContent: "space-between",
   },
 });
 
 export default Upload;
 
-// Helper function to convert base64 to Blob
 const base64ToBlob = (base64Data, contentType = "image/jpeg") => {
   const byteCharacters = atob(base64Data);
   const byteArrays = [];
