@@ -1,54 +1,86 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import ProfilePic from '../components/profile_sections/ProfilePic';
 import ProfileName from '../components/profile_sections/ProfileName';
-import ProfileGallery from '../components/profile_sections/ProfileGallery';
 import ProfileViews from '../components/profile_sections/ProfileViews';
-import ProfileLikes from '../components/profile_sections/ProfileLikes'; // Import ProfileLikes
+import ProfileLikes from '../components/profile_sections/ProfileLikes';
 import ProfileBio from '../components/profile_sections/ProfileBio';
 import ProfileArtistType from '../components/profile_sections/ProfileArtistType';
-import { getUserProfile } from '../API/API';
+import {
+  getUserProfile,
+  getUserImages,
+  getAllImages,
+  fetchLikedImages,
+} from '../API/API';
 import { useAuth } from '../state/AuthProvider';
 import { useNavigation } from '@react-navigation/native';
-
 import ScreenTemplate from './Template/ScreenTemplate';
+import FolderPreview from '../components/FolderPreview';
 
 const Profile = () => {
   const navigation = useNavigation();
   const { userData } = useAuth();
   const token = userData?.token;
+  const userId = userData?.id;
+
   const [profileName, setProfileName] = useState('');
-  const profilePicSource = require('../assets/arrow.jpeg'); 
   const [viewsCount, setViewsCount] = useState(0);
-  const [likesCount, setLikesCount] = useState(0); // New state for likes
+  const [likesCount, setLikesCount] = useState(0);
+
+  const [sellingImages, setSellingImages] = useState([]);
+  const [likedImages, setLikedImages] = useState([]);
+  const [soldImages, setSoldImages] = useState([]);
+  const [boughtImages, setBoughtImages] = useState([]);
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      if (token) {
-        try {
-          const data = await getUserProfile(token);
-          if (data?.user) {
-            setProfileName(data.user.name || '');
-            setViewsCount(data.user.views || 0);
-            setLikesCount(data.user.likes || 0); // Fetch likes count
-          } else {
-            console.error('Error: user data is undefined in fetchProfileData');
-          }
-        } catch (error) {
-          console.error('Error fetching profile data:', error);
-        }
+      if (!token) return;
+
+      try {
+        const profile = await getUserProfile(token);
+        setProfileName(profile?.user?.name || '');
+        setViewsCount(profile?.user?.views || 0);
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+      }
+    };
+
+    const fetchImageData = async () => {
+      if (!token || !userId) return;
+    
+      try {
+        const userImgs = await getUserImages(token);
+    
+        setSellingImages(userImgs?.images?.filter((img) => img.stage === 'approved') || []);
+        setSoldImages(userImgs?.images?.filter((img) => img.stage === 'sold') || []);
+    
+        const likedImgsRes = await fetchLikedImages(token);
+        setLikedImages(likedImgsRes?.images || []);
+        
+    
+        setBoughtImages([]); // placeholder
+      } catch (err) {
+        console.error('Error loading images:', err);
       }
     };
 
     fetchProfileData();
+    fetchImageData();
   }, [token]);
+
+  const profilePicSource = require('../assets/arrow.jpeg');
 
   return (
     <ScreenTemplate>
       <ScrollView contentContainerStyle={styles.container}>
-        {/* Edit Profile Button */}
-        <TouchableOpacity 
-          style={styles.editProfileButton} 
+        <TouchableOpacity
+          style={styles.editProfileButton}
           onPress={() => navigation.navigate('EditProfile')}
         >
           <Text style={styles.editProfileText}>Edit Profile</Text>
@@ -60,11 +92,8 @@ const Profile = () => {
             <ProfileArtistType />
           </View>
 
-          <TouchableOpacity onPress={() => {}}>
-            <ProfilePic source={profilePicSource} />
-          </TouchableOpacity>
+          <ProfilePic source={profilePicSource} />
 
-          {/* Views and Likes Row */}
           <View style={styles.viewsLikesContainer}>
             <ProfileViews views={viewsCount} />
             <ProfileLikes likes={likesCount} />
@@ -75,8 +104,32 @@ const Profile = () => {
           </View>
         </View>
 
-        <View style={styles.galleryContainer}>
-          <ProfileGallery />
+        {/* Folder UI */}
+        <View style={styles.folderGrid}>
+          <FolderPreview
+            title="Favorited"
+            count={likedImages.length}
+            images={likedImages.map((img) => img.imageLink)}
+            onPress={() => navigation.navigate('GalleryView', { type: 'liked' })}
+          />
+          <FolderPreview
+            title="Gallery / Selling"
+            count={sellingImages.length}
+            images={sellingImages.map((img) => img.imageLink)}
+            onPress={() => navigation.navigate('GalleryView', { type: 'selling' })}
+          />
+          <FolderPreview
+            title="Sold"
+            count={soldImages.length}
+            images={soldImages.map((img) => img.imageLink)}
+            onPress={() => navigation.navigate('GalleryView', { type: 'sold' })}
+          />
+          <FolderPreview
+            title="Bought"
+            count={boughtImages.length}
+            images={boughtImages.map((img) => img.imageLink)}
+            onPress={() => navigation.navigate('GalleryView', { type: 'bought' })}
+          />
         </View>
       </ScrollView>
     </ScreenTemplate>
@@ -84,6 +137,9 @@ const Profile = () => {
 };
 
 const styles = StyleSheet.create({
+  container: {
+    paddingBottom: 100,
+  },
   editProfileButton: {
     position: 'absolute',
     top: 10,
@@ -92,6 +148,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 15,
     borderRadius: 5,
+    zIndex: 10,
   },
   editProfileText: {
     color: 'white',
@@ -117,11 +174,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: 20,
   },
-  galleryContainer: {
-    marginTop: 20,
+  folderGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
+    justifyContent: 'space-around',
+    marginTop: 20,
   },
 });
 

@@ -22,6 +22,7 @@ import EditProfile from '../screens/EditProfile';
 import RequestOtp from '../screens/RequestOtp';
 import VerifyOtp from '../screens/VerifyOtp';
 import SellGuide from '../screens/SellGuide';
+import GalleryView from '../components/GalleryView';
 
 export const UserNavigation = [
   {
@@ -111,6 +112,10 @@ export const UserNavigation = [
   {
     name: 'SellGuide',
     component: SellGuide,
+  },
+  {
+    name: 'GalleryView',
+    component: GalleryView,
   },
   
 ];
