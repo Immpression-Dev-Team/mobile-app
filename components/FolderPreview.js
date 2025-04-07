@@ -1,7 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
-const FolderPreview = ({ title, count, images = [], onPress }) => {
+const FolderPreview = ({ title, images = [], onPress }) => {
+  const count = images.length;
+
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={styles.imageStack}>

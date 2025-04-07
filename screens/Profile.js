@@ -1,23 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import ProfilePic from '../components/profile_sections/ProfilePic';
 import ProfileName from '../components/profile_sections/ProfileName';
 import ProfileViews from '../components/profile_sections/ProfileViews';
 import ProfileLikes from '../components/profile_sections/ProfileLikes';
 import ProfileBio from '../components/profile_sections/ProfileBio';
 import ProfileArtistType from '../components/profile_sections/ProfileArtistType';
-import {
-  getUserProfile,
-  getUserImages,
-  getAllImages,
-  fetchLikedImages,
-} from '../API/API';
+import { getUserProfile, getUserImages, fetchLikedImages } from '../API/API';
 import { useAuth } from '../state/AuthProvider';
 import { useNavigation } from '@react-navigation/native';
 import ScreenTemplate from './Template/ScreenTemplate';
@@ -53,18 +42,21 @@ const Profile = () => {
 
     const fetchImageData = async () => {
       if (!token || !userId) return;
-    
+
       try {
         const userImgs = await getUserImages(token);
-    
-        setSellingImages(userImgs?.images?.filter((img) => img.stage === 'approved') || []);
-        setSoldImages(userImgs?.images?.filter((img) => img.stage === 'sold') || []);
-    
+
+        setSellingImages(
+          userImgs?.images?.filter((img) => img.stage === 'approved') || []
+        );
+        setSoldImages(
+          userImgs?.images?.filter((img) => img.stage === 'sold') || []
+        );
+
         const likedImgsRes = await fetchLikedImages(token);
         setLikedImages(likedImgsRes?.images || []);
-        
-    
-        setBoughtImages([]); // placeholder
+
+        setBoughtImages([]);
       } catch (err) {
         console.error('Error loading images:', err);
       }
@@ -72,13 +64,13 @@ const Profile = () => {
 
     fetchProfileData();
     fetchImageData();
-  }, [token]);
+  }, [token, userId]);
 
   const profilePicSource = require('../assets/arrow.jpeg');
 
   return (
     <ScreenTemplate>
-      <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.container}>
         <TouchableOpacity
           style={styles.editProfileButton}
           onPress={() => navigation.navigate('EditProfile')}
@@ -104,56 +96,61 @@ const Profile = () => {
           </View>
         </View>
 
-        {/* Folder UI */}
         <View style={styles.folderGrid}>
-          <FolderPreview
-            title="Favorited"
-            count={likedImages.length}
-            images={likedImages.map((img) => img.imageLink)}
-            onPress={() => navigation.navigate('GalleryView', { type: 'liked' })}
-          />
-          <FolderPreview
-            title="Gallery / Selling"
-            count={sellingImages.length}
-            images={sellingImages.map((img) => img.imageLink)}
-            onPress={() => navigation.navigate('GalleryView', { type: 'selling' })}
-          />
-          <FolderPreview
-            title="Sold"
-            count={soldImages.length}
-            images={soldImages.map((img) => img.imageLink)}
-            onPress={() => navigation.navigate('GalleryView', { type: 'sold' })}
-          />
-          <FolderPreview
-            title="Bought"
-            count={boughtImages.length}
-            images={boughtImages.map((img) => img.imageLink)}
-            onPress={() => navigation.navigate('GalleryView', { type: 'bought' })}
-          />
+          <View style={styles.row}>
+            <FolderPreview
+              title="Favorited"
+              images={likedImages.map((img) => img.imageLink)}
+              onPress={() => navigation.navigate('GalleryView', { type: 'liked' })}
+            />
+            <FolderPreview
+              title="Gallery / Selling"
+              images={sellingImages.map((img) => img.imageLink)}
+              onPress={() => navigation.navigate('GalleryView', { type: 'selling' })}
+            />
+          </View>
+
+          <View style={styles.row}>
+            <FolderPreview
+              title="Sold"
+              images={soldImages.map((img) => img.imageLink)}
+              onPress={() => navigation.navigate('GalleryView', { type: 'sold' })}
+            />
+            <FolderPreview
+              title="Bought"
+              images={boughtImages.map((img) => img.imageLink)}
+              onPress={() => navigation.navigate('GalleryView', { type: 'bought' })}
+            />
+          </View>
         </View>
-      </ScrollView>
+      </View>
     </ScreenTemplate>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 100,
+    flex: 1,
+    paddingBottom: 20,
   },
   editProfileButton: {
     position: 'absolute',
     top: 10,
-    left: 10,
-    backgroundColor: '#007BFF',
-    paddingVertical: 6,
-    paddingHorizontal: 15,
-    borderRadius: 5,
+    left: 20,
+    backgroundColor: '#FF6B6B',
+    paddingVertical: 3,
+    paddingHorizontal: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.3,
+    shadowRadius: 1,
+    elevation: 5,
     zIndex: 10,
   },
   editProfileText: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: 'bold',
+    color: '#FFFFFF',
+    fontSize: 11,
+    fontWeight: '600',
   },
   profileContainer: {
     alignItems: 'center',
@@ -175,10 +172,15 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   folderGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
     marginTop: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginVertical: 10,
   },
 });
 

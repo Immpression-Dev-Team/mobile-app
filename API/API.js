@@ -608,12 +608,16 @@ async function fetchLikedImages(token) {
       },
     });
 
-    return response.data; // should contain { success: true, images: [...] }
+    return {
+      success: response.data.success,
+      images: response.data.images || [],
+    };
   } catch (err) {
     console.error('Error fetching liked images:', err.response?.data || err);
     return { success: false, images: [] };
   }
 }
+
 
 export {
   requestOtp,
