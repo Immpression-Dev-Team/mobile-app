@@ -22,10 +22,15 @@ const FooterNavbar = () => {
       imgText: null,
     },
     {
-      navLink: 'Upload',
+      navLink: 'SellGuide', // was 'Upload'
       imgLink: sellIcon,
       imgText: 'SELL',
     },
+    // {
+    //   navLink: 'Upload',
+    //   imgLink: sellIcon,
+    //   imgText: 'SELL',
+    // },
     {
       navLink: 'Profile',
       imgLink: profileIcon,
