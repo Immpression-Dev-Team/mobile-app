@@ -21,6 +21,7 @@ import EditAccountFieldScreen from '../screens/EditAccountField';
 import EditProfile from '../screens/EditProfile';
 import RequestOtp from '../screens/RequestOtp';
 import VerifyOtp from '../screens/VerifyOtp';
+import SellGuide from '../screens/SellGuide';
 
 export const UserNavigation = [
   {
@@ -107,6 +108,11 @@ export const UserNavigation = [
     name: 'EditProfile',
     component: EditProfile,
   },
+  {
+    name: 'SellGuide',
+    component: SellGuide,
+  },
+  
 ];
 
 export const GuestNavigation = [
