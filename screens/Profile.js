@@ -56,7 +56,7 @@ const Profile = () => {
         const likedImgsRes = await fetchLikedImages(token);
         setLikedImages(likedImgsRes?.images || []);
 
-        setBoughtImages([]);
+        setBoughtImages([]); // Add real logic if needed
       } catch (err) {
         console.error('Error loading images:', err);
       }
@@ -100,25 +100,27 @@ const Profile = () => {
           <View style={styles.row}>
             <FolderPreview
               title="Favorited"
-              images={likedImages.map((img) => img.imageLink)}
+              images={likedImages.map((img) => img.imageLink).filter(Boolean)}
               onPress={() => navigation.navigate('GalleryView', { type: 'liked' })}
             />
+
             <FolderPreview
               title="Gallery / Selling"
-              images={sellingImages.map((img) => img.imageLink)}
+              images={sellingImages.map((img) => img.imageLink).filter(Boolean)}
               onPress={() => navigation.navigate('GalleryView', { type: 'selling' })}
             />
+
           </View>
 
           <View style={styles.row}>
             <FolderPreview
               title="Sold"
-              images={soldImages.map((img) => img.imageLink)}
+              images={soldImages.map((img) => img?.imageLink).filter(Boolean)}
               onPress={() => navigation.navigate('GalleryView', { type: 'sold' })}
             />
             <FolderPreview
               title="Bought"
-              images={boughtImages.map((img) => img.imageLink)}
+              images={boughtImages.map((img) => img?.imageLink).filter(Boolean)}
               onPress={() => navigation.navigate('GalleryView', { type: 'bought' })}
             />
           </View>
