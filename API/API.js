@@ -599,6 +599,26 @@ async function fetchUserProfilePicture(userId, token) {
   }
 }
 
+async function fetchLikedImages(token) {
+  try {
+    const response = await axios.get(`${API_URL}/image/liked-images`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    return {
+      success: response.data.success,
+      images: response.data.images || [],
+    };
+  } catch (err) {
+    console.error('Error fetching liked images:', err.response?.data || err);
+    return { success: false, images: [] };
+  }
+}
+
+
 export {
   requestOtp,
   verifyOtp,
@@ -632,4 +652,5 @@ export {
   toggleLike,
   updateImageStage,
   fetchUserProfilePicture,
+  fetchLikedImages,
 };
