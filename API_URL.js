@@ -11,7 +11,7 @@ const PROD_URL = "https://immpression-backend.vercel.app"
 const API_URL =
     ENV === "prod"
         ? PROD_URL
-        : `http://${IP}:5000`;
+        : `http://${IP}:4000`;
 
 console.log("API URL:", API_URL);
 

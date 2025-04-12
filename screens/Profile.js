@@ -12,6 +12,24 @@ import { useNavigation } from '@react-navigation/native';
 import ScreenTemplate from './Template/ScreenTemplate';
 import FolderPreview from '../components/FolderPreview';
 
+// Assuming this is the API utility to fetch bought images (add to your API file)
+const fetchBoughtImages = async (token) => {
+  try {
+    const response = await fetch('http://your-api-base-url/api/images/bought', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching bought images:', error);
+    throw error;
+  }
+};
+
 const Profile = () => {
   const navigation = useNavigation();
   const { userData } = useAuth();
@@ -33,6 +51,7 @@ const Profile = () => {
 
       try {
         const profile = await getUserProfile(token);
+        console.log('Profile Data:', profile); // Debug log
         setProfileName(profile?.user?.name || '');
         setViewsCount(profile?.user?.views || 0);
       } catch (err) {
@@ -44,21 +63,46 @@ const Profile = () => {
       if (!token || !userId) return;
 
       try {
+        // Fetch user images (for Selling and Sold)
         const userImgs = await getUserImages(token);
+        console.log('User Images:', userImgs); // Debug log
+        const userImages = userImgs?.images || [];
+        const approvedImages = userImages
+          .filter((img) => img.stage === 'approved')
+          .map((img) => img.imageLink)
+          .filter(Boolean);
+        const soldImages = userImages
+          .filter((img) => img.stage === 'sold')
+          .map((img) => img.imageLink)
+          .filter(Boolean);
+        setSellingImages(approvedImages);
+        setSoldImages(soldImages);
+        console.log('Selling Images:', approvedImages);
+        console.log('Sold Images:', soldImages);
 
-        setSellingImages(
-          userImgs?.images?.filter((img) => img.stage === 'approved') || []
-        );
-        setSoldImages(
-          userImgs?.images?.filter((img) => img.stage === 'sold') || []
-        );
-
+        // Fetch liked images (Favorited)
         const likedImgsRes = await fetchLikedImages(token);
-        setLikedImages(likedImgsRes?.images || []);
+        console.log('Liked Images Response:', likedImgsRes); // Debug log
+        const likedImageLinks = (likedImgsRes?.images || [])
+          .map((img) => img.imageLink)
+          .filter(Boolean);
+        setLikedImages(likedImageLinks);
+        console.log('Liked Images:', likedImageLinks);
 
-        setBoughtImages([]); // Add real logic if needed
+        // Fetch bought images (Bought)
+        const boughtImgsRes = await fetchBoughtImages(token);
+        console.log('Bought Images Response:', boughtImgsRes); // Debug log
+        const boughtImageLinks = (boughtImgsRes?.images || [])
+          .map((img) => img.imageLink)
+          .filter(Boolean);
+        setBoughtImages(boughtImageLinks);
+        console.log('Bought Images:', boughtImageLinks);
       } catch (err) {
         console.error('Error loading images:', err);
+        setSellingImages([]);
+        setSoldImages([]);
+        setLikedImages([]);
+        setBoughtImages([]);
       }
     };
 
@@ -100,27 +144,24 @@ const Profile = () => {
           <View style={styles.row}>
             <FolderPreview
               title="Favorited"
-              images={likedImages.map((img) => img.imageLink).filter(Boolean)}
+              images={likedImages}
               onPress={() => navigation.navigate('GalleryView', { type: 'liked' })}
             />
-
             <FolderPreview
               title="Gallery / Selling"
-              images={sellingImages.map((img) => img.imageLink).filter(Boolean)}
+              images={sellingImages}
               onPress={() => navigation.navigate('GalleryView', { type: 'selling' })}
             />
-
           </View>
-
           <View style={styles.row}>
             <FolderPreview
               title="Sold"
-              images={soldImages.map((img) => img?.imageLink).filter(Boolean)}
+              images={soldImages}
               onPress={() => navigation.navigate('GalleryView', { type: 'sold' })}
             />
             <FolderPreview
               title="Bought"
-              images={boughtImages.map((img) => img?.imageLink).filter(Boolean)}
+              images={boughtImages}
               onPress={() => navigation.navigate('GalleryView', { type: 'bought' })}
             />
           </View>
