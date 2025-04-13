@@ -2,26 +2,33 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 const FolderPreview = ({ title, images = [], onPress }) => {
+  console.log(`FolderPreview - ${title}:`, images); // Debug log
   const count = images.length;
 
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={styles.previewBox}>
-        <View style={styles.imageStack}>
-          {images.slice(0, 3).map((img, index) => (
-            <Image
-              key={index}
-              source={{ uri: img }}
-              style={[
-                styles.image,
-                {
-                  left: index * 20, // slight offset
-                  zIndex: 3 - index,
-                },
-              ]}
-            />
-          ))}
-        </View>
+        {count > 0 ? (
+          <View style={styles.imageStack}>
+            {images.slice(0, 3).map((img, index) => (
+              <Image
+                key={index}
+                source={{ uri: img }}
+                style={[
+                  styles.image,
+                  {
+                    left: index * 20, // slight offset
+                    zIndex: 3 - index,
+                  },
+                ]}
+              />
+            ))}
+          </View>
+        ) : (
+          <View style={styles.placeholder}>
+            <Text style={styles.placeholderText}>No Images</Text>
+          </View>
+        )}
         <Text style={styles.countOverlay}>{count}</Text>
       </View>
       <Text style={styles.label}>{title}</Text>

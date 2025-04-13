@@ -61,11 +61,11 @@ const Profile = () => {
 
     const fetchImageData = async () => {
       if (!token || !userId) return;
-
+    
       try {
         // Fetch user images (for Selling and Sold)
         const userImgs = await getUserImages(token);
-        console.log('User Images:', userImgs); // Debug log
+        console.log('Raw User Images Response:', userImgs);
         const userImages = userImgs?.images || [];
         const approvedImages = userImages
           .filter((img) => img.stage === 'approved')
@@ -77,26 +77,26 @@ const Profile = () => {
           .filter(Boolean);
         setSellingImages(approvedImages);
         setSoldImages(soldImages);
-        console.log('Selling Images:', approvedImages);
-        console.log('Sold Images:', soldImages);
-
+        console.log('Processed Selling Images:', approvedImages);
+        console.log('Processed Sold Images:', soldImages);
+    
         // Fetch liked images (Favorited)
         const likedImgsRes = await fetchLikedImages(token);
-        console.log('Liked Images Response:', likedImgsRes); // Debug log
+        console.log('Raw Liked Images Response:', likedImgsRes);
         const likedImageLinks = (likedImgsRes?.images || [])
           .map((img) => img.imageLink)
           .filter(Boolean);
         setLikedImages(likedImageLinks);
-        console.log('Liked Images:', likedImageLinks);
-
+        console.log('Processed Liked Images:', likedImageLinks);
+    
         // Fetch bought images (Bought)
         const boughtImgsRes = await fetchBoughtImages(token);
-        console.log('Bought Images Response:', boughtImgsRes); // Debug log
+        console.log('Raw Bought Images Response:', boughtImgsRes);
         const boughtImageLinks = (boughtImgsRes?.images || [])
           .map((img) => img.imageLink)
           .filter(Boolean);
         setBoughtImages(boughtImageLinks);
-        console.log('Bought Images:', boughtImageLinks);
+        console.log('Processed Bought Images:', boughtImageLinks);
       } catch (err) {
         console.error('Error loading images:', err);
         setSellingImages([]);
