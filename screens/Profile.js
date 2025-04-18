@@ -16,7 +16,7 @@ const Profile = () => {
   const navigation = useNavigation();
   const { userData } = useAuth();
   const token = userData?.token;
-  const userId = userData?.id;
+  const userId = userData?._id;
 
   const [profileName, setProfileName] = useState('');
   const [viewsCount, setViewsCount] = useState(0);
@@ -29,20 +29,22 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      if (!token) return;
-
+      if (!token) return console.warn("no token was found");
       try {
         const profile = await getUserProfile(token);
         setProfileName(profile?.user?.name || '');
         setViewsCount(profile?.user?.views || 0);
+    
+        // Fetch liked images to get likes count
+        const likedImgsRes = await fetchLikedImages(token);
+        setLikesCount(likedImgsRes?.images?.length || 0); // Set likesCount based on the number of liked images
       } catch (err) {
         console.error('Error fetching profile:', err);
       }
     };
 
     const fetchImageData = async () => {
-      if (!token || !userId) return;
-
+      if (!token) return console.warn("neither userId nor token were found")
       try {
         const userImgs = await getUserImages(token);
 
