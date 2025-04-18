@@ -7,21 +7,27 @@ const FolderPreview = ({ title, images = [], onPress }) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <View style={styles.previewBox}>
-        <View style={styles.imageStack}>
-          {images.slice(0, 3).map((img, index) => (
-            <Image
-              key={index}
-              source={{ uri: img }}
-              style={[
-                styles.image,
-                {
-                  left: index * 20, // slight offset
-                  zIndex: 3 - index,
-                },
-              ]}
-            />
-          ))}
-        </View>
+        {count > 0 ? (
+          <View style={styles.imageStack}>
+            {images.slice(0, 3).map((img, index) => (
+              <Image
+                key={index}
+                source={{ uri: img }}
+                style={[
+                  styles.image,
+                  {
+                    left: index * 20,
+                    zIndex: 3 - index,
+                  },
+                ]}
+              />
+            ))}
+          </View>
+        ) : (
+          <View style={styles.emptyPlaceholder}>
+            <Text style={styles.emptyText}>No images</Text>
+          </View>
+        )}
         <Text style={styles.countOverlay}>{count}</Text>
       </View>
       <Text style={styles.label}>{title}</Text>
@@ -52,6 +58,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#fff',
     position: 'absolute',
+  },
+  emptyPlaceholder: {
+    width: 50,
+    height: 50,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    position: 'absolute',
+  },
+  emptyText: {
+    fontSize: 12,
+    color: '#666',
   },
   countOverlay: {
     position: 'absolute',
