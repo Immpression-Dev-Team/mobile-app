@@ -114,7 +114,7 @@ const Profile = () => {
 
           </View>
 
-          <View style={styles.row}>
+          {/* <View style={styles.row}>
             <FolderPreview
               title="Sold"
               images={soldImages.map((img) => img?.imageLink).filter(Boolean)}
@@ -125,7 +125,7 @@ const Profile = () => {
               images={boughtImages.map((img) => img?.imageLink).filter(Boolean)}
               onPress={() => navigation.navigate('GalleryView', { type: 'bought' })}
             />
-          </View>
+          </View> */}
         </View>
       </View>
     </ScreenTemplate>

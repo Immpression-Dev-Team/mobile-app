@@ -1,5 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
+
+const { width } = Dimensions.get('window');
+const IMAGE_SIZE = width * 0.28;
+const PREVIEW_BOX_WIDTH = width * 0.4;
+const PREVIEW_BOX_HEIGHT = IMAGE_SIZE + 10;
 
 const FolderPreview = ({ title, images = [], onPress }) => {
   const count = images.length;
@@ -16,7 +21,7 @@ const FolderPreview = ({ title, images = [], onPress }) => {
                 style={[
                   styles.image,
                   {
-                    left: index * 20,
+                    left: index * (IMAGE_SIZE * 0.35),
                     zIndex: 3 - index,
                   },
                 ]}
@@ -25,7 +30,7 @@ const FolderPreview = ({ title, images = [], onPress }) => {
           </View>
         ) : (
           <View style={styles.emptyPlaceholder}>
-            <Text style={styles.emptyText}>No images</Text>
+            <Text style={styles.emptyText}>No Art</Text>
           </View>
         )}
         <Text style={styles.countOverlay}>{count}</Text>
@@ -37,38 +42,40 @@ const FolderPreview = ({ title, images = [], onPress }) => {
 
 const styles = StyleSheet.create({
   container: {
-    width: '45%',
-    margin: 10,
+    width: '48%',
+    marginVertical: 12,
     alignItems: 'center',
   },
   previewBox: {
-    width: 100,
-    height: 70,
+    width: PREVIEW_BOX_WIDTH,
+    height: PREVIEW_BOX_HEIGHT,
     position: 'relative',
-    marginBottom: 8,
+    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   imageStack: {
     flexDirection: 'row',
+    alignItems: 'center',
     position: 'absolute',
+    height: '100%',
   },
   image: {
-    width: 50,
-    height: 50,
-    borderRadius: 6,
+    width: IMAGE_SIZE,
+    height: IMAGE_SIZE,
+    borderRadius: 3,
     borderWidth: 1,
     borderColor: '#fff',
-    position: 'absolute',
   },
   emptyPlaceholder: {
-    width: 50,
-    height: 50,
-    borderRadius: 6,
+    width: IMAGE_SIZE,
+    height: IMAGE_SIZE,
+    borderRadius: 3,
     borderWidth: 1,
     borderColor: '#ccc',
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f0f0f0',
-    position: 'absolute',
   },
   emptyText: {
     fontSize: 12,
@@ -76,21 +83,22 @@ const styles = StyleSheet.create({
   },
   countOverlay: {
     position: 'absolute',
-    right: -10,
-    bottom: -5,
+    bottom: -2,
+    right: 13,
     backgroundColor: '#333',
     color: 'white',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 10,
+    paddingHorizontal: 7,
+    paddingVertical: 3,
+    borderRadius: 12,
     fontSize: 12,
     fontWeight: '600',
     overflow: 'hidden',
+    zIndex: 99,
   },
   label: {
     textAlign: 'center',
     fontWeight: '600',
-    fontSize: 13,
+    fontSize: 14,
   },
 });
 
