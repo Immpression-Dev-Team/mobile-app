@@ -6,7 +6,13 @@ import ProfileViews from '../components/profile_sections/ProfileViews';
 import ProfileLikes from '../components/profile_sections/ProfileLikes';
 import ProfileBio from '../components/profile_sections/ProfileBio';
 import ProfileArtistType from '../components/profile_sections/ProfileArtistType';
-import { getUserProfile, getUserImages, fetchLikedImages } from '../API/API';
+import {
+  getUserProfile,
+  getUserImages,
+  fetchLikedImages,
+  getBio,
+  getArtistType,
+} from '../API/API';
 import { useAuth } from '../state/AuthProvider';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import ScreenTemplate from './Template/ScreenTemplate';
@@ -42,6 +48,13 @@ const Profile = () => {
           const profile = await getUserProfile(token);
           setProfileName(profile?.user?.name || '');
           setViewsCount(profile?.user?.views || 0);
+
+          const [bioRes, artistRes] = await Promise.all([
+            getBio(token),
+            getArtistType(token),
+          ]);
+          if (bioRes?.bio) setBio(bioRes.bio);
+          if (artistRes?.artistType) setArtistType(artistRes.artistType);
         } else {
           const res = await axios.get(`${API_URL}/profile/${userId}`);
           const user = res.data.user;
