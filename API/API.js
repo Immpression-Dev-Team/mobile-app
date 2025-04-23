@@ -618,6 +618,17 @@ async function fetchLikedImages(token) {
   }
 }
 
+// Get another user's profile by ID
+async function getUserProfileById(userId) {
+  try {
+    const response = await axios.get(`${API_URL}/profile/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching profile by ID:', error);
+    return null;
+  }
+}
+
 
 export {
   requestOtp,
@@ -653,4 +664,5 @@ export {
   updateImageStage,
   fetchUserProfilePicture,
   fetchLikedImages,
+  getUserProfileById,
 };

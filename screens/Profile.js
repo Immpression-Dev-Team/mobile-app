@@ -8,19 +8,27 @@ import ProfileBio from '../components/profile_sections/ProfileBio';
 import ProfileArtistType from '../components/profile_sections/ProfileArtistType';
 import { getUserProfile, getUserImages, fetchLikedImages } from '../API/API';
 import { useAuth } from '../state/AuthProvider';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import ScreenTemplate from './Template/ScreenTemplate';
 import FolderPreview from '../components/FolderPreview';
+import axios from 'axios';
+import { API_URL } from '../API_URL';
 
 const Profile = () => {
   const navigation = useNavigation();
+  const route = useRoute();
   const { userData } = useAuth();
   const token = userData?.token;
-  const userId = userData?._id;
+  const currentUserId = userData?._id;
+  const isOwnProfile = !route.params?.userId || route.params?.userId === currentUserId;
+  const userId = route.params?.userId || currentUserId;
 
   const [profileName, setProfileName] = useState('');
   const [viewsCount, setViewsCount] = useState(0);
   const [likesCount, setLikesCount] = useState(0);
+  const [bio, setBio] = useState('');
+  const [artistType, setArtistType] = useState('');
+  const [profilePicture, setProfilePicture] = useState(null);
 
   const [sellingImages, setSellingImages] = useState([]);
   const [likedImages, setLikedImages] = useState([]);
@@ -29,22 +37,27 @@ const Profile = () => {
 
   useEffect(() => {
     const fetchProfileData = async () => {
-      if (!token) return console.warn("no token was found");
       try {
-        const profile = await getUserProfile(token);
-        setProfileName(profile?.user?.name || '');
-        setViewsCount(profile?.user?.views || 0);
-    
-        // Fetch liked images to get likes count
-        const likedImgsRes = await fetchLikedImages(token);
-        setLikesCount(likedImgsRes?.images?.length || 0); // Set likesCount based on the number of liked images
+        if (isOwnProfile) {
+          const profile = await getUserProfile(token);
+          setProfileName(profile?.user?.name || '');
+          setViewsCount(profile?.user?.views || 0);
+        } else {
+          const res = await axios.get(`${API_URL}/profile/${userId}`);
+          const user = res.data.user;
+          setProfileName(user?.name || '');
+          setViewsCount(user?.views || 0);
+          setBio(user?.bio || '');
+          setArtistType(user?.artistType || '');
+          setProfilePicture(user?.profilePictureLink || null);
+        }
       } catch (err) {
         console.error('Error fetching profile:', err);
       }
     };
 
     const fetchImageData = async () => {
-      if (!token) return console.warn("neither userId nor token were found")
+      if (!isOwnProfile || !token) return;
       try {
         const userImgs = await getUserImages(token);
 
@@ -68,65 +81,58 @@ const Profile = () => {
     fetchImageData();
   }, [token, userId]);
 
-  const profilePicSource = require('../assets/arrow.jpeg');
-
   return (
     <ScreenTemplate>
       <View style={styles.container}>
-        <TouchableOpacity
-          style={styles.editProfileButton}
-          onPress={() => navigation.navigate('EditProfile')}
-        >
-          <Text style={styles.editProfileText}>Edit Profile</Text>
-        </TouchableOpacity>
+        {isOwnProfile && (
+          <TouchableOpacity
+            style={styles.editProfileButton}
+            onPress={() => navigation.navigate('EditProfile')}
+          >
+            <Text style={styles.editProfileText}>Edit Profile</Text>
+          </TouchableOpacity>
+        )}
 
         <View style={styles.profileContainer}>
           <View style={styles.nameArtistContainer}>
             <ProfileName name={profileName} />
-            <ProfileArtistType />
+            <ProfileArtistType artistType={artistType} />
           </View>
 
-          <ProfilePic source={profilePicSource} />
+          <ProfilePic
+            source={!isOwnProfile && profilePicture ? { uri: profilePicture } : null}
+            name={profileName}
+          />
 
           <View style={styles.viewsLikesContainer}>
             <ProfileViews views={viewsCount} />
-            <ProfileLikes likes={likesCount} />
+            {isOwnProfile && <ProfileLikes likes={likesCount} />}
           </View>
 
           <View style={styles.bioContainer}>
-            <ProfileBio />
+            <ProfileBio bio={bio} />
           </View>
         </View>
 
-        <View style={styles.folderGrid}>
-          <View style={styles.row}>
-            <FolderPreview
-              title="Favorited"
-              images={likedImages.map((img) => img.imageLink).filter(Boolean)}
-              onPress={() => navigation.navigate('GalleryView', { type: 'liked' })}
-            />
+        <View style={styles.separator} />
 
-            <FolderPreview
-              title="Gallery / Selling"
-              images={sellingImages.map((img) => img.imageLink).filter(Boolean)}
-              onPress={() => navigation.navigate('GalleryView', { type: 'selling' })}
-            />
+        {isOwnProfile && (
+          <View style={styles.folderGrid}>
+            <View style={styles.row}>
+              <FolderPreview
+                title="Favorited"
+                images={likedImages.map((img) => img.imageLink).filter(Boolean)}
+                onPress={() => navigation.navigate('GalleryView', { type: 'liked' })}
+              />
 
+              <FolderPreview
+                title="Gallery / Selling"
+                images={sellingImages.map((img) => img.imageLink).filter(Boolean)}
+                onPress={() => navigation.navigate('GalleryView', { type: 'selling' })}
+              />
+            </View>
           </View>
-
-          {/* <View style={styles.row}>
-            <FolderPreview
-              title="Sold"
-              images={soldImages.map((img) => img?.imageLink).filter(Boolean)}
-              onPress={() => navigation.navigate('GalleryView', { type: 'sold' })}
-            />
-            <FolderPreview
-              title="Bought"
-              images={boughtImages.map((img) => img?.imageLink).filter(Boolean)}
-              onPress={() => navigation.navigate('GalleryView', { type: 'bought' })}
-            />
-          </View> */}
-        </View>
+        )}
       </View>
     </ScreenTemplate>
   );
@@ -174,6 +180,13 @@ const styles = StyleSheet.create({
     width: '90%',
     alignItems: 'center',
     marginVertical: 20,
+  },
+  separator: {
+    width: '90%',
+    height: 1,
+    backgroundColor: '#ccc',
+    alignSelf: 'center',
+    marginVertical: 10,
   },
   folderGrid: {
     marginTop: 20,

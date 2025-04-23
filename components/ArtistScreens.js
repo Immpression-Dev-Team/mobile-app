@@ -1,21 +1,21 @@
 import React, { useRef } from 'react';
-import { View, Text, StyleSheet, Image, FlatList, Dimensions, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList, Dimensions, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { incrementViews } from '../API/API'; // Import the incrementViews function
+import { incrementViews } from '../API/API';
 import { useAuth } from '../state/AuthProvider';
 import ScreenTemplate from '../screens/Template/ScreenTemplate';
+
 const { width } = Dimensions.get('window');
 
 const ArtistScreen = ({ route }) => {
   const navigation = useNavigation();
   const { artist, profilePic, type, galleryImages = [], initialIndex } = route.params;
-  const { token } = useAuth();
+  const { userData, token } = useAuth();
   const flatListRef = useRef(null);
 
-  // Function to increment views for the artist at the current index
   const handleViewIncrement = async (index) => {
     const currentArtist = galleryImages[index];
-    if (currentArtist && currentArtist._id) { // Ensure artist has an ID
+    if (currentArtist && currentArtist._id) {
       try {
         await incrementViews(currentArtist._id, token);
         console.log(`Incremented views for artist: ${currentArtist.name}`);
@@ -25,8 +25,22 @@ const ArtistScreen = ({ route }) => {
     }
   };
 
+  const handleViewProfile = (item) => {
+    const isOwnProfile = item._id === userData._id;
+    navigation.navigate('Profile', { userId: item._id, isOwnProfile });
+  };
+
   const renderItem = ({ item }) => (
     <View style={styles.imageContainer}>
+      <TouchableOpacity
+        onPress={() =>
+          navigation.navigate('Profile', { userId: item._id }) // <-- send artist's userId
+        }
+        style={{ position: 'absolute', top: 15, right: 15, padding: 8, backgroundColor: '#fff', borderRadius: 5, zIndex: 10 }}
+      >
+        <Text style={{ fontWeight: 'bold' }}>View Profile</Text>
+      </TouchableOpacity>
+
       <View style={styles.card}>
         <Text style={styles.artistName}>{item.name}</Text>
         <Text style={styles.artistType}>{item.artistType}</Text>
@@ -53,7 +67,7 @@ const ArtistScreen = ({ route }) => {
         }}
         onMomentumScrollEnd={(event) => {
           const index = Math.round(event.nativeEvent.contentOffset.x / width);
-          handleViewIncrement(index); // Increment views for the artist at this index
+          handleViewIncrement(index);
         }}
       />
     </ScreenTemplate>
@@ -104,6 +118,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
     marginTop: -20,
+  },
+  viewProfileButton: {
+    position: 'absolute',
+    top: 20,
+    right: 20,
+    zIndex: 10,
+    backgroundColor: '#FF6B6B',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 6,
+  },
+  viewProfileText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 12,
   },
 });
 
