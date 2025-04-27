@@ -2,7 +2,7 @@ import {HOST_IP} from "@env"
 
 // Change between production and development backend services
 // "dev" for local OR "prod" for remote
-const ENV = "dev";
+const ENV = "prod";
 
 // TODO: ADD IP TO .env file located in mobile-app folder
 const IP = process.env.HOST_IP;
