@@ -10,7 +10,7 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../state/AuthProvider"; 
-import { updateUserProfile } from "../API/API"; // Import the update API function
+import { updateUserProfile } from "../API/API";
 import ScreenTemplate from "./Template/ScreenTemplate"; 
 
 const EditAccountFieldScreen = () => {
@@ -18,10 +18,10 @@ const EditAccountFieldScreen = () => {
   const route = useRoute();
   const { field, value } = route.params;
   const [input, setInput] = useState(value);
-  const { userData, setUserData } = useAuth(); // Get auth state and updater function
+  const [currentPassword, setCurrentPassword] = useState("");
+  const { userData, setUserData, logout } = useAuth();
   const token = userData?.token;
 
-  // Handle profile update
   const handleUpdate = async () => {
     if (!input.trim()) {
       Alert.alert("Error", `${field} cannot be empty.`);
@@ -29,19 +29,41 @@ const EditAccountFieldScreen = () => {
     }
 
     try {
-      const updatedData = { [field.toLowerCase()]: input }; // Create dynamic payload
+      let updatedData;
+      if (field === "Password") {
+        if (!currentPassword.trim()) {
+          Alert.alert("Error", "Current password cannot be empty.");
+          return;
+        }
+        // Validate new password length on the frontend
+        if (input.length < 8) {
+          Alert.alert("Error", "New password must be at least 8 characters long.");
+          return;
+        }
+        if (input.length > 30) {
+          Alert.alert("Error", "New password must be less than 30 characters.");
+          return;
+        }
+        updatedData = { currentPassword, newPassword: input };
+      } else {
+        updatedData = { [field.toLowerCase()]: input };
+      }
+
       const response = await updateUserProfile(updatedData, token);
 
       if (response.success) {
         Alert.alert("Success", `${field} updated successfully.`);
-        
-        // Update the local user state with the new value
-        setUserData((prev) => ({
-          ...prev,
-          [field.toLowerCase()]: input,
-        }));
 
-        navigation.goBack(); // Navigate back to Account Details
+        if (field === "Password") {
+          await logout(); // Clear the token and user data
+          navigation.navigate("Login"); // Redirect to login screen
+        } else {
+          setUserData((prev) => ({
+            ...prev,
+            [field.toLowerCase()]: input,
+          }));
+          navigation.goBack();
+        }
       } else {
         Alert.alert("Error", response.error || "Failed to update profile.");
       }
@@ -53,7 +75,6 @@ const EditAccountFieldScreen = () => {
   return (
     <ScreenTemplate>
       <View style={styles.container}>
-        {/* Header */}
         <View style={styles.headerContainer}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color="#000" />
@@ -64,13 +85,27 @@ const EditAccountFieldScreen = () => {
           </TouchableOpacity>
         </View>
 
-        {/* Input Field */}
-        <Text style={styles.label}>{field}</Text>
+        {field === "Password" && (
+          <>
+            <Text style={styles.label}>Current Password</Text>
+            <TextInput 
+              style={styles.input} 
+              value={currentPassword} 
+              onChangeText={setCurrentPassword} 
+              placeholder="Enter current password" 
+              secureTextEntry
+              autoCapitalize="none"
+            />
+          </>
+        )}
+
+        <Text style={styles.label}>{field === "Password" ? "New Password" : field}</Text>
         <TextInput 
           style={styles.input} 
           value={input} 
           onChangeText={setInput} 
           placeholder={`Enter new ${field.toLowerCase()}`} 
+          secureTextEntry={field === "Password"}
           autoCapitalize="none"
         />
       </View>
@@ -108,6 +143,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#555",
     marginBottom: 5,
+    marginTop: 10,
   },
   input: {
     borderWidth: 1,
