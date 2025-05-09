@@ -23,6 +23,7 @@ const EditAccountFieldScreen = () => {
   const token = userData?.token;
 
   const handleUpdate = async () => {
+    const trimmedInput = input.trim();
     if (!input.trim()) {
       Alert.alert("Error", `${field} cannot be empty.`);
       return;
@@ -31,7 +32,8 @@ const EditAccountFieldScreen = () => {
     try {
       let updatedData;
       if (field === "Password") {
-        if (!currentPassword.trim()) {
+        const trimmedCurrentPassword = currentPassword.trim();
+        if (!trimmedCurrentPassword.trim()) {
           Alert.alert("Error", "Current password cannot be empty.");
           return;
         }
