@@ -26,7 +26,8 @@ const Profile = () => {
   const { userData } = useAuth();
   const token = userData?.token;
   const currentUserId = userData?._id;
-  const isOwnProfile = !route.params?.userId || route.params?.userId === currentUserId;
+  const isOwnProfile =
+    !route.params?.userId || route.params?.userId === currentUserId;
   const userId = route.params?.userId || currentUserId;
 
   const [profileName, setProfileName] = useState('');
@@ -63,6 +64,7 @@ const Profile = () => {
           setBio(user?.bio || '');
           setArtistType(user?.artistType || '');
           setProfilePicture(user?.profilePictureLink || null);
+          setLikesCount(user?.likedImages?.length || 0);
         }
       } catch (err) {
         console.error('Error fetching profile:', err);
@@ -113,7 +115,9 @@ const Profile = () => {
           </View>
 
           <ProfilePic
-            source={!isOwnProfile && profilePicture ? { uri: profilePicture } : null}
+            source={
+              !isOwnProfile && profilePicture ? { uri: profilePicture } : null
+            }
             name={profileName}
           />
 
@@ -135,13 +139,19 @@ const Profile = () => {
               <FolderPreview
                 title="Favorited"
                 images={likedImages.map((img) => img.imageLink).filter(Boolean)}
-                onPress={() => navigation.navigate('GalleryView', { type: 'liked' })}
+                onPress={() =>
+                  navigation.navigate('GalleryView', { type: 'liked' })
+                }
               />
 
               <FolderPreview
                 title="Gallery / Selling"
-                images={sellingImages.map((img) => img.imageLink).filter(Boolean)}
-                onPress={() => navigation.navigate('GalleryView', { type: 'selling' })}
+                images={sellingImages
+                  .map((img) => img.imageLink)
+                  .filter(Boolean)}
+                onPress={() =>
+                  navigation.navigate('GalleryView', { type: 'selling' })
+                }
               />
             </View>
           </View>
