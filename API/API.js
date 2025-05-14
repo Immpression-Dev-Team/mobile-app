@@ -629,6 +629,22 @@ async function getUserProfileById(userId) {
   }
 }
 
+// Add this to your API file (e.g., API.js)
+async function updateUserPassword(passwordData, token) {
+  try {
+    const response = await axios.patch(`${API_URL}/update-password`, passwordData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating password:', error.response?.data || error);
+    return error.response?.data || error;
+  }
+}
+
 
 export {
   requestOtp,
@@ -665,4 +681,5 @@ export {
   fetchUserProfilePicture,
   fetchLikedImages,
   getUserProfileById,
+  updateUserPassword
 };

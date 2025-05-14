@@ -10,7 +10,7 @@ import {
 import { useNavigation, useRoute } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useAuth } from "../state/AuthProvider"; 
-import { updateUserProfile } from "../API/API";
+import { updateUserProfile, updateUserPassword } from "../API/API"; // Import the new function
 import ScreenTemplate from "./Template/ScreenTemplate"; 
 
 const EditAccountFieldScreen = () => {
@@ -31,9 +31,11 @@ const EditAccountFieldScreen = () => {
 
     try {
       let updatedData;
+      let response;
+
       if (field === "Password") {
         const trimmedCurrentPassword = currentPassword.trim();
-        if (!trimmedCurrentPassword.trim()) {
+        if (!trimmedCurrentPassword) {
           Alert.alert("Error", "Current password cannot be empty.");
           return;
         }
@@ -46,19 +48,19 @@ const EditAccountFieldScreen = () => {
           Alert.alert("Error", "New password must be less than 30 characters.");
           return;
         }
-        updatedData = { currentPassword, newPassword: input };
+        updatedData = { currentPassword: trimmedCurrentPassword, newPassword: input };
+        response = await updateUserPassword(updatedData, token); // Use the new function
       } else {
         updatedData = { [field.toLowerCase()]: input };
+        response = await updateUserProfile(updatedData, token);
       }
-
-      const response = await updateUserProfile(updatedData, token);
 
       if (response.success) {
         Alert.alert("Success", `${field} updated successfully.`);
 
         if (field === "Password") {
           await logout(); // Clear the token and user data
-          navigation.navigate("Login"); // Redirect to login screen
+          navigation.navigate("Home"); // Redirect to login screen
         } else {
           setUserData((prev) => ({
             ...prev,
