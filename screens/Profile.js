@@ -1,24 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import ProfilePic from '../components/profile_sections/ProfilePic';
-import ProfileName from '../components/profile_sections/ProfileName';
-import ProfileViews from '../components/profile_sections/ProfileViews';
-import ProfileLikes from '../components/profile_sections/ProfileLikes';
-import ProfileBio from '../components/profile_sections/ProfileBio';
-import ProfileArtistType from '../components/profile_sections/ProfileArtistType';
-import {
-  getUserProfile,
-  getUserImages,
-  fetchLikedImages,
-  getBio,
-  getArtistType,
-} from '../API/API';
-import { useAuth } from '../state/AuthProvider';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import ScreenTemplate from './Template/ScreenTemplate';
-import FolderPreview from '../components/FolderPreview';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+
+import { fetchLikedImages, getUserImages, getUserProfile } from '../API/API';
 import { API_URL } from '../API_URL';
+import FolderPreview from '../components/FolderPreview';
+import ProfileArtistType from '../components/profile_sections/ProfileArtistType';
+import ProfileBio from '../components/profile_sections/ProfileBio';
+import ProfileLikes from '../components/profile_sections/ProfileLikes';
+import ProfileName from '../components/profile_sections/ProfileName';
+import ProfilePic from '../components/profile_sections/ProfilePic';
+import ProfileViews from '../components/profile_sections/ProfileViews';
+import { useAuth } from '../state/AuthProvider';
+import ScreenTemplate from './Template/ScreenTemplate';
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -47,24 +42,29 @@ const Profile = () => {
       try {
         if (isOwnProfile) {
           const profile = await getUserProfile(token);
+          console.log(profile);
+          console.log(profile.artistType);
           setProfileName(profile?.user?.name || '');
+          setBio(profile?.user?.bio || '');
           setViewsCount(profile?.user?.views || 0);
-
-          const [bioRes, artistRes] = await Promise.all([
-            getBio(token),
-            getArtistType(token),
-          ]);
-          if (bioRes?.bio) setBio(bioRes.bio);
-          if (artistRes?.artistType) setArtistType(artistRes.artistType);
+          setArtistType(profile?.user?.artistType);
+          setLikesCount(profile?.user?.totalLikes || 0);
         } else {
           const res = await axios.get(`${API_URL}/profile/${userId}`);
+          console.log(
+            'response',
+            res.data,
+            'DKLAKJFGAHKFOAHOIAHFGAHPIF>>>>>>>+++++++++++'
+          );
           const user = res.data.user;
+          const totalLikes = res.data.totalLikes;
+          console.log(user);
           setProfileName(user?.name || '');
           setViewsCount(user?.views || 0);
           setBio(user?.bio || '');
           setArtistType(user?.artistType || '');
           setProfilePicture(user?.profilePictureLink || null);
-          setLikesCount(user?.likedImages?.length || 0);
+          setLikesCount(totalLikes || 0);
         }
       } catch (err) {
         console.error('Error fetching profile:', err);
@@ -123,7 +123,7 @@ const Profile = () => {
 
           <View style={styles.viewsLikesContainer}>
             <ProfileViews views={viewsCount} />
-            {isOwnProfile && <ProfileLikes likes={likesCount} />}
+            {true && <ProfileLikes likes={likesCount} />}
           </View>
 
           <View style={styles.bioContainer}>

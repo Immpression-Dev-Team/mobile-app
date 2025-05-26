@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Image,
@@ -7,18 +7,18 @@ import {
   FlatList,
   Dimensions,
   TouchableOpacity,
-  ActivityIndicator,
 } from 'react-native';
 import { useAuth } from '../state/AuthProvider';
 import {
-  fetchUserProfilePicture,
-  getImage,
+  toggleLike,
+  fetchLikeData,
   incrementImageViews,
+  fetchUserProfilePicture,
 } from '../API/API';
 import ScreenTemplate from '../screens/Template/ScreenTemplate';
-import { useLike } from '../hooks/useLike';
-import axios from 'axios';
+import PriceSliders from './PriceSliders';
 
+const share = require('../assets/icons/share-button.jpg');
 const like = require('../assets/icons/like-button.jpg');
 const likedIcon = require('../assets/icons/like-button.jpg');
 const likesIcon = require('../assets/icons/likes_icon.png');
@@ -26,107 +26,83 @@ const viewsIcon = require('../assets/icons/views_icon.jpg');
 
 const { width, height } = Dimensions.get('window');
 
-const ImageScreen = async ({ route, navigation }) => {
+const ImageScreen = ({ route, navigation }) => {
   const { images, initialIndex } = route.params;
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const flatListRef = useRef(null);
   const { token } = useAuth();
+  const [likes, setLikes] = useState(0);
+  const [hasLiked, setHasLiked] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
-  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
-  const [profileError, setProfileError] = useState(null);
 
-  const currentImage = images[currentIndex];
+  useEffect(() => {
+    console.log('Current Image Data:', images[currentIndex]);
 
-  console.log('currentimage', JSON.stringify(currentImage, null, 2));
+    if (images[currentIndex]?.userId) {
+      console.log(
+        `Fetching profile picture for userId: ${images[currentIndex].userId}`
+      );
 
-  const {
-    likes,
-    hasLiked,
-    toggleLike: handleToggleLike,
-    isLoading: isLikeLoading,
-    error: likeError,
-  } = useLike(
-    currentImage?.likesCount || 0,
-    currentImage?.hasLiked || false,
-    currentImage?._id,
-    token
-  );
+      fetchUserProfilePicture(images[currentIndex].userId, token)
+        .then((profilePic) => {
+          console.log('Received profile picture link:', profilePic);
+          setProfilePicture(profilePic);
+        })
+        .catch((error) => {
+          console.error('Failed to fetch profile picture:', error);
+        });
+    } else {
+      console.warn('No userId found for the current image.');
+    }
+  }, [currentIndex]);
 
-  // Memoized fetch profile picture function
-  const fetchProfilePicture = useCallback(
-    async (userId) => {
-      if (!userId) return;
+  useEffect(() => {
+    if (images[currentIndex]?._id) {
+      handleFetchLikeData(images[currentIndex]._id);
+      handleViewIncrement(currentIndex);
+    }
+  }, [currentIndex]);
 
-      setIsLoadingProfile(true);
-      setProfileError(null);
+  const handleFetchLikeData = async (imageId) => {
+    if (!imageId) return;
+    try {
+      const data = await fetchLikeData(imageId, token);
+      setLikes(data.likesCount);
+      setHasLiked(data.hasLiked);
+    } catch (error) {
+      console.error('Error fetching like data:', error);
+    }
+  };
+
+  const handleToggleLike = async () => {
+    if (!images[currentIndex]?._id) return;
+    try {
+      const data = await toggleLike(images[currentIndex]._id, token);
+      setLikes(data.likesCount);
+      setHasLiked(data.hasLiked);
+    } catch (error) {
+      console.error('Error liking/unliking image:', error);
+    }
+  };
+
+  const handleViewIncrement = async (index) => {
+    const currentImage = images[index];
+    if (currentImage && currentImage._id) {
       try {
-        const profilePic = await fetchUserProfilePicture(userId, token);
-        setProfilePicture(profilePic);
-      } catch (error) {
-        console.error('Failed to fetch profile picture:', error);
-        setProfileError('Failed to load profile picture');
-      } finally {
-        setIsLoadingProfile(false);
-      }
-    },
-    [token]
-  );
-
-  // Memoized view increment function
-  const handleViewIncrement = useCallback(
-    async (imageId) => {
-      if (!imageId) return;
-      try {
-        await incrementImageViews(imageId, token);
+        console.log(`Incrementing views for image ID: ${currentImage._id}`);
+        await incrementImageViews(currentImage._id, token);
       } catch (error) {
         console.error('Error incrementing image views:', error);
       }
-    },
-    [token]
-  );
-
-  // Effect for handling image changes
-  useEffect(() => {
-    if (!currentImage) return;
-
-    // Fetch profile picture when image changes
-    if (currentImage.userId) {
-      fetchProfilePicture(currentImage.userId);
     }
-
-    // Increment views when image changes
-    handleViewIncrement(currentImage._id);
-  }, [currentIndex, currentImage, fetchProfilePicture, handleViewIncrement]);
-
-  // Handle FlatList scroll
-  const handleScrollEnd = useCallback(
-    (event) => {
-      const index = Math.round(event.nativeEvent.contentOffset.x / width);
-      if (index !== currentIndex) {
-        setCurrentIndex(index);
-      }
-    },
-    [currentIndex]
-  );
-
-  // Render loading state if no current image
-  if (!currentImage) {
-    return (
-      <ScreenTemplate>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" />
-          <Text>Loading image...</Text>
-        </View>
-      </ScreenTemplate>
-    );
-  }
+  };
 
   return (
     <ScreenTemplate>
       <View style={styles.container}>
         {/* Artist Info + Likes/Views */}
         <View style={styles.headerContainer}>
-          {/* Likes & Views Section */}
+          {/* Likes & Views Section - Now on the Left */}
           <View style={styles.likeViewCountContainer}>
             <View style={styles.count}>
               <Image source={likesIcon} style={styles.likesIcon} />
@@ -134,26 +110,27 @@ const ImageScreen = async ({ route, navigation }) => {
             </View>
             <View style={styles.count}>
               <Image source={viewsIcon} style={styles.viewsIcon} />
-              <Text style={styles.viewsCount}>{currentImage?.views || 0}</Text>
+              <Text style={styles.viewsCount}>
+                {images[currentIndex]?.views || 0}
+              </Text>
             </View>
           </View>
 
-          {/* Artist Info */}
+          {/* Artist Info - Now on the Right */}
           <View style={styles.artistContainer}>
             <Text style={styles.artistName}>
               <Text style={styles.boldText}>
-                {currentImage?.artistName || 'Unknown Artist'}
+                {images[currentIndex]?.artistName || 'Unknown Artist'}
               </Text>
             </Text>
-            {isLoadingProfile ? (
-              <ActivityIndicator size="small" style={styles.profileLoading} />
-            ) : profilePicture ? (
+            {profilePicture && (
               <Image
                 source={{ uri: profilePicture }}
-                style={styles.profilePicture}
+                style={[
+                  styles.profilePicture,
+                  { marginLeft: 10, marginRight: 0 },
+                ]}
               />
-            ) : (
-              <View style={styles.profilePlaceholder} />
             )}
           </View>
         </View>
@@ -167,85 +144,80 @@ const ImageScreen = async ({ route, navigation }) => {
               <Image
                 source={{ uri: item.imageLink }}
                 style={styles.fullImage}
-                resizeMode="contain"
               />
             </View>
           )}
           horizontal
           pagingEnabled
-          keyExtractor={(item) => item._id}
+          keyExtractor={(item, index) => index.toString()}
           showsHorizontalScrollIndicator={false}
           initialScrollIndex={initialIndex}
-          getItemLayout={(_, index) => ({
+          getItemLayout={(data, index) => ({
             length: width,
             offset: width * index,
             index,
           })}
-          onMomentumScrollEnd={handleScrollEnd}
+          onMomentumScrollEnd={(event) => {
+            const index = Math.round(event.nativeEvent.contentOffset.x / width);
+            if (index !== currentIndex) {
+              setCurrentIndex(index);
+              handleFetchLikeData(images[index]._id);
+              handleViewIncrement(index);
+            }
+          }}
         />
 
         {/* Description & Like Button */}
         <View style={styles.descriptionButtonContainer}>
           <View style={styles.textContainer}>
             <Text style={styles.artTitle}>
-              {currentImage?.name || 'Untitled'}
+              {images[currentIndex]?.name || 'Untitled'}
             </Text>
 
             <Text style={styles.labelText}>
               CATEGORY:{' '}
               <Text style={styles.boldText}>
-                {currentImage?.category || 'No Category'}
+                {images[currentIndex]?.category || 'No Category'}
               </Text>
             </Text>
             <Text style={styles.labelText}>
               DESCRIPTION:{' '}
               <Text style={styles.boldText}>
-                {currentImage?.description || 'No Description Available'}
+                {images[currentIndex]?.description ||
+                  'No Description Available'}
               </Text>
             </Text>
           </View>
-
           <TouchableOpacity
-            style={[styles.likeButton, hasLiked && styles.likedButton]}
+            style={styles.likeButton}
             onPress={handleToggleLike}
-            disabled={isLikeLoading}
           >
-            {isLikeLoading ? (
-              <ActivityIndicator size="small" color="#FFF" />
-            ) : (
-              <>
-                <Image
-                  source={hasLiked ? likedIcon : like}
-                  style={styles.likeIcon}
-                />
-                <Text style={styles.likeText}>
-                  {hasLiked ? 'UNLIKE' : 'LIKE'}
-                </Text>
-              </>
-            )}
+            <Image
+              source={hasLiked ? likedIcon : like}
+              style={styles.likeIcon}
+            />
+            <Text style={styles.likeText}>{hasLiked ? 'UNLIKE' : 'LIKE'}</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Error Messages */}
-        {likeError && <Text style={styles.errorText}>{likeError}</Text>}
-        {profileError && <Text style={styles.errorText}>{profileError}</Text>}
       </View>
 
-      {/* Price and Buy Now Button */}
       <View style={styles.priceButtonContainer}>
         <View style={styles.priceContainer}>
           <Text style={styles.priceText}>
-            ${currentImage?.price?.toFixed(2) || 'N/A'}
+            $
+            {images[currentIndex]?.price
+              ? images[currentIndex].price.toFixed(2)
+              : 'N/A'}
           </Text>
         </View>
         <TouchableOpacity
           style={styles.buyNowButton}
           onPress={() =>
             navigation.navigate('PaymentScreen', {
-              artName: currentImage?.name,
-              imageLink: currentImage?.imageLink,
-              artistName: currentImage?.artistName,
-              price: currentImage?.price,
+              artName: images[currentIndex]?.name,
+              imageLink: images[currentIndex]?.imageLink,
+              artistName: images[currentIndex]?.artistName,
+              price: images[currentIndex]?.price,
             })
           }
         >
@@ -260,11 +232,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+
   headerContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -273,26 +241,17 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     backgroundColor: '#FFF',
   },
+
   artistContainer: {
     flexDirection: 'row',
     alignItems: 'center',
   },
+
   profilePicture: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    marginLeft: 10,
   },
-  profilePlaceholder: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#e0e0e0',
-    marginLeft: 10,
-  },
-  profileLoading: {
-    marginLeft: 10,
-  },
+
   artistName: {
     color: 'black',
     fontSize: 15,
@@ -300,40 +259,49 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginBottom: -10,
   },
+
   likeViewCountContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: -10,
   },
+
   count: {
     flexDirection: 'row',
     alignItems: 'center',
     marginLeft: 10,
   },
+
   likesIcon: {
     width: 15,
     height: 15,
     marginRight: 2,
   },
+
   viewsIcon: {
     width: 15,
     height: 15,
     marginRight: 2,
   },
+
   viewsCount: {
     color: 'black',
     fontSize: 12,
     fontWeight: 'bold',
   },
+
   imageContainer: {
     width,
     justifyContent: 'center',
     alignItems: 'center',
   },
+
   fullImage: {
     width: '98.5%',
-    height: height * 0.5,
+    height: height * 0.5, // 50% of the screen height for responsiveness
+    resizeMode: 'cover',
   },
+
   descriptionButtonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -344,23 +312,28 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: '#ccc',
   },
+
   textContainer: {
     flex: 1,
   },
+
   artTitle: {
     color: '#333',
     fontSize: 20,
     fontWeight: 'bold',
     textTransform: 'uppercase',
   },
+
   labelText: {
     color: '#000',
     fontSize: 12,
     textTransform: 'uppercase',
   },
+
   boldText: {
     fontWeight: 'bold',
   },
+
   likeButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -369,19 +342,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 5,
   },
-  likedButton: {
-    backgroundColor: '#FF0000',
-  },
+
   likeIcon: {
     width: 15,
     height: 15,
     marginRight: 5,
   },
+
   likeText: {
     color: '#FFF',
     fontSize: 12,
     fontWeight: 'bold',
   },
+
   buyNowButton: {
     backgroundColor: '#007AFF',
     paddingVertical: 8,
@@ -389,40 +362,39 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     borderWidth: 1,
     alignItems: 'center',
-    flex: 1,
+    flex: 1, // Allow button to take remaining space
     elevation: 8,
   },
+
   buyNowButtonText: {
     color: '#FFF',
     fontSize: 20,
     fontWeight: 'bold',
     textTransform: 'uppercase',
   },
+
   priceButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '95%',
+    flexDirection: 'row', // Arrange price and button side by side
+    alignItems: 'center', // Align them vertically
+    justifyContent: 'space-between', // Distribute space
+    width: '95%', // Make it responsive
     alignSelf: 'center',
     marginVertical: 10,
   },
+
   priceContainer: {
-    backgroundColor: '#D3D3D3',
+    backgroundColor: '#D3D3D3', // Light gray background
     paddingVertical: 8,
     paddingHorizontal: 5,
     borderRadius: 0,
     borderWidth: 0,
-    marginRight: 5,
+    marginRight: 5, // Space between price and button
   },
+
   priceText: {
     fontSize: 22,
     fontWeight: 'bold',
     color: '#333',
-  },
-  errorText: {
-    color: 'red',
-    textAlign: 'center',
-    marginVertical: 5,
   },
 });
 

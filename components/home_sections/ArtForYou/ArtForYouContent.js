@@ -46,6 +46,7 @@ export default function ArtForYouContent({
   handleImagePress,
   handleUserActivity,
 }) {
+  console.log(JSON.stringify(imageChunks, null, 2));
   return (
     <View style={styles.imageContainer}>
       <ScrollView
