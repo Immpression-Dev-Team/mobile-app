@@ -46,7 +46,7 @@ const ImageScreen = async ({ route, navigation }) => {
     isLoading: isLikeLoading,
     error: likeError,
   } = useLike(
-    currentImage?.likesCount || 0,
+    currentImage?.likes?.length || 0,
     currentImage?.hasLiked || false,
     currentImage?._id,
     token
