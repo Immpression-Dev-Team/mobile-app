@@ -26,11 +26,11 @@ const viewsIcon = require('../assets/icons/views_icon.jpg');
 
 const { width, height } = Dimensions.get('window');
 
-const ImageScreen = async ({ route, navigation }) => {
+const ImageScreen = ({ route, navigation }) => {
   const { images, initialIndex } = route.params;
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const flatListRef = useRef(null);
-  const { token } = useAuth();
+  const { token, userData } = useAuth();
   const [profilePicture, setProfilePicture] = useState(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [profileError, setProfileError] = useState(null);
@@ -38,6 +38,11 @@ const ImageScreen = async ({ route, navigation }) => {
   const currentImage = images[currentIndex];
 
   console.log('currentimage', JSON.stringify(currentImage, null, 2));
+
+  console.log('user data', JSON.stringify(userData.user.user, null, 2));
+
+  const isPrevLiked = currentImage?.likes?.includes(userData?.user?.user._id);
+  console.log(isPrevLiked);
 
   const {
     likes,
@@ -219,7 +224,7 @@ const ImageScreen = async ({ route, navigation }) => {
                   style={styles.likeIcon}
                 />
                 <Text style={styles.likeText}>
-                  {hasLiked ? 'UNLIKE' : 'LIKE'}
+                  {hasLiked || isPrevLiked ? 'UNLIKE' : 'LIKE'}
                 </Text>
               </>
             )}
