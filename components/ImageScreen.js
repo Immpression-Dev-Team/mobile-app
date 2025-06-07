@@ -39,10 +39,9 @@ const ImageScreen = ({ route, navigation }) => {
 
   console.log('currentimage', JSON.stringify(currentImage, null, 2));
 
-  console.log('user data', JSON.stringify(userData.user.user, null, 2));
-
-  const isPrevLiked = currentImage?.likes?.includes(userData?.user?.user._id);
-  console.log(isPrevLiked);
+  const isInitiallyLiked = currentImage?.likes?.includes(
+    userData?.user?.user._id
+  );
 
   const {
     likes,
@@ -52,7 +51,8 @@ const ImageScreen = ({ route, navigation }) => {
     error: likeError,
   } = useLike(
     currentImage?.likes?.length || 0,
-    currentImage?.hasLiked || false,
+    isInitiallyLiked || false,
+    isInitiallyLiked || false,
     currentImage?._id,
     token
   );
@@ -224,7 +224,7 @@ const ImageScreen = ({ route, navigation }) => {
                   style={styles.likeIcon}
                 />
                 <Text style={styles.likeText}>
-                  {hasLiked || isPrevLiked ? 'UNLIKE' : 'LIKE'}
+                  {hasLiked ? 'UNLIKE' : 'LIKE'}
                 </Text>
               </>
             )}

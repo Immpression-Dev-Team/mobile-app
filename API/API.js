@@ -587,7 +587,7 @@ async function fetchUserProfilePicture(userId, token) {
       },
     });
 
-    console.log('Profile picture response:', response.data);
+    // console.log('Profile picture response:', response.data);
 
     return response.data.profilePictureLink || null;
   } catch (error) {

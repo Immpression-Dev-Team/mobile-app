@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 import { API_URL } from '../API_URL';
 
@@ -8,19 +8,24 @@ export const useLike = (initialLikes, initialHasLiked, imageId, token) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  useEffect(() => {
+    setLikes(initialLikes);
+    setHasLiked(initialHasLiked);
+  }, [imageId, initialLikes, initialHasLiked]);
+
   const toggleLike = useCallback(async () => {
     if (!imageId || !token) return;
 
     setIsLoading(true);
     setError(null);
 
+    const newHasLiked = !hasLiked;
+    const newLikes = newHasLiked ? likes + 1 : likes - 1;
+
+    setHasLiked(newHasLiked);
+    setLikes(newLikes);
+
     try {
-      const newHasLiked = !hasLiked;
-      const newLikes = newHasLiked ? likes + 1 : likes - 1;
-
-      setHasLiked(newHasLiked);
-      setLikes(newLikes);
-
       const response = await axios.post(
         `${API_URL}/image/${imageId}/like`,
         {},
@@ -36,6 +41,9 @@ export const useLike = (initialLikes, initialHasLiked, imageId, token) => {
         setLikes(likes);
         throw new Error(response.data.error || 'Like action failed');
       }
+
+      setHasLiked(response.data.hasLiked);
+      setLikes(response.data.likesCount);
     } catch (error) {
       setError(err.message);
       // Revert optimistic update
