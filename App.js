@@ -8,8 +8,6 @@ import PaymentScreen from "./screens/PaymentScreen";
 import { StripeProvider } from "@stripe/stripe-react-native";
 import "react-native-get-random-values";
 
-const STRIPE_KEY = "your-stripe-publishable-key"; // Replace with your Stripe publishable key
-
 const Stack = createStackNavigator();
 
 const AppContent = () => {
@@ -35,7 +33,7 @@ export default function App() {
   return (
     <AuthProvider>
       <NavigationContainer>
-        <StripeProvider publishableKey={STRIPE_KEY}>
+        <StripeProvider publishableKey={process.env.STRIPE_KEY}>
           <AppContent />
         </StripeProvider>
       </NavigationContainer>

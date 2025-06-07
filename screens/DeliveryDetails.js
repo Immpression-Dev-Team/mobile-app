@@ -29,7 +29,11 @@ const DeliveryDetails = ({ navigation, route }) => {
 
   const countries = [
     { label: "United States", value: "United States" },
-    { label: "(Only available in America for now)", value: "disabled", disabled: true },
+    {
+      label: "(Only available in America for now)",
+      value: "disabled",
+      disabled: true,
+    },
   ];
 
   const usStates = [
@@ -114,9 +118,12 @@ const DeliveryDetails = ({ navigation, route }) => {
     try {
       const response = await createOrder(orderData, token);
       console.log("Order created:", response);
-      navigation.navigate("PaymentScreen", { orderId: response.orderId });
+      navigation.replace("PaymentScreen", {
+        orderId: response.orderId,
+        price,
+      });
     } catch (error) {
-      console.error("Error creating order:", error.response?.data || error.message);
+      console.error("Error creating order:", error);
       Alert.alert("Order Failed", "Could not create order. Please try again.");
     }
   };
@@ -146,7 +153,9 @@ const DeliveryDetails = ({ navigation, route }) => {
             )}
             <View style={styles.textDetails}>
               <Text style={styles.artName}>{artName}</Text>
-              {artistName && <Text style={styles.artistName}>By: {artistName}</Text>}
+              {artistName && (
+                <Text style={styles.artistName}>By: {artistName}</Text>
+              )}
               {price && <Text style={styles.price}>Price: ${price}</Text>}
             </View>
           </View>
@@ -199,7 +208,9 @@ const DeliveryDetails = ({ navigation, route }) => {
             <View style={{ zIndex: openCountry ? 2000 : 0 }}>
               <DropDownPicker
                 open={openCountry}
-                value={countries.some((c) => c.value === country) ? country : null}
+                value={
+                  countries.some((c) => c.value === country) ? country : null
+                }
                 items={countries}
                 setOpen={setOpenCountry}
                 setValue={(callback) => setCountry(callback(country))}

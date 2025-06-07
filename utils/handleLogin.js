@@ -1,8 +1,7 @@
-import axios from 'axios';
-import { API_URL } from '../API_URL';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { showToast } from '../utils/toastNotification';
-
+import axios from "axios";
+import { API_URL } from "../API_URL";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { showToast } from "../utils/toastNotification";
 
 export const handleLogin = async (
   email,
@@ -12,6 +11,7 @@ export const handleLogin = async (
   login
 ) => {
   try {
+    console.log("API_UR in requresL", API_URL);
     const response = await axios.post(
       `${API_URL}/login`,
       { email, password },
@@ -30,7 +30,7 @@ export const handleLogin = async (
       return { success: false, error: response.data.message }; // Return failure with error
     }
   } catch (err) {
-    showToast("Error During Login");
     console.log("Error during login:", err.response.data);
+    showToast("Error During Login", err);
   }
 };

@@ -1,148 +1,152 @@
-import SettingsScreen from '../screens/Settings';
-import HomeScreen from '../screens/Home';
-import StatisticsScreen from '../screens/Statistics';
-import Profile from '../screens/Profile';
-import SignUp from '../screens/SignUp';
-import ImageScreen from '../components/ImageScreen';
-import PasswordReset from '../screens/PasswordReset';
-import ArtistScreen from '../components/ArtistScreens';
-import Upload from '../screens/Upload';
-import Login from '../screens/Login';
-import CategoriesScreen from '../screens/CategoriesScreen';
-import CategoryView from '../screens/CategoryView';
-import AccountTypeScreen from '../screens/AccountType';
-import ArtistType from '../screens/ArtistType';
-import DeliveryDetails from '../screens/DeliveryDetails';
-import PaymentScreen from '../screens/PaymentScreen';
-import ArtPreferences from '../screens/ArtPreferences';
-import DeleteAccount from '../screens/DeleteAccount';
-import AccountDetails from '../screens/AccountDetails';
-import EditAccountFieldScreen from '../screens/EditAccountField';
-import EditProfile from '../screens/EditProfile';
-import RequestOtp from '../screens/RequestOtp';
-import VerifyOtp from '../screens/VerifyOtp';
-import SellGuide from '../screens/SellGuide';
-import GalleryView from '../components/GalleryView';
+import SettingsScreen from "../screens/Settings";
+import HomeScreen from "../screens/Home";
+import StatisticsScreen from "../screens/Statistics";
+import Profile from "../screens/Profile";
+import SignUp from "../screens/SignUp";
+import ImageScreen from "../components/ImageScreen";
+import PasswordReset from "../screens/PasswordReset";
+import ArtistScreen from "../components/ArtistScreens";
+import Upload from "../screens/Upload";
+import Login from "../screens/Login";
+import CategoriesScreen from "../screens/CategoriesScreen";
+import CategoryView from "../screens/CategoryView";
+import AccountTypeScreen from "../screens/AccountType";
+import ArtistType from "../screens/ArtistType";
+import DeliveryDetails from "../screens/DeliveryDetails";
+import PaymentScreen from "../screens/PaymentScreen";
+import ArtPreferences from "../screens/ArtPreferences";
+import DeleteAccount from "../screens/DeleteAccount";
+import AccountDetails from "../screens/AccountDetails";
+import EditAccountFieldScreen from "../screens/EditAccountField";
+import EditProfile from "../screens/EditProfile";
+import RequestOtp from "../screens/RequestOtp";
+import VerifyOtp from "../screens/VerifyOtp";
+import SellGuide from "../screens/SellGuide";
+import GalleryView from "../components/GalleryView";
+import ReviewScreen from "../screens/ReviewScreen";
 
 export const UserNavigation = [
   {
-    name: 'Home',
+    name: "Home",
     component: HomeScreen,
   },
   {
-    name: 'Statisctics',
+    name: "Statisctics",
     component: StatisticsScreen,
   },
   {
-    name: 'Profile',
+    name: "Profile",
     component: Profile,
   },
   {
-    name: 'Settings',
+    name: "Settings",
     component: SettingsScreen,
   },
   {
-    name: 'SignUp',
+    name: "SignUp",
     component: SignUp,
   },
   {
-    name: 'ImageScreen',
+    name: "ImageScreen",
     component: ImageScreen,
   },
   {
-    name: 'PasswordReset',
+    name: "PasswordReset",
     component: PasswordReset,
   },
   {
-    name: 'ArtistScreens',
+    name: "ArtistScreens",
     component: ArtistScreen,
   },
   {
-    name: 'Upload',
+    name: "Upload",
     component: Upload,
   },
   {
-    name: 'Categories',
+    name: "Categories",
     component: CategoriesScreen,
   },
   {
-    name: 'Category',
+    name: "Category",
     component: CategoryView,
   },
   {
-    name: 'AccountType',
+    name: "AccountType",
     component: AccountTypeScreen,
   },
   {
-    name: 'ArtistType',
+    name: "ArtistType",
     component: ArtistType,
   },
   {
-    name: 'ArtPreferences',
+    name: "ArtPreferences",
     component: ArtPreferences,
   },
   {
-    name: 'DeliveryDetails',
+    name: "DeliveryDetails",
     component: DeliveryDetails,
   },
   {
-    name: 'PaymentScreen',
+    name: "PaymentScreen",
     component: PaymentScreen,
   },
   {
-    name: 'DeleteAccount',
+    name: "ReviewScreen",
+    component: ReviewScreen,
+  },
+  {
+    name: "DeleteAccount",
     component: DeleteAccount,
   },
   {
-    name: 'AccountDetails',
+    name: "AccountDetails",
     component: AccountDetails,
   },
   {
-    name: 'EditAccountField',
+    name: "EditAccountField",
     component: EditAccountFieldScreen,
   },
   {
-    name: 'Login',
+    name: "Login",
     component: Login,
   },
   {
-    name: 'EditProfile',
+    name: "EditProfile",
     component: EditProfile,
   },
   {
-    name: 'SellGuide',
+    name: "SellGuide",
     component: SellGuide,
   },
   {
-    name: 'GalleryView',
+    name: "GalleryView",
     component: GalleryView,
   },
-  
 ];
 
 export const GuestNavigation = [
   {
-    name: 'Login',
+    name: "Login",
     component: Login,
   },
   {
-    name: 'RequestOtp',
+    name: "RequestOtp",
     component: RequestOtp,
   },
   {
-    name: 'VerifyOtp',
+    name: "VerifyOtp",
     component: VerifyOtp,
   },
   {
-    name: 'SignUp',
+    name: "SignUp",
     component: SignUp,
   },
   {
-    name: 'PasswordReset',
+    name: "PasswordReset",
     component: PasswordReset,
   },
   {
-    name: 'AccountType',
+    name: "AccountType",
     component: AccountTypeScreen,
   },
 ];
@@ -150,87 +154,87 @@ export const GuestNavigation = [
 export const ArtistTypes = [
   {
     id: 1,
-    name: 'Painter',
-    icon: require('../assets/artisteemoji.png'),
+    name: "Painter",
+    icon: require("../assets/artisteemoji.png"),
   },
   {
     id: 2,
-    name: 'Photographer',
-    icon: require('../assets/artisteemoji.png'),
+    name: "Photographer",
+    icon: require("../assets/artisteemoji.png"),
   },
   {
     id: 3,
-    name: 'Graphic ',
-    secondaryName: 'Designer',
-    icon: require('../assets/artisteemoji.png'),
+    name: "Graphic ",
+    secondaryName: "Designer",
+    icon: require("../assets/artisteemoji.png"),
   },
   {
     id: 4,
-    name: 'Illustrator',
-    icon: require('../assets/artisteemoji.png'),
+    name: "Illustrator",
+    icon: require("../assets/artisteemoji.png"),
   },
   {
     id: 5,
-    name: 'Sculptor',
-    icon: require('../assets/artisteemoji.png'),
+    name: "Sculptor",
+    icon: require("../assets/artisteemoji.png"),
   },
   {
     id: 6,
-    name: 'WoodWorker',
-    icon: require('../assets/artisteemoji.png'),
+    name: "WoodWorker",
+    icon: require("../assets/artisteemoji.png"),
   },
   {
     id: 7,
-    name: 'Graffitist',
-    icon: require('../assets/artisteemoji.png'),
+    name: "Graffitist",
+    icon: require("../assets/artisteemoji.png"),
   },
   {
     id: 8,
-    name: 'Stenciler',
-    icon: require('../assets/artisteemoji.png'),
+    name: "Stenciler",
+    icon: require("../assets/artisteemoji.png"),
   },
 ];
 
 export const ArtTypes = [
   {
     id: 1,
-    name: 'Paintings',
-    icon: require('../assets/artisteemoji.png'),
+    name: "Paintings",
+    icon: require("../assets/artisteemoji.png"),
   },
   {
     id: 2,
-    name: 'Photography',
-    icon: require('../assets/artisteemoji.png'),
+    name: "Photography",
+    icon: require("../assets/artisteemoji.png"),
   },
   {
     id: 3,
-    name: 'Graphic ',
-    secondaryName: 'Design',
-    icon: require('../assets/artisteemoji.png'),
+    name: "Graphic ",
+    secondaryName: "Design",
+    icon: require("../assets/artisteemoji.png"),
   },
   {
     id: 4,
-    name: 'Illustrations',
-    icon: require('../assets/artisteemoji.png'),
+    name: "Illustrations",
+    icon: require("../assets/artisteemoji.png"),
   },
   {
     id: 5,
-    name: 'Sculptures',
-    icon: require('../assets/artisteemoji.png'),
+    name: "Sculptures",
+    icon: require("../assets/artisteemoji.png"),
   },
   {
     id: 6,
-    name: 'WoodWork',
-    icon: require('../assets/artisteemoji.png'),
+    name: "WoodWork",
+    icon: require("../assets/artisteemoji.png"),
   },
   {
     id: 7,
-    name: 'Graffiti',
-    icon: require('../assets/artisteemoji.png'),
+    name: "Graffiti",
+    icon: require("../assets/artisteemoji.png"),
   },
   {
     id: 8,
-    name: 'Stencils',
-    icon: require('../assets/artisteemoji.png'),
+    name: "Stencils",
+    icon: require("../assets/artisteemoji.png"),
   },
 ];
