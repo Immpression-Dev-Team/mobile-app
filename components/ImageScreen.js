@@ -9,7 +9,12 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useAuth } from "../state/AuthProvider";
-import { toggleLike, fetchLikeData, incrementImageViews, fetchUserProfilePicture } from "../API/API";
+import {
+  toggleLike,
+  fetchLikeData,
+  incrementImageViews,
+  fetchUserProfilePicture,
+} from "../API/API";
 import ScreenTemplate from "../screens/Template/ScreenTemplate";
 import PriceSliders from "./PriceSliders";
 
@@ -34,7 +39,9 @@ const ImageScreen = ({ route, navigation }) => {
     console.log("Current Image Data:", images[currentIndex]);
 
     if (images[currentIndex]?.userId) {
-      console.log(`Fetching profile picture for userId: ${images[currentIndex].userId}`);
+      console.log(
+        `Fetching profile picture for userId: ${images[currentIndex].userId}`
+      );
 
       fetchUserProfilePicture(images[currentIndex].userId, token)
         .then((profilePic) => {
@@ -117,7 +124,13 @@ const ImageScreen = ({ route, navigation }) => {
               </Text>
             </Text>
             {profilePicture && (
-              <Image source={{ uri: profilePicture }} style={[styles.profilePicture, { marginLeft: 10, marginRight: 0 }]} />
+              <Image
+                source={{ uri: profilePicture }}
+                style={[
+                  styles.profilePicture,
+                  { marginLeft: 10, marginRight: 0 },
+                ]}
+              />
             )}
           </View>
         </View>
@@ -128,7 +141,10 @@ const ImageScreen = ({ route, navigation }) => {
           data={images}
           renderItem={({ item }) => (
             <View style={styles.imageContainer}>
-              <Image source={{ uri: item.imageLink }} style={styles.fullImage} />
+              <Image
+                source={{ uri: item.imageLink }}
+                style={styles.fullImage}
+              />
             </View>
           )}
           horizontal
@@ -167,12 +183,19 @@ const ImageScreen = ({ route, navigation }) => {
             <Text style={styles.labelText}>
               DESCRIPTION:{" "}
               <Text style={styles.boldText}>
-                {images[currentIndex]?.description || "No Description Available"}
+                {images[currentIndex]?.description ||
+                  "No Description Available"}
               </Text>
             </Text>
           </View>
-          <TouchableOpacity style={styles.likeButton} onPress={handleToggleLike}>
-            <Image source={hasLiked ? likedIcon : like} style={styles.likeIcon} />
+          <TouchableOpacity
+            style={styles.likeButton}
+            onPress={handleToggleLike}
+          >
+            <Image
+              source={hasLiked ? likedIcon : like}
+              style={styles.likeIcon}
+            />
             <Text style={styles.likeText}>{hasLiked ? "UNLIKE" : "LIKE"}</Text>
           </TouchableOpacity>
         </View>
@@ -181,13 +204,16 @@ const ImageScreen = ({ route, navigation }) => {
       <View style={styles.priceButtonContainer}>
         <View style={styles.priceContainer}>
           <Text style={styles.priceText}>
-            ${images[currentIndex]?.price ? images[currentIndex].price.toFixed(2) : "N/A"}
+            $
+            {images[currentIndex]?.price
+              ? images[currentIndex].price.toFixed(2)
+              : "N/A"}
           </Text>
         </View>
         <TouchableOpacity
           style={styles.buyNowButton}
           onPress={() =>
-            navigation.navigate("PaymentScreen", {
+            navigation.navigate("DeliveryDetails", {
               artName: images[currentIndex]?.name,
               imageLink: images[currentIndex]?.imageLink,
               artistName: images[currentIndex]?.artistName,
@@ -346,7 +372,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textTransform: "uppercase",
   },
-  
+
   priceButtonContainer: {
     flexDirection: "row", // Arrange price and button side by side
     alignItems: "center", // Align them vertically
