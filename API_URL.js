@@ -8,7 +8,7 @@ const ENV = "dev";
 const IP = process.env.HOST_IP;
 
 const PROD_URL = "https://immpression-backend.vercel.app";
-const API_URL = ENV === "prod" ? PROD_URL : `http://${"192.168.0.103"}:5001`;
+const API_URL = ENV === "prod" ? PROD_URL : `http://${IP}:5001`;
 
 console.log("API URL:", API_URL);
 
