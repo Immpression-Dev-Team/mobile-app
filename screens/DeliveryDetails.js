@@ -15,7 +15,7 @@ import { createOrder } from "../API/API";
 import ScreenTemplate from "./Template/ScreenTemplate";
 
 const DeliveryDetails = ({ navigation, route }) => {
-  const { artName, imageLink, artistName, price } = route.params;
+  const { imageId, imageLink, artName, artistName, price } = route.params;
   const { token } = useAuth();
 
   const [name, setName] = useState("");
@@ -101,6 +101,7 @@ const DeliveryDetails = ({ navigation, route }) => {
     if (!validateInputs()) return;
 
     const orderData = {
+      imageId,
       artName,
       artistName,
       price,
