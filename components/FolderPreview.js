@@ -1,5 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 
 const { width } = Dimensions.get('window');
 const IMAGE_SIZE = width * 0.28;
@@ -7,6 +14,9 @@ const PREVIEW_BOX_WIDTH = width * 0.4;
 const PREVIEW_BOX_HEIGHT = IMAGE_SIZE + 10;
 
 const FolderPreview = ({ title, images = [], onPress }) => {
+  console.log('title', title);
+  console.log('images from folder', JSON.stringify(images, null, 2));
+
   const count = images.length;
 
   return (
@@ -16,7 +26,7 @@ const FolderPreview = ({ title, images = [], onPress }) => {
           <View style={styles.imageStack}>
             {images.slice(0, 3).map((img, index) => (
               <Image
-                key={index}
+                key={Math.random() * 100}
                 source={{ uri: img }}
                 style={[
                   styles.image,

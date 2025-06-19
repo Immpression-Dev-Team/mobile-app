@@ -37,6 +37,7 @@ const Profile = () => {
   const [soldImages, setSoldImages] = useState([]);
   const [boughtImages, setBoughtImages] = useState([]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -51,14 +52,9 @@ const Profile = () => {
           setLikesCount(profile?.user?.totalLikes || 0);
         } else {
           const res = await axios.get(`${API_URL}/profile/${userId}`);
-          console.log(
-            'response',
-            res.data,
-            'DKLAKJFGAHKFOAHOIAHFGAHPIF>>>>>>>+++++++++++'
-          );
+
           const user = res.data.user;
           const totalLikes = res.data.totalLikes;
-          console.log(user);
           setProfileName(user?.name || '');
           setViewsCount(user?.views || 0);
           setBio(user?.bio || '');
@@ -75,6 +71,11 @@ const Profile = () => {
       if (!isOwnProfile || !token) return;
       try {
         const userImgs = await getUserImages(token);
+
+        console.log(
+          'USERIMAGES====USERIMAGES:',
+          JSON.stringify(userImgs, null, 2)
+        );
 
         setSellingImages(
           userImgs?.images?.filter((img) => img.stage === 'approved') || []
@@ -146,9 +147,11 @@ const Profile = () => {
 
               <FolderPreview
                 title="Gallery / Selling"
-                images={sellingImages
-                  .map((img) => img.imageLink)
-                  .filter(Boolean)}
+                images={
+                  sellingImages
+                  // .map((img) => img.imageLink)
+                  // .filter(Boolean)
+                }
                 onPress={() =>
                   navigation.navigate('GalleryView', { type: 'selling' })
                 }

@@ -26,7 +26,7 @@ const viewsIcon = require('../assets/icons/views_icon.jpg');
 
 const { width, height } = Dimensions.get('window');
 
-const ImageScreen = ({ route, navigation }) => {
+const ImageScreen = async ({ route, navigation }) => {
   const { images, initialIndex } = route.params;
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const flatListRef = useRef(null);
@@ -35,9 +35,13 @@ const ImageScreen = ({ route, navigation }) => {
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [profileError, setProfileError] = useState(null);
 
-  const currentImage = images[currentIndex];
+  const imageId = images[currentIndex]._id;
+
+  const currentImage = await getImage(imageId, token);
 
   console.log('currentimage', JSON.stringify(currentImage, null, 2));
+
+  // console.log('route params ', JSON.stringify(route.params, null, 2));
 
   const isInitiallyLiked = currentImage?.likes?.includes(
     userData?.user?.user._id

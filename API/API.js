@@ -630,30 +630,19 @@ async function getUserProfileById(userId) {
 }
 
 async function getImage(imageId, token) {
-  console.log(imageId, token);
   try {
-    return [imageId, token];
-    // const response = await axios.get(
-    //   `${API_URL}/image/${imageId}`,
-    //   {},
-    //   {
-    //     headers: {
-    //       Authorization: `Bearer ${token}`,
-    //       'Content-Type': 'application/json',
-    //     },
-    //   }
-    // );
+    const response = await axios.get(`${API_URL}/image/${imageId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
 
-    // console.log(response);
-
-    // return response.data;
+    return response.data;
   } catch (error) {
     console.error('Error fetching image:', error);
     return null;
   }
-  // user likes image
-  // add image to user favorite images.
-  // increase the likes of the seller.
 }
 
 export {

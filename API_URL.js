@@ -5,15 +5,12 @@ import { HOST_IP } from '@env';
 const ENV = 'dev';
 
 // TODO: ADD IP TO .env file located in mobile-app folder
-const IP = process.env.HOST_IP;
+const IP = '192.168.128.166'; //process.env.HOST_IP;
 
 const PROD_URL = 'https://immpression-backend.vercel.app';
-// const API_URL =
-//     ENV === "prod"
-//         ? PROD_URL
-//         : `http://${IP}:5000`;
+const API_URL = ENV === 'prod' ? PROD_URL : `http://${IP}:4000`;
 
-const API_URL = `http://${IP}:4000`;
+// const API_URL = `http://${IP}:4000`;
 
 console.log('API URL:', API_URL);
 
