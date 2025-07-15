@@ -26,17 +26,28 @@ const PaymentScreen = ({ navigation, route }) => {
     try {
       setLoading(true);
 
-      const response = await createPaymentIntent({ orderId, price }, token);
+      const response = await createPaymentIntent(
+        { orderId, price: Math.round(price * 100) },
+        token
+      );
       if (!response.clientSecret) {
         throw new Error("No client secret received from server");
       }
+      console.log("response", response);
 
       const { error, paymentIntent } = await confirmPayment(
         response.clientSecret,
         {
           paymentMethodType: "Card",
+          paymentMethodData: {
+            billingDetails: {
+              name: userData.name,
+            },
+          },
         }
       );
+      console.log("paymentIntent", paymentIntent);
+      console.log("error", error);
 
       if (error) {
         updateOrder("failed");
@@ -61,10 +72,12 @@ const PaymentScreen = ({ navigation, route }) => {
     try {
       await axios.put(
         `${API_URL}/order/${orderId}`,
-        { status },
+        { status, transactionId: "123xyz" },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      navigation.replace("ReviewScreen", { orderId });
+      if (status === "paid") {
+        navigation.replace("ReviewScreen", { orderId });
+      }
     } catch (error) {
       console.error("Failed to update order:", error);
     }

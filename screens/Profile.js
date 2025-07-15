@@ -1,39 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import ProfilePic from '../components/profile_sections/ProfilePic';
-import ProfileName from '../components/profile_sections/ProfileName';
-import ProfileViews from '../components/profile_sections/ProfileViews';
-import ProfileLikes from '../components/profile_sections/ProfileLikes';
-import ProfileBio from '../components/profile_sections/ProfileBio';
-import ProfileArtistType from '../components/profile_sections/ProfileArtistType';
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import ProfilePic from "../components/profile_sections/ProfilePic";
+import ProfileName from "../components/profile_sections/ProfileName";
+import ProfileViews from "../components/profile_sections/ProfileViews";
+import ProfileLikes from "../components/profile_sections/ProfileLikes";
+import ProfileBio from "../components/profile_sections/ProfileBio";
+import ProfileArtistType from "../components/profile_sections/ProfileArtistType";
 import {
   getUserProfile,
   getUserImages,
   fetchLikedImages,
   getBio,
   getArtistType,
-} from '../API/API';
-import { useAuth } from '../state/AuthProvider';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import ScreenTemplate from './Template/ScreenTemplate';
-import FolderPreview from '../components/FolderPreview';
-import axios from 'axios';
-import { API_URL } from '../API_URL';
+} from "../API/API";
+import { useAuth } from "../state/AuthProvider";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import ScreenTemplate from "./Template/ScreenTemplate";
+import FolderPreview from "../components/FolderPreview";
+import axios from "axios";
+import { API_URL } from "../API_URL";
 
 const Profile = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { userData } = useAuth();
   const token = userData?.token;
-  const currentUserId = userData?._id;
-  const isOwnProfile = !route.params?.userId || route.params?.userId === currentUserId;
+  const currentUserId = userData?.user?.user?._id;
+  const isOwnProfile =
+    !route.params?.userId || route.params?.userId === currentUserId;
   const userId = route.params?.userId || currentUserId;
 
-  const [profileName, setProfileName] = useState('');
+  const [profileName, setProfileName] = useState("");
   const [viewsCount, setViewsCount] = useState(0);
   const [likesCount, setLikesCount] = useState(0);
-  const [bio, setBio] = useState('');
-  const [artistType, setArtistType] = useState('');
+  const [bio, setBio] = useState("");
+  const [artistType, setArtistType] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
 
   const [sellingImages, setSellingImages] = useState([]);
@@ -46,7 +47,7 @@ const Profile = () => {
       try {
         if (isOwnProfile) {
           const profile = await getUserProfile(token);
-          setProfileName(profile?.user?.name || '');
+          setProfileName(profile?.user?.name || "");
           setViewsCount(profile?.user?.views || 0);
 
           const [bioRes, artistRes] = await Promise.all([
@@ -58,14 +59,14 @@ const Profile = () => {
         } else {
           const res = await axios.get(`${API_URL}/profile/${userId}`);
           const user = res.data.user;
-          setProfileName(user?.name || '');
+          setProfileName(user?.name || "");
           setViewsCount(user?.views || 0);
-          setBio(user?.bio || '');
-          setArtistType(user?.artistType || '');
+          setBio(user?.bio || "");
+          setArtistType(user?.artistType || "");
           setProfilePicture(user?.profilePictureLink || null);
         }
       } catch (err) {
-        console.error('Error fetching profile:', err);
+        console.error("Error fetching profile:", err);
       }
     };
 
@@ -75,10 +76,10 @@ const Profile = () => {
         const userImgs = await getUserImages(token);
 
         setSellingImages(
-          userImgs?.images?.filter((img) => img.stage === 'approved') || []
+          userImgs?.images?.filter((img) => img.stage === "approved") || []
         );
         setSoldImages(
-          userImgs?.images?.filter((img) => img.stage === 'sold') || []
+          userImgs?.images?.filter((img) => img.stage === "sold") || []
         );
 
         const likedImgsRes = await fetchLikedImages(token);
@@ -86,13 +87,55 @@ const Profile = () => {
 
         setBoughtImages([]); // Add real logic if needed
       } catch (err) {
-        console.error('Error loading images:', err);
+        console.error("Error loading images:", err);
       }
     };
 
     fetchProfileData();
     fetchImageData();
+    fetchBoughtImages();
   }, [token, userId]);
+
+  const fetchBoughtImages = async () => {
+    const res = await axios.get(`${API_URL}/orders`);
+    setBoughtImages(
+      res.data.data.filter((order) => order.userId === currentUserId)
+    );
+  };
+
+  const handlePayout = async () => {
+    console.log("payout");
+
+    const res = await axios.post(`${API_URL}/payout`, {
+      stripeConnectId: "acct_1RdcTdQPrkTTRhKX",
+      amount: 2,
+    });
+    console.log("res", res.data);
+  };
+
+  const handleCreateStripeAccount = async () => {
+    console.log("create stripe account");
+    try {
+      const res = await axios.post(`${API_URL}/create-stripe-account`, {
+        userId: currentUserId,
+        userName: profileName,
+        userEmail: userData?.user?.email,
+      });
+      console.log("res", res.data.data.id);
+      createStripeOnboarding(res.data.data.id);
+    } catch (error) {
+      console.error("Error creating stripe account:", error);
+    }
+  };
+
+  const createStripeOnboarding = async (stripeConnectId) => {
+    console.log("create stripe onboarding");
+
+    const res = await axios.post(`${API_URL}/createStripeOnboardingLink`, {
+      stripeConnectId: stripeConnectId,
+    });
+    console.log("res", res.data.data);
+  };
 
   return (
     <ScreenTemplate>
@@ -100,7 +143,7 @@ const Profile = () => {
         {isOwnProfile && (
           <TouchableOpacity
             style={styles.editProfileButton}
-            onPress={() => navigation.navigate('EditProfile')}
+            onPress={() => navigation.navigate("EditProfile")}
           >
             <Text style={styles.editProfileText}>Edit Profile</Text>
           </TouchableOpacity>
@@ -113,7 +156,9 @@ const Profile = () => {
           </View>
 
           <ProfilePic
-            source={!isOwnProfile && profilePicture ? { uri: profilePicture } : null}
+            source={
+              !isOwnProfile && profilePicture ? { uri: profilePicture } : null
+            }
             name={profileName}
           />
 
@@ -129,19 +174,39 @@ const Profile = () => {
 
         <View style={styles.separator} />
 
+        <TouchableOpacity
+          style={styles.viewProfileButton}
+          onPress={handlePayout}
+        >
+          <Text>Payout</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.viewProfileButton}
+          onPress={handleCreateStripeAccount}
+        >
+          <Text>Create Stripe Account</Text>
+        </TouchableOpacity>
+
         {isOwnProfile && (
           <View style={styles.folderGrid}>
             <View style={styles.row}>
               <FolderPreview
                 title="Favorited"
                 images={likedImages.map((img) => img.imageLink).filter(Boolean)}
-                onPress={() => navigation.navigate('GalleryView', { type: 'liked' })}
+                onPress={() =>
+                  navigation.navigate("GalleryView", { type: "liked" })
+                }
               />
 
               <FolderPreview
                 title="Gallery / Selling"
-                images={sellingImages.map((img) => img.imageLink).filter(Boolean)}
-                onPress={() => navigation.navigate('GalleryView', { type: 'selling' })}
+                images={sellingImages
+                  .map((img) => img.imageLink)
+                  .filter(Boolean)}
+                onPress={() =>
+                  navigation.navigate("GalleryView", { type: "selling" })
+                }
               />
             </View>
           </View>
@@ -157,13 +222,13 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
   editProfileButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 10,
     left: 20,
-    backgroundColor: '#FF6B6B',
+    backgroundColor: "#FF6B6B",
     paddingVertical: 3,
     paddingHorizontal: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.3,
     shadowRadius: 1,
@@ -171,45 +236,45 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   editProfileText: {
-    color: '#FFFFFF',
+    color: "#FFFFFF",
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   profileContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 55,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   nameArtistContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 10,
   },
   viewsLikesContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 10,
   },
   bioContainer: {
-    width: '90%',
-    alignItems: 'center',
+    width: "90%",
+    alignItems: "center",
     marginVertical: 20,
   },
   separator: {
-    width: '90%',
+    width: "90%",
     height: 1,
-    backgroundColor: '#ccc',
-    alignSelf: 'center',
+    backgroundColor: "#ccc",
+    alignSelf: "center",
     marginVertical: 10,
   },
   folderGrid: {
     marginTop: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   row: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    width: "100%",
     marginVertical: 10,
   },
 });
