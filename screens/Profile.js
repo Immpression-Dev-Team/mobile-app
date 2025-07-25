@@ -197,8 +197,7 @@ const Profile = () => {
               <Text style={styles.viewProfileButtonText}>Payout</Text>
             </TouchableOpacity>
 
-            {!stripeOnboardingData?.onboarding_completed &&
-              !stripeOnboardingData?.stripeAccountId && (
+            {!stripeOnboardingData?.onboarding_completed && (
                 <TouchableOpacity
                   style={styles.viewProfileButton}
                   onPress={handleCreateStripeAccount}
