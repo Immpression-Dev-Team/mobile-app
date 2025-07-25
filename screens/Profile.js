@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Linking } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Linking,
+} from "react-native";
 import ProfilePic from "../components/profile_sections/ProfilePic";
 import ProfileName from "../components/profile_sections/ProfileName";
 import ProfileViews from "../components/profile_sections/ProfileViews";
@@ -19,6 +25,7 @@ import ScreenTemplate from "./Template/ScreenTemplate";
 import FolderPreview from "../components/FolderPreview";
 import axios from "axios";
 import { API_URL } from "../API_URL";
+import * as WebBrowser from "expo-web-browser";
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -123,7 +130,10 @@ const Profile = () => {
         credentials: "include", // this ensures cookies are sent
       });
       if (res.data.data.url) {
-        Linking.openURL(res.data.data.url);
+        const browserResult = await WebBrowser.openBrowserAsync(
+          res.data.data.url
+        );
+        checkStripeStatus();
       }
       // await createStripeOnboarding(res.data.data.id);
     } catch (error) {
@@ -133,15 +143,17 @@ const Profile = () => {
 
   const checkStripeStatus = async () => {
     try {
-      const res = await axios.post(`${API_URL}/check-stripe-status`, {}, {
-        withCredentials: true  // ✅ Correct syntax for axios (not "credentials: include")
-      });
-
+      const res = await axios.post(
+        `${API_URL}/check-stripe-status`,
+        {},
+        {
+          withCredentials: true, // ✅ Correct syntax for axios (not "credentials: include")
+        }
+      );
       // Update onboarding completion status
       if (res.data?.data) {
-        setStripeOnboardingData(res.data?.data)
+        setStripeOnboardingData(res.data?.data);
       }
-
     } catch (error) {
       console.error("Error checking status:", error);
       console.error("Error details:", error.response?.data); // Added more detailed error logging
@@ -185,14 +197,17 @@ const Profile = () => {
               <Text style={styles.viewProfileButtonText}>Payout</Text>
             </TouchableOpacity>
 
-            {!stripeOnboardingData?.onboarding_completed && !stripeOnboardingData?.stripeAccountId && (
-              <TouchableOpacity
-                style={styles.viewProfileButton}
-                onPress={handleCreateStripeAccount}
-              >
-                <Text style={styles.viewProfileButtonText}>Create Stripe Account</Text>
-              </TouchableOpacity>
-            )}
+            {!stripeOnboardingData?.onboarding_completed &&
+              !stripeOnboardingData?.stripeAccountId && (
+                <TouchableOpacity
+                  style={styles.viewProfileButton}
+                  onPress={handleCreateStripeAccount}
+                >
+                  <Text style={styles.viewProfileButtonText}>
+                    Create Stripe Account
+                  </Text>
+                </TouchableOpacity>
+              )}
           </View>
         )}
 
