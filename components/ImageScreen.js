@@ -214,6 +214,7 @@ const ImageScreen = ({ route, navigation }) => {
           style={styles.buyNowButton}
           onPress={() =>
             navigation.navigate("DeliveryDetails", {
+              imageId: images[currentIndex]?._id,
               artName: images[currentIndex]?.name,
               imageLink: images[currentIndex]?.imageLink,
               artistName: images[currentIndex]?.artistName,
