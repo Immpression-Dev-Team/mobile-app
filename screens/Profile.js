@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   Linking,
+  Image,
 } from "react-native";
 import ProfilePic from "../components/profile_sections/ProfilePic";
 import ProfileName from "../components/profile_sections/ProfileName";
@@ -190,23 +191,28 @@ const Profile = () => {
 
         {isOwnProfile && (
           <View style={styles.buttonContainer}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.viewProfileButton}
               onPress={handlePayout}
             >
               <Text style={styles.viewProfileButtonText}>Payout</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             {!stripeOnboardingData?.onboarding_completed && (
-                <TouchableOpacity
-                  style={styles.viewProfileButton}
-                  onPress={handleCreateStripeAccount}
-                >
-                  <Text style={styles.viewProfileButtonText}>
-                    Create Stripe Account
-                  </Text>
-                </TouchableOpacity>
-              )}
+              <TouchableOpacity
+                style={styles.stripeButton}
+                onPress={handleCreateStripeAccount}
+              >
+                <View style={styles.stripeButtonContent}>
+                  <Image
+                    source={require("../assets/stripe-logo.png")}
+                    style={styles.stripeLogo}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.stripeButtonText}>Link Stripe Account</Text>
+                </View>
+              </TouchableOpacity>
+            )}
           </View>
         )}
 
@@ -350,6 +356,37 @@ const styles = StyleSheet.create({
     width: "100%",
     marginVertical: 10,
   },
+  stripeButton: {
+    backgroundColor: "#635BFF", // Stripe purple
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    flex: 1,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    maxWidth: 180,
+  },
+  stripeButtonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  stripeLogo: {
+    width: 20,
+    height: 20,
+  },
+  stripeButtonText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  
 });
 
 export default Profile;
