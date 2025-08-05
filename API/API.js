@@ -262,13 +262,12 @@ const deleteProfilePicture = async (publicId) => {
         success: true,
         message: result.message || 'Profile picture deleted successfully',
       };
-    } else {
-      console.warn('No existing profile picture found.');
-      return {
-        success: true,
-        message: 'No profile picture found for deletion',
-      };
     }
+    console.warn('No existing profile picture found.');
+    return {
+      success: true,
+      message: 'No profile picture found for deletion',
+    };
   } catch (error) {
     console.error('Error deleting image:', error);
     return { success: false, error: 'Failed to delete image' };
@@ -277,7 +276,6 @@ const deleteProfilePicture = async (publicId) => {
 
 async function getAllProfilePictures(token) {
   try {
-    console.log('Fetching all profile pictures from API...', API_URL);
     const response = await axios.get(`${API_URL}/all-profile-pictures`, {
       headers: {
         Authorization: `Bearer ${token}`, // Add token to headers

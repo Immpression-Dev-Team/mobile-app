@@ -19,7 +19,6 @@ export default function FeaturedArtists() {
   useEffect(() => {
     const fetchArtists = async () => {
       try {
-        console.log('Fetching artists from API...');
         const data = await getAllProfilePictures(token);
 
         if (!Array.isArray(data)) {
