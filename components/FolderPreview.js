@@ -14,8 +14,8 @@ const PREVIEW_BOX_WIDTH = width * 0.4;
 const PREVIEW_BOX_HEIGHT = IMAGE_SIZE + 10;
 
 const FolderPreview = ({ title, images = [], onPress }) => {
-  console.log('title', title);
-  console.log('images from folder', JSON.stringify(images, null, 2));
+  // console.log('title', title);
+  // console.log('images from folder', JSON.stringify(images, null, 2));
 
   const count = images.length;
 

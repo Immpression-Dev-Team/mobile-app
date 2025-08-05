@@ -1,6 +1,8 @@
 import axios from 'axios';
 import { API_URL } from '../API_URL';
 
+console.log(API_URL);
+
 async function requestOtp(email, password) {
   try {
     const response = await axios.post(

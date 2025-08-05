@@ -26,22 +26,37 @@ const viewsIcon = require('../assets/icons/views_icon.jpg');
 
 const { width, height } = Dimensions.get('window');
 
-const ImageScreen = async ({ route, navigation }) => {
+const ImageScreen = ({ route, navigation }) => {
   const { images, initialIndex } = route.params;
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [currentImage, setCurrentImage] = useState(null);
+  const [isLoadingImage, setIsLoadingImage] = useState(true);
   const flatListRef = useRef(null);
   const { token, userData } = useAuth();
   const [profilePicture, setProfilePicture] = useState(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(false);
   const [profileError, setProfileError] = useState(null);
 
-  const imageId = images[currentIndex]._id;
+  useEffect(() => {
+    const fetchImageData = async () => {
+      if (images && images[currentIndex]) {
+        setIsLoadingImage(true);
+        try {
+          const imageId = images[currentIndex]._id;
+          const image = await getImage(imageId, token);
+          setCurrentImage(image);
+          console.log('currentimage here', JSON.stringify(image, null, 2));
+          console.log('route params ', JSON.stringify(route.params, null, 2));
+        } catch (error) {
+          console.error('Failed to fetch image:', error);
+        } finally {
+          setIsLoadingImage(false);
+        }
+      }
+    };
 
-  const currentImage = await getImage(imageId, token);
-
-  console.log('currentimage', JSON.stringify(currentImage, null, 2));
-
-  // console.log('route params ', JSON.stringify(route.params, null, 2));
+    fetchImageData();
+  }, [currentIndex, images, token]);
 
   const isInitiallyLiked = currentImage?.likes?.includes(
     userData?.user?.user._id
@@ -105,7 +120,7 @@ const ImageScreen = async ({ route, navigation }) => {
 
     // Increment views when image changes
     handleViewIncrement(currentImage._id);
-  }, [currentIndex, currentImage, fetchProfilePicture, handleViewIncrement]);
+  }, [currentImage, fetchProfilePicture, handleViewIncrement]);
 
   // Handle FlatList scroll
   const handleScrollEnd = useCallback(

@@ -72,11 +72,6 @@ const Profile = () => {
       try {
         const userImgs = await getUserImages(token);
 
-        console.log(
-          'USERIMAGES====USERIMAGES:',
-          JSON.stringify(userImgs, null, 2)
-        );
-
         setSellingImages(
           userImgs?.images?.filter((img) => img.stage === 'approved') || []
         );
