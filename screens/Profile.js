@@ -44,12 +44,12 @@ const Profile = () => {
   const [bio, setBio] = useState("");
   const [artistType, setArtistType] = useState("");
   const [profilePicture, setProfilePicture] = useState(null);
-
   const [sellingImages, setSellingImages] = useState([]);
   const [likedImages, setLikedImages] = useState([]);
   const [soldImages, setSoldImages] = useState([]);
   const [boughtImages, setBoughtImages] = useState([]);
   const [stripeOnboardingData, setStripeOnboardingData] = useState({});
+
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -111,34 +111,20 @@ const Profile = () => {
     );
   };
 
-  const handlePayout = async () => {
-    console.log("payout");
-
-    const res = await axios.post(`${API_URL}/payout`, {
-      stripeConnectId: "acct_1RdcTdQPrkTTRhKX",
-      amount: 2,
-    });
-    console.log("res", res.data);
-  };
-
   const handleCreateStripeAccount = async () => {
-    // console.log("create stripe account");
     try {
       const res = await axios.post(`${API_URL}/create-stripe-account`, {
         userId: currentUserId,
         userName: profileName,
         userEmail: userData.user.user.email,
-        credentials: "include", // this ensures cookies are sent
+        credentials: "include",
       });
       if (res.data.data.url) {
-        const browserResult = await WebBrowser.openBrowserAsync(
-          res.data.data.url
-        );
+        await WebBrowser.openBrowserAsync(res.data.data.url);
         checkStripeStatus();
       }
-      // await createStripeOnboarding(res.data.data.id);
     } catch (error) {
-      // console.error("Error creating stripe account:", error);
+      console.error("Error creating stripe account:", error);
     }
   };
 
@@ -147,17 +133,14 @@ const Profile = () => {
       const res = await axios.post(
         `${API_URL}/check-stripe-status`,
         {},
-        {
-          withCredentials: true, // ✅ Correct syntax for axios (not "credentials: include")
-        }
+        { withCredentials: true }
       );
-      // Update onboarding completion status
       if (res.data?.data) {
         setStripeOnboardingData(res.data?.data);
       }
     } catch (error) {
       console.error("Error checking status:", error);
-      console.error("Error details:", error.response?.data); // Added more detailed error logging
+      console.error("Error details:", error.response?.data);
     }
   };
 
@@ -165,38 +148,17 @@ const Profile = () => {
     checkStripeStatus();
   }, []);
 
-  // const createStripeOnboarding = async (stripeConnectId) => {
-  //   console.log("create stripe onboarding");
-
-  //   const res = await axios.post(`${API_URL}/createStripeOnboardingLink`, {
-  //     stripeConnectId: stripeConnectId,
-  //   });
-  //   if (res.data.data.url) {
-  //     Linking.openURL(res.data.data.url);
-  //   }
-  //   console.log("res", res.data.data.url);
-  // };
-
   return (
     <ScreenTemplate>
       <View style={styles.container}>
         {isOwnProfile && (
-          <TouchableOpacity
-            style={styles.editProfileButton}
-            onPress={() => navigation.navigate("EditProfile")}
-          >
-            <Text style={styles.editProfileText}>Edit Profile</Text>
-          </TouchableOpacity>
-        )}
-
-        {isOwnProfile && (
-          <View style={styles.buttonContainer}>
-            {/* <TouchableOpacity
-              style={styles.viewProfileButton}
-              onPress={handlePayout}
+          <View style={styles.editStripeRow}>
+            <TouchableOpacity
+              style={styles.editProfileModernButton}
+              onPress={() => navigation.navigate("EditProfile")}
             >
-              <Text style={styles.viewProfileButtonText}>Payout</Text>
-            </TouchableOpacity> */}
+              <Text style={styles.editProfileModernText}>Edit Profile</Text>
+            </TouchableOpacity>
 
             {!stripeOnboardingData?.onboarding_completed && (
               <TouchableOpacity
@@ -218,24 +180,36 @@ const Profile = () => {
 
         <View style={styles.profileContainer}>
           <View style={styles.nameArtistContainer}>
-            <ProfileName name={profileName} />
-            <ProfileArtistType artistType={artistType} />
+            <Text style={styles.profileName}>{profileName}</Text>
+            <Text style={styles.artistType}>{artistType}</Text>
           </View>
 
-          <ProfilePic
-            source={
-              !isOwnProfile && profilePicture ? { uri: profilePicture } : null
-            }
-            name={profileName}
-          />
+          <View style={styles.profilePicWrapper}>
+            <ProfilePic
+              source={
+                !isOwnProfile && profilePicture
+                  ? { uri: profilePicture }
+                  : null
+              }
+              name={profileName}
+            />
+          </View>
 
           <View style={styles.viewsLikesContainer}>
-            <ProfileViews views={viewsCount} />
-            {isOwnProfile && <ProfileLikes likes={likesCount} />}
+            <View style={styles.statPill}>
+              <Text style={styles.statIcon}>👁</Text>
+              <ProfileViews views={viewsCount} />
+            </View>
+            {isOwnProfile && (
+              <View style={styles.statPill}>
+                <Text style={styles.statIcon}>❤️</Text>
+                <ProfileLikes likes={likesCount} />
+              </View>
+            )}
           </View>
 
           <View style={styles.bioContainer}>
-            <ProfileBio bio={bio} />
+            <Text style={styles.bioText}>{bio}</Text>
           </View>
         </View>
 
@@ -243,6 +217,7 @@ const Profile = () => {
 
         {isOwnProfile && (
           <View style={styles.folderGrid}>
+            <Text style={styles.sectionHeader}>Your Folders</Text>
             <View style={styles.row}>
               <FolderPreview
                 title="Favorited"
@@ -273,70 +248,80 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingBottom: 20,
-  },
-  editProfileButton: {
-    position: "absolute",
-    top: 10,
-    left: 20,
-    backgroundColor: "#FF6B6B",
-    paddingVertical: 3,
-    paddingHorizontal: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.3,
-    shadowRadius: 1,
-    elevation: 5,
-    zIndex: 10,
-  },
-  editProfileText: {
-    color: "#FFFFFF",
-    fontSize: 11,
-    fontWeight: "600",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 50,
-    marginHorizontal: 20,
-    gap: 10,
-  },
-  viewProfileButton: {
-    backgroundColor: "#007AFF",
-    paddingVertical: 8,
-    paddingHorizontal: 15,
-    borderRadius: 8,
-    flex: 1,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    maxWidth: 150,
-  },
-  viewProfileButtonText: {
-    color: "#FFFFFF",
-    fontSize: 12,
-    fontWeight: "600",
+    backgroundColor: "#F7F9FC",
   },
   profileContainer: {
     alignItems: "center",
     marginTop: 25,
     backgroundColor: "white",
+    paddingVertical: 20,
+    borderRadius: 12,
+    marginHorizontal: 16,
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 3,
   },
   nameArtistContainer: {
     alignItems: "center",
     marginBottom: 10,
   },
+  profileName: {
+    fontSize: 20,
+    fontWeight: "700",
+    color: "#222",
+  },
+  artistType: {
+    backgroundColor: "#EAEAFF",
+    color: "#635BFF",
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 20,
+    fontSize: 12,
+    fontWeight: "600",
+    marginTop: 4,
+  },
+  profilePicWrapper: {
+    borderRadius: 100,
+    padding: 4,
+    borderColor: "#635BFF",
+    borderWidth: 2,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 6,
+    elevation: 3,
+  },
   viewsLikesContainer: {
     flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
-    marginTop: 10,
+    marginTop: 14,
+    gap: 10,
+  },
+  statPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F1F1F1",
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
+  },
+  statIcon: {
+    marginRight: 6,
   },
   bioContainer: {
     width: "90%",
+    marginTop: 16,
     alignItems: "center",
-    marginVertical: 20,
+  },
+  bioText: {
+    fontStyle: "italic",
+    fontSize: 13,
+    color: "#444",
+    lineHeight: 18,
+    textAlign: "center",
   },
   separator: {
     width: "90%",
@@ -350,14 +335,51 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  sectionHeader: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 12,
+  },
   row: {
     flexDirection: "row",
     justifyContent: "space-around",
     width: "100%",
     marginVertical: 10,
+    paddingHorizontal: 12,
+  },
+  editStripeRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 15,
+    marginHorizontal: 20,
+    gap: 10,
+  },
+  editProfileModernButton: {
+    borderColor: "#999",
+    borderWidth: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    flex: 1,
+    backgroundColor: "#f9f9f9",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 1,
+    elevation: 1,
+    maxWidth: 150,
+  },
+  editProfileModernText: {
+    color: "#333",
+    fontSize: 12,
+    fontWeight: "600",
   },
   stripeButton: {
-    backgroundColor: "#635BFF", // Stripe purple
+    backgroundColor: "#635BFF",
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 8,
@@ -386,7 +408,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "600",
   },
-  
 });
 
 export default Profile;

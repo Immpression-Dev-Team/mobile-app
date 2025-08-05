@@ -3,8 +3,11 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 
 const ProfileLikes = ({ likes }) => {
     return (
-        <View style={styles.container}>
-            <Image source={require('../../assets/icons/likes_icon.png')} style={styles.icon} />
+        // <View style={styles.container}>
+        //     <Image source={require('../../assets/icons/likes_icon.png')} style={styles.icon} />
+        //     <Text style={styles.likesCount}>{likes}</Text>
+        // </View>
+        <View>
             <Text style={styles.likesCount}>{likes}</Text>
         </View>
     );

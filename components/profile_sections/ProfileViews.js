@@ -3,8 +3,11 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 
 const ProfileViews = ({ views }) => {
     return (
-        <View style={styles.container}>
-            <Image source={require('../../assets/icons/views_icon.jpg')} style={styles.icon} />
+        // <View style={styles.container}>
+        //     <Image source={require('../../assets/icons/views_icon.jpg')} style={styles.icon} />
+        //     <Text style={styles.viewsCount}>{views}</Text>
+        // </View>
+        <View>
             <Text style={styles.viewsCount}>{views}</Text>
         </View>
     );
