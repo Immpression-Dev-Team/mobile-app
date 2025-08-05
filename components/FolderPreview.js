@@ -2,103 +2,82 @@ import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
 
 const { width } = Dimensions.get('window');
-const IMAGE_SIZE = width * 0.28;
-const PREVIEW_BOX_WIDTH = width * 0.4;
-const PREVIEW_BOX_HEIGHT = IMAGE_SIZE + 10;
+const CARD_WIDTH = width * 0.42;
+const IMAGE_HEIGHT = CARD_WIDTH; // Square
 
 const FolderPreview = ({ title, images = [], onPress }) => {
-  const count = images.length;
+  const hasImage = images.length > 0;
+  const image = images[0];
 
   return (
-    <TouchableOpacity style={styles.container} onPress={onPress}>
-      <View style={styles.previewBox}>
-        {count > 0 ? (
-          <View style={styles.imageStack}>
-            {images.slice(0, 3).map((img, index) => (
-              <Image
-                key={index}
-                source={{ uri: img }}
-                style={[
-                  styles.image,
-                  {
-                    left: index * (IMAGE_SIZE * 0.35),
-                    zIndex: 3 - index,
-                  },
-                ]}
-              />
-            ))}
-          </View>
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.85}>
+      <View style={styles.imageWrapper}>
+        {hasImage ? (
+          <Image source={{ uri: image }} style={styles.image} />
         ) : (
-          <View style={styles.emptyPlaceholder}>
-            <Text style={styles.emptyText}>No Art</Text>
+          <View style={styles.placeholder}>
+            <Text style={styles.placeholderText}>No Art</Text>
           </View>
         )}
-        <Text style={styles.countOverlay}>{count}</Text>
+        <View style={styles.countTag}>
+          <Text style={styles.countText}>{images.length}</Text>
+        </View>
       </View>
-      <Text style={styles.label}>{title}</Text>
+      <Text style={styles.title}>{title}</Text>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    width: '48%',
-    marginVertical: 12,
-    alignItems: 'center',
+  card: {
+    width: CARD_WIDTH,
+    marginBottom: 20,
   },
-  previewBox: {
-    width: PREVIEW_BOX_WIDTH,
-    height: PREVIEW_BOX_HEIGHT,
+  imageWrapper: {
+    width: '100%',
+    height: IMAGE_HEIGHT,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#f1f1f1',
     position: 'relative',
-    marginBottom: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imageStack: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    position: 'absolute',
-    height: '100%',
+    borderWidth: 1,
+    borderColor: '#ddd',
   },
   image: {
-    width: IMAGE_SIZE,
-    height: IMAGE_SIZE,
-    borderRadius: 3,
-    borderWidth: 1,
-    borderColor: '#fff',
+    width: '100%',
+    height: '100%',
   },
-  emptyPlaceholder: {
-    width: IMAGE_SIZE,
-    height: IMAGE_SIZE,
-    borderRadius: 3,
-    borderWidth: 1,
-    borderColor: '#ccc',
+  placeholder: {
+    width: '100%',
+    height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#e5e5e5',
   },
-  emptyText: {
-    fontSize: 12,
+  placeholderText: {
     color: '#666',
+    fontSize: 13,
   },
-  countOverlay: {
+  countTag: {
     position: 'absolute',
-    bottom: -2,
-    right: 13,
-    backgroundColor: '#333',
-    color: 'white',
-    paddingHorizontal: 7,
+    bottom: 8,
+    right: 8,
+    backgroundColor: '#000000aa',
+    paddingHorizontal: 6,
     paddingVertical: 3,
-    borderRadius: 12,
-    fontSize: 12,
-    fontWeight: '600',
-    overflow: 'hidden',
-    zIndex: 99,
+    borderRadius: 10,
   },
-  label: {
+  countText: {
+    color: 'white',
+    fontSize: 11,
+    fontWeight: '600',
+  },
+  title: {
+    marginTop: 6,
     textAlign: 'center',
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: 13,
+    color: '#333',
   },
 });
 

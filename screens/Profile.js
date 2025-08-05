@@ -4,7 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Linking,
   Image,
 } from "react-native";
 import ProfilePic from "../components/profile_sections/ProfilePic";
@@ -217,21 +216,18 @@ const Profile = () => {
 
         {isOwnProfile && (
           <View style={styles.folderGrid}>
-            <Text style={styles.sectionHeader}>Your Folders</Text>
-            <View style={styles.row}>
+            {/* <Text style={styles.sectionHeader}>Your Folders</Text> */}
+            <View style={styles.folderRow}>
               <FolderPreview
                 title="Favorited"
-                images={likedImages.map((img) => img.imageLink).filter(Boolean)}
+                images={[likedImages.find(img => img.imageLink)?.imageLink]}
                 onPress={() =>
                   navigation.navigate("GalleryView", { type: "liked" })
                 }
               />
-
               <FolderPreview
                 title="Gallery / Selling"
-                images={sellingImages
-                  .map((img) => img.imageLink)
-                  .filter(Boolean)}
+                images={[sellingImages.find(img => img.imageLink)?.imageLink]}
                 onPress={() =>
                   navigation.navigate("GalleryView", { type: "selling" })
                 }
@@ -248,17 +244,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingBottom: 20,
-    backgroundColor: "#F7F9FC",
+    backgroundColor: "#FFF",
   },
   profileContainer: {
     alignItems: "center",
     marginTop: 25,
-    backgroundColor: "white",
+    backgroundColor: "#FFF",
     paddingVertical: 20,
     borderRadius: 12,
     marginHorizontal: 16,
     shadowColor: "#000",
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.36,
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 6,
     elevation: 3,
@@ -341,12 +337,13 @@ const styles = StyleSheet.create({
     color: "#333",
     marginBottom: 12,
   },
-  row: {
+  folderRow: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    gap: 16,
+    paddingHorizontal: 16,
     width: "100%",
-    marginVertical: 10,
-    paddingHorizontal: 12,
   },
   editStripeRow: {
     flexDirection: "row",
