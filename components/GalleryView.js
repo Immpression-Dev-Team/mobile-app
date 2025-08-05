@@ -18,6 +18,8 @@ import { useAuth } from '../state/AuthProvider';
 import { useNavigation } from '@react-navigation/native';
 import ScreenTemplate from '../screens/Template/ScreenTemplate';
 import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
+import { API_URL } from '../API_URL';
 
 const screenWidth = Dimensions.get('window').width;
 
@@ -47,7 +49,6 @@ const GalleryView = ({ route }) => {
           setImages(likedImgsRes?.images || []);
         } else {
           const res = await getUserImages(token);
-
           setImages(
             res.images.filter((img) => {
               if (activeType === 'selling') return img.stage === 'approved';
@@ -120,10 +121,10 @@ const GalleryView = ({ route }) => {
           />
           <View style={styles.cardInfo}>
             <Text style={styles.artTitle} numberOfLines={1}>
-              {item.name}
+              {item.title}
             </Text>
             <Text style={styles.artArtist} numberOfLines={1}>
-              {item.artistName || 'Unknown Artist'}
+              {item.artist?.name || 'Unknown Artist'}
             </Text>
           </View>
         </Animated.View>

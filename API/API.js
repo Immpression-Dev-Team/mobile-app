@@ -1,8 +1,6 @@
 import axios from 'axios';
 import { API_URL } from '../API_URL';
 
-console.log(API_URL);
-
 async function requestOtp(email, password) {
   try {
     const response = await axios.post(
@@ -279,6 +277,7 @@ const deleteProfilePicture = async (publicId) => {
 
 async function getAllProfilePictures(token) {
   try {
+    console.log('Fetching all profile pictures from API...', API_URL);
     const response = await axios.get(`${API_URL}/all-profile-pictures`, {
       headers: {
         Authorization: `Bearer ${token}`, // Add token to headers
@@ -589,7 +588,7 @@ async function fetchUserProfilePicture(userId, token) {
       },
     });
 
-    // console.log('Profile picture response:', response.data);
+    console.log('Profile picture response:', response.data);
 
     return response.data.profilePictureLink || null;
   } catch (error) {
@@ -631,24 +630,27 @@ async function getUserProfileById(userId) {
   }
 }
 
-async function getImage(imageId, token) {
+// Add this to your API file (e.g., API.js)
+async function updateUserPassword(passwordData, token) {
   try {
-    const response = await axios.get(`${API_URL}/image/${imageId}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      },
-    });
-
+    const response = await axios.patch(
+      `${API_URL}/update-password`,
+      passwordData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
     return response.data;
   } catch (error) {
-    console.error('Error fetching image:', error);
-    return null;
+    console.error('Error updating password:', error.response?.data || error);
+    return error.response?.data || error;
   }
 }
 
 export {
-  getImage,
   requestOtp,
   verifyOtp,
   getAllImages,
@@ -683,4 +685,5 @@ export {
   fetchUserProfilePicture,
   fetchLikedImages,
   getUserProfileById,
+  updateUserPassword,
 };

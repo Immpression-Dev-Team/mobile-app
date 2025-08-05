@@ -1,40 +1,85 @@
+import { CardField, useStripe } from "@stripe/stripe-react-native";
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
+  ActivityIndicator,
   Alert,
   ScrollView,
-  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { CardField, useStripe } from '@stripe/stripe-react-native';
+import { createPaymentIntent } from "../API/API";
+import { useAuth } from "../state/AuthProvider";
 import ScreenTemplate from "./Template/ScreenTemplate";
+import axios from "axios";
+import { API_URL } from "../API_URL";
 
 const PaymentScreen = ({ navigation, route }) => {
-  const { orderId } = route.params; // Order ID passed from the DeliveryDetails screen
-  const [cardNumber, setCardNumber] = useState("");
-  const [expiryDate, setExpiryDate] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [nameOnCard, setNameOnCard] = useState("");
+  const { orderId, price } = route.params;
+  const [loading, setLoading] = useState(false);
   const { confirmPayment } = useStripe();
+  const { userData, setUserData, logout } = useAuth();
+  const token = userData?.token;
 
   const handlePayment = async () => {
-    if (!cardNumber || !expiryDate || !cvv || !nameOnCard) {
-      Alert.alert("Missing Fields", "Please fill in all payment fields.");
-      return;
-    }
-
     try {
-      // Simulate a payment process
-      Alert.alert("Payment Successful", "Your payment has been processed!");
+      setLoading(true);
 
-      // Navigate to the Review/Summary Screen
-      navigation.navigate("ReviewScreen", { orderId });
+      const response = await createPaymentIntent(
+        { orderId, price: Math.round(price * 100) },
+        token
+      );
+      if (!response.clientSecret) {
+        throw new Error("No client secret received from server");
+      }
+      console.log("response", response);
+
+      const { error, paymentIntent } = await confirmPayment(
+        response.clientSecret,
+        {
+          paymentMethodType: "Card",
+          paymentMethodData: {
+            billingDetails: {
+              name: userData.name,
+            },
+          },
+        }
+      );
+      console.log("paymentIntent", paymentIntent);
+      console.log("error", error);
+
+      if (error) {
+        updateOrder("failed");
+        Alert.alert("Payment failed", error.message);
+      } else if (paymentIntent) {
+        updateOrder("paid");
+      }
     } catch (error) {
-      console.error("Payment Error:", error);
-      Alert.alert("Payment Failed", "An error occurred while processing payment.");
+      updateOrder("failed");
+      Alert.alert(
+        "Error",
+        error.response?.data?.error ||
+          error.message ||
+          "An error occurred while processing payment."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateOrder = async (status) => {
+    try {
+      await axios.put(
+        `${API_URL}/order/${orderId}`,
+        { status, transactionId: "123xyz" },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (status === "paid") {
+        navigation.replace("ReviewScreen", { orderId });
+      }
+    } catch (error) {
+      console.error("Failed to update order:", error);
     }
   };
 
@@ -48,52 +93,37 @@ const PaymentScreen = ({ navigation, route }) => {
         >
           <Text style={styles.arrow}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.header}>Payment Details</Text>
+        <View style={styles.orderDetails}>
+          <Text style={styles.header}>Payment Details</Text>
+          <Text style={styles.price}>Price: ${price}</Text>
+        </View>
       </View>
 
       {/* Main Content */}
       <ScrollView contentContainerStyle={styles.content}>
-        {/* Card Number Input with Icon */}
-        <View style={styles.inputContainer}>
-          <Image
-            source={require("../assets/icons/credit-card-icon.png")}
-            style={styles.icon}
-          />
-          <TextInput
-            style={styles.inputWithIcon}
-            placeholder="Card Number"
-            value={cardNumber}
-            onChangeText={setCardNumber}
-            keyboardType="numeric"
-          />
-        </View>
-
-        {/* Other Inputs */}
-        <TextInput
-          style={styles.input}
-          placeholder="Expiry Date (MM/YY)"
-          value={expiryDate}
-          onChangeText={setExpiryDate}
-          keyboardType="numeric"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="CVV"
-          value={cvv}
-          onChangeText={setCvv}
-          keyboardType="numeric"
-          secureTextEntry
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Name on Card"
-          value={nameOnCard}
-          onChangeText={setNameOnCard}
+        <CardField
+          postalCodeEnabled={false}
+          placeholder={{
+            number: "4242 4242 4242 4242",
+          }}
+          cardStyle={{
+            backgroundColor: "#FFFFFF",
+            textColor: "#000000",
+          }}
+          style={styles.cardField}
         />
 
         {/* Pay Now Button */}
-        <TouchableOpacity style={styles.button} onPress={handlePayment}>
-          <Text style={styles.buttonText}>Pay Now</Text>
+        <TouchableOpacity
+          style={[styles.button, loading && styles.buttonDisabled]}
+          onPress={handlePayment}
+          disabled={loading}
+        >
+          {loading ? (
+            <ActivityIndicator color="#FFF" />
+          ) : (
+            <Text style={styles.buttonText}>Pay Now</Text>
+          )}
         </TouchableOpacity>
       </ScrollView>
     </ScreenTemplate>
@@ -118,6 +148,12 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 24,
     fontWeight: "bold",
+    color: "#333",
+  },
+  price: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginTop: 10,
     color: "#333",
   },
   content: {
@@ -164,6 +200,20 @@ const styles = StyleSheet.create({
     color: "#FFF",
     fontWeight: "bold",
     fontSize: 16,
+  },
+  cardField: {
+    width: "100%",
+    height: 50,
+    marginBottom: 20,
+  },
+  buttonDisabled: {
+    opacity: 0.7,
+  },
+  orderDetails: {
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginLeft: 20,
   },
 });
 

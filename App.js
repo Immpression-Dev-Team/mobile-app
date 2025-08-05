@@ -10,6 +10,7 @@ import 'react-native-get-random-values';
 
 const STRIPE_KEY = 'your-stripe-publishable-key'; // Replace with your Stripe publishable key
 
+
 const Stack = createStackNavigator();
 
 const AppContent = () => {
@@ -35,7 +36,11 @@ export default function App() {
   return (
     <AuthProvider>
       <NavigationContainer>
-        <StripeProvider publishableKey={STRIPE_KEY}>
+        <StripeProvider
+          publishableKey={
+            "pk_test_51RWFfQ4DVblvV3YcFDRm2SVYcWJcbEpwZyaCDzwxd5un2jRsqca4y3fenZiudVWjFF1Wy6WcCQ6JIvVWmUKh7TYc00AQO5NYKH"
+          }
+        >
           <AppContent />
         </StripeProvider>
       </NavigationContainer>

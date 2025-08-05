@@ -36,7 +36,7 @@ const Profile = () => {
   const [likedImages, setLikedImages] = useState([]);
   const [soldImages, setSoldImages] = useState([]);
   const [boughtImages, setBoughtImages] = useState([]);
-
+  const [stripeOnboardingData, setStripeOnboardingData] = useState({});
   // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -90,7 +90,81 @@ const Profile = () => {
 
     fetchProfileData();
     fetchImageData();
+    fetchBoughtImages();
   }, [token, userId]);
+
+  const fetchBoughtImages = async () => {
+    const res = await axios.get(`${API_URL}/orders`);
+    setBoughtImages(
+      res.data.data.filter((order) => order.userId === currentUserId)
+    );
+  };
+
+  const handlePayout = async () => {
+    console.log('payout');
+
+    const res = await axios.post(`${API_URL}/payout`, {
+      stripeConnectId: 'acct_1RdcTdQPrkTTRhKX',
+      amount: 2,
+    });
+    console.log('res', res.data);
+  };
+
+  const handleCreateStripeAccount = async () => {
+    // console.log("create stripe account");
+    try {
+      const res = await axios.post(`${API_URL}/create-stripe-account`, {
+        userId: currentUserId,
+        userName: profileName,
+        userEmail: userData.user.user.email,
+        credentials: 'include', // this ensures cookies are sent
+      });
+      if (res.data.data.url) {
+        const browserResult = await WebBrowser.openBrowserAsync(
+          res.data.data.url
+        );
+        checkStripeStatus();
+      }
+      // await createStripeOnboarding(res.data.data.id);
+    } catch (error) {
+      // console.error("Error creating stripe account:", error);
+    }
+  };
+
+  const checkStripeStatus = async () => {
+    try {
+      const res = await axios.post(
+        `${API_URL}/check-stripe-status`,
+        {},
+        {
+          withCredentials: true, // ✅ Correct syntax for axios (not "credentials: include")
+        }
+      );
+      // Update onboarding completion status
+      if (res.data?.data) {
+        setStripeOnboardingData(res.data?.data);
+      }
+    } catch (error) {
+      console.error('Error checking status:', error);
+      console.error('Error details:', error.response?.data); // Added more detailed error logging
+    }
+  };
+
+  useEffect(() => {
+    checkStripeStatus();
+  }, []);
+
+  // const createStripeOnboarding = async (stripeConnectId) => {
+  //   console.log("create stripe onboarding");
+
+  //   const res = await axios.post(`${API_URL}/createStripeOnboardingLink`, {
+  //     stripeConnectId: stripeConnectId,
+  //   });
+  //   if (res.data.data.url) {
+  //     Linking.openURL(res.data.data.url);
+  //   }
+  //   console.log("res", res.data.data.url);
+  // };
 
   return (
     <ScreenTemplate>
@@ -102,6 +176,28 @@ const Profile = () => {
           >
             <Text style={styles.editProfileText}>Edit Profile</Text>
           </TouchableOpacity>
+        )}
+
+        {isOwnProfile && (
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.viewProfileButton}
+              onPress={handlePayout}
+            >
+              <Text style={styles.viewProfileButtonText}>Payout</Text>
+            </TouchableOpacity>
+
+            {!stripeOnboardingData?.onboarding_completed && (
+              <TouchableOpacity
+                style={styles.viewProfileButton}
+                onPress={handleCreateStripeAccount}
+              >
+                <Text style={styles.viewProfileButtonText}>
+                  Create Stripe Account
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
         )}
 
         <View style={styles.profileContainer}>
@@ -142,11 +238,9 @@ const Profile = () => {
 
               <FolderPreview
                 title="Gallery / Selling"
-                images={
-                  sellingImages
-                  // .map((img) => img.imageLink)
-                  // .filter(Boolean)
-                }
+                images={sellingImages
+                  .map((img) => img.imageLink)
+                  .filter(Boolean)}
                 onPress={() =>
                   navigation.navigate('GalleryView', { type: 'selling' })
                 }
@@ -183,9 +277,35 @@ const styles = StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 50,
+    marginHorizontal: 20,
+    gap: 10,
+  },
+  viewProfileButton: {
+    backgroundColor: '#007AFF',
+    paddingVertical: 8,
+    paddingHorizontal: 15,
+    borderRadius: 8,
+    flex: 1,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    maxWidth: 150,
+  },
+  viewProfileButtonText: {
+    color: '#FFFFFF',
+    fontSize: 12,
+    fontWeight: '600',
+  },
   profileContainer: {
     alignItems: 'center',
-    marginTop: 55,
+    marginTop: 25,
     backgroundColor: 'white',
   },
   nameArtistContainer: {

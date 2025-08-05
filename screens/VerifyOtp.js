@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,22 +8,22 @@ import {
   Pressable,
   Image,
   ImageBackground,
-} from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { verifyOtp } from '../API/API';
-import { useNavigation, useRoute } from '@react-navigation/native';
+} from "react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { verifyOtp } from "../API/API";
+import { useNavigation, useRoute } from "@react-navigation/native";
 
-const logoImage = require('../assets/Logo_T.png');
-const headerImage = require('../assets/headers/Immpression_multi.png');
-const backgroundImage = require('../assets/backgrounds/paint_background.png');
+const logoImage = require("../assets/Logo_T.png");
+const headerImage = require("../assets/headers/Immpression_multi.png");
+const backgroundImage = require("../assets/backgrounds/paint_background.png");
 
 const VerifyOtp = () => {
-  const [code, setCode] = useState('');
-  const [error, setError] = useState('');
+  const [code, setCode] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const route = useRoute();
-  console.log('Route Params:', route.params);
+  console.log("Route Params:", route.params);
 
   const { email, password } = route.params; // Get the email passed from request otp screen
 
@@ -31,15 +31,15 @@ const VerifyOtp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     if (!email.trim()) {
-      setError('Please enter your email address');
+      setError("Please enter your email address");
       return;
     }
 
     if (!code.trim()) {
-      setError('Please enter the OTP code');
+      setError("Please enter the OTP code");
       return;
     }
 
@@ -48,12 +48,12 @@ const VerifyOtp = () => {
       const result = await verifyOtp(email, code);
 
       if (!result.success === true) {
-        throw new Error('Invalid OTP. Please try again.');
+        throw new Error("Invalid OTP. Please try again.");
       }
 
-      navigation.navigate('SignUp', { email, password });
+      navigation.navigate("SignUp", { email, password });
     } catch (error) {
-      setError(error.message || 'An unexpected error occurred');
+      setError(error.message || "An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
@@ -72,8 +72,8 @@ const VerifyOtp = () => {
         </View>
         <Text
           style={{
-            color: 'blue',
-            textAlign: 'center',
+            color: "blue",
+            textAlign: "center",
             marginTop: 10,
             marginBottom: 25,
             fontWeight: 700,
@@ -119,8 +119,8 @@ const VerifyOtp = () => {
 
               <Text
                 style={{
-                  color: 'red',
-                  textAlign: 'center',
+                  color: "red",
+                  textAlign: "center",
                   marginTop: 10,
                 }}
               >
@@ -145,59 +145,59 @@ export default VerifyOtp;
 const styles = StyleSheet.create({
   backgroundImage: {
     flex: 1,
-    resizeMode: 'cover',
-    justifyContent: 'center',
+    resizeMode: "cover",
+    justifyContent: "center",
   },
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
+    justifyContent: "flex-start",
+    alignItems: "center",
     paddingTop: 0,
   },
   totalHeader: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
   logoContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 20,
   },
   logo: {
     width: 70,
     height: 70,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   headerImageContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 10,
     marginLeft: 12,
   },
   headerImage: {
     width: 200,
     height: 50,
-    resizeMode: 'contain',
+    resizeMode: "contain",
   },
   contentContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    width: '100%',
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
   keyboardAvoidingContainer: {
-    width: '80%',
+    width: "80%",
   },
   inputContainer: {
-    width: '100%',
+    width: "100%",
     marginTop: -200, // Adjust this value to bring inputs higher up
   },
   inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#C6C7DE',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#C6C7DE",
     paddingHorizontal: 15,
     paddingVertical: 10,
     borderRadius: 20,
@@ -211,48 +211,48 @@ const styles = StyleSheet.create({
     height: 40,
   },
   forgotPasswordText: {
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 10,
     marginRight: 10,
-    color: '#3C3D52',
-    textDecorationLine: 'underline',
+    color: "#3C3D52",
+    textDecorationLine: "underline",
   },
   buttonContainer: {
-    width: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 20, // Adjust this value to bring buttons higher up
   },
   button: {
-    backgroundColor: 'blue',
-    width: '100%',
+    backgroundColor: "blue",
+    width: "100%",
     padding: 11,
     borderRadius: 20,
     marginTop: 10,
     minHeight: 50, // Ensure the button maintains a visible height
   },
   buttonText: {
-    textAlign: 'center',
-    color: 'white',
-    fontWeight: 'bold',
+    textAlign: "center",
+    color: "white",
+    fontWeight: "bold",
     fontSize: 15,
   },
   buttonOutline: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     marginTop: 10,
   },
   buttonOutlineText: {
-    color: 'black',
-    fontWeight: 'bold',
+    color: "black",
+    fontWeight: "bold",
     fontSize: 15,
-    textAlign: 'center',
+    textAlign: "center",
   },
   googleButton: {
-    backgroundColor: '#DB4437',
+    backgroundColor: "#DB4437",
     marginTop: 10,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
   },
   googleIcon: {
     marginRight: 10,
