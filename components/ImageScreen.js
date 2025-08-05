@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
   View,
   Image,
@@ -7,102 +7,150 @@ import {
   FlatList,
   Dimensions,
   TouchableOpacity,
-} from "react-native";
-import { useAuth } from "../state/AuthProvider";
+  ActivityIndicator,
+} from 'react-native';
+import { useAuth } from '../state/AuthProvider';
 import {
-  toggleLike,
-  fetchLikeData,
-  incrementImageViews,
   fetchUserProfilePicture,
-} from "../API/API";
-import ScreenTemplate from "../screens/Template/ScreenTemplate";
-import PriceSliders from "./PriceSliders";
+  getImage,
+  incrementImageViews,
+} from '../API/API';
+import ScreenTemplate from '../screens/Template/ScreenTemplate';
+import { useLike } from '../hooks/useLike';
+import axios from 'axios';
 
-const share = require("../assets/icons/share-button.jpg");
-const like = require("../assets/icons/like-button.jpg");
-const likedIcon = require("../assets/icons/like-button.jpg");
-const likesIcon = require("../assets/icons/likes_icon.png");
-const viewsIcon = require("../assets/icons/views_icon.jpg");
+const like = require('../assets/icons/like-button.jpg');
+const likedIcon = require('../assets/icons/like-button.jpg');
+const likesIcon = require('../assets/icons/likes_icon.png');
+const viewsIcon = require('../assets/icons/views_icon.jpg');
 
-const { width, height } = Dimensions.get("window");
+const { width, height } = Dimensions.get('window');
 
 const ImageScreen = ({ route, navigation }) => {
   const { images, initialIndex } = route.params;
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [currentImage, setCurrentImage] = useState(null);
+  const [isLoadingImage, setIsLoadingImage] = useState(true);
   const flatListRef = useRef(null);
-  const { token } = useAuth();
-  const [likes, setLikes] = useState(0);
-  const [hasLiked, setHasLiked] = useState(false);
+  const { token, userData } = useAuth();
   const [profilePicture, setProfilePicture] = useState(null);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+  const [profileError, setProfileError] = useState(null);
 
   useEffect(() => {
-    console.log("Current Image Data:", images[currentIndex]);
-
-    if (images[currentIndex]?.userId) {
-      console.log(
-        `Fetching profile picture for userId: ${images[currentIndex].userId}`
-      );
-
-      fetchUserProfilePicture(images[currentIndex].userId, token)
-        .then((profilePic) => {
-          console.log("Received profile picture link:", profilePic);
-          setProfilePicture(profilePic);
-        })
-        .catch((error) => {
-          console.error("Failed to fetch profile picture:", error);
-        });
-    } else {
-      console.warn("No userId found for the current image.");
-    }
-  }, [currentIndex]);
-
-  useEffect(() => {
-    if (images[currentIndex]?._id) {
-      handleFetchLikeData(images[currentIndex]._id);
-      handleViewIncrement(currentIndex);
-    }
-  }, [currentIndex]);
-
-  const handleFetchLikeData = async (imageId) => {
-    if (!imageId) return;
-    try {
-      const data = await fetchLikeData(imageId, token);
-      setLikes(data.likesCount);
-      setHasLiked(data.hasLiked);
-    } catch (error) {
-      console.error("Error fetching like data:", error);
-    }
-  };
-
-  const handleToggleLike = async () => {
-    if (!images[currentIndex]?._id) return;
-    try {
-      const data = await toggleLike(images[currentIndex]._id, token);
-      setLikes(data.likesCount);
-      setHasLiked(data.hasLiked);
-    } catch (error) {
-      console.error("Error liking/unliking image:", error);
-    }
-  };
-
-  const handleViewIncrement = async (index) => {
-    const currentImage = images[index];
-    if (currentImage && currentImage._id) {
-      try {
-        console.log(`Incrementing views for image ID: ${currentImage._id}`);
-        await incrementImageViews(currentImage._id, token);
-      } catch (error) {
-        console.error("Error incrementing image views:", error);
+    const fetchImageData = async () => {
+      if (images && images[currentIndex]) {
+        setIsLoadingImage(true);
+        try {
+          const imageId = images[currentIndex]._id;
+          const image = await getImage(imageId, token);
+          setCurrentImage(image);
+          console.log('currentimage here', JSON.stringify(image, null, 2));
+          console.log('route params ', JSON.stringify(route.params, null, 2));
+        } catch (error) {
+          console.error('Failed to fetch image:', error);
+        } finally {
+          setIsLoadingImage(false);
+        }
       }
+    };
+
+    fetchImageData();
+  }, [currentIndex, images, token]);
+
+  const isInitiallyLiked = currentImage?.likes?.includes(
+    userData?.user?.user._id
+  );
+
+  const {
+    likes,
+    hasLiked,
+    toggleLike: handleToggleLike,
+    isLoading: isLikeLoading,
+    error: likeError,
+  } = useLike(
+    currentImage?.likes?.length || 0,
+    isInitiallyLiked || false,
+    isInitiallyLiked || false,
+    currentImage?._id,
+    token
+  );
+
+  // Memoized fetch profile picture function
+  const fetchProfilePicture = useCallback(
+    async (userId) => {
+      if (!userId) return;
+
+      setIsLoadingProfile(true);
+      setProfileError(null);
+      try {
+        const profilePic = await fetchUserProfilePicture(userId, token);
+        setProfilePicture(profilePic);
+      } catch (error) {
+        console.error('Failed to fetch profile picture:', error);
+        setProfileError('Failed to load profile picture');
+      } finally {
+        setIsLoadingProfile(false);
+      }
+    },
+    [token]
+  );
+
+  // Memoized view increment function
+  const handleViewIncrement = useCallback(
+    async (imageId) => {
+      if (!imageId) return;
+      try {
+        await incrementImageViews(imageId, token);
+      } catch (error) {
+        console.error('Error incrementing image views:', error);
+      }
+    },
+    [token]
+  );
+
+  // Effect for handling image changes
+  useEffect(() => {
+    if (!currentImage) return;
+
+    // Fetch profile picture when image changes
+    if (currentImage.userId) {
+      fetchProfilePicture(currentImage.userId);
     }
-  };
+
+    // Increment views when image changes
+    handleViewIncrement(currentImage._id);
+  }, [currentImage, fetchProfilePicture, handleViewIncrement]);
+
+  // Handle FlatList scroll
+  const handleScrollEnd = useCallback(
+    (event) => {
+      const index = Math.round(event.nativeEvent.contentOffset.x / width);
+      if (index !== currentIndex) {
+        setCurrentIndex(index);
+      }
+    },
+    [currentIndex]
+  );
+
+  // Render loading state if no current image
+  if (!currentImage) {
+    return (
+      <ScreenTemplate>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" />
+          <Text>Loading image...</Text>
+        </View>
+      </ScreenTemplate>
+    );
+  }
 
   return (
     <ScreenTemplate>
       <View style={styles.container}>
         {/* Artist Info + Likes/Views */}
         <View style={styles.headerContainer}>
-          {/* Likes & Views Section - Now on the Left */}
+          {/* Likes & Views Section */}
           <View style={styles.likeViewCountContainer}>
             <View style={styles.count}>
               <Image source={likesIcon} style={styles.likesIcon} />
@@ -110,27 +158,26 @@ const ImageScreen = ({ route, navigation }) => {
             </View>
             <View style={styles.count}>
               <Image source={viewsIcon} style={styles.viewsIcon} />
-              <Text style={styles.viewsCount}>
-                {images[currentIndex]?.views || 0}
-              </Text>
+              <Text style={styles.viewsCount}>{currentImage?.views || 0}</Text>
             </View>
           </View>
 
-          {/* Artist Info - Now on the Right */}
+          {/* Artist Info */}
           <View style={styles.artistContainer}>
             <Text style={styles.artistName}>
               <Text style={styles.boldText}>
-                {images[currentIndex]?.artistName || "Unknown Artist"}
+                {currentImage?.artistName || 'Unknown Artist'}
               </Text>
             </Text>
-            {profilePicture && (
+            {isLoadingProfile ? (
+              <ActivityIndicator size="small" style={styles.profileLoading} />
+            ) : profilePicture ? (
               <Image
                 source={{ uri: profilePicture }}
-                style={[
-                  styles.profilePicture,
-                  { marginLeft: 10, marginRight: 0 },
-                ]}
+                style={styles.profilePicture}
               />
+            ) : (
+              <View style={styles.profilePlaceholder} />
             )}
           </View>
         </View>
@@ -144,81 +191,85 @@ const ImageScreen = ({ route, navigation }) => {
               <Image
                 source={{ uri: item.imageLink }}
                 style={styles.fullImage}
+                resizeMode="contain"
               />
             </View>
           )}
           horizontal
           pagingEnabled
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item) => item._id}
           showsHorizontalScrollIndicator={false}
           initialScrollIndex={initialIndex}
-          getItemLayout={(data, index) => ({
+          getItemLayout={(_, index) => ({
             length: width,
             offset: width * index,
             index,
           })}
-          onMomentumScrollEnd={(event) => {
-            const index = Math.round(event.nativeEvent.contentOffset.x / width);
-            if (index !== currentIndex) {
-              setCurrentIndex(index);
-              handleFetchLikeData(images[index]._id);
-              handleViewIncrement(index);
-            }
-          }}
+          onMomentumScrollEnd={handleScrollEnd}
         />
 
         {/* Description & Like Button */}
         <View style={styles.descriptionButtonContainer}>
           <View style={styles.textContainer}>
             <Text style={styles.artTitle}>
-              {images[currentIndex]?.name || "Untitled"}
+              {currentImage?.name || 'Untitled'}
             </Text>
 
             <Text style={styles.labelText}>
-              CATEGORY:{" "}
+              CATEGORY:{' '}
               <Text style={styles.boldText}>
-                {images[currentIndex]?.category || "No Category"}
+                {currentImage?.category || 'No Category'}
               </Text>
             </Text>
             <Text style={styles.labelText}>
-              DESCRIPTION:{" "}
+              DESCRIPTION:{' '}
               <Text style={styles.boldText}>
-                {images[currentIndex]?.description ||
-                  "No Description Available"}
+                {currentImage?.description || 'No Description Available'}
               </Text>
             </Text>
           </View>
+
           <TouchableOpacity
-            style={styles.likeButton}
+            style={[styles.likeButton, hasLiked && styles.likedButton]}
             onPress={handleToggleLike}
+            disabled={isLikeLoading}
           >
-            <Image
-              source={hasLiked ? likedIcon : like}
-              style={styles.likeIcon}
-            />
-            <Text style={styles.likeText}>{hasLiked ? "UNLIKE" : "LIKE"}</Text>
+            {isLikeLoading ? (
+              <ActivityIndicator size="small" color="#FFF" />
+            ) : (
+              <>
+                <Image
+                  source={hasLiked ? likedIcon : like}
+                  style={styles.likeIcon}
+                />
+                <Text style={styles.likeText}>
+                  {hasLiked ? 'UNLIKE' : 'LIKE'}
+                </Text>
+              </>
+            )}
           </TouchableOpacity>
         </View>
+
+        {/* Error Messages */}
+        {likeError && <Text style={styles.errorText}>{likeError}</Text>}
+        {profileError && <Text style={styles.errorText}>{profileError}</Text>}
       </View>
 
+      {/* Price and Buy Now Button */}
       <View style={styles.priceButtonContainer}>
         <View style={styles.priceContainer}>
           <Text style={styles.priceText}>
-            $
-            {images[currentIndex]?.price
-              ? images[currentIndex].price.toFixed(2)
-              : "N/A"}
+            ${currentImage?.price?.toFixed(2) || 'N/A'}
           </Text>
         </View>
         <TouchableOpacity
           style={styles.buyNowButton}
           onPress={() =>
-            navigation.navigate("DeliveryDetails", {
-              imageId: images[currentIndex]?._id,
-              artName: images[currentIndex]?.name,
-              imageLink: images[currentIndex]?.imageLink,
-              artistName: images[currentIndex]?.artistName,
-              price: images[currentIndex]?.price,
+            navigation.navigate('PaymentScreen', {
+              artName: currentImage?.name,
+              imageLink: currentImage?.imageLink,
+              artistName: currentImage?.artistName,
+              price: currentImage?.price,
             })
           }
         >
@@ -233,169 +284,169 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   headerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 3.5,
     paddingVertical: 5,
-    backgroundColor: "#FFF",
+    backgroundColor: '#FFF',
   },
-
   artistContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-
   profilePicture: {
     width: 40,
     height: 40,
-  },
-
-  artistName: {
-    color: "black",
-    fontSize: 15,
-    fontFamily: "Calibri",
-    textTransform: "uppercase",
-    marginBottom: -10,
-  },
-
-  likeViewCountContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: -10,
-  },
-
-  count: {
-    flexDirection: "row",
-    alignItems: "center",
+    borderRadius: 20,
     marginLeft: 10,
   },
-
+  profilePlaceholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#e0e0e0',
+    marginLeft: 10,
+  },
+  profileLoading: {
+    marginLeft: 10,
+  },
+  artistName: {
+    color: 'black',
+    fontSize: 15,
+    fontFamily: 'Calibri',
+    textTransform: 'uppercase',
+    marginBottom: -10,
+  },
+  likeViewCountContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: -10,
+  },
+  count: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 10,
+  },
   likesIcon: {
     width: 15,
     height: 15,
     marginRight: 2,
   },
-
   viewsIcon: {
     width: 15,
     height: 15,
     marginRight: 2,
   },
-
   viewsCount: {
-    color: "black",
+    color: 'black',
     fontSize: 12,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
-
   imageContainer: {
     width,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-
   fullImage: {
-    width: "98.5%",
-    height: height * 0.5, // 50% of the screen height for responsiveness
-    resizeMode: "cover",
+    width: '98.5%',
+    height: height * 0.5,
   },
-
   descriptionButtonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 15,
     paddingVertical: 10,
-    backgroundColor: "#FFF",
+    backgroundColor: '#FFF',
     borderTopWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
   },
-
   textContainer: {
     flex: 1,
   },
-
   artTitle: {
-    color: "#333",
+    color: '#333',
     fontSize: 20,
-    fontWeight: "bold",
-    textTransform: "uppercase",
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
-
   labelText: {
-    color: "#000",
+    color: '#000',
     fontSize: 12,
-    textTransform: "uppercase",
+    textTransform: 'uppercase',
   },
-
   boldText: {
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
-
   likeButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#007AFF",
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#007AFF',
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 5,
   },
-
+  likedButton: {
+    backgroundColor: '#FF0000',
+  },
   likeIcon: {
     width: 15,
     height: 15,
     marginRight: 5,
   },
-
   likeText: {
-    color: "#FFF",
+    color: '#FFF',
     fontSize: 12,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
-
   buyNowButton: {
-    backgroundColor: "#007AFF",
+    backgroundColor: '#007AFF',
     paddingVertical: 8,
     paddingHorizontal: 14,
     borderRadius: 2,
     borderWidth: 1,
-    alignItems: "center",
-    flex: 1, // Allow button to take remaining space
+    alignItems: 'center',
+    flex: 1,
     elevation: 8,
   },
-
   buyNowButtonText: {
-    color: "#FFF",
+    color: '#FFF',
     fontSize: 20,
-    fontWeight: "bold",
-    textTransform: "uppercase",
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
-
   priceButtonContainer: {
-    flexDirection: "row", // Arrange price and button side by side
-    alignItems: "center", // Align them vertically
-    justifyContent: "space-between", // Distribute space
-    width: "95%", // Make it responsive
-    alignSelf: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '95%',
+    alignSelf: 'center',
     marginVertical: 10,
   },
-
   priceContainer: {
-    backgroundColor: "#D3D3D3", // Light gray background
+    backgroundColor: '#D3D3D3',
     paddingVertical: 8,
     paddingHorizontal: 5,
     borderRadius: 0,
     borderWidth: 0,
-    marginRight: 5, // Space between price and button
+    marginRight: 5,
   },
-
   priceText: {
     fontSize: 22,
-    fontWeight: "bold",
-    color: "#333",
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginVertical: 5,
   },
 });
 

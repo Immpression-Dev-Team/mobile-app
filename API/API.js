@@ -1,5 +1,5 @@
-import axios from "axios";
-import { API_URL } from "../API_URL";
+import axios from 'axios';
+import { API_URL } from '../API_URL';
 
 async function requestOtp(email, password) {
   try {
@@ -8,7 +8,7 @@ async function requestOtp(email, password) {
       { email, password },
       {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
@@ -16,7 +16,7 @@ async function requestOtp(email, password) {
     return response.data;
   } catch (error) {
     console.error(
-      "Error requesting OTP",
+      'Error requesting OTP',
       error?.response || error?.message || error
     );
     return error;
@@ -33,7 +33,7 @@ async function verifyOtp(email, code) {
       },
       {
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
@@ -41,7 +41,7 @@ async function verifyOtp(email, code) {
     return response.data;
   } catch (error) {
     console.error(
-      "Error verifying code",
+      'Error verifying code',
       error?.response || error?.message || error
     );
     return error;
@@ -53,21 +53,21 @@ async function updateBio(bio, token) {
   // Removed userId parameter from the function
 
   try {
-    console.log("Sending data to server:", { bio }); // Log the data being sent to the server
+    console.log('Sending data to server:', { bio }); // Log the data being sent to the server
     const response = await axios.put(
       `${API_URL}/set-bio`, // Removed userId from the payload
       { bio },
       {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to headers
-          "Content-Type": "application/json", // Ensure the content type is set correctly
+          'Content-Type': 'application/json', // Ensure the content type is set correctly
         },
       }
     );
     return response.data;
   } catch (error) {
-    console.error("Error updating bio:", error);
-    console.error("Server response:", error.response?.data); // Log server response for more details
+    console.error('Error updating bio:', error);
+    console.error('Server response:', error.response?.data); // Log server response for more details
     return error;
   }
 }
@@ -78,13 +78,13 @@ async function getBio(token) {
     const response = await axios.get(`${API_URL}/get-bio`, {
       headers: {
         Authorization: `Bearer ${token}`, // Add token to headers for authentication
-        "Content-Type": "application/json", // Ensure the content type is set correctly
+        'Content-Type': 'application/json', // Ensure the content type is set correctly
       },
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching bio:", error);
-    console.error("Server response:", error.response?.data); // Log server response for more details
+    console.error('Error fetching bio:', error);
+    console.error('Server response:', error.response?.data); // Log server response for more details
     return error;
   }
 }
@@ -93,14 +93,14 @@ async function getBio(token) {
 async function updateArtistType(artistType, token) {
   // Removed userId parameter
   try {
-    console.log("Sending data to server:", { artistType }); // Log the data being sent to the server
+    console.log('Sending data to server:', { artistType }); // Log the data being sent to the server
     const response = await axios.put(
       `${API_URL}/set-artist-type`, // Removed userId from the payload
       { artistType },
       {
         headers: {
           Authorization: `Bearer ${token}`, // Add token to headers
-          "Content-Type": "application/json", // Ensure the content type is set correctly
+          'Content-Type': 'application/json', // Ensure the content type is set correctly
         },
       }
     );
@@ -108,7 +108,7 @@ async function updateArtistType(artistType, token) {
     console.log(response.data);
     return response.data;
   } catch (error) {
-    console.error("Error updating artist type:", error);
+    console.error('Error updating artist type:', error);
     return error.response?.data || error;
   }
 }
@@ -122,14 +122,14 @@ async function updateArtType(artTypes, token) {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
     console.log(response);
     return response.data;
   } catch (error) {
-    console.error("Error updating art-lover art types: ", error);
+    console.error('Error updating art-lover art types: ', error);
     return error.response?.data || error;
   }
 }
@@ -140,13 +140,13 @@ async function getArtistType(token) {
     const response = await axios.get(`${API_URL}/get-artist-type`, {
       headers: {
         Authorization: `Bearer ${token}`, // Add token to headers for authentication
-        "Content-Type": "application/json", // Ensure the content type is set correctly
+        'Content-Type': 'application/json', // Ensure the content type is set correctly
       },
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching artist type:", error);
-    console.error("Server response:", error.response?.data); // Log server response for more details
+    console.error('Error fetching artist type:', error);
+    console.error('Server response:', error.response?.data); // Log server response for more details
     return error;
   }
 }
@@ -179,7 +179,7 @@ async function uploadImage(data, token) {
     const response = await axios.post(`${API_URL}/image`, data, {
       headers: {
         Authorization: `Bearer ${token}`, // Add token to headers
-        "Content-Type": "application/json", // Ensure the content type is set correctly
+        'Content-Type': 'application/json', // Ensure the content type is set correctly
       },
     });
     return response.data;
@@ -194,7 +194,7 @@ async function uploadProfilePicture(data, token) {
     const response = await axios.post(`${API_URL}/profile-picture`, data, {
       headers: {
         Authorization: `Bearer ${token}`, // Add token to headers
-        "Content-Type": "application/json", // Ensure the content type is set correctly
+        'Content-Type': 'application/json', // Ensure the content type is set correctly
       },
     });
     return response.data;
@@ -207,16 +207,16 @@ async function uploadProfilePicture(data, token) {
 const fetchProfilePicture = async (userId) => {
   try {
     const response = await fetch(`${API_URL}/profile-picture/${userId}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching profile picture:", error);
+    console.error('Error fetching profile picture:', error);
     throw error;
   }
 };
@@ -224,21 +224,21 @@ const fetchProfilePicture = async (userId) => {
 const updateProfilePicture = async (imageData, token) => {
   try {
     const response = await fetch(`${API_URL}/profile-picture`, {
-      method: "PUT", // Use PUT method to update
+      method: 'PUT', // Use PUT method to update
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`, // Assuming you use a token for authentication
       },
       body: JSON.stringify(imageData),
     });
 
     if (!response.ok) {
-      throw new Error("Failed to update profile picture");
+      throw new Error('Failed to update profile picture');
     }
 
     return await response.json();
   } catch (error) {
-    console.error("Error uploading profile picture:", error);
+    console.error('Error uploading profile picture:', error);
     throw error;
   }
 };
@@ -246,38 +246,36 @@ const updateProfilePicture = async (imageData, token) => {
 const deleteProfilePicture = async (publicId) => {
   try {
     const response = await fetch(`${API_URL}/delete-profile-picture`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({ public_id: publicId }),
     });
 
     const result = await response.json();
-    console.log("Delete result:", result);
+    console.log('Delete result:', result);
 
     // Check if the backend returned a success message or that the file was not found
-    if (result.success || result.message === "File not found") {
+    if (result.success || result.message === 'File not found') {
       return {
         success: true,
-        message: result.message || "Profile picture deleted successfully",
-      };
-    } else {
-      console.warn("No existing profile picture found.");
-      return {
-        success: true,
-        message: "No profile picture found for deletion",
+        message: result.message || 'Profile picture deleted successfully',
       };
     }
+    console.warn('No existing profile picture found.');
+    return {
+      success: true,
+      message: 'No profile picture found for deletion',
+    };
   } catch (error) {
-    console.error("Error deleting image:", error);
-    return { success: false, error: "Failed to delete image" };
+    console.error('Error deleting image:', error);
+    return { success: false, error: 'Failed to delete image' };
   }
 };
 
 async function getAllProfilePictures(token) {
   try {
-    console.log("Fetching all profile pictures from API...", API_URL);
     const response = await axios.get(`${API_URL}/all-profile-pictures`, {
       headers: {
         Authorization: `Bearer ${token}`, // Add token to headers
@@ -286,7 +284,7 @@ async function getAllProfilePictures(token) {
 
     return response.data.users; // Adjusted to return the full user data including bio and artistType
   } catch (error) {
-    console.error("Error fetching profile pictures:", error);
+    console.error('Error fetching profile pictures:', error);
     return error;
   }
 }
@@ -300,7 +298,7 @@ const getUserProfile = async (token) => {
     });
     return response.data; // Return the user profile data
   } catch (error) {
-    console.error("Error fetching user profile:", error);
+    console.error('Error fetching user profile:', error);
     throw error;
   }
 };
@@ -333,7 +331,7 @@ async function incrementViews(userId, token) {
     );
     return response.data;
   } catch (error) {
-    console.error("Error incrementing views:", error);
+    console.error('Error incrementing views:', error);
     return error.response;
   }
 }
@@ -349,14 +347,14 @@ async function updateAccountType(accountType, token) {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
 
     return response.data;
   } catch (error) {
-    console.error("Error updating account type:", error);
+    console.error('Error updating account type:', error);
     return error.response?.data || error;
   }
 }
@@ -375,7 +373,7 @@ async function incrementImageViews(imageId, token) {
     );
     return response.data;
   } catch (error) {
-    console.error("Error incrementing image views:", error);
+    console.error('Error incrementing image views:', error);
     return error.response;
   }
 }
@@ -386,12 +384,12 @@ async function getImageViews(imageId, token) {
     const response = await axios.get(`${API_URL}/get-image-views/${imageId}`, {
       headers: {
         Authorization: `Bearer ${token}`, // Add token to headers for authentication
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
     return response.data; // Return the image views data
   } catch (error) {
-    console.error("Error fetching image views:", error);
+    console.error('Error fetching image views:', error);
     return error.response;
   }
 }
@@ -400,12 +398,12 @@ async function createOrder(orderData, token) {
     const response = await axios.post(`${API_URL}/order`, orderData, {
       headers: {
         Authorization: `Bearer ${token}`, // Add token to headers
-        "Content-Type": "application/json", // Ensure the content type is set correctly
+        'Content-Type': 'application/json', // Ensure the content type is set correctly
       },
     });
     return response.data;
   } catch (error) {
-    console.error("Error creating order:", error.response?.data || error);
+    console.error('Error creating order:', error.response?.data || error);
     throw error;
   }
 }
@@ -418,14 +416,14 @@ async function createPaymentIntent(paymentData, token) {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
     return response.data; // Contains the client_secret and other payment details
   } catch (error) {
     console.error(
-      "Error creating payment intent:",
+      'Error creating payment intent:',
       error.response?.data || error
     );
     throw error;
@@ -440,13 +438,13 @@ async function confirmPayment(paymentIntentId, token) {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
     return response.data; // Contains confirmation result
   } catch (error) {
-    console.error("Error confirming payment:", error.response?.data || error);
+    console.error('Error confirming payment:', error.response?.data || error);
     throw error;
   }
 }
@@ -463,7 +461,7 @@ async function getPaymentStatus(paymentIntentId, token) {
     return response.data; // Contains the PaymentIntent status
   } catch (error) {
     console.error(
-      "Error fetching payment status:",
+      'Error fetching payment status:',
       error.response?.data || error
     );
     throw error;
@@ -480,7 +478,7 @@ async function deleteAccount(token) {
     });
     return response.data; // Return the response from the server
   } catch (error) {
-    console.error("Error deleting account:", error.response?.data || error);
+    console.error('Error deleting account:', error.response?.data || error);
     return error.response?.data || error;
   }
 }
@@ -491,13 +489,13 @@ async function updateUserProfile(updatedData, token) {
     const response = await axios.put(`${API_URL}/update-profile`, updatedData, {
       headers: {
         Authorization: `Bearer ${token}`, // Add token for authentication
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
     return response.data; // Return success message and updated user info
   } catch (error) {
-    console.error("Error updating profile:", error.response?.data || error);
+    console.error('Error updating profile:', error.response?.data || error);
     return error.response?.data || error;
   }
 }
@@ -510,7 +508,7 @@ async function getCurrentBid(imageId, token) {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching current bid:", error);
+    console.error('Error fetching current bid:', error);
     return error.response?.data || error;
   }
 }
@@ -525,7 +523,7 @@ async function placeBid(imageId, bidAmount, token) {
     );
     return response.data;
   } catch (error) {
-    console.error("Error placing bid:", error);
+    console.error('Error placing bid:', error);
     return error.response?.data || error;
   }
 }
@@ -538,7 +536,7 @@ async function fetchLikeData(imageId, token) {
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching like data:", error);
+    console.error('Error fetching like data:', error);
     return { likesCount: 0, hasLiked: false };
   }
 }
@@ -553,7 +551,7 @@ async function toggleLike(imageId, token) {
     );
     return response.data;
   } catch (error) {
-    console.error("Error liking/unliking image:", error);
+    console.error('Error liking/unliking image:', error);
     return { likesCount: 0, hasLiked: false };
   }
 }
@@ -567,14 +565,14 @@ async function updateImageStage(imageId, stage, token) {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
 
     return response.data;
   } catch (error) {
-    console.error("Error updating image stage:", error);
+    console.error('Error updating image stage:', error);
     return error.response?.data || error;
   }
 }
@@ -588,12 +586,12 @@ async function fetchUserProfilePicture(userId, token) {
       },
     });
 
-    console.log("Profile picture response:", response.data);
+    console.log('Profile picture response:', response.data);
 
     return response.data.profilePictureLink || null;
   } catch (error) {
     console.error(
-      "Error fetching user profile picture:",
+      'Error fetching user profile picture:',
       error.response?.data || error
     );
     return null; // Return null if there's an error
@@ -605,7 +603,7 @@ async function fetchLikedImages(token) {
     const response = await axios.get(`${API_URL}/image/liked-images`, {
       headers: {
         Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
     });
 
@@ -614,7 +612,7 @@ async function fetchLikedImages(token) {
       images: response.data.images || [],
     };
   } catch (err) {
-    console.error("Error fetching liked images:", err.response?.data || err);
+    console.error('Error fetching liked images:', err.response?.data || err);
     return { success: false, images: [] };
   }
 }
@@ -625,7 +623,7 @@ async function getUserProfileById(userId) {
     const response = await axios.get(`${API_URL}/profile/${userId}`);
     return response.data;
   } catch (error) {
-    console.error("Error fetching profile by ID:", error);
+    console.error('Error fetching profile by ID:', error);
     return null;
   }
 }
@@ -639,13 +637,13 @@ async function updateUserPassword(passwordData, token) {
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
       }
     );
     return response.data;
   } catch (error) {
-    console.error("Error updating password:", error.response?.data || error);
+    console.error('Error updating password:', error.response?.data || error);
     return error.response?.data || error;
   }
 }

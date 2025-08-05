@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from 'react';
 import {
   View,
   FlatList,
@@ -8,26 +8,26 @@ import {
   TouchableOpacity,
   Dimensions,
   Animated,
-} from "react-native";
+} from 'react-native';
 import {
   getUserImages,
   fetchLikedImages,
   incrementImageViews,
-} from "../API/API";
-import { useAuth } from "../state/AuthProvider";
-import { useNavigation } from "@react-navigation/native";
-import ScreenTemplate from "../screens/Template/ScreenTemplate";
-import { Ionicons } from "@expo/vector-icons";
-import axios from "axios";
-import { API_URL } from "../API_URL";
+} from '../API/API';
+import { useAuth } from '../state/AuthProvider';
+import { useNavigation } from '@react-navigation/native';
+import ScreenTemplate from '../screens/Template/ScreenTemplate';
+import { Ionicons } from '@expo/vector-icons';
+import axios from 'axios';
+import { API_URL } from '../API_URL';
 
-const screenWidth = Dimensions.get("window").width;
+const screenWidth = Dimensions.get('window').width;
 
 const filterTypes = [
-  { label: "Selling", value: "selling" },
-  { label: "Sold", value: "sold" },
-  { label: "Bought", value: "bought" },
-  { label: "Liked", value: "liked" },
+  { label: 'Selling', value: 'selling' },
+  { label: 'Sold', value: 'sold' },
+  { label: 'Bought', value: 'bought' },
+  { label: 'Liked', value: 'liked' },
 ];
 
 const GalleryView = ({ route }) => {
@@ -35,7 +35,6 @@ const GalleryView = ({ route }) => {
   const { userData } = useAuth();
   const token = userData?.token;
   const navigation = useNavigation();
-  const currentUserId = userData?.user?.user?._id;
 
   const [images, setImages] = useState([]);
   const [activeType, setActiveType] = useState(initialType);
@@ -45,53 +44,41 @@ const GalleryView = ({ route }) => {
       if (!token) return;
 
       try {
-        if (activeType === "liked") {
+        if (activeType === 'liked') {
           const likedImgsRes = await fetchLikedImages(token);
           setImages(likedImgsRes?.images || []);
         } else {
           const res = await getUserImages(token);
           setImages(
             res.images.filter((img) => {
-              if (activeType === "selling") return img.stage === "approved";
-              if (activeType === "sold") return img.stage === "sold";
-              if (activeType === "bought") return false; // Update later when logic exists
+              if (activeType === 'selling') return img.stage === 'approved';
+              if (activeType === 'sold') return img.stage === 'sold';
+              if (activeType === 'bought') return false; // Update later when logic exists
             })
           );
         }
       } catch (err) {
-        console.error("Error fetching gallery images:", err);
+        console.error('Error fetching gallery images:', err);
       }
     };
 
     fetchImages();
-    if (activeType === "bought") fetchBoughtImages();
   }, [activeType, token]);
-
-  const fetchBoughtImages = async () => {
-    try {
-      const res = await axios.get(`${API_URL}/orders`);
-      setImages(
-        res.data.data.filter((order) => order.userId === currentUserId)
-      );
-    } catch (error) {
-      console.error("Error fetching bought images:", error);
-    }
-  };
 
   const handleImagePress = async (image, index) => {
     try {
       await incrementImageViews(image._id, token);
     } catch (err) {
-      console.error("Error incrementing image views:", err);
+      console.error('Error incrementing image views:', err);
     } finally {
       const normalizedImages = images.map((img) => ({
         ...img,
         artist: {
-          name: img?.artist?.name || img?.artistName || "Unknown Artist",
+          name: img?.artist?.name || img?.artistName || 'Unknown Artist',
         },
       }));
 
-      navigation.navigate("ImageScreen", {
+      navigation.navigate('ImageScreen', {
         images: normalizedImages,
         initialIndex: index,
       });
@@ -137,7 +124,7 @@ const GalleryView = ({ route }) => {
               {item.title}
             </Text>
             <Text style={styles.artArtist} numberOfLines={1}>
-              {item.artist?.name || item.artistName || "Unknown Artist"}
+              {item.artist?.name || 'Unknown Artist'}
             </Text>
           </View>
         </Animated.View>
@@ -208,9 +195,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
     marginBottom: 1,
   },
   backButton: {
@@ -218,38 +205,38 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: "700",
-    color: "#333",
+    fontWeight: '700',
+    color: '#333',
     marginLeft: 10,
   },
   count: {
     fontSize: 14,
-    color: "#777",
+    color: '#777',
     marginLeft: 10,
   },
   filterContainer: {
-    flexDirection: "row",
-    alignSelf: "stretch", // Stretch horizontally
+    flexDirection: 'row',
+    alignSelf: 'stretch', // Stretch horizontally
     marginTop: 15,
     marginHorizontal: 12,
     borderRadius: 2,
-    overflow: "hidden",
-    backgroundColor: "#f1f3f5",
+    overflow: 'hidden',
+    backgroundColor: '#f1f3f5',
   },
 
   filterButton: {
     flex: 1, // Make buttons evenly stretch across the container
     paddingVertical: 8,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: '#ddd',
   },
 
   filterButtonActive: {
-    backgroundColor: "#333",
-    borderColor: "#333",
-    shadowColor: "#000",
+    backgroundColor: '#333',
+    borderColor: '#333',
+    shadowColor: '#000',
     shadowOffset: { width: 1, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3,
@@ -257,15 +244,15 @@ const styles = StyleSheet.create({
   },
 
   filterText: {
-    color: "#333",
+    color: '#333',
     fontSize: 13,
   },
   filterTextActive: {
-    color: "white",
-    fontWeight: "bold",
+    color: 'white',
+    fontWeight: 'bold',
   },
   gallery: {
-    alignItems: "center",
+    alignItems: 'center',
     paddingBottom: 50,
   },
   imageWrapper: {
@@ -273,30 +260,30 @@ const styles = StyleSheet.create({
     height: 200,
     marginHorizontal: 3,
     marginTop: 5,
-    backgroundColor: "#eee",
-    shadowColor: "#000",
+    backgroundColor: '#eee',
+    shadowColor: '#000',
     shadowOffset: { width: 2, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 4,
     elevation: 5,
   },
   image: {
-    width: "100%",
-    height: "100%",
+    width: '100%',
+    height: '100%',
   },
   emptyText: {
-    textAlign: "center",
+    textAlign: 'center',
     marginTop: 40,
-    color: "#888",
+    color: '#888',
     fontSize: 16,
   },
   cardContainer: {
     width: screenWidth / 2 - 20,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     marginHorizontal: 5,
     marginVertical: 10,
     borderRadius: 6,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.25,
     shadowRadius: 4,
@@ -304,7 +291,7 @@ const styles = StyleSheet.create({
   },
 
   cardImage: {
-    width: "100%",
+    width: '100%',
     height: 150,
   },
 
@@ -315,13 +302,13 @@ const styles = StyleSheet.create({
 
   artTitle: {
     fontSize: 14,
-    fontWeight: "600",
-    color: "#333",
+    fontWeight: '600',
+    color: '#333',
   },
 
   artArtist: {
     fontSize: 12,
-    color: "#777",
+    color: '#777',
   },
 });
 

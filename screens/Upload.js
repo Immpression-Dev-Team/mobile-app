@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -12,15 +12,15 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   TouchableWithoutFeedback,
-} from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import * as ImagePicker from "expo-image-picker";
-import * as ImageManipulator from "expo-image-manipulator";
-import DropDownPicker from "react-native-dropdown-picker";
-import { useAuth } from "../state/AuthProvider";
-import { uploadImage } from "../API/API";
-import ScreenTemplate from "./Template/ScreenTemplate";
-import LoadingSection from "../components/home_sections/SectionTemplate/LoadingSection";
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
+import DropDownPicker from 'react-native-dropdown-picker';
+import { useAuth } from '../state/AuthProvider';
+import { uploadImage } from '../API/API';
+import ScreenTemplate from './Template/ScreenTemplate';
+import LoadingSection from '../components/home_sections/SectionTemplate/LoadingSection';
 
 const Upload = () => {
   const { userData } = useAuth();
@@ -28,33 +28,33 @@ const Upload = () => {
   const [step, setStep] = useState(1);
 
   const [image, setImage] = useState(null);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [height, setHeight] = useState("");
-  const [width, setWidth] = useState("");
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
+  const [height, setHeight] = useState('');
+  const [width, setWidth] = useState('');
   const [isSigned, setIsSigned] = useState(false);
   const [isFramed, setIsFramed] = useState(false);
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState('');
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([
-    { label: "Paintings", value: "paintings" },
-    { label: "Photography", value: "photography" },
-    { label: "Graphic Design", value: "graphic design" },
-    { label: "Illustrations", value: "illustrations" },
-    { label: "Sculptures", value: "sculptures" },
-    { label: "Woodwork", value: "woodwork" },
-    { label: "Graffiti", value: "graffiti" },
-    { label: "Stencil", value: "stencil" },
+    { label: 'Paintings', value: 'paintings' },
+    { label: 'Photography', value: 'photography' },
+    { label: 'Graphic Design', value: 'graphic design' },
+    { label: 'Illustrations', value: 'illustrations' },
+    { label: 'Sculptures', value: 'sculptures' },
+    { label: 'Woodwork', value: 'woodwork' },
+    { label: 'Graffiti', value: 'graffiti' },
+    { label: 'Stencil', value: 'stencil' },
   ]);
   const [isLoading, setIsLoading] = useState(false);
 
   const displayError = (msg) =>
-    Platform.OS === "web" ? alert(msg) : Alert.alert("Error", msg);
+    Platform.OS === 'web' ? alert(msg) : Alert.alert('Error', msg);
 
   const selectImage = async () => {
     const result = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!result.granted) return alert("Permission required");
+    if (!result.granted) return alert('Permission required');
 
     const picker = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -79,35 +79,51 @@ const Upload = () => {
     const heightVal = parseFloat(height);
     const widthVal = parseFloat(width);
 
-    if (!image || !title || !description || !priceVal || !heightVal || !widthVal || !category) {
-      return displayError("Please complete all fields");
+    if (
+      !image ||
+      !title ||
+      !description ||
+      !priceVal ||
+      !heightVal ||
+      !widthVal ||
+      !category
+    ) {
+      return displayError('Please complete all fields');
     }
 
     setIsLoading(true);
 
     try {
       const formData = new FormData();
-      formData.append("file", { uri: image.uri, name: title, type: "image/jpeg" });
-      formData.append("upload_preset", "edevre");
-      formData.append("folder", "artwork");
-
-      const cloudRes = await fetch("https://api.cloudinary.com/v1_1/dttomxwev/image/upload", {
-        method: "POST",
-        body: formData,
+      formData.append('file', {
+        uri: image.uri,
+        name: title,
+        type: 'image/jpeg',
       });
+      formData.append('upload_preset', 'edevre');
+      formData.append('folder', 'artwork');
+
+      const cloudRes = await fetch(
+        'https://api.cloudinary.com/v1_1/dttomxwev/image/upload',
+        {
+          method: 'POST',
+          body: formData,
+        }
+      );
       const result = await cloudRes.json();
 
-      if (!result.secure_url) return displayError("Image upload failed");
+      if (!result.secure_url) return displayError('Image upload failed');
 
       const payload = {
         userId: userData.user.user._id,
+        artistEmail: userData.user.user.email,
         artistName: userData.user.user.name,
         name: title,
         imageLink: result.secure_url,
         price: priceVal,
         description,
         category,
-        stage: "review",
+        stage: 'review',
         dimensions: { height: heightVal, width: widthVal },
         isSigned,
         isFramed,
@@ -116,24 +132,24 @@ const Upload = () => {
       const dbRes = await uploadImage(payload, userData.token);
 
       if (dbRes.success) {
-        Alert.alert("Success", "Artwork submitted for review!");
+        Alert.alert('Success', 'Artwork submitted for review!');
         setStep(1);
         setImage(null);
-        setTitle("");
-        setDescription("");
-        setCategory("");
-        setPrice("");
-        setHeight("");
-        setWidth("");
+        setTitle('');
+        setDescription('');
+        setCategory('');
+        setPrice('');
+        setHeight('');
+        setWidth('');
         setIsSigned(false);
         setIsFramed(false);
-        navigation.navigate("Home");
+        navigation.navigate('Home');
       } else {
-        displayError("Server Error: " + (dbRes.data?.error || ""));
+        displayError('Server Error: ' + (dbRes.data?.error || ''));
       }
     } catch (e) {
-      console.error("Error submitting:", e);
-      displayError("An error occurred.");
+      console.error('Error submitting:', e);
+      displayError('An error occurred.');
     } finally {
       setIsLoading(false);
     }
@@ -148,13 +164,19 @@ const Upload = () => {
         <KeyboardAvoidingView behavior="padding" style={styles.container}>
           {step === 1 && (
             <View style={styles.card}>
-              <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={styles.backButton}
+              >
                 <Text style={styles.backText}>← Back</Text>
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.imageBox} onPress={selectImage}>
                 {image ? (
-                  <Image source={{ uri: image.uri }} style={styles.imagePreview} />
+                  <Image
+                    source={{ uri: image.uri }}
+                    style={styles.imagePreview}
+                  />
                 ) : (
                   <Text style={styles.imageText}>Tap to Upload Image</Text>
                 )}
@@ -196,11 +218,19 @@ const Upload = () => {
 
           {step === 2 && (
             <View style={styles.card}>
-              <TouchableOpacity onPress={() => setStep(1)} style={styles.backButton}>
+              <TouchableOpacity
+                onPress={() => setStep(1)}
+                style={styles.backButton}
+              >
                 <Text style={styles.backText}>← Back</Text>
               </TouchableOpacity>
 
-              {image && <Image source={{ uri: image.uri }} style={styles.imagePreviewTop} />}
+              {image && (
+                <Image
+                  source={{ uri: image.uri }}
+                  style={styles.imagePreviewTop}
+                />
+              )}
               <TextInput
                 style={styles.input}
                 placeholder="Height (in)"
@@ -234,7 +264,10 @@ const Upload = () => {
                 returnKeyType="done"
               />
               <TouchableOpacity
-                style={[styles.button, { marginTop: 16, opacity: isStepTwoValid ? 1 : 0.5 }]}
+                style={[
+                  styles.button,
+                  { marginTop: 16, opacity: isStepTwoValid ? 1 : 0.5 },
+                ]}
                 onPress={() => isStepTwoValid && handleSubmit()}
                 disabled={!isStepTwoValid}
               >
@@ -255,66 +288,71 @@ const Upload = () => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
+  container: { flex: 1, justifyContent: 'center', padding: 20 },
   card: { padding: 20 },
   input: {
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     borderRadius: 6,
     paddingHorizontal: 12,
     paddingVertical: 10,
     marginBottom: 12,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   dropdown: {
-    borderColor: "#ccc",
+    borderColor: '#ccc',
     marginBottom: 12,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
   },
   imageBox: {
     borderWidth: 2,
-    borderColor: "#007bff",
+    borderColor: '#007bff',
     borderRadius: 8,
     padding: 10,
     marginBottom: 16,
     height: 200,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#e6f0ff",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#e6f0ff',
   },
-  imageText: { color: "#007bff", fontSize: 16 },
-  imagePreview: { width: "100%", height: "100%", borderRadius: 6 },
-  imagePreviewTop: { width: "100%", height: 200, borderRadius: 8, marginBottom: 16 },
+  imageText: { color: '#007bff', fontSize: 16 },
+  imagePreview: { width: '100%', height: '100%', borderRadius: 6 },
+  imagePreviewTop: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 16,
+  },
   button: {
-    backgroundColor: "#007bff",
+    backgroundColor: '#007bff',
     paddingVertical: 14,
     borderRadius: 6,
-    alignItems: "center",
+    alignItems: 'center',
   },
-  buttonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  buttonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
   switchRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 12,
   },
   backButton: {
     marginBottom: 12,
   },
   backText: {
-    color: "#007bff",
+    color: '#007bff',
     fontSize: 16,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   loadingOverlay: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
     zIndex: 999,
   },
 });

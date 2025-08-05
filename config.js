@@ -2,7 +2,7 @@
 
 // export const API_URL = "https://immpression-backend.vercel.app";
 
-export const API_URL = `http://192.168.1.232:5000`;
+export const API_URL = 'http://192.168.0.3:5000';
 // export const API_URL = `http://192.168.1.232:5000`;
 // export const API_URL = `http://10.55.16.79:5000`;
 // export const API_URL = `http://localhost:4000`;

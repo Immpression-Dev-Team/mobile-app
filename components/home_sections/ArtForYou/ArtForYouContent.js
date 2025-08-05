@@ -37,36 +37,6 @@ const LazyImage = ({ art, style }) => {
   );
 };
 
-// const LazyImage = ({ art, style }) => {
-//   const [isLoading, setIsLoading] = useState(true);
-//   const [inView, setInView] = useState(false);
-
-//   // const { ref, inview } = useInView({ threshold: 0.1 });
-
-//   return (
-//     <View onChange={setInView} style={style}>
-//       {isLoading && (
-//         <SkeletonPlaceholder>
-//           <SkeletonPlaceholder.Item
-//             width={'100%'}
-//             height={'100%'}
-//             borderRadius={0}
-//           />
-//         </SkeletonPlaceholder>
-//       )}
-//       {inView && (
-//         <Image
-//           source={{ uri: art.imageLink }}
-//           style={[style, isLoading ? styles.hiddenImage : null]}
-//           onLoadStart={() => setIsLoading(true)}
-//           onLoadEnd={() => setIsLoading(false)}
-//           loading="lazy"
-//         />
-//       )}
-//     </View>
-//   );
-// };
-
 export default function ArtForYouContent({
   fadeAnim,
   imageChunks,
