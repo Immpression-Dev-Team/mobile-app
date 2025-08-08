@@ -144,22 +144,22 @@ const DeliveryDetails = ({ navigation, route }) => {
       <KeyboardAvoidingView style={styles.content} behavior="padding">
         <View style={styles.content}>
           <View style={styles.spacingBelowHeader} />
-          <View style={styles.detailsContainer}>
+          <View style={styles.artCard}>
             {imageLink && (
               <Image
                 source={{ uri: imageLink }}
-                style={styles.image}
+                style={styles.artCardImage}
                 resizeMode="cover"
               />
             )}
-            <View style={styles.textDetails}>
-              <Text style={styles.artName}>{artName}</Text>
-              {artistName && (
-                <Text style={styles.artistName}>By: {artistName}</Text>
-              )}
-              {price && <Text style={styles.price}>Price: ${price}</Text>}
+            <View style={styles.artCardInfo}>
+              <Text style={styles.artTitle}>{artName}</Text>
+              {artistName && <Text style={styles.artArtist}>By: {artistName}</Text>}
+              {price && <Text style={styles.artPrice}>${price.toFixed(2)}</Text>}
             </View>
           </View>
+
+
 
           <View style={styles.formContainer}>
             <TextInput
@@ -314,6 +314,46 @@ const styles = StyleSheet.create({
   lineBreak: {
     height: 20,
   },
+  artCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    marginBottom: 20,
+  },
+  artCardImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+  },
+  artCardInfo: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  artTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#1E2A3A",
+    marginBottom: 4,
+  },
+  artArtist: {
+    fontSize: 14,
+    color: "#555",
+  },
+  artPrice: {
+    fontSize: 15,
+    fontWeight: "bold",
+    color: "#007AFF",
+    marginTop: 4,
+  },
+  
+
 });
 
 export default DeliveryDetails;
