@@ -141,7 +141,7 @@ const DeliveryDetails = ({ navigation, route }) => {
         <Text style={styles.header}>Delivery Details</Text>
       </View>
 
-      <KeyboardAvoidingView style={styles.content} behavior="padding">
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <View style={styles.content}>
           <View style={styles.spacingBelowHeader} />
           <View style={styles.artCard}>
@@ -237,22 +237,38 @@ const styles = StyleSheet.create({
   headerContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "flex-start",
+    width: "100%",
     paddingHorizontal: 20,
-    marginTop: 10,
+    paddingTop: 5,
+    paddingBottom: 10,
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderColor: "#eee",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 3,
+    marginBottom: -20,
   },
   goBackButton: {
-    marginRight: 10,
+    backgroundColor: "#f0f0f0",
+    padding: 8,
+    borderRadius: 8,
   },
   arrow: {
-    fontSize: 24,
-    color: "#007AFF",
-    fontWeight: "bold",
+    fontSize: 18,
+    color: "#333",
+    fontWeight: "600",
   },
   header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#333",
+    fontSize: 20,
+    fontWeight: "600",
+    marginLeft: 12,
+    color: "#1E2A3A",
   },
+
   content: { flexGrow: 1, alignItems: "flex-start", paddingHorizontal: 20 },
   spacingBelowHeader: {
     marginVertical: 20,
@@ -283,13 +299,22 @@ const styles = StyleSheet.create({
   },
   formContainer: { width: "100%" },
   input: {
+    backgroundColor: "#F9FAFB",
+    borderColor: "#D1D5DB",
     borderWidth: 1,
-    borderColor: "#CCC",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 15,
-    backgroundColor: "#FFF",
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    fontSize: 15,
+    marginBottom: 5,
+    color: "#1E2A3A",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
   },
+
   dropdown: {
     borderWidth: 1,
     borderColor: "#CCC",
@@ -301,16 +326,28 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   button: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 5,
+    flexDirection: "row",
+    justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#1E2A3A",
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 30,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    // marginTop: 0,
   },
+  
   buttonText: {
-    color: "#FFF",
-    fontWeight: "bold",
+    color: "#fff",
     fontSize: 16,
+    fontWeight: "600",
+    letterSpacing: 0.5,
   },
+  
   lineBreak: {
     height: 20,
   },
@@ -352,7 +389,7 @@ const styles = StyleSheet.create({
     color: "#007AFF",
     marginTop: 4,
   },
-  
+
 
 });
 
