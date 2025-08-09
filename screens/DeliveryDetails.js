@@ -13,6 +13,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import { useAuth } from "../state/AuthProvider";
 import { createOrder } from "../API/API";
 import ScreenTemplate from "./Template/ScreenTemplate";
+import { ScrollView } from "react-native-gesture-handler";
 
 const DeliveryDetails = ({ navigation, route }) => {
   const { imageId, imageLink, artName, artistName, price } = route.params;
@@ -131,104 +132,106 @@ const DeliveryDetails = ({ navigation, route }) => {
 
   return (
     <ScreenTemplate>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.goBackButton}
-          onPress={() => navigation.goBack()}
-        >
-          <Text style={styles.arrow}>←</Text>
-        </TouchableOpacity>
-        <Text style={styles.header}>Delivery Details</Text>
-      </View>
+      <ScrollView>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            style={styles.goBackButton}
+            onPress={() => navigation.goBack()}
+          >
+            <Text style={styles.arrow}>←</Text>
+          </TouchableOpacity>
+          <Text style={styles.header}>Delivery Details</Text>
+        </View>
 
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-        <View style={styles.content}>
-          <View style={styles.spacingBelowHeader} />
-          <View style={styles.artCard}>
-            {imageLink && (
-              <Image
-                source={{ uri: imageLink }}
-                style={styles.artCardImage}
-                resizeMode="cover"
-              />
-            )}
-            <View style={styles.artCardInfo}>
-              <Text style={styles.artTitle}>{artName}</Text>
-              {artistName && <Text style={styles.artArtist}>By: {artistName}</Text>}
-              {price && <Text style={styles.artPrice}>${price.toFixed(2)}</Text>}
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+          <View style={styles.content}>
+            <View style={styles.spacingBelowHeader} />
+            <View style={styles.artCard}>
+              {imageLink && (
+                <Image
+                  source={{ uri: imageLink }}
+                  style={styles.artCardImage}
+                  resizeMode="cover"
+                />
+              )}
+              <View style={styles.artCardInfo}>
+                <Text style={styles.artTitle}>{artName}</Text>
+                {artistName && <Text style={styles.artArtist}>By: {artistName}</Text>}
+                {price && <Text style={styles.artPrice}>${price.toFixed(2)}</Text>}
+              </View>
             </View>
-          </View>
 
 
 
-          <View style={styles.formContainer}>
-            <TextInput
-              style={styles.input}
-              placeholder="Full Name"
-              value={name}
-              onChangeText={setName}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Street Address"
-              value={address}
-              onChangeText={setAddress}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="City"
-              value={city}
-              onChangeText={setCity}
-            />
+            <View style={styles.formContainer}>
+              <TextInput
+                style={styles.input}
+                placeholder="Full Name"
+                value={name}
+                onChangeText={setName}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Street Address"
+                value={address}
+                onChangeText={setAddress}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="City"
+                value={city}
+                onChangeText={setCity}
+              />
 
-            {country === "United States" && (
-              <View style={{ zIndex: openState ? 3000 : 1 }}>
+              {country === "United States" && (
+                <View style={{ zIndex: openState ? 3000 : 1 }}>
+                  <DropDownPicker
+                    open={openState}
+                    value={state}
+                    items={usStates}
+                    setOpen={setOpenState}
+                    setValue={(callback) => setState(callback(state))}
+                    placeholder="Select State"
+                    style={styles.dropdown}
+                    dropDownContainerStyle={styles.dropdownContainer}
+                    maxHeight={200}
+                    searchable={true}
+                    searchPlaceholder="Search your state."
+                  />
+                </View>
+              )}
+
+              <TextInput
+                style={styles.input}
+                placeholder="Zip Code"
+                value={zipCode}
+                onChangeText={setZipCode}
+              />
+
+              <View style={{ zIndex: openCountry ? 2000 : 0 }}>
                 <DropDownPicker
-                  open={openState}
-                  value={state}
-                  items={usStates}
-                  setOpen={setOpenState}
-                  setValue={(callback) => setState(callback(state))}
-                  placeholder="Select State"
+                  open={openCountry}
+                  value={
+                    countries.some((c) => c.value === country) ? country : null
+                  }
+                  items={countries}
+                  setOpen={setOpenCountry}
+                  setValue={(callback) => setCountry(callback(country))}
+                  placeholder="Select Country"
                   style={styles.dropdown}
                   dropDownContainerStyle={styles.dropdownContainer}
-                  maxHeight={200}
-                  searchable={true}
-                  searchPlaceholder="Search your state."
                 />
               </View>
-            )}
 
-            <TextInput
-              style={styles.input}
-              placeholder="Zip Code"
-              value={zipCode}
-              onChangeText={setZipCode}
-            />
+              <View style={styles.lineBreak} />
 
-            <View style={{ zIndex: openCountry ? 2000 : 0 }}>
-              <DropDownPicker
-                open={openCountry}
-                value={
-                  countries.some((c) => c.value === country) ? country : null
-                }
-                items={countries}
-                setOpen={setOpenCountry}
-                setValue={(callback) => setCountry(callback(country))}
-                placeholder="Select Country"
-                style={styles.dropdown}
-                dropDownContainerStyle={styles.dropdownContainer}
-              />
+              <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                <Text style={styles.buttonText}>Continue</Text>
+              </TouchableOpacity>
             </View>
-
-            <View style={styles.lineBreak} />
-
-            <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>Continue</Text>
-            </TouchableOpacity>
           </View>
-        </View>
-      </KeyboardAvoidingView>
+        </KeyboardAvoidingView>
+      </ScrollView>
     </ScreenTemplate>
   );
 };
@@ -340,14 +343,14 @@ const styles = StyleSheet.create({
     elevation: 3,
     // marginTop: 0,
   },
-  
+
   buttonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "600",
     letterSpacing: 0.5,
   },
-  
+
   lineBreak: {
     height: 20,
   },

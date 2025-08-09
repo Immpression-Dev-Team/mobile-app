@@ -86,76 +86,78 @@ const PaymentScreen = ({ navigation, route }) => {
 
   return (
     <ScreenTemplate>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity
-          style={styles.goBackButton}
-          onPress={() => navigation.replace("DeliveryDetails", { orderId, price })}
-        >
-          <Text style={styles.arrow}>←</Text>
-        </TouchableOpacity>
-        <View style={styles.orderDetails}>
-          <Text style={styles.header}>Payment Details</Text>
-        </View>
-      </View>
-
-      <View style={styles.formWrapper}>
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryHeader}>Order Summary</Text>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Subtotal</Text>
-            <Text style={styles.summaryValue}>${price.toFixed(2)}</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Shipping</Text>
-            <Text style={styles.summaryValue}>FREE</Text>
-          </View>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Tax</Text>
-            <Text style={styles.summaryValue}>$0.00</Text>
-          </View>
-          <View style={styles.summaryDivider} />
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryTotalLabel}>Total</Text>
-            <Text style={styles.summaryTotalValue}>${price.toFixed(2)}</Text>
-          </View>
-        </View>
-
-
-        <View style={styles.cardContainer}>
-          <View style={styles.cardLabelRow}>
-            <Ionicons name="lock-closed-outline" size={16} color="#777" style={{ marginRight: 6, marginTop: -10 }} />
-            <Text style={styles.cardLabel}>Credit or Debit Card</Text>
-          </View>
-
-          <CardField
-            postalCodeEnabled={false}
-            placeholder={{ number: "4242 4242 4242 4242" }}
-            cardStyle={{
-              backgroundColor: "#F8F9FA",
-              textColor: "#000000",
-              borderRadius: 10,
-              placeholderColor: "#A9A9A9",
-            }}
-            style={styles.cardField}
-          />
-        </View>
-
-        <View style={{ width: "100%", marginTop: 10 }}>
+      <ScrollView>
+        <View style={styles.headerContainer}>
           <TouchableOpacity
-            style={[styles.button, loading && styles.buttonDisabled]}
-            onPress={handlePayment}
-            disabled={loading}
-            activeOpacity={0.85}
+            style={styles.goBackButton}
+            onPress={() => navigation.replace("DeliveryDetails", { orderId, price })}
           >
-            {loading ? (
-              <ActivityIndicator color="#FFF" />
-            ) : (
-              <Text style={styles.buttonText}>Pay Now</Text>
-            )}
+            <Text style={styles.arrow}>←</Text>
           </TouchableOpacity>
+          <View style={styles.orderDetails}>
+            <Text style={styles.header}>Payment Details</Text>
+          </View>
         </View>
 
-      </View>
+        <View style={styles.formWrapper}>
+          <View style={styles.summaryCard}>
+            <Text style={styles.summaryHeader}>Order Summary</Text>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Subtotal</Text>
+              <Text style={styles.summaryValue}>${price.toFixed(2)}</Text>
+            </View>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Shipping</Text>
+              <Text style={styles.summaryValue}>FREE</Text>
+            </View>
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryLabel}>Tax</Text>
+              <Text style={styles.summaryValue}>$0.00</Text>
+            </View>
+            <View style={styles.summaryDivider} />
+            <View style={styles.summaryRow}>
+              <Text style={styles.summaryTotalLabel}>Total</Text>
+              <Text style={styles.summaryTotalValue}>${price.toFixed(2)}</Text>
+            </View>
+          </View>
+
+
+          <View style={styles.cardContainer}>
+            <View style={styles.cardLabelRow}>
+              <Ionicons name="lock-closed-outline" size={16} color="#777" style={{ marginRight: 6, marginTop: -10 }} />
+              <Text style={styles.cardLabel}>Credit or Debit Card</Text>
+            </View>
+
+            <CardField
+              postalCodeEnabled={false}
+              placeholder={{ number: "4242 4242 4242 4242" }}
+              cardStyle={{
+                backgroundColor: "#F8F9FA",
+                textColor: "#000000",
+                borderRadius: 10,
+                placeholderColor: "#A9A9A9",
+              }}
+              style={styles.cardField}
+            />
+          </View>
+
+          <View style={{ width: "100%", marginTop: 10 }}>
+            <TouchableOpacity
+              style={[styles.button, loading && styles.buttonDisabled]}
+              onPress={handlePayment}
+              disabled={loading}
+              activeOpacity={0.85}
+            >
+              {loading ? (
+                <ActivityIndicator color="#FFF" />
+              ) : (
+                <Text style={styles.buttonText}>Pay Now</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+
+        </View>
+      </ScrollView>
     </ScreenTemplate>
 
   );
