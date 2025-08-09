@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     height: '100%',
     borderRadius: 0,
     borderColor: 'black',
-    borderWidth: 1,
+    borderWidth: 0.5,
   },
   overlay: {
     position: 'absolute',
