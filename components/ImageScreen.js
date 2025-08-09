@@ -7,6 +7,7 @@ import {
   FlatList,
   Dimensions,
   TouchableOpacity,
+  TextInput
 } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from "../state/AuthProvider";
@@ -36,6 +37,8 @@ const ImageScreen = ({ route, navigation }) => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [showMoreInfo, setShowMoreInfo] = useState(false);
   const [enlarged, setEnlarged] = useState(false);
+  const [trackingNumberInput, setTrackingNumberInput] = useState("");
+  const [isSubmittingTracking, setIsSubmittingTracking] = useState(false);
 
   useEffect(() => {
     if (images[currentIndex]?.userId) {
@@ -82,6 +85,30 @@ const ImageScreen = ({ route, navigation }) => {
       }
     }
   };
+
+  const handleSubmitTrackingNumber = async () => {
+  if (!trackingNumberInput.trim()) return;
+
+  setIsSubmittingTracking(true);
+
+  try {
+    // Assuming you have an API function to update tracking number,
+    // e.g. updateTrackingNumber(imageId, trackingNumber, token)
+    await updateTrackingNumber(images[currentIndex]._id, trackingNumberInput.trim(), token);
+
+    // Optionally update local images state or refetch data
+    // For now, you can just close More Info or clear input
+    setTrackingNumberInput("");
+    setShowMoreInfo(false);
+
+    // You can add a toast or alert here to confirm success
+  } catch (error) {
+    console.error("Error submitting tracking number:", error);
+    // Optionally show error alert or toast
+  } finally {
+    setIsSubmittingTracking(false);
+  }
+};
 
   return (
     <ScreenTemplate>
@@ -276,6 +303,25 @@ const ImageScreen = ({ route, navigation }) => {
               <Text style={styles.infoValue}>
                 {images[currentIndex]?.isFramed ? "Yes" : "No"}
               </Text>
+            </View>
+
+            <View style={[styles.infoRow, { flexDirection: 'column', alignItems: 'flex-start' }]}>
+              <Text style={[styles.infoLabel, { marginBottom: 4 }]}>Tracking Number:</Text>
+              <TextInput
+                style={styles.trackingInput}
+                placeholder="Enter tracking number"
+                value={trackingNumberInput}
+                onChangeText={setTrackingNumberInput}
+              />
+              <TouchableOpacity
+                style={styles.submitTrackingButton}
+                onPress={handleSubmitTrackingNumber}
+                disabled={isSubmittingTracking || trackingNumberInput.trim() === ""}
+              >
+                <Text style={styles.submitTrackingButtonText}>
+                  {isSubmittingTracking ? "Submitting..." : "Submit"}
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
         )}
