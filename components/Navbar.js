@@ -16,9 +16,21 @@ export default function Navbar() {
   const [showNotifications, setShowNotifications] = useState(false);
 
   const notifications = [
-    { id: '1', message: 'Your order has been shipped!' },
-    { id: '2', message: 'New artwork has been uploaded in your favorite category.' },
-    { id: '3', message: 'Your profile was viewed 5 times today.' },
+    { 
+      id: '1', 
+      message: 'Someone bought your art! Continue with order →', 
+      type: 'purchase',
+      orderData: {
+        orderId: 'order_12345',
+        artName: 'Abstract Sunset',
+        artistName: 'Test Artist',
+        price: 299.99,
+        imageLink: 'https://via.placeholder.com/300x300'
+      }
+    },
+    { id: '2', message: 'Your order has been shipped!' },
+    { id: '3', message: 'New artwork has been uploaded in your favorite category.' },
+    { id: '4', message: 'Your profile was viewed 5 times today.' },
   ];
 
   const handleToggleNavItems = () => {

@@ -1,16 +1,39 @@
 import React from 'react';
 import { View, Text, StyleSheet, FlatList, Pressable } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 export default function NotificationDropdown({ notifications, onClose }) {
+  const navigation = useNavigation();
+
+  const handleNotificationPress = (notification) => {
+    if (notification.type === 'purchase' && notification.orderData) {
+      navigation.navigate('SubmitTrackingNumber', {
+        orderData: notification.orderData
+      });
+      onClose();
+    }
+  };
+
   return (
     <View style={styles.dropdown}>
       <FlatList
         data={notifications}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={styles.notificationCard}>
-            <Text style={styles.notificationText}>{item.message}</Text>
-          </View>
+          <Pressable 
+            style={[
+              styles.notificationCard,
+              item.type === 'purchase' && styles.purchaseNotification
+            ]}
+            onPress={() => handleNotificationPress(item)}
+          >
+            <Text style={[
+              styles.notificationText,
+              item.type === 'purchase' && styles.purchaseNotificationText
+            ]}>
+              {item.message}
+            </Text>
+          </Pressable>
         )}
         ListEmptyComponent={
           <Text style={styles.emptyText}>No notifications yet</Text>
@@ -46,6 +69,15 @@ const styles = StyleSheet.create({
   notificationText: {
     fontSize: 14,
     color: '#333',
+  },
+  purchaseNotification: {
+    backgroundColor: '#E8F5E8',
+    borderLeftWidth: 3,
+    borderLeftColor: '#28A745',
+  },
+  purchaseNotificationText: {
+    color: '#155724',
+    fontWeight: '600',
   },
   emptyText: {
     fontSize: 14,

@@ -650,6 +650,26 @@ async function updateUserPassword(passwordData, token) {
   }
 }
 
+// Function to update tracking number for an order
+async function updateTrackingNumber(orderId, trackingNumber, token) {
+  try {
+    const response = await axios.patch(
+      `${API_URL}/order/${orderId}/tracking`,
+      { trackingNumber },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error updating tracking number:", error.response?.data || error);
+    return error.response?.data || error;
+  }
+}
+
 export {
   requestOtp,
   verifyOtp,
@@ -686,4 +706,5 @@ export {
   fetchLikedImages,
   getUserProfileById,
   updateUserPassword,
+  updateTrackingNumber,
 };
