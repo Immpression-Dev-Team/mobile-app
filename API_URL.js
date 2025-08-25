@@ -5,7 +5,7 @@ import { HOST_IP } from "@env";
 const ENV = "dev";
 
 // TODO: ADD HOST_IP to .env file at project root (e.g., 192.168.10.5)
-const IP = HOST_IP;
+const IP = process.env.HOST_IP;
 
 const PROD_URL = "https://immpression-backend.vercel.app";
 

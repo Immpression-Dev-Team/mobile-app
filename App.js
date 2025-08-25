@@ -35,7 +35,7 @@ export default function App() {
       <NavigationContainer>
         <StripeProvider
           publishableKey={
-            "pk_test_51RWFfQ4DVblvV3YcFDRm2SVYcWJcbEpwZyaCDzwxd5un2jRsqca4y3fenZiudVWjFF1Wy6WcCQ6JIvVWmUKh7TYc00AQO5NYKH"
+            "pk_live_51QSkxdKdKw1LKdPsgCBuTZnWZBJHXq7tjN5e3M9zHFjASwVd1QizY8O2eswoZeNCKfMUJYX5awVxtpxWElgXqlA600gtAz0hwy"
           }
         >
           <AppContent />
