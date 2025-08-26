@@ -5,104 +5,85 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
-  ImageBackground,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-
-import homeIcon from '../assets/icons/Home_white.png';
-import sellIcon from '../assets/icons/Sell_green.png';
-import profileIcon from '../assets/icons/Profile_white.png';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const FooterNavbar = () => {
   const navigation = useNavigation();
   const navBtns = [
     {
       navLink: 'Home',
-      imgLink: homeIcon,
-      imgText: null,
+      iconName: 'home',
+      label: 'Home',
     },
     {
-      navLink: 'SellGuide', // was 'Upload'
-      imgLink: sellIcon,
-      imgText: 'SELL',
+      navLink: 'SellGuide',
+      iconName: 'sell',
+      label: 'Sell',
     },
-    // {
-    //   navLink: 'Upload',
-    //   imgLink: sellIcon,
-    //   imgText: 'SELL',
-    // },
     {
       navLink: 'Profile',
-      imgLink: profileIcon,
-      imgText: null,
+      iconName: 'person',
+      label: 'Profile',
     },
   ]
 
   return (
-    <ImageBackground
-      source={require("../assets/Bottom_Nav_Container_blue.png")}
-      style={styles.backgroundImage}
-    >
-      <View style={styles.container}>
-        {
-          navBtns.map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={styles.button}
-              onPress={() => navigation.navigate(item.navLink)}
-            >
-              <Image
-                source={item.imgLink}
-                style={(item.imgText === 'SELL') ? styles.sellIcon : styles.icon }
-              />
-              {
-                item.imgText && 
-                <Text style={styles.text}>
-                  {item.imgText}
-                </Text>
-              }
-            </TouchableOpacity>
-          ))
-        }
-      </View>
-    </ImageBackground>
+    <View style={styles.container}>
+      {navBtns.map((item, index) => (
+        <TouchableOpacity
+          key={index}
+          style={styles.button}
+          onPress={() => navigation.navigate(item.navLink)}
+        >
+          <Icon 
+            name={item.iconName} 
+            size={24} 
+            color="#635BFF" 
+            style={styles.icon}
+          />
+          <Text style={styles.text}>
+            {item.label}
+          </Text>
+        </TouchableOpacity>
+      ))}
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
-    width: "100%",
-    resizeMode: "cover",
-    backgroundColor: "white",
-  },
   container: {
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    height: "100%",
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderTopWidth: 1,
+    borderTopColor: "#E5E7EB",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
   },
   button: {
     alignItems: "center",
-    width: 100,
-    paddingVertical: 5,
-  },
-  text: {
-    color: "#fff",
-    fontSize: 12,
-    textAlign: "center",
-    fontFamily: "LEMON MILK Bold",
-    marginTop: '7.5%',
+    justifyContent: "center",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    flex: 1,
   },
   icon: {
-    width: "55%",
-    height: "55%",
-    resizeMode: "contain",
+    marginBottom: 4,
   },
-  sellIcon: {
-    width: "58%",
-    height: "58%",
-    resizeMode: "contain",
+  text: {
+    color: "#635BFF",
+    fontSize: 11,
+    textAlign: "center",
+    fontWeight: "600",
+    letterSpacing: 0.5,
   },
 });
 

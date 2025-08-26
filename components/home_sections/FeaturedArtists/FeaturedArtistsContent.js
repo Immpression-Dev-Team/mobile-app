@@ -7,7 +7,6 @@ import {
     Platform,
 } from "react-native";
 
-
 export default function FeaturedArtistsContent({ artists = [], navigate }) { // Default to an empty array
     const maxLen = 10;
 
@@ -68,34 +67,42 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
     scrollView: {
-        flex: 1,
+        height: Platform.OS === "web" ? 300 : 240,
         flexDirection: "row",
-        paddingHorizontal: "0.75%",
+        paddingHorizontal: 0,
     },
     artistContainer: {
         flexDirection: "column",
-        textAlign: "left",
-        justifyContent: "flex-end",
-        width: Platform.OS === "web" ? 200 : 95,
-        marginRight: Platform.OS === "web" ? 20 : 2.5,
+        alignItems: "center",
+        width: Platform.OS === "web" ? 160 : 90,
+        marginRight: Platform.OS === "web" ? 16 : 0,
+        paddingBottom: 20,
     },
     image: {
-        width: "100%",
-        height: "67.5%",
-        marginBottom: "5%",
-        borderRadius: 0,
+        width: Platform.OS === "web" ? 140 : 75,
+        height: Platform.OS === "web" ? 140 : 75,
+        marginBottom: 8,
+        borderRadius: 8,
         resizeMode: "cover",
-        borderColor: "black",
+        borderColor: "#E5E7EB",
         borderWidth: 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
+        elevation: 6,
     },
     artistName: {
         fontSize: 10,
-        color: "black",
-        fontFamily: "LEMON MILK Bold",
+        color: "#1F2937",
+        fontWeight: "700",
+        textAlign: "center",
+        marginBottom: 2,
     },
     artistType: {
-        fontSize: 9,
-        color: "black",
-        fontWeight: "bold",
+        fontSize: 8,
+        color: "#6B7280",
+        fontWeight: "500",
+        textAlign: "center",
     },
 });

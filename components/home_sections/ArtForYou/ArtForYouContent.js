@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 
 const skeleton = require('../../../assets/skeleton.png');
+const loadingGif = require('../../../assets/loading-gif.gif');
 
 const slideLeftGif = require('../../../assets//slideLeft.gif');
 
@@ -21,8 +22,7 @@ const LazyImage = ({ art, style }) => {
     <View style={style}>
       {isLoading && (
         <View style={[style, styles.placeholder]}>
-          <Text>loading</Text>
-          {/* <ActivityIndicator size="small" color="#999" /> */}
+          <Image source={loadingGif} style={styles.loadingGif} />
         </View>
       )}
       <Image
@@ -116,27 +116,30 @@ export default function ArtForYouContent({
 
 const styles = StyleSheet.create({
   imageContainer: {
-    flex: 1,
     width: '100%',
-    padding: '0.75%',
+    height: Platform.OS === 'web' ? 400 : 280,
+    padding: 0,
   },
   column: {
-    height: '100%',
     flexDirection: 'column',
-    justifyContent: 'space-between',
-    width: Platform.OS === 'web' ? 200 : 110,
-    marginRight: Platform.OS === 'web' ? 20 : 4,
-    gap: Platform.OS === 'web' ? 20 : 4,
+    width: Platform.OS === 'web' ? 180 : 120,
+    marginRight: Platform.OS === 'web' ? 16 : 8,
+    gap: Platform.OS === 'web' ? 16 : 8,
   },
   imgContainer: {
-    flex: 1,
+    width: Platform.OS === 'web' ? 180 : 120,
+    height: Platform.OS === 'web' ? 180 : 120,
   },
   image: {
     width: '100%',
     height: '100%',
-    borderRadius: 0,
-    borderColor: 'black',
-    borderWidth: 0.5,
+    borderColor: '#E5E7EB',
+    borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 6,
   },
   overlay: {
     position: 'absolute',
@@ -172,12 +175,20 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   placeholder: {
-    backgroundColor: '#E1E1E1',
+    backgroundColor: '#F8F9FA',
     position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+  },
+  loadingGif: {
+    width: 100,
+    height: 100,
+    resizeMode: 'contain',
   },
   hiddenImage: {
     opacity: 0,
