@@ -6,7 +6,7 @@ import {
 } from "react-native";
 
 import Navbar from "../../components/Navbar";
-import navBackground from "../../assets/backgrounds/navbar_bg_blue.png";
+import navBackground from "../../assets/blue-paint2.png";
 import FooterNavbar from "../../components/FooterNavbar";
 
 export default function ScreenTemplate({children}) {

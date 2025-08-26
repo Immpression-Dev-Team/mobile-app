@@ -11,11 +11,11 @@ export default function ArtForYouHeader(){
         <View style={styles.headerContainer}>
             <View style={styles.titleSection}>
                 <View style={styles.paintedTitleWrapper}>
-                    <Image
+                    {/* <Image
                         source={require('../../../assets/orange-paint.png')}
                         style={styles.paintBackground}
                         resizeMode="contain"
-                    />
+                    /> */}
                     <Text style={styles.headerText}>
                         Art For You
                     </Text>

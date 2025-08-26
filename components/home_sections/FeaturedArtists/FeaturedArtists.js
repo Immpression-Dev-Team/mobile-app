@@ -104,11 +104,11 @@ export default function FeaturedArtists() {
   return (
     <View style={styles.outerWrapper}>
       {/* Paint behind entire container */}
-      <Animated.Image
+      {/* <Animated.Image
         source={require('../../../assets/red-paint2.png')}
         style={[styles.paintBehindEntireContainer, { opacity: paintContainerFadeAnim }]}
         resizeMode="contain"
-      />
+      /> */}
       {/* Paint behind entire card */}
       <Animated.Image
         source={require('../../../assets/red-paint.png')}
@@ -117,20 +117,20 @@ export default function FeaturedArtists() {
       />
       <View style={styles.cardWrapper}>
         {/* Paint behind header only */}
-        <Image
+        <Animated.Image
           source={require('../../../assets/red-paint.png')}
-          style={styles.paintBehindHeader}
+          style={[styles.paintBehindHeader, { opacity: paintCardFadeAnim }]}
           resizeMode="contain"
         />
         <View style={styles.container}>
           <FeaturedArtistsHeader />
           <View style={styles.contentWrapper}>
             {/* Paint behind art on card */}
-            <Animated.Image
+            {/* <Animated.Image
               source={require('../../../assets/red-paint2.png')}
               style={[styles.paintBehindArtOnCard, { opacity: paintArtFadeAnim }]}
               resizeMode="contain"
-            />
+            /> */}
             <FeaturedArtistsContent
                 artists={artists}
                 navigate={navigateToArtistScreen}
@@ -150,10 +150,10 @@ const styles = StyleSheet.create({
   },
   paintBehindEntireContainer: {
     position: 'absolute',
-    top: -140,
-    right: -180,
-    width: 500,
-    height: 500,
+    top: -40,
+    right: -280,
+    width: 200,
+    height: 200,
     transform: [{ rotate: '0deg' }],
     opacity: 1,
     zIndex: 1,
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: -40,
     left: -60,
-    width: 250,
+    width: 550,
     height: 150,
     transform: [{ rotate: '2deg' }, { scaleX: 1.2 }],
     opacity: 0.8,
@@ -170,10 +170,10 @@ const styles = StyleSheet.create({
   },
   paintBehindHeader: {
     position: 'absolute',
-    top: -15,
-    left: -30,
+    top: -30,
+    left: -50,
     width: 230,
-    height: 60,
+    height: 50,
     transform: [{ rotate: '-1deg' }],
     opacity: 0.6,
     zIndex: -1,
@@ -199,12 +199,12 @@ const styles = StyleSheet.create({
   },
   paintBehindArtOnCard: {
     position: 'absolute',
-    top: -120,
-    right: -130,
-    width: 350,
-    height: 350,
+    top: 60,
+    right: -50,
+    width: 150,
+    height: 150,
     transform: [{ rotate: '0deg' }],
-    opacity: 0.6,
+    opacity: 0,
     zIndex: -1,
   },
 });

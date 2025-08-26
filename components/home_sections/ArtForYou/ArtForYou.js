@@ -105,6 +105,7 @@ export default function ArtForYou() {
     fadeOutOverlay();
   };
 
+
   const fetchArtData = async (token) => {
     try {
       const response = await getAllImages(token, page, 50);
@@ -231,11 +232,11 @@ export default function ArtForYou() {
         <ArtForYouHeader />
         <View style={styles.contentWrapper}>
           {/* Paint behind pictures to the right */}
-          <Animated.Image
+          {/* <Animated.Image
             source={require('../../../assets/orange-paint2.png')}
             style={[styles.paintBehindPictures, { opacity: paintFadeAnim }]}
             resizeMode="contain"
-          />
+          /> */}
           <ArtForYouContent
             fadeAnim={fadeAnim}
             imageChunks={imageChunks}
@@ -258,7 +259,8 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 16,
     paddingTop: 0,
-    marginTop: -8,
+    paddingBottom: 4,
+    marginTop: 0,
   },
   contentWrapper: {
     flex: 1,
@@ -266,10 +268,10 @@ const styles = StyleSheet.create({
   },
   paintBehindPictures: {
     position: 'absolute',
-    top: -30,
-    right: -180,
-    width: 350,
-    height: 250,
+    top: -70,
+    right: -400,
+    width: 550,
+    height: 550,
     transform: [{ rotate: '180deg' }],
     opacity: .7,
     zIndex: 0,

@@ -29,27 +29,45 @@ export default function HomeScreen() {
     navigation.navigate('GalleryView', {type: 'orders'});
   };
 
+  const handleUpdatesPress = () => {
+    navigation.navigate('GalleryView', {type: 'updates'});
+  };
+
   return (
     <ScreenTemplate>
       <View style={styles.container}>
         {/* <CategoryNavSection /> */}
         
-        <TouchableOpacity style={styles.ordersButtonWrapper} onPress={handleOrdersPress}>
-          <LinearGradient
-            colors={['#635BFF', '#7C3AED', '#8B5CF6']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.ordersButton}
-          >
-            <Text style={styles.ordersButtonText}>📋 View My Orders</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+        <View style={styles.buttonRow}>
+          <TouchableOpacity style={styles.halfButtonWrapper} onPress={handleOrdersPress}>
+            <LinearGradient
+              colors={['#635BFF', '#7C3AED', '#8B5CF6']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.halfButton}
+            >
+              <Text style={styles.halfButtonText}>📋 Orders</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.halfButtonWrapper} onPress={handleUpdatesPress}>
+            <LinearGradient
+              colors={['#F59E0B', '#D97706', '#B45309']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.halfButton}
+            >
+              <Text style={styles.halfButtonText}>📢 Updates</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
         
         {/* <SectionBanner imgLink={navBgHeader} bannerHeight={3} /> */}
 
         <ArtForYouSection />
-        {/* <SectionBanner imgLink={discoverBgHeader} bannerHeight={2} /> */}
-
+        
+        <View style={styles.divider} />
+        
         <FeaturedArtistsSection />
         {/* <SectionBanner imgLink={discoverBgFooter} bannerHeight={3.5} /> */}
       </View>
@@ -63,33 +81,48 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  ordersButtonWrapper: {
+  buttonRow: {
+    flexDirection: 'row',
     marginHorizontal: 20,
     marginVertical: 10,
     width: "90%",
+    gap: 12,
+  },
+  halfButtonWrapper: {
+    flex: 1,
     borderRadius: 16,
-    shadowColor: "#635BFF",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 6,
-    transform: [{ rotate: '-0.5deg' }],
   },
-  ordersButton: {
-    paddingVertical: 15,
-    paddingHorizontal: 25,
+  halfButton: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 16,
     alignItems: "center",
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
-  ordersButtonText: {
+  halfButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
     letterSpacing: 0.5,
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
+  },
+  divider: {
+    width: '85%',
+    height: 1,
+    backgroundColor: '#E5E7EB',
+    marginVertical: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
   },
 });
