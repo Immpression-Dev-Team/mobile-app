@@ -1,25 +1,15 @@
-import { View, Text, StyleSheet, Image } from "react-native";
-
-import loadingGif from "../../../assets/loading-gif.gif";
+import React from "react";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
 
 export default function LoadingSection({ loadingMsg, size }) {
   const isMediumSize = size === "medium";
 
   return (
     <View style={styles.loadingContainer}>
-      <Text style={[styles.headerText, { fontSize: isMediumSize ? 20 : 25 }]}>
+      <ActivityIndicator size="large" color="#635BFF" style={styles.spinner} />
+      <Text style={[styles.headerText, { fontSize: isMediumSize ? 16 : 18 }]}>
         {loadingMsg}
       </Text>
-      <Image
-        source={loadingGif}
-        style={[
-          styles.loadingGif,
-          {
-            width: isMediumSize ? 150 : 200,
-            height: isMediumSize ? 150 : 200,
-          },
-        ]}
-      />
     </View>
   );
 }
@@ -33,9 +23,13 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255, 255, 255, .3)",
   },
   headerText: {
-    fontFamily: "LEMON MILK Bold",
+    fontWeight: "600",
+    color: "#666",
+    textAlign: "center",
+    marginTop: 16,
+    letterSpacing: 0.5,
   },
-  loadingGif: {
-    resizeMode: "contain",
+  spinner: {
+    marginBottom: 8,
   },
 });

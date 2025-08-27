@@ -26,7 +26,7 @@ export default function HomeScreen() {
   console.log("useAuth response: ", name);
 
   const handleOrdersPress = () => {
-    navigation.navigate('GalleryView', {type: 'orders'});
+    navigation.navigate('OrderScreen');
   };
 
   const handleUpdatesPress = () => {

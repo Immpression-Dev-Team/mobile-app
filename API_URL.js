@@ -2,13 +2,13 @@ import { HOST_IP } from "@env";
 
 // Change between production and development backend services
 // "dev" for local OR "prod" for remote
-const ENV = "local";
+const ENV = "prod";
 
 // TODO: ADD IP TO .env file located in mobile-app folder
 const IP = process.env.HOST_IP;
 
 const PROD_URL = "https://immpression-backend.vercel.app";
-const API_URL = ENV === "prod" ? PROD_URL : `${HOST_IP}:5001`;
+const API_URL = ENV === "prod" ? PROD_URL : `${HOST_IP}:5002`;
 
 console.log("API URL:", API_URL);
 
