@@ -650,12 +650,15 @@ async function updateUserPassword(passwordData, token) {
   }
 }
 
-// Function to update tracking number for an order
-async function updateTrackingNumber(orderId, trackingNumber, token) {
+// Function to update tracking number for an order (optionally pass carrier)
+async function updateTrackingNumber(orderId, trackingNumber, token, carrier) {
   try {
     const response = await axios.patch(
-      `${API_URL}/order/${orderId}/tracking`,
-      { trackingNumber },
+      `${API_URL}/order/${orderId}/tracking`, // matches your router.patch("/order/:id/tracking")
+      {
+        trackingNumber: String(trackingNumber || "").trim().toUpperCase(),
+        ...(carrier ? { carrier: String(carrier).toLowerCase() } : {}),
+      },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -663,12 +666,51 @@ async function updateTrackingNumber(orderId, trackingNumber, token) {
         },
       }
     );
-    return response.data;
+    return response.data; // { success, message, data: { orderId, shipping } }
   } catch (error) {
-    console.error("Error updating tracking number:", error.response?.data || error);
-    return error.response?.data || error;
+    const msg =
+      error?.response?.data?.message ||
+      error?.response?.data?.error ||
+      error?.message ||
+      "Failed to update tracking number";
+    console.error("Error updating tracking number:", msg);
+    throw new Error(msg);
   }
 }
+
+async function getOrderDetails(orderId, token) {
+  try {
+    const res = await axios.get(`${API_URL}/orderDetails/${orderId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data; // { success, data: order }
+  } catch (error) {
+    const msg = error?.response?.data?.error || error?.message || "Failed to fetch order";
+    throw new Error(msg);
+  }
+}
+
+// Function to fetch orders for the logged-in user
+async function getMyOrders(token, page = 1, limit = 10) {
+  try {
+    const res = await axios.get(`${API_URL}/my-orders`, {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { page, limit },
+    });
+
+    // Backend already returns: { success, data: [...], pagination: {...} }
+    return res.data;
+  } catch (error) {
+    console.error(
+      "Error fetching user orders:",
+      error?.response?.data || error?.message
+    );
+    throw new Error(
+      error?.response?.data?.error || "Failed to fetch user orders"
+    );
+  }
+}
+
 
 export {
   requestOtp,
@@ -707,4 +749,6 @@ export {
   getUserProfileById,
   updateUserPassword,
   updateTrackingNumber,
+  getOrderDetails,
+  getMyOrders,
 };
