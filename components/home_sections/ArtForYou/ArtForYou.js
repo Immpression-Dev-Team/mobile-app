@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { StyleSheet, Animated, TouchableWithoutFeedback } from 'react-native';
+import { StyleSheet, Animated, TouchableWithoutFeedback, View, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -37,6 +37,7 @@ export default function ArtForYou() {
   const scrollDistance = 150;
   const inactivityTimeoutRef = useRef(null);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const paintFadeAnim = useRef(new Animated.Value(0)).current;
 
   const [artData, setArtData] = useState([]);
   const [page, setPage] = useState(1);
@@ -103,6 +104,7 @@ export default function ArtForYou() {
     resetInactivityTimer();
     fadeOutOverlay();
   };
+
 
   const fetchArtData = async (token) => {
     try {
@@ -198,6 +200,15 @@ export default function ArtForYou() {
       fetchArtData(token);
       startAutoScrollOnce();
       resetInactivityTimer();
+      
+      // Animate paint fade-in
+      setTimeout(() => {
+        Animated.timing(paintFadeAnim, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        }).start();
+      }, 500);
     }
 
     return () => {
@@ -206,7 +217,7 @@ export default function ArtForYou() {
         clearTimeout(inactivityTimeoutRef.current);
       }
     };
-  }, [token]);
+  }, [token, paintFadeAnim]);
 
   // render animation if still loading images
   if (isLoading) {
@@ -217,21 +228,26 @@ export default function ArtForYou() {
 
   return (
     <TouchableWithoutFeedback onPress={handleUserActivity}>
-      <LinearGradient
-        colors={['white', '#acb3bf', 'white']}
-        style={styles.container}
-      >
+      <View style={styles.container}>
         <ArtForYouHeader />
-        <ArtForYouContent
-          fadeAnim={fadeAnim}
-          imageChunks={imageChunks}
-          scrollViewRef={scrollViewRef}
-          isOverlayVisible={isOverlayVisible}
-          handleScrollEnd={handleScrollEnd}
-          handleImagePress={handleImagePress}
-          handleUserActivity={handleUserActivity}
-        />
-      </LinearGradient>
+        <View style={styles.contentWrapper}>
+          {/* Paint behind pictures to the right */}
+          {/* <Animated.Image
+            source={require('../../../assets/orange-paint2.png')}
+            style={[styles.paintBehindPictures, { opacity: paintFadeAnim }]}
+            resizeMode="contain"
+          /> */}
+          <ArtForYouContent
+            fadeAnim={fadeAnim}
+            imageChunks={imageChunks}
+            scrollViewRef={scrollViewRef}
+            isOverlayVisible={isOverlayVisible}
+            handleScrollEnd={handleScrollEnd}
+            handleImagePress={handleImagePress}
+            handleUserActivity={handleUserActivity}
+          />
+        </View>
+      </View>
     </TouchableWithoutFeedback>
   );
 }
@@ -241,7 +257,24 @@ const styles = StyleSheet.create({
     flex: 1,
     height: '100%',
     width: '100%',
-    padding: '1.75%',
+    padding: 16,
+    paddingTop: 0,
+    paddingBottom: 4,
+    marginTop: 0,
+  },
+  contentWrapper: {
+    flex: 1,
+    position: 'relative',
+  },
+  paintBehindPictures: {
+    position: 'absolute',
+    top: -70,
+    right: -400,
+    width: 550,
+    height: 550,
+    transform: [{ rotate: '180deg' }],
+    opacity: .7,
+    zIndex: 0,
   },
   loadingContainer: {
     flex: 1,

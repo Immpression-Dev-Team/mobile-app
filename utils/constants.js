@@ -24,6 +24,8 @@ import VerifyOtp from "../screens/VerifyOtp";
 import SellGuide from "../screens/SellGuide";
 import GalleryView from "../components/GalleryView";
 import ReviewScreen from "../screens/ReviewScreen";
+import SubmitTrackingNumber from "../screens/SubmitTrackingNumber";
+import OrderScreen from "../screens/OrderScreen";
 
 export const UserNavigation = [
   {
@@ -121,6 +123,14 @@ export const UserNavigation = [
   {
     name: "GalleryView",
     component: GalleryView,
+  },
+  {
+    name: "SubmitTrackingNumber",
+    component: SubmitTrackingNumber,
+  },
+  {
+    name: "OrderScreen",
+    component: OrderScreen,
   },
 ];
 

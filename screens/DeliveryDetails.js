@@ -19,14 +19,14 @@ const DeliveryDetails = ({ navigation, route }) => {
   const { imageId, imageLink, artName, artistName, price } = route.params;
   const { token } = useAuth();
 
-  const [name, setName] = useState("AWais");
+  const [name, setName] = useState("");
   const [country, setCountry] = useState("United States");
   const [openCountry, setOpenCountry] = useState(false);
-  const [address, setAddress] = useState("test");
-  const [city, setCity] = useState("test");
-  const [state, setState] = useState("Alaska");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
   const [openState, setOpenState] = useState(false);
-  const [zipCode, setZipCode] = useState("test");
+  const [zipCode, setZipCode] = useState("");
 
   const countries = [
     { label: "United States", value: "United States" },

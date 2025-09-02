@@ -4,8 +4,8 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import logoImg from "../assets/Logo_T.png";
 import { useNavigation, StackActions } from '@react-navigation/native';
 import LongSearchBar from './LongSearchBar';
-import LoginButton from './LoginButton';
 import LogoTitle from './LogoTitle';
+import NotificationDropdown from './NotificationDropdown';
 
 export default function Navbar() {
   const navigation = useNavigation();
@@ -13,19 +13,38 @@ export default function Navbar() {
   const [showNavItems, setShowNavItems] = useState(false);
   const slideAnimation = useRef(new Animated.Value(0)).current;
   const fadeAnimation = useRef(new Animated.Value(0)).current;
+  const [showNotifications, setShowNotifications] = useState(false);
+
+  const notifications = [
+    { 
+      id: '1', 
+      message: 'Someone bought your art! Continue with order →', 
+      type: 'purchase',
+      orderData: {
+        orderId: 'order_12345',
+        artName: 'Abstract Sunset',
+        artistName: 'Test Artist',
+        price: 299.99,
+        imageLink: 'https://via.placeholder.com/300x300'
+      }
+    },
+    { id: '2', message: 'Your order has been shipped!' },
+    { id: '3', message: 'New artwork has been uploaded in your favorite category.' },
+    { id: '4', message: 'Your profile was viewed 5 times today.' },
+  ];
 
   const handleToggleNavItems = () => {
-    setShowNavItems(!showNavItems); // Toggle navigation items container
-    setShowSearch(false); // Hide search bar
+    setShowNavItems(!showNavItems);
+    setShowSearch(false);
     Animated.timing(slideAnimation, {
-      toValue: showNavItems ? 0 : 1, // Use the updated state
+      toValue: showNavItems ? 0 : 1,
       duration: 200,
       useNativeDriver: false,
     }).start();
   };
 
   const handleOpenSearch = () => {
-    setShowSearch(true); // Open search bar
+    setShowSearch(true);
     Animated.parallel([
       Animated.timing(slideAnimation, {
         toValue: 1,
@@ -53,37 +72,55 @@ export default function Navbar() {
         useNativeDriver: true,
       })
     ]).start(() => {
-      setShowSearch(false); // Close search bar
-      setShowNavItems(false); // Close navigation items
+      setShowSearch(false);
+      setShowNavItems(false);
     });
   };
 
   const refreshApp = () => {
-    navigation.dispatch(
-      StackActions.replace('Home') // Replace current screen with Home to simulate a refresh
-    );
+    navigation.dispatch(StackActions.replace('Home'));
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.navbar}>
-          <Pressable onPress={refreshApp} style={styles.logoAndTitle}>
-            <Image source={logoImg} style={styles.logo} />
-            <LogoTitle />
-          </Pressable>
-        <Pressable onPress={handleToggleNavItems} style={styles.menuButton}>
-          <Icon name={showNavItems ? "close" : "menu"} size={30} color="black" />
+        <Pressable onPress={refreshApp} style={styles.logoAndTitle}>
+          <Image source={logoImg} style={styles.logo} />
+          <LogoTitle />
         </Pressable>
+
+        {showNotifications && (
+          <NotificationDropdown
+            notifications={notifications}
+            onClose={() => setShowNotifications(false)}
+          />
+        )}
+
+
+        <View style={styles.rightIcons}>
+          {/* Notification Bell */}
+          <Pressable
+            onPress={() => setShowNotifications((prev) => !prev)}
+            style={styles.iconButton}
+          >
+            <Icon name="notifications" size={26} color="black" />
+          </Pressable>
+
+
+          {/* Menu Button */}
+          <Pressable onPress={handleToggleNavItems} style={styles.iconButton}>
+            <Icon name={showNavItems ? "close" : "menu"} size={30} color="black" />
+          </Pressable>
+        </View>
       </View>
+
       <Animated.View style={[styles.navItemsContainer, {
-        transform: [
-          {
-            translateX: slideAnimation.interpolate({
-              inputRange: [0, 1],
-              outputRange: [400, 0], // Slide in from right (400) to show
-            }),
-          },
-        ],
+        transform: [{
+          translateX: slideAnimation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [400, 0],
+          }),
+        }],
       }]}>
         <Pressable onPress={() => navigation.navigate("Statistics")} style={styles.navItem}>
           <Icon name="equalizer" size={24} color="black" />
@@ -95,10 +132,9 @@ export default function Navbar() {
           <Icon name="settings" size={24} color="black" />
         </Pressable>
       </Animated.View>
+
       {showSearch && (
-        <Animated.View style={[styles.searchContainer, {
-          opacity: fadeAnimation, // Apply fade animation
-        }]}>
+        <Animated.View style={[styles.searchContainer, { opacity: fadeAnimation }]}>
           <LongSearchBar onClose={handleCloseSearch} />
         </Animated.View>
       )}
@@ -122,8 +158,13 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
-  menuButton: {
-    padding: 10,
+  rightIcons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconButton: {
+    padding: 8,
+    marginLeft: 5,
   },
   navItemsContainer: {
     position: 'absolute',

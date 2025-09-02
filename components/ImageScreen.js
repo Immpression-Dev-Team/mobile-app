@@ -7,6 +7,7 @@ import {
   FlatList,
   Dimensions,
   TouchableOpacity,
+  TextInput
 } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { useAuth } from "../state/AuthProvider";
@@ -82,6 +83,7 @@ const ImageScreen = ({ route, navigation }) => {
       }
     }
   };
+
 
   return (
     <ScreenTemplate>
@@ -277,6 +279,7 @@ const ImageScreen = ({ route, navigation }) => {
                 {images[currentIndex]?.isFramed ? "Yes" : "No"}
               </Text>
             </View>
+
           </View>
         )}
 
