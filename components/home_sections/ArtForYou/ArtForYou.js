@@ -108,7 +108,7 @@ export default function ArtForYou() {
 
   const fetchArtData = async (token) => {
     try {
-      const response = await getAllImages(token, page, 50);
+      const response = await getAllImages(token, 1, 50); // Always start from page 1
       if (!response.success) {
         console.error('Error fetching art data:', response.data);
         return;
@@ -121,17 +121,26 @@ export default function ArtForYou() {
   
       const shuffledData = shuffleArray(approvedArt);
       setOriginalArtData(shuffledData);
-      setHasMore(true);
+      setPage(1); // Reset to page 1
+      
+      // Only has more if we got a full page (50 items)
+      setHasMore(response.images.length === 50);
     } catch (error) {
       console.error('Error fetching art data:', error);
+      setHasMore(false);
     } finally {
       setIsLoading(false);
     }
   };
   
   const fetchMoreArtData = async (token) => {
+    if (isLoading) return; // Prevent multiple concurrent requests
+    
     try {
-      const response = await getAllImages(token, page + 1, 50);
+      setIsLoading(true);
+      const nextPage = page + 1;
+      const response = await getAllImages(token, nextPage, 50);
+      
       if (!response.success) {
         console.error('Error fetching more art data:', response.data);
         return;
@@ -141,18 +150,29 @@ export default function ArtForYou() {
   
       if (response.images.length === 0) {
         setHasMore(false);
-      } else {
-        // Filter out only approved artworks
-        const approvedArt = response.images.filter((image) => image.stage === 'approved');
-        console.log('Approved images length =', approvedArt.length);
-  
-        const shuffledData = shuffleArray(approvedArt);
-        setOriginalArtData((prevData) => [...prevData, ...shuffledData]);
-        setPage((prevPage) => prevPage + 1);
-        setHasMore(true);
+        return;
       }
+      
+      // Filter out only approved artworks
+      const approvedArt = response.images.filter((image) => image.stage === 'approved');
+      console.log('Approved images length =', approvedArt.length);
+      
+      if (approvedArt.length === 0) {
+        // If no approved art in this batch, try next page
+        setPage(nextPage);
+        setHasMore(response.images.length === 50); // Only has more if we got full page
+        return;
+      }
+
+      const shuffledData = shuffleArray(approvedArt);
+      setOriginalArtData((prevData) => [...prevData, ...shuffledData]);
+      setPage(nextPage);
+      
+      // Only set hasMore to true if we got a full page (50 items)
+      setHasMore(response.images.length === 50);
     } catch (error) {
       console.error('Error fetching more art data:', error);
+      setHasMore(false);
     } finally {
       setIsLoading(false);
     }
@@ -187,8 +207,15 @@ export default function ArtForYou() {
   };
 
   const handleScrollEnd = async () => {
-    if (hasMore && !isLoading) {
+    if (hasMore && !isLoading && token) {
       await fetchMoreArtData(token);
+    }
+  };
+
+  const handleRefresh = async () => {
+    if (!isLoading && token) {
+      setIsLoading(true);
+      await fetchArtData(token);
     }
   };
 
@@ -245,6 +272,8 @@ export default function ArtForYou() {
             handleScrollEnd={handleScrollEnd}
             handleImagePress={handleImagePress}
             handleUserActivity={handleUserActivity}
+            handleRefresh={handleRefresh}
+            isLoading={isLoading}
           />
         </View>
       </View>

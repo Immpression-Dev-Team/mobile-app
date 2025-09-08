@@ -711,6 +711,97 @@ async function getMyOrders(token, page = 1, limit = 10) {
   }
 }
 
+// Function to fetch seller orders (orders where current user is the seller)
+async function getMySales(token, page = 1, limit = 10, status /* optional */) {
+  try {
+    const res = await axios.get(`${API_URL}/my-sales`, {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { page, limit, ...(status ? { status } : {}) },
+    });
+    return res.data;
+  } catch (error) {
+    console.error(
+      "Error fetching user sales:",
+      error?.response?.data || error?.message
+    );
+    throw new Error(
+      error?.response?.data?.error || "Failed to fetch user sales"
+    );
+  }
+}
+
+
+// ========= Notifications =========
+
+// List notifications (cursor = ISO string for "after")
+async function getNotifications(token, { limit = 20, after } = {}) {
+  console.log("🚀 API.js getNotifications called with:", { token: token ? "Present" : "Missing", limit, after });
+  try {
+    const url = `${API_URL}/notifications`;
+    console.log("🚀 Making request to:", url);
+    const res = await axios.get(url, {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { limit, ...(after ? { after } : {}) },
+    });
+    console.log("🚀 Notifications API response:", res.data);
+    return res.data; // { success, data: [ ...notifications ] }
+  } catch (error) {
+    const msg = error?.response?.data?.error || error?.message || "Failed to fetch notifications";
+    console.error("🚀 Error fetching notifications:", msg);
+    throw new Error(msg);
+  }
+}
+
+// Get unread count
+async function getUnreadNotificationsCount(token) {
+  console.log("🚀 API.js getUnreadNotificationsCount called with token:", token ? "Present" : "Missing");
+  try {
+    const url = `${API_URL}/notifications/unread-count`;
+    console.log("🚀 Making request to:", url);
+    const res = await axios.get(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    console.log("🚀 Unread count API response:", res.data);
+    return res.data; // { success: true, data: { count } }
+  } catch (error) {
+    const msg = error?.response?.data?.error || error?.message || "Failed to fetch unread count";
+    console.error("🚀 Error fetching unread count:", msg);
+    throw new Error(msg);
+  }
+}
+
+// Mark ONE notification as read
+async function markNotificationRead(notificationId, token) {
+  try {
+    const res = await axios.patch(
+      `${API_URL}/notifications/${notificationId}/read`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return res.data; // { success: true }
+  } catch (error) {
+    const msg = error?.response?.data?.error || error?.message || "Failed to mark notification read";
+    console.error("Error marking notification read:", msg);
+    throw new Error(msg);
+  }
+}
+
+// Mark ALL notifications as read
+async function markAllNotificationsRead(token) {
+  try {
+    const res = await axios.patch(
+      `${API_URL}/notifications/read-all`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    return res.data; // { success: true }
+  } catch (error) {
+    const msg = error?.response?.data?.error || error?.message || "Failed to mark all notifications read";
+    console.error("Error marking all notifications read:", msg);
+    throw new Error(msg);
+  }
+}
+
 
 export {
   requestOtp,
@@ -751,4 +842,9 @@ export {
   updateTrackingNumber,
   getOrderDetails,
   getMyOrders,
+  getMySales,
+  getNotifications,
+  getUnreadNotificationsCount,
+  markNotificationRead,
+  markAllNotificationsRead,
 };
