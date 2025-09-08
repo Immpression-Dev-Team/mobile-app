@@ -1,72 +1,69 @@
-import { useState, useEffect, useRef } from 'react';
+// ArtForYouContent.js
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
-  Image,
+  Image as RNImage,
   Platform,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Image as ExpoImage } from 'expo-image';
 
 const skeleton = require('../../../assets/skeleton.png');
 const loadingGif = require('../../../assets/loading-gif.gif');
+const slideLeftGif = require('../../../assets/slideLeft.gif');
 
-const slideLeftGif = require('../../../assets//slideLeft.gif');
-
-const LazyImage = ({ art, style }) => {
+const LazyImage = ({ art, style, reloadToken }) => {
   const [isLoading, setIsLoading] = useState(true);
+  const [hadError, setHadError] = useState(false);
+
+  // Bust cache on refresh
+  const uri = useMemo(() => {
+    if (!art?.imageLink) return null;
+    const sep = art.imageLink.includes('?') ? '&' : '?';
+    return `${art.imageLink}${sep}v=${reloadToken}`;
+  }, [art?.imageLink, reloadToken]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    setHadError(false);
+  }, [uri]);
 
   return (
     <View style={style}>
-      {isLoading && (
+      {isLoading && !hadError && (
         <View style={[style, styles.placeholder]}>
-          <Image source={loadingGif} style={styles.loadingGif} />
+          <RNImage source={loadingGif} style={styles.loadingGif} />
         </View>
       )}
-      <Image
-        source={{ uri: art.imageLink }}
-        style={[style, isLoading ? styles.hiddenImage : null]}
-        onLoadStart={() => setIsLoading(true)}
-        onLoadEnd={() => setIsLoading(false)}
-        loading="lazy"
-        defaultSource={skeleton}
-      />
+
+      {hadError ? (
+        <RNImage source={skeleton} style={style} />
+      ) : (
+        <ExpoImage
+          key={`${art._id}-${reloadToken}`} // force remount on refresh
+          source={{ uri }}
+          style={[style, isLoading ? styles.hiddenImage : null]}
+          contentFit="cover"
+          transition={200}
+          cachePolicy="memory-disk"
+          onLoadStart={() => setIsLoading(true)}
+          onLoadEnd={() => setIsLoading(false)}
+          onError={() => {
+            setHadError(true);
+            setIsLoading(false);
+          }}
+          draggable={false}
+        />
+      )}
     </View>
   );
 };
-
-// const LazyImage = ({ art, style }) => {
-//   const [isLoading, setIsLoading] = useState(true);
-//   const [inView, setInView] = useState(false);
-
-//   // const { ref, inview } = useInView({ threshold: 0.1 });
-
-//   return (
-//     <View onChange={setInView} style={style}>
-//       {isLoading && (
-//         <SkeletonPlaceholder>
-//           <SkeletonPlaceholder.Item
-//             width={'100%'}
-//             height={'100%'}
-//             borderRadius={0}
-//           />
-//         </SkeletonPlaceholder>
-//       )}
-//       {inView && (
-//         <Image
-//           source={{ uri: art.imageLink }}
-//           style={[style, isLoading ? styles.hiddenImage : null]}
-//           onLoadStart={() => setIsLoading(true)}
-//           onLoadEnd={() => setIsLoading(false)}
-//           loading="lazy"
-//         />
-//       )}
-//     </View>
-//   );
-// };
 
 export default function ArtForYouContent({
   fadeAnim,
@@ -76,7 +73,20 @@ export default function ArtForYouContent({
   handleScrollEnd,
   handleImagePress,
   handleUserActivity,
+  handleRefresh,
+  isLoading,
 }) {
+  const [reloadToken, setReloadToken] = useState(0);
+
+  // wrap your refresh to also bump reloadToken
+  const onRefresh = async () => {
+    try {
+      await handleRefresh?.();
+    } finally {
+      setReloadToken(t => t + 1);
+    }
+  };
+
   const pulseAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(50)).current;
   const arrowAnim1 = useRef(new Animated.Value(0)).current;
@@ -85,7 +95,6 @@ export default function ArtForYouContent({
 
   useEffect(() => {
     if (isOverlayVisible) {
-      // Slide in animation
       Animated.spring(slideAnim, {
         toValue: 0,
         tension: 80,
@@ -93,75 +102,39 @@ export default function ArtForYouContent({
         useNativeDriver: true,
       }).start();
 
-      // Start pulsing animation
       const pulseAnimation = Animated.loop(
         Animated.sequence([
-          Animated.timing(pulseAnim, {
-            toValue: 1,
-            duration: 1500,
-            useNativeDriver: true,
-          }),
-          Animated.timing(pulseAnim, {
-            toValue: 0,
-            duration: 1500,
-            useNativeDriver: true,
-          }),
+          Animated.timing(pulseAnim, { toValue: 1, duration: 1500, useNativeDriver: true }),
+          Animated.timing(pulseAnim, { toValue: 0, duration: 1500, useNativeDriver: true }),
         ])
       );
       pulseAnimation.start();
 
-      // Start sequential arrow animations
       const startArrowAnimations = () => {
         const arrowSequence = Animated.stagger(200, [
           Animated.sequence([
-            Animated.timing(arrowAnim1, {
-              toValue: 1,
-              duration: 800,
-              useNativeDriver: true,
-            }),
-            Animated.timing(arrowAnim1, {
-              toValue: 0,
-              duration: 400,
-              useNativeDriver: true,
-            }),
+            Animated.timing(arrowAnim1, { toValue: 1, duration: 800, useNativeDriver: true }),
+            Animated.timing(arrowAnim1, { toValue: 0, duration: 400, useNativeDriver: true }),
           ]),
           Animated.sequence([
-            Animated.timing(arrowAnim2, {
-              toValue: 1,
-              duration: 800,
-              useNativeDriver: true,
-            }),
-            Animated.timing(arrowAnim2, {
-              toValue: 0,
-              duration: 400,
-              useNativeDriver: true,
-            }),
+            Animated.timing(arrowAnim2, { toValue: 1, duration: 800, useNativeDriver: true }),
+            Animated.timing(arrowAnim2, { toValue: 0, duration: 400, useNativeDriver: true }),
           ]),
           Animated.sequence([
-            Animated.timing(arrowAnim3, {
-              toValue: 1,
-              duration: 800,
-              useNativeDriver: true,
-            }),
-            Animated.timing(arrowAnim3, {
-              toValue: 0,
-              duration: 400,
-              useNativeDriver: true,
-            }),
+            Animated.timing(arrowAnim3, { toValue: 1, duration: 800, useNativeDriver: true }),
+            Animated.timing(arrowAnim3, { toValue: 0, duration: 400, useNativeDriver: true }),
           ]),
         ]);
-        
         Animated.loop(arrowSequence).start();
       };
 
-      setTimeout(startArrowAnimations, 500);
-
+      const t = setTimeout(startArrowAnimations, 500);
       return () => {
+        clearTimeout(t);
         pulseAnimation.stop();
         slideAnim.setValue(50);
       };
     } else {
-      // Reset animations when overlay is hidden
       slideAnim.setValue(50);
       pulseAnim.setValue(0);
       arrowAnim1.setValue(0);
@@ -169,6 +142,7 @@ export default function ArtForYouContent({
       arrowAnim3.setValue(0);
     }
   }, [isOverlayVisible]);
+
   return (
     <View style={styles.imageContainer}>
       <ScrollView
@@ -179,16 +153,24 @@ export default function ArtForYouContent({
         onScroll={handleUserActivity}
         onMomentumScrollEnd={handleScrollEnd}
         style={styles.scrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={!!isLoading}
+            onRefresh={onRefresh}
+            tintColor="#635BFF"
+            colors={['#635BFF']}
+          />
+        }
       >
         {imageChunks.map((chunk, chunkIndex) => (
           <View key={`chunk-${chunkIndex}`} style={styles.column}>
             {chunk.map((art, index) => (
               <Pressable
-                key={art._id}
-                onPress={() => handleImagePress(chunkIndex * 2 + index)}
+                key={`${art._id}-${reloadToken}`} // ensure subtree remount too
+                onPress={() => handleImagePress?.(chunkIndex * 2 + index)}
                 style={styles.imgContainer}
               >
-                <LazyImage art={art} style={styles.image} />
+                <LazyImage art={art} style={styles.image} reloadToken={reloadToken} />
               </Pressable>
             ))}
           </View>
@@ -196,26 +178,28 @@ export default function ArtForYouContent({
       </ScrollView>
 
       {isOverlayVisible && (
-        <Animated.View 
+        <Animated.View
           style={[
-            styles.overlay, 
-            { 
+            styles.overlay,
+            {
               opacity: fadeAnim,
-              transform: [{ translateX: slideAnim }]
-            }
+              transform: [{ translateX: slideAnim }],
+            },
           ]}
         >
           <Animated.View
             style={[
               styles.enhancedCard,
               {
-                transform: [{
-                  scale: pulseAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [1, 1.05]
-                  })
-                }]
-              }
+                transform: [
+                  {
+                    scale: pulseAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [1, 1.05],
+                    }),
+                  },
+                ],
+              },
             ]}
           >
             <LinearGradient
@@ -225,54 +209,60 @@ export default function ArtForYouContent({
               <View style={styles.cardHeader}>
                 <Text style={styles.swipeText}>Swipe →</Text>
               </View>
-              
+
               <View style={styles.arrowContainer}>
                 <Animated.View
                   style={[
                     styles.arrow,
                     {
                       opacity: arrowAnim1,
-                      transform: [{
-                        translateX: arrowAnim1.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0, 10]
-                        })
-                      }]
-                    }
+                      transform: [
+                        {
+                          translateX: arrowAnim1.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0, 10],
+                          }),
+                        },
+                      ],
+                    },
                   ]}
                 >
                   <Text style={styles.arrowText}>›</Text>
                 </Animated.View>
-                
+
                 <Animated.View
                   style={[
                     styles.arrow,
                     {
                       opacity: arrowAnim2,
-                      transform: [{
-                        translateX: arrowAnim2.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0, 10]
-                        })
-                      }]
-                    }
+                      transform: [
+                        {
+                          translateX: arrowAnim2.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0, 10],
+                          }),
+                        },
+                      ],
+                    },
                   ]}
                 >
                   <Text style={styles.arrowText}>›</Text>
                 </Animated.View>
-                
+
                 <Animated.View
                   style={[
                     styles.arrow,
                     {
                       opacity: arrowAnim3,
-                      transform: [{
-                        translateX: arrowAnim3.interpolate({
-                          inputRange: [0, 1],
-                          outputRange: [0, 10]
-                        })
-                      }]
-                    }
+                      transform: [
+                        {
+                          translateX: arrowAnim3.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0, 10],
+                          }),
+                        },
+                      ],
+                    },
                   ]}
                 >
                   <Text style={styles.arrowText}>›</Text>
@@ -291,6 +281,9 @@ const styles = StyleSheet.create({
     width: '100%',
     height: Platform.OS === 'web' ? 400 : 280,
     padding: 0,
+  },
+  scrollView: {
+    flexGrow: 0,
   },
   column: {
     flexDirection: 'column',
@@ -312,6 +305,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 6,
+    ...(Platform.OS === 'web' ? { objectFit: 'cover' } : {}),
   },
   overlay: {
     position: 'absolute',
@@ -380,30 +374,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#2563EB',
     textAlign: 'center',
-  },
-  card: {
-    flexDirection: 'row',
-    backgroundColor: 'white',
-    borderRadius: 3,
-    paddingHorizontal: 5,
-    paddingVertical: 2,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  cardImage: {
-    width: 30,
-    height: 30,
-    marginRight: 5,
-    resizeMode: 'contain',
-  },
-  cardText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#333',
   },
   placeholder: {
     backgroundColor: '#F8F9FA',

@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(npm start)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(expo install:*)"
     ],
     "deny": [],
     "ask": []

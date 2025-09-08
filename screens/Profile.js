@@ -5,6 +5,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   Image,
+  Linking,
+  Alert,
 } from "react-native";
 import ProfilePic from "../components/profile_sections/ProfilePic";
 import ProfileName from "../components/profile_sections/ProfileName";
@@ -143,6 +145,29 @@ const Profile = () => {
     }
   };
 
+  const handleOpenStripeApp = async () => {
+    try {
+      // Try to open Stripe app first
+      const stripeAppUrl = "stripe://dashboard";
+      const canOpen = await Linking.canOpenURL(stripeAppUrl);
+      
+      if (canOpen) {
+        await Linking.openURL(stripeAppUrl);
+      } else {
+        // Fallback to Stripe web dashboard
+        const stripeWebUrl = "https://dashboard.stripe.com";
+        await WebBrowser.openBrowserAsync(stripeWebUrl);
+      }
+    } catch (error) {
+      console.error("Error opening Stripe:", error);
+      Alert.alert(
+        "Unable to Open Stripe",
+        "Could not open the Stripe app. Please check if you have it installed or try again later.",
+        [{ text: "OK" }]
+      );
+    }
+  };
+
   useEffect(() => {
     checkStripeStatus();
   }, []);
@@ -159,7 +184,7 @@ const Profile = () => {
               <Text style={styles.editProfileModernText}>Edit Profile</Text>
             </TouchableOpacity>
 
-            {!stripeOnboardingData?.onboarding_completed && (
+            {!stripeOnboardingData?.onboarding_completed ? (
               <TouchableOpacity
                 style={styles.stripeButton}
                 onPress={handleCreateStripeAccount}
@@ -171,6 +196,20 @@ const Profile = () => {
                     resizeMode="contain"
                   />
                   <Text style={styles.stripeButtonText}>Link Stripe Account</Text>
+                </View>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={styles.stripeLinkedButton}
+                onPress={handleOpenStripeApp}
+              >
+                <View style={styles.stripeButtonContent}>
+                  <Image
+                    source={require("../assets/stripe-logo.png")}
+                    style={styles.stripeLogo}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.stripeLinkedText}>View Stripe Account</Text>
                 </View>
               </TouchableOpacity>
             )}
@@ -401,6 +440,31 @@ const styles = StyleSheet.create({
     height: 20,
   },
   stripeButtonText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  stripeLinkedButton: {
+    backgroundColor: "#10B981", // Green color for success/linked
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    flex: 1,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    maxWidth: 180,
+  },
+  stripeLinkedIcon: {
+    fontSize: 16,
+    marginRight: 6,
+  },
+  stripeLinkedText: {
     color: "#FFFFFF",
     fontSize: 12,
     fontWeight: "600",

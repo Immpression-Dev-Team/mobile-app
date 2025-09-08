@@ -711,6 +711,26 @@ async function getMyOrders(token, page = 1, limit = 10) {
   }
 }
 
+// Function to fetch seller orders (orders where current user is the seller)
+async function getMySales(token, page = 1, limit = 10) {
+  try {
+    const res = await axios.get(`${API_URL}/my-sales`, {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { page, limit },
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error(
+      "Error fetching user sales:",
+      error?.response?.data || error?.message
+    );
+    throw new Error(
+      error?.response?.data?.error || "Failed to fetch user sales"
+    );
+  }
+}
+
 
 export {
   requestOtp,
@@ -751,4 +771,5 @@ export {
   updateTrackingNumber,
   getOrderDetails,
   getMyOrders,
+  getMySales,
 };
