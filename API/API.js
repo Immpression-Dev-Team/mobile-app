@@ -651,10 +651,10 @@ async function updateUserPassword(passwordData, token) {
 }
 
 // Function to update tracking number for an order (optionally pass carrier)
-async function updateTrackingNumber(orderId, trackingNumber, token, carrier) {
+async function updateTrackingNumber(orderId, trackingNumber, token, carrier, { forceMock } = {}) {
   try {
     const response = await axios.patch(
-      `${API_URL}/order/${orderId}/tracking`, // matches your router.patch("/order/:id/tracking")
+      `${API_URL}/order/${orderId}/tracking`,
       {
         trackingNumber: String(trackingNumber || "").trim().toUpperCase(),
         ...(carrier ? { carrier: String(carrier).toLowerCase() } : {}),
@@ -664,9 +664,11 @@ async function updateTrackingNumber(orderId, trackingNumber, token, carrier) {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
+        // 👇 add this while testing mock UPS numbers
+        params: forceMock ? { forceMock: 1 } : undefined,
       }
     );
-    return response.data; // { success, message, data: { orderId, shipping } }
+    return response.data;
   } catch (error) {
     const msg =
       error?.response?.data?.message ||
