@@ -63,6 +63,17 @@ export default function NotificationDropdown({
     );
   };
 
+  // Robust key extractor: prefer _id, then id, then a composed fallback
+  const keyExtractor = (item, index) =>
+    String(item._id || item.id || item.uuid || item.notificationId || index);
+
+  // Guard onEndReached so it doesn't spam while loading/refreshing
+  const handleEndReached = () => {
+    if (!footerLoading && !refreshing) {
+      onLoadMore?.();
+    }
+  };
+
   return (
     <View style={styles.dropdown}>
       <View style={styles.topBar}>
@@ -77,13 +88,19 @@ export default function NotificationDropdown({
       </View>
 
       <FlatList
-        data={notifications}
-        keyExtractor={(item) => item.id}
+        data={Array.isArray(notifications) ? notifications : []}
+        keyExtractor={keyExtractor}
         renderItem={renderItem}
         refreshing={refreshing}
         onRefresh={onRefresh}
         onEndReachedThreshold={0.35}
-        onEndReached={onLoadMore}
+        onEndReached={handleEndReached}
+        // Force re-render when the array reference changes or read states update
+        extraData={notifications}
+        // A few stability/perf tweaks for small lists in a constrained dropdown
+        initialNumToRender={8}
+        windowSize={3}
+        removeClippedSubviews={false}
         ListEmptyComponent={<Text style={styles.emptyText}>No notifications yet</Text>}
         ListFooterComponent={
           footerLoading ? (
@@ -92,6 +109,7 @@ export default function NotificationDropdown({
             </View>
           ) : null
         }
+        contentContainerStyle={{ paddingBottom: 6 }}
       />
     </View>
   );
