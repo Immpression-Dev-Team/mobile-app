@@ -115,10 +115,10 @@ const SubmitTrackingNumber = ({ navigation, route }) => {
     selectedCarrier === "UPS"
       ? "1Zxxxxxxxxxxxxxxxx"
       : selectedCarrier === "USPS"
-        ? "20–26 digits"
-        : selectedCarrier === "FEDEX"
-          ? "12/15/20/22 digits"
-          : "Select a carrier or start typing";
+      ? "20–26 digits"
+      : selectedCarrier === "FEDEX"
+      ? "12/15/20/22 digits"
+      : "Select a carrier or start typing";
 
   const handleSubmit = async () => {
     if (!orderData?.orderId) {
@@ -145,8 +145,13 @@ const SubmitTrackingNumber = ({ navigation, route }) => {
     submitLock.current = true;
     setIsSubmitting(true);
     try {
-      const res = await updateTrackingNumber(orderData.orderId, tnNormalized, token, chosenCarrier, { forceMock: true });
-
+      // IMPORTANT: no forceMock flag here
+      const res = await updateTrackingNumber(
+        orderData.orderId,
+        tnNormalized,
+        token,
+        chosenCarrier
+      );
 
       const status =
         res?.data?.shipping?.shipmentStatus?.replace(/_/g, " ") || "saved";
