@@ -675,7 +675,7 @@ async function updateTrackingNumber(orderId, trackingNumber, token, carrier, { f
       error?.response?.data?.error ||
       error?.message ||
       "Failed to update tracking number";
-    console.error("Error updating tracking number:", msg);
+    console.error("Error updating tracking number:", msg); 
     throw new Error(msg);
   }
 }
@@ -804,6 +804,39 @@ async function markAllNotificationsRead(token) {
   }
 }
 
+async function upsPing(token) {
+  const res = await axios.get(`${API_URL}/ups/ping`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data; // { ok, tokenPreview, env }
+}
+
+async function fedexPing(token) {
+  const res = await axios.get(`${API_URL}/fedex/ping`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return res.data; // { ok, tokenPreview, env }
+}
+
+// --- Stripe account onboarding ---
+async function createStripeAccount({ userId, userName, userEmail }, token) {
+  const res = await axios.post(
+    `${API_URL}/create-stripe-account`,
+    { userId, userName, userEmail },
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res.data; // { success, data: accountLink, user, message }
+}
+
+async function checkStripeStatus(token) {
+  const res = await axios.post(
+    `${API_URL}/check-stripe-status`,
+    {},
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  return res.data; // { success, data: {...status...} }
+}
+
 
 export {
   requestOtp,
@@ -849,4 +882,8 @@ export {
   getUnreadNotificationsCount,
   markNotificationRead,
   markAllNotificationsRead,
+  upsPing,
+  fedexPing,
+  createStripeAccount,
+  checkStripeStatus,
 };

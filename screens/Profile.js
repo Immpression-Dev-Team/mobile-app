@@ -9,17 +9,17 @@ import {
   Alert,
 } from "react-native";
 import ProfilePic from "../components/profile_sections/ProfilePic";
-import ProfileName from "../components/profile_sections/ProfileName";
 import ProfileViews from "../components/profile_sections/ProfileViews";
 import ProfileLikes from "../components/profile_sections/ProfileLikes";
-import ProfileBio from "../components/profile_sections/ProfileBio";
-import ProfileArtistType from "../components/profile_sections/ProfileArtistType";
 import {
   getUserProfile,
   getUserImages,
   fetchLikedImages,
   getBio,
   getArtistType,
+  // ⬇️ new authenticated helpers you added in API.js
+  createStripeAccount,
+  checkStripeStatus as checkStripeStatusApi,
 } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -35,6 +35,7 @@ const Profile = () => {
   const { userData } = useAuth();
   const token = userData?.token;
   const currentUserId = userData?.user?.user?._id;
+
   const isOwnProfile =
     !route.params?.userId || route.params?.userId === currentUserId;
   const userId = route.params?.userId || currentUserId;
@@ -94,7 +95,7 @@ const Profile = () => {
         const likedImgsRes = await fetchLikedImages(token);
         setLikedImages(likedImgsRes?.images || []);
 
-        setBoughtImages([]); // Add real logic if needed
+        setBoughtImages([]); // hook up real logic if needed
       } catch (err) {
         console.error("Error loading images:", err);
       }
@@ -103,60 +104,62 @@ const Profile = () => {
     fetchProfileData();
     fetchImageData();
     fetchBoughtImages();
-  }, [token, userId]);
+  }, [token, userId, isOwnProfile]);
 
   const fetchBoughtImages = async () => {
-    const res = await axios.get(`${API_URL}/orders`);
-    setBoughtImages(
-      res.data.data.filter((order) => order.userId === currentUserId)
-    );
+    try {
+      const res = await axios.get(`${API_URL}/orders`);
+      setBoughtImages(
+        (res.data?.data || []).filter((order) => order.userId === currentUserId)
+      );
+    } catch (e) {
+      console.error("Error fetching orders:", e?.response?.data || e?.message || e);
+    }
   };
 
+  // ========================= Stripe onboarding actions =========================
   const handleCreateStripeAccount = async () => {
     try {
-      const res = await axios.post(`${API_URL}/create-stripe-account`, {
+      const payload = {
         userId: currentUserId,
         userName: profileName,
-        userEmail: userData.user.user.email,
-        credentials: "include",
-      });
-      if (res.data.data.url) {
-        await WebBrowser.openBrowserAsync(res.data.data.url);
-        checkStripeStatus();
+        userEmail: userData?.user?.user?.email,
+      };
+
+      // Authenticated helper (sends Authorization header)
+      const res = await createStripeAccount(payload, token);
+
+      // backend returns { success, data: accountLink, user, message }
+      const url = res?.data?.url;
+      if (url) {
+        await WebBrowser.openBrowserAsync(url);
+        // You may choose to poll here or let the user tap a button later
+        // to re-check their onboarding status.
       }
     } catch (error) {
-      console.error("Error creating stripe account:", error);
+      console.error("Error creating Stripe account:", error?.response?.data || error);
+      Alert.alert("Stripe", "Could not start Stripe onboarding. Please try again.");
     }
   };
 
   const checkStripeStatus = async () => {
     try {
-      const res = await axios.post(
-        `${API_URL}/check-stripe-status`,
-        {},
-        { withCredentials: true }
-      );
-      if (res.data?.data) {
-        setStripeOnboardingData(res.data?.data);
-      }
+      const res = await checkStripeStatusApi(token);
+      if (res?.data) setStripeOnboardingData(res.data);
     } catch (error) {
-      console.error("Error checking status:", error);
-      console.error("Error details:", error.response?.data);
+      console.error("Error checking Stripe status:", error?.response?.data || error);
     }
   };
 
   const handleOpenStripeApp = async () => {
     try {
-      // Try to open Stripe app first
       const stripeAppUrl = "stripe://dashboard";
       const canOpen = await Linking.canOpenURL(stripeAppUrl);
-      
+
       if (canOpen) {
         await Linking.openURL(stripeAppUrl);
       } else {
-        // Fallback to Stripe web dashboard
-        const stripeWebUrl = "https://dashboard.stripe.com";
-        await WebBrowser.openBrowserAsync(stripeWebUrl);
+        await WebBrowser.openBrowserAsync("https://dashboard.stripe.com");
       }
     } catch (error) {
       console.error("Error opening Stripe:", error);
@@ -169,8 +172,8 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    checkStripeStatus();
-  }, []);
+    if (token) checkStripeStatus();
+  }, [token]);
 
   return (
     <ScreenTemplate>
@@ -225,9 +228,7 @@ const Profile = () => {
           <View style={styles.profilePicWrapper}>
             <ProfilePic
               source={
-                !isOwnProfile && profilePicture
-                  ? { uri: profilePicture }
-                  : null
+                !isOwnProfile && profilePicture ? { uri: profilePicture } : null
               }
               name={profileName}
             />
@@ -255,18 +256,17 @@ const Profile = () => {
 
         {isOwnProfile && (
           <View style={styles.folderGrid}>
-            {/* <Text style={styles.sectionHeader}>Your Folders</Text> */}
             <View style={styles.folderRow}>
               <FolderPreview
                 title="Favorited"
-                images={[likedImages.find(img => img.imageLink)?.imageLink]}
+                images={[likedImages.find((img) => img.imageLink)?.imageLink]}
                 onPress={() =>
                   navigation.navigate("GalleryView", { type: "liked" })
                 }
               />
               <FolderPreview
                 title="Gallery / Selling"
-                images={[sellingImages.find(img => img.imageLink)?.imageLink]}
+                images={[sellingImages.find((img) => img.imageLink)?.imageLink]}
                 onPress={() =>
                   navigation.navigate("GalleryView", { type: "selling" })
                 }
@@ -445,7 +445,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   stripeLinkedButton: {
-    backgroundColor: "#10B981", // Green color for success/linked
+    backgroundColor: "#10B981",
     paddingVertical: 8,
     paddingHorizontal: 10,
     borderRadius: 8,
