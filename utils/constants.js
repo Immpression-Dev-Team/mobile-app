@@ -26,6 +26,7 @@ import GalleryView from "../components/GalleryView";
 import ReviewScreen from "../screens/ReviewScreen";
 import SubmitTrackingNumber from "../screens/SubmitTrackingNumber";
 import OrderScreen from "../screens/OrderScreen";
+import ZipCode from "../screens/ZipCode";
 
 export const UserNavigation = [
   {
@@ -132,6 +133,7 @@ export const UserNavigation = [
     name: "OrderScreen",
     component: OrderScreen,
   },
+  { name: "ZipCode", component: ZipCode }, 
 ];
 
 export const GuestNavigation = [
@@ -159,49 +161,50 @@ export const GuestNavigation = [
     name: "AccountType",
     component: AccountTypeScreen,
   },
+  { name: "ZipCode", component: ZipCode }, 
 ];
 
 export const ArtistTypes = [
   {
     id: 1,
     name: "Painter",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/artistemoji.png"),
   },
   {
     id: 2,
     name: "Photographer",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/cameraemoji.png"),
   },
   {
     id: 3,
     name: "Graphic ",
     secondaryName: "Designer",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/graphicemoji.png"),
   },
   {
     id: 4,
     name: "Illustrator",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/writingemoji.png"),
   },
   {
     id: 5,
     name: "Sculptor",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/rockemoji.png"),
   },
   {
     id: 6,
     name: "WoodWorker",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/woodemoji.png"),
   },
   {
     id: 7,
     name: "Graffitist",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/graffitiemoji.png"),
   },
   {
     id: 8,
     name: "Stenciler",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/stencilemoji.png"),
   },
 ];
 
@@ -209,42 +212,42 @@ export const ArtTypes = [
   {
     id: 1,
     name: "Paintings",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/artistemoji.png"),
   },
   {
     id: 2,
     name: "Photography",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/cameraemoji.png"),
   },
   {
     id: 3,
     name: "Graphic ",
     secondaryName: "Design",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/graphicemoji.png"),
   },
   {
     id: 4,
     name: "Illustrations",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/writingemoji.png"),
   },
   {
     id: 5,
     name: "Sculptures",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/rockemoji.png"),
   },
   {
     id: 6,
     name: "WoodWork",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/woodemoji.png"),
   },
   {
     id: 7,
     name: "Graffiti",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/graffitiemoji.png"),
   },
   {
     id: 8,
     name: "Stencils",
-    icon: require("../assets/artisteemoji.png"),
+    icon: require("../assets/emojis/stencilemoji.png"),
   },
 ];

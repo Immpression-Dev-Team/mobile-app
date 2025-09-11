@@ -6,58 +6,56 @@ import {
   TextInput,
   Pressable,
   Image,
-  ImageBackground, // Import ImageBackground component
+  ImageBackground,
+  Platform,
+  ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import NavBar from "../components/Navbar";
-import { API_URL } from "../API_URL";
 import axios from "axios";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { API_URL } from "../API_URL";
 import { handleLogin } from "../utils/handleLogin";
-import Icon from "react-native-vector-icons/FontAwesome"; // Import your preferred icon set
 import { showToast } from "../utils/toastNotification";
 import { useAuth } from "../state/AuthProvider";
 
-const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
-const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image
-const backgroundImage = require("../assets/backgrounds/babyBlue.png"); // Adjust the path to your background image
+const logoImage = require("../assets/Logo_T.png");
+const headerImage = require("../assets/headers/Immpression_multi.png");
+const backgroundImage = require("../assets/backgrounds/paint_background.png");
 
 const SignUp = () => {
   const [name, setName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [ellipsis, setEllipsis] = useState("");
-
-  const route = useRoute();
-  const { email, password } = route.params; // Get the email passed from request otp screen
-
   const [error, setError] = useState("");
 
-  const { login } = useAuth();
+  const route = useRoute();
+  const { email, password } = route.params || { email: "", password: "" };
 
+  const { login } = useAuth();
   const navigation = useNavigation();
 
-  // Animate loading state
   useEffect(() => {
     if (isLoading) {
-      const intervalId = setInterval(() => {
-        setEllipsis((prev) => (prev.length < 3 ? `${prev}.` : ""));
-      }, 500); // Adjust the speed as desired
-
-      return () => clearInterval(intervalId); // Clear interval on unmount or stop loading
+      const id = setInterval(
+        () => setEllipsis((prev) => (prev.length < 3 ? prev + "." : "")),
+        500
+      );
+      return () => clearInterval(id);
     } else {
-      setEllipsis(""); // Reset ellipsis when not loading
+      setEllipsis("");
     }
   }, [isLoading]);
 
-  // Simple email validation
-  const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
+  const isValidEmail = (e) => /\S+@\S+\.\S+/.test(e);
 
-  // TODO: set up frontend confirmPassword logic before calling handleSubmit
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault?.();
     setError("");
 
-    if (name.length < 4) {
+    if (name.trim().length < 4) {
       setError("Name must be at least 4 characters long.");
       return;
     }
@@ -68,68 +66,49 @@ const SignUp = () => {
 
     setIsLoading(true);
     try {
-      console.log("API_UR in requresL", API_URL);
-
-      const response = await axios.post(`${API_URL}/signup`, {
-        name,
-        email,
-      });
-
-      console.log("this is signup response", response.data);
-      console.log("this is the password we have", password, route.params);
+      const response = await axios.post(`${API_URL}/signup`, { name, email });
       if (response.data.success) {
         const result = await handleLogin(email, password, login);
-
         if (result.success) {
-          navigation.navigate("AccountType");
+          navigation.navigate("AccountType"); // 👈 next screen
+        } else {
+          showToast("Login failed after signup");
         }
       } else {
-        console.log("Signup failed");
-        showToast("Signup Failed");
+        showToast("Signup failed");
       }
     } catch (err) {
-      showToast("Error during login");
-      console.log("Error during login:", err.response.data);
-      setError(err.response.data.error);
+      showToast("Error during signup");
+      setError(err?.response?.data?.error || "Signup error");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleBack = () => {
-    navigation.navigate("Login");
-  };
-
   return (
-    <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
-      <View style={styles.container}>
-        {/* <NavBar /> */}
-        <KeyboardAvoidingView style={styles.signUpContainer} behavior="padding">
-          <View style={styles.inputContainer}>
-            <View style={styles.totalHeader}>
-              <View style={styles.logoContainer}>
-                <Image source={logoImage} style={styles.logo} />
-              </View>
-              <View style={styles.headerImageContainer}>
-                <Image source={headerImage} style={styles.headerImage} />
-              </View>
-            </View>
+    <ImageBackground source={backgroundImage} style={styles.bg}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.select({ ios: "padding", android: "height" })}
+        keyboardVerticalOffset={Platform.select({ ios: 60, android: 0 })}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
+          >
+            <View style={styles.centerBlock}>
+              <Image source={logoImage} style={styles.logo} />
+              <Image source={headerImage} style={styles.headerImage} />
 
-            {/* <Text style={styles.title}>Sign Up to Impression</Text> */}
-            <View style={styles.contentContainer}>
-              <View style={styles.inputContainer}>
-                <Text
-                  style={{
-                    color: "#1E90FF",
-                    textAlign: "center",
-                    marginTop: 45,
-                    marginBottom: 12,
-                    fontWeight: "bold",
-                    letterSpacing: 0.3,
-                  }}
-                >
-                  Almost there! Choose a username.
-                </Text>
+              <Text style={styles.title}>Create your account</Text>
+              <Text style={styles.subtitle}>
+                Almost there! Choose a username.
+              </Text>
+
+              
+              <View style={styles.card}>
+                {/* Email (read-only) */}
                 <View style={styles.inputWrapper}>
                   <Icon
                     name="envelope"
@@ -140,11 +119,12 @@ const SignUp = () => {
                   <TextInput
                     placeholder="Email"
                     value={email}
-                    // onChangeText={(text) => setEmail(text)}
-                    disabled
-                    style={styles.input}
+                    editable={false}
+                    style={[styles.input, styles.inputDisabled]}
                   />
                 </View>
+
+                {/* Username */}
                 <View style={styles.inputWrapper}>
                   <Icon
                     name="user"
@@ -155,145 +135,131 @@ const SignUp = () => {
                   <TextInput
                     placeholder="Username"
                     value={name}
-                    onChangeText={(text) => setName(text)}
+                    onChangeText={setName}
                     style={styles.input}
+                    autoCapitalize="none"
+                    returnKeyType="done"
+                    onSubmitEditing={handleSubmit}
                   />
                 </View>
+
+                {!!error && <Text style={styles.error}>{error}</Text>}
+
+                <Pressable
+                  onPress={handleSubmit}
+                  disabled={isLoading}
+                  style={({ pressed }) => [
+                    styles.button,
+                    (pressed || isLoading) && styles.buttonPressed,
+                  ]}
+                >
+                  <Text style={styles.buttonText}>
+                    {isLoading ? `Signing Up${ellipsis}` : "Sign Up"}
+                  </Text>
+                </Pressable>
+
+                <Pressable
+                  onPress={() => navigation.navigate("Login")}
+                  style={styles.textOnlyBtn}
+                >
+                  <Text style={styles.textOnlyBtnText}>Back to Login</Text>
+                </Pressable>
               </View>
             </View>
-            <Text style={{ color: "red", textAlign: "center" }}>
-              {error ? error : ""}
-            </Text>
-          </View>
-          <Pressable
-            onPress={handleSubmit}
-            disabled={isLoading}
-            style={[
-              styles.button,
-              styles.buttonOutline,
-              isLoading && { opacity: 0.7 },
-            ]}
-          >
-            <Text style={styles.buttonOutlineText}>
-              {isLoading ? `Signing Up${ellipsis}` : "Sign Up"}
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={handleBack}
-            style={[styles.button, styles.buttonOutline2]}
-          >
-            <Text style={styles.buttonOutlineText2}>Back to Login</Text>
-          </Pressable>
-        </KeyboardAvoidingView>
-      </View>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
 };
 
-export default SignUp;
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  backgroundImage: {
-    flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
-  },
-  signUpContainer: {
-    flex: 1,
+  flex: { flex: 1 },
+  bg: { flex: 1, resizeMode: "cover" },
+
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 20, // Adjust the top padding to create space between NavBar and Sign Up section
+    paddingHorizontal: 24,
   },
+
+  centerBlock: {
+    alignItems: "center",
+    gap: 12,
+    width: "100%",
+    maxWidth: 420,
+  },
+
+  logo: { width: 72, height: 72, resizeMode: "contain" },
+  headerImage: { width: 220, height: 56, resizeMode: "contain" },
+
   title: {
-    fontSize: 30,
-    marginBottom: 30,
-    fontWeight: "bold",
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#1E2A3A",
+    marginTop: 8,
+  },
+  subtitle: {
+    fontSize: 13,
+    color: "#3C3D52",
     textAlign: "center",
   },
-  inputContainer: {
-    width: "90%",
-    marginTop: 0, // Adjust this value to bring inputs higher up
+
+  card: {
+    marginTop: 16,
+    backgroundColor: "rgba(255,255,255,0.92)",
+    borderRadius: 16,
+    padding: 20,
+    width: "100%",
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 16,
+    elevation: 4,
+    alignItems: "center",
   },
+
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#C6C7DE",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 20,
-    marginTop: 15,
-  },
-  inputIcon: {
-    marginRight: 10,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-  },
-  contentContainer: {
-    // flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#F1F2F8",
+    borderColor: "#C6C7DE",
+    borderWidth: 1.5,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    height: 52,
     width: "100%",
+    marginTop: 12,
   },
+  inputIcon: { marginRight: 10 },
+  input: { flex: 1, fontSize: 16 },
+  inputDisabled: { color: "#6b7280" },
+
+  error: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 10,
+    alignSelf: "stretch",
+  },
+
   button: {
-    backgroundColor: "blue",
-    width: "80%",
-    padding: 10,
-    borderRadius: 10,
-    marginTop: 20,
-  },
-  buttonOutline: {
-    backgroundColor: "blue",
-    marginTop: 10,
-    borderRadius: 20,
-  },
-  buttonOutline2: {
-    backgroundColor: "transparent",
-    marginTop: 10,
-    borderRadius: 20,
-  },
-  buttonOutlineText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 15,
-    textAlign: "center",
-  },
-  buttonOutlineText2: {
-    color: "black",
-    fontWeight: "bold",
-    fontSize: 15,
-    textAlign: "center",
-  },
-  logoContainer: {
-    justifyContent: "center",
+    backgroundColor: "#1E2A3A",
+    borderRadius: 12,
+    paddingVertical: 14,
     alignItems: "center",
-    marginTop: 20,
-  },
-  logo: {
-    width: 70,
-    height: 70,
-    resizeMode: "contain",
-  },
-  headerImageContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-    marginLeft: 12,
-  },
-  headerImage: {
-    width: 200,
-    height: 50,
-    resizeMode: "contain",
-  },
-  totalHeader: {
-    // flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    marginTop: 16,
     width: "100%",
+  },
+  buttonPressed: { opacity: 0.9 },
+  buttonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+
+  textOnlyBtn: { marginTop: 10 },
+  textOnlyBtnText: {
+    color: "#1E2A3A",
+    fontWeight: "700",
+    textDecorationLine: "underline",
   },
 });
+
+export default SignUp;

@@ -6,214 +6,261 @@ import {
   ImageBackground,
   Image,
   TouchableOpacity,
+  ScrollView,
 } from 'react-native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { ArtTypes } from '../utils/constants';
 import { useAuth } from '../state/AuthProvider';
 import { useNavigation } from '@react-navigation/native';
 import { updateArtType } from '../API/API';
 
 const backgroundImage = require('../assets/backgrounds/navbar_bg_blue.png');
-const loadingGif = require('../assets/loading-gif.gif');
+const loadingGif = require('../assets/Logo_T.png');
 
-const ArtPrefences = () => {
+const ArtPreferences = () => {
   const { userData } = useAuth();
   const token = userData?.token;
   const navigation = useNavigation();
 
   const [selectedArtTypes, setSelectedArtTypes] = useState([]);
 
-  const selectType = (type) => {
+  const toggleType = (name) => {
     setSelectedArtTypes((prev) =>
-      prev.includes(type) ? prev.filter((art) => art !== type) : [...prev, type]
+      prev.includes(name) ? prev.filter((t) => t !== name) : [...prev, name]
     );
   };
 
-  const handleSelection = async () => {
+  const handleProceed = async () => {
     try {
       const response = await updateArtType(selectedArtTypes, token);
-      console.log('response from updating art types: ' + response);
-      // Check if the response indicates a successful operation
-      if (response.success) {
+      if (response?.success) {
         navigation.navigate('Home');
       } else {
-        console.warn(
-          'Update failed with message:',
-          response.message || 'Unknown error'
-        );
+        console.warn('Update failed:', response?.message || 'Unknown error');
       }
-    } catch (error) {
-      console.error('Error updating artist type:', error);
+    } catch (err) {
+      console.error('Error updating art types:', err);
     }
   };
 
   return (
     <View style={styles.container}>
-      {/* header */}
-      <View style={styles.header}>
-        <ImageBackground
-          source={backgroundImage}
-          style={styles.backgroundImage}
-        />
+      {/* Header wave */}
+      <View style={styles.waveHeader}>
+        <ImageBackground source={backgroundImage} style={styles.waveImage} />
       </View>
 
-      {/* body */}
-      <View style={styles.body}>
+      {/* 🔙 Back Button (matches ArtistType) */}
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => navigation.goBack()}
+        activeOpacity={0.8}
+      >
+        <Ionicons name="arrow-back" size={22} color="#1E2A3A" />
+      </TouchableOpacity>
+
+      {/* Body */}
+      <ScrollView
+        contentContainerStyle={styles.bodyContent}
+        keyboardShouldPersistTaps="handled"
+      >
         <View style={styles.headingContainer}>
           <Text style={styles.subHeading}>WHAT TYPE OF</Text>
           <Text style={styles.mainHeading}>ART</Text>
           <Text style={styles.subHeading}>DO YOU LIKE?</Text>
         </View>
 
-        {/* buttons */}
+        {/* Buttons grid (compact, 2 columns) */}
         <View style={styles.buttons}>
-          {ArtTypes.map((type) => (
-            <TouchableOpacity
-              style={[
-                styles.button,
-                selectedArtTypes.includes(type.name) && styles.selectedButton,
-              ]}
-              key={type.id}
-              onPress={() => selectType(type.name)}
-            >
-              <Text style={styles.buttonText}>
-                <Text style={styles.primaryName}>{type.name}</Text> {'\n'}
-                <Text style={styles.secondaryName}>
-                  {type.secondaryName && type.secondaryName}
-                </Text>
-              </Text>
-              <Image source={type.icon} style={styles.buttonImage} />
-            </TouchableOpacity>
-          ))}
+          {ArtTypes.map((type) => {
+            const selected = selectedArtTypes.includes(type.name);
+            return (
+              <TouchableOpacity
+                key={type.id}
+                activeOpacity={0.9}
+                style={[
+                  styles.button,
+                  selected && styles.buttonSelected,
+                ]}
+                onPress={() => toggleType(type.name)}
+              >
+                <View style={styles.textWrap}>
+                  <Text style={styles.primaryText}>{type.name}</Text>
+                  {!!type.secondaryName && (
+                    <Text style={styles.secondaryText}>{type.secondaryName}</Text>
+                  )}
+                </View>
+                <Image source={type.icon} style={styles.icon} />
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
-        {/* button text */}
+        {/* Proceed button */}
         <TouchableOpacity
-          style={styles.submit}
-          onPress={() => handleSelection()}
+          style={[
+            styles.proceedBtn,
+            selectedArtTypes.length === 0 && { opacity: 0.6 },
+          ]}
+          onPress={handleProceed}
+          disabled={selectedArtTypes.length === 0}
+          activeOpacity={0.85}
         >
-          <Text style={styles.submitText}>Proceed</Text>
+          <Text style={styles.proceedText}>Proceed</Text>
         </TouchableOpacity>
 
-        {/* loading gif */}
-        <Image source={loadingGif} style={styles.loading} />
-      </View>
 
-      {/* footer */}
-      <View style={styles.header}>
+        <Image source={loadingGif} style={styles.loading} />
+      </ScrollView>
+
+      {/* Footer wave */}
+      <View style={styles.waveFooter}>
         <ImageBackground
           source={backgroundImage}
-          style={styles.footerBackgroundImage}
+          style={styles.waveImageFlipped}
         />
       </View>
     </View>
   );
 };
 
+
+
 const styles = StyleSheet.create({
   container: {
-    display: 'flex',
-    height: '100%',
-    backgroundColor: 'white',
-  },
-  header: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '10%',
-    marginBottom: 42,
-  },
-  body: {
-    height: '75%',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttons: {
-    marginVertical: 65,
     flex: 1,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    padding: 10,
-    marginHorizontal: 15,
-    // gap: 5,
-    // maxWidth: '80%',
+    backgroundColor: '#ffffff',
   },
-  button: {
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    backgroundColor: '#000',
-    borderRadius: 16,
-    marginBottom: 10,
-    paddingVertical: 3,
-    paddingHorizontal: 10,
-    width: '49%',
-    aspectRatio: 1,
-    alignItems: 'center',
-  },
-  selectedButton: {
-    backgroundColor: '#0284c7',
-  },
-  loading: {
-    width: 70,
+  waveHeader: {
     height: 70,
-    borderRadius: 25,
-    marginTop: 70,
+    width: '100%',
   },
-  buttonImage: {
-    width: 30,
-    height: 30,
+  waveFooter: {
+    height: 70,
+    width: '100%',
   },
-  headingContainer: {
-    fontWeight: '900',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  mainHeading: {
-    fontSize: 40,
-    fontWeight: '900',
-  },
-  subHeading: {
-    fontSize: 20,
-    fontWeight: '900',
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: '900',
-    fontSize: 10,
-    padding: 10,
-    textTransform: 'uppercase',
-    display: 'flex',
-    flexDirection: 'column',
-  },
-  backgroundImage: {
+  waveImage: {
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
   },
-  footerBackgroundImage: {
+  waveImageFlipped: {
     transform: [{ rotate: '180deg' }],
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
   },
-  submit: {
-    backgroundColor: '#0284c7',
-    fontSize: 10,
 
-    borderRadius: 5,
+  backButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 10,
+    backgroundColor: 'rgba(255,255,255,0.75)',
+    borderRadius: 20,
+    padding: 6,
   },
-  submitText: {
-    color: 'white',
+
+  bodyContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 20,
+  },
+
+  headingContainer: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  subHeading: {
+    fontSize: 14,
+    letterSpacing: 1,
+    color: '#3C3D52',
+    fontWeight: '800',
     textTransform: 'uppercase',
-    fontWeight: 900,
-    fontSize: 16,
-    paddingHorizontal: 20,
+  },
+  mainHeading: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#1E2A3A',
+  },
+
+  buttons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 10,
+    width: '100%',
+  },
+  button: {
+    width: '48%',
+    backgroundColor: '#1E2A3A',
+    borderRadius: 12,
     paddingVertical: 10,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  buttonSelected: {
+    backgroundColor: '#0284c7',
+  },
+  textWrap: {
+    flexShrink: 1,
+  },
+  primaryText: {
+    color: '#fff',
+    fontWeight: '900',
+    fontSize: 12,
+    textTransform: 'uppercase',
+  },
+  secondaryText: {
+    color: '#C6C7DE',
+    fontWeight: '700',
+    fontSize: 10,
+    textTransform: 'uppercase',
+    marginTop: 2,
+  },
+  icon: {
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
+    marginLeft: 6,
+  },
+
+  proceedBtn: {
+    backgroundColor: '#0284c7',
+    borderRadius: 14,
+    paddingVertical: 14,
+    width: '90%',          // ✅ makes it wide and consistent
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 6 },
+    shadowRadius: 8,
+    elevation: 3,
+    alignSelf: 'center',   // centers it nicely
+  },
+  proceedText: {
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  
+
+  loading: {
+    width: 50,
+    height: 50,
+    borderRadius: 12,
+    marginTop: 20,
   },
 });
 
-export default ArtPrefences;
+
+export default ArtPreferences;

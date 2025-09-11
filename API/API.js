@@ -837,6 +837,24 @@ async function checkStripeStatus(token) {
   return res.data; // { success, data: {...status...} }
 }
 
+async function updateShippingZip(zipcode, token) {
+  try {
+    const res = await axios.put(
+      `${API_URL}/set-zipcode`,
+      { zipcode },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return res.data; // { success, message, zipcode }
+  } catch (error) {
+    console.error("Error updating ZIP:", error?.response?.data || error);
+    return error?.response?.data || { success: false, error: 'Failed to update ZIP' };
+  }
+}
 
 export {
   requestOtp,
@@ -886,4 +904,5 @@ export {
   fedexPing,
   createStripeAccount,
   checkStripeStatus,
+  updateShippingZip,
 };

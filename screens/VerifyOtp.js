@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,253 +8,253 @@ import {
   Pressable,
   Image,
   ImageBackground,
+  Platform,
+  ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
-import Icon from "react-native-vector-icons/FontAwesome";
-import { verifyOtp } from "../API/API";
 import { useNavigation, useRoute } from "@react-navigation/native";
+import { verifyOtp } from "../API/API";
 
 const logoImage = require("../assets/Logo_T.png");
 const headerImage = require("../assets/headers/Immpression_multi.png");
 const backgroundImage = require("../assets/backgrounds/paint_background.png");
 
-const VerifyOtp = () => {
-  const [code, setCode] = useState("");
+const DIGITS = 4;
+
+export default function VerifyOtp() {
+  const [code, setCode] = useState(Array(DIGITS).fill(""));
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  const inputsRef = useRef([]);
   const route = useRoute();
-  console.log("Route Params:", route.params);
-
-  const { email, password } = route.params; // Get the email passed from request otp screen
-
   const navigation = useNavigation();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+  const { email, password } = route.params ?? { email: "", password: "" };
 
-    if (!email.trim()) {
-      setError("Please enter your email address");
+  const handleChangeDigit = (text, idx) => {
+    const value = text.replace(/[^0-9]/g, "");
+    const next = [...code];
+    next[idx] = value.slice(-1);
+    setCode(next);
+
+    if (value && idx < DIGITS - 1) {
+      inputsRef.current[idx + 1]?.focus();
+    }
+  };
+
+  const handleKeyPress = (e, idx) => {
+    if (e.nativeEvent.key === "Backspace" && !code[idx] && idx > 0) {
+      inputsRef.current[idx - 1]?.focus();
+    }
+  };
+
+  const handleSubmit = async () => {
+    setError("");
+    const joined = code.join("");
+
+    if (!email?.trim()) {
+      setError("Missing email for verification.");
       return;
     }
-
-    if (!code.trim()) {
-      setError("Please enter the OTP code");
+    if (joined.length !== DIGITS) {
+      setError(`Please enter the ${DIGITS}-digit code.`);
       return;
     }
 
     try {
-      setIsLoading(true); // Add a loading state
-      const result = await verifyOtp(email, code);
-
-      if (!result.success === true) {
-        throw new Error("Invalid OTP. Please try again.");
-      }
+      setIsLoading(true);
+      const result = await verifyOtp(email, joined);
+      if (!result?.success) throw new Error("Invalid OTP. Please try again.");
 
       navigation.navigate("SignUp", { email, password });
-    } catch (error) {
-      setError(error.message || "An unexpected error occurred");
+    } catch (err) {
+      setError(err?.message || "An unexpected error occurred");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
-      <View style={styles.container}>
-        <View style={styles.totalHeader}>
-          <View style={styles.logoContainer}>
-            <Image source={logoImage} style={styles.logo} />
-          </View>
-          <View style={styles.headerImageContainer}>
-            <Image source={headerImage} style={styles.headerImage} />
-          </View>
-        </View>
-        <Text
-          style={{
-            color: "blue",
-            textAlign: "center",
-            marginTop: 10,
-            marginBottom: 25,
-            fontWeight: 700,
-          }}
-        >
-          Verify OTP
-        </Text>
-
-        <View style={styles.contentContainer}>
-          <KeyboardAvoidingView
-            style={styles.keyboardAvoidingContainer}
-            behavior="padding"
+    <ImageBackground source={backgroundImage} style={styles.bg}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.select({ ios: "padding", android: "height" })}
+        keyboardVerticalOffset={Platform.select({ ios: 60, android: 0 })}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
           >
-            <View style={styles.inputContainer}>
-              <View style={styles.inputWrapper}>
-                <Icon
-                  name="envelope"
-                  size={14}
-                  color="#000"
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  placeholder="Input your email address"
-                  value={email}
-                  onChangeText={(text) => setEmail(text)}
-                  style={styles.input}
-                />
-              </View>
-              <View style={styles.inputWrapper}>
-                <Icon
-                  name="key"
-                  size={14}
-                  color="#000"
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  placeholder="Input 4 digit code"
-                  value={code}
-                  onChangeText={(text) => setCode(text)}
-                  style={styles.input}
-                />
-              </View>
+            {/* Centered Content */}
+            <View style={styles.centerBlock}>
+              <Image source={logoImage} style={styles.logo} />
+              <Image source={headerImage} style={styles.headerImage} />
 
-              <Text
-                style={{
-                  color: "red",
-                  textAlign: "center",
-                  marginTop: 10,
-                }}
-              >
-                {error && error}
+              <Text style={styles.title}>Verify OTP</Text>
+              <Text style={styles.subtitle}>
+                We sent a code to{" "}
+                <Text style={styles.emailText}>{email}</Text>
               </Text>
-            </View>
 
-            <View style={styles.buttonContainer}>
-              <Pressable onPress={handleSubmit} style={styles.button}>
-                <Text style={styles.buttonText}>Verify</Text>
-              </Pressable>
+              {/* OTP Card */}
+              <View style={styles.card}>
+                <Text style={styles.label}>Enter 4-digit code</Text>
+
+                <View style={styles.otpRow}>
+                  {code.map((digit, idx) => (
+                    <TextInput
+                      key={idx}
+                      ref={(el) => (inputsRef.current[idx] = el)}
+                      style={[styles.otpBox, digit ? styles.otpBoxFilled : null]}
+                      value={digit}
+                      onChangeText={(t) => handleChangeDigit(t, idx)}
+                      onKeyPress={(e) => handleKeyPress(e, idx)}
+                      keyboardType="number-pad"
+                      maxLength={1}
+                      textContentType="oneTimeCode"
+                      returnKeyType={idx === DIGITS - 1 ? "done" : "next"}
+                      onSubmitEditing={() =>
+                        idx === DIGITS - 1
+                          ? Keyboard.dismiss()
+                          : inputsRef.current[idx + 1]?.focus()
+                      }
+                    />
+                  ))}
+                </View>
+
+                {!!error && <Text style={styles.error}>{error}</Text>}
+
+                <Pressable
+                  onPress={handleSubmit}
+                  style={({ pressed }) => [
+                    styles.button,
+                    (pressed || isLoading) && styles.buttonPressed,
+                  ]}
+                  disabled={isLoading}
+                >
+                  <Text style={styles.buttonText}>
+                    {isLoading ? "Verifying..." : "Verify"}
+                  </Text>
+                </Pressable>
+
+                <View style={styles.hintRow}>
+                  <Text style={styles.hintText}>Didn’t get a code?</Text>
+                  <Pressable onPress={() => {}}>
+                    <Text style={styles.hintLink}>Resend</Text>
+                  </Pressable>
+                </View>
+              </View>
             </View>
-          </KeyboardAvoidingView>
-        </View>
-      </View>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
-};
-
-export default VerifyOtp;
+}
 
 const styles = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
+  flex: { flex: 1 },
+  bg: { flex: 1, resizeMode: "cover" },
+
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center", // centers vertically
+    alignItems: "center", // centers horizontally
+    paddingHorizontal: 24,
   },
-  container: {
-    flex: 1,
-    justifyContent: "flex-start",
+
+  centerBlock: {
     alignItems: "center",
-    paddingTop: 0,
-  },
-  totalHeader: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    gap: 12, // tighter spacing between logo, header, and title
     width: "100%",
+    maxWidth: 400,
   },
-  logoContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 20,
+
+  logo: { width: 72, height: 72, resizeMode: "contain" },
+  headerImage: { width: 220, height: 56, resizeMode: "contain" },
+
+  title: {
+    fontSize: 22,
+    fontWeight: "700",
+    color: "#1E2A3A",
+    marginTop: 8,
   },
-  logo: {
-    width: 70,
-    height: 70,
-    resizeMode: "contain",
+  subtitle: {
+    fontSize: 13,
+    color: "#3C3D52",
+    textAlign: "center",
   },
-  headerImageContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-    marginLeft: 12,
-  },
-  headerImage: {
-    width: 200,
-    height: 50,
-    resizeMode: "contain",
-  },
-  contentContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  emailText: { fontWeight: "700", color: "#1E2A3A" },
+
+  card: {
+    marginTop: 16,
+    backgroundColor: "rgba(255,255,255,0.92)",
+    borderRadius: 16,
+    padding: 20,
     width: "100%",
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 16,
+    elevation: 4,
+    alignItems: "center",
   },
-  keyboardAvoidingContainer: {
+
+  label: { fontSize: 14, color: "#3C3D52", marginBottom: 12 },
+
+  otpRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "80%",
+    marginBottom: 12,
+  },
+  otpBox: {
+    width: 56,
+    height: 56,
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: "#C6C7DE",
+    backgroundColor: "#F1F2F8",
+    textAlign: "center",
+    fontSize: 20,
+    fontWeight: "700",
+  },
+  otpBoxFilled: {
+    backgroundColor: "#E7E9F6",
+    borderColor: "#9AA0C3",
+  },
+
+  error: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 6,
+    marginBottom: 4,
+  },
+
+  button: {
+    backgroundColor: "#1E2A3A",
+    borderRadius: 12,
+    paddingVertical: 14,
+    alignItems: "center",
+    marginTop: 8,
     width: "80%",
   },
-  inputContainer: {
-    width: "100%",
-    marginTop: -200, // Adjust this value to bring inputs higher up
-  },
-  inputWrapper: {
+  buttonPressed: { opacity: 0.9 },
+  buttonText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+
+  hintRow: {
     flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#C6C7DE",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 20,
-    marginTop: 15,
+    justifyContent: "center",
+    gap: 6,
+    marginTop: 12,
   },
-  inputIcon: {
-    marginRight: 10,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-  },
-  forgotPasswordText: {
-    textAlign: "center",
-    marginTop: 10,
-    marginRight: 10,
-    color: "#3C3D52",
+  hintText: { color: "#3C3D52" },
+  hintLink: {
+    color: "#1E2A3A",
+    fontWeight: "700",
     textDecorationLine: "underline",
-  },
-  buttonContainer: {
-    width: "100%",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 20, // Adjust this value to bring buttons higher up
-  },
-  button: {
-    backgroundColor: "blue",
-    width: "100%",
-    padding: 11,
-    borderRadius: 20,
-    marginTop: 10,
-    minHeight: 50, // Ensure the button maintains a visible height
-  },
-  buttonText: {
-    textAlign: "center",
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 15,
-  },
-  buttonOutline: {
-    backgroundColor: "transparent",
-    marginTop: 10,
-  },
-  buttonOutlineText: {
-    color: "black",
-    fontWeight: "bold",
-    fontSize: 15,
-    textAlign: "center",
-  },
-  googleButton: {
-    backgroundColor: "#DB4437",
-    marginTop: 10,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  googleIcon: {
-    marginRight: 10,
   },
 });
