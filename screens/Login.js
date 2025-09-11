@@ -7,7 +7,11 @@ import {
   TextInput,
   Pressable,
   Image,
-  ImageBackground, // Import ImageBackground component
+  ImageBackground,
+  Platform,
+  ScrollView,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 import {
   useNavigation,
@@ -15,11 +19,10 @@ import {
 } from "@react-navigation/native";
 import axios from "axios";
 import { API_URL } from "../API_URL";
-import Icon from "react-native-vector-icons/FontAwesome"; // Import your preferred icon set
+import Icon from "react-native-vector-icons/FontAwesome";
 import { handleLogin } from "../utils/handleLogin.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../state/AuthProvider";
-import SignUp from "./SignUp";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import { makeRedirectUri } from "expo-auth-session";
@@ -27,11 +30,10 @@ import { showToast } from "../utils/toastNotification";
 import * as AuthSession from "expo-auth-session";
 import Constants, { ExecutionEnvironment } from "expo-constants";
 
-const logoImage = require("../assets/Logo_T.png"); // Adjust the path to your logo image
-const headerImage = require("../assets/headers/Immpression_multi.png"); // Adjust the path to your header image
-const backgroundImage = require("../assets/backgrounds/paint_background.png"); // Adjust the path to your background image
+const logoImage = require("../assets/Logo_T.png");
+const headerImage = require("../assets/headers/Immpression_multi.png");
+const backgroundImage = require("../assets/backgrounds/paint_background.png");
 
-// Initialize WebBrowser
 WebBrowser.maybeCompleteAuthSession();
 
 const Login = () => {
@@ -40,7 +42,6 @@ const Login = () => {
   const { login, userData } = useAuth();
   const navigation = useNavigation();
   const [error, setError] = useState("");
-  const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
   const navigationRef = useNavigationContainerRef();
 
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
@@ -56,17 +57,12 @@ const Login = () => {
 
   useEffect(() => {
     if (userData && navigationRef.isReady()) {
-      console.log("Log in success. Now going to home screen");
-      navigationRef.reset({
-        index: 0,
-        routes: [{ name: "Home" }],
-      });
+      navigationRef.reset({ index: 0, routes: [{ name: "Home" }] });
     }
   }, [userData]);
 
   useEffect(() => {
     if (response?.type === "success") {
-      console.log("Google response:", response);
       const { authentication } = response;
       handleGoogleLogin(authentication.idToken);
     }
@@ -86,9 +82,8 @@ const Login = () => {
   };
 
   const signInWithGoogle = async () => {
-    console.log(request);
     try {
-      setError(""); // Clear previous errors
+      setError("");
       await promptAsync();
     } catch (error) {
       console.error("Google Sign-In Error:", error);
@@ -98,30 +93,24 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError(""); // Clear previous errors
+    e.preventDefault?.();
+    setError("");
 
     try {
       const result = await handleLogin(email, password, login);
-
       if (!result.success) {
         setError("Invalid email or password");
         return;
       }
 
-      // Force update the auth state
       const storedUser = await AsyncStorage.getItem("userData");
       if (storedUser) {
-        login(JSON.parse(storedUser)); // Ensure `login` updates state
+        login(JSON.parse(storedUser));
       }
 
-      // Small delay to ensure `userData` updates before navigation
       setTimeout(() => {
-        navigation.reset({
-          index: 0,
-          routes: [{ name: "Home" }],
-        });
-      }, 500); // Adjust delay if needed
+        navigation.reset({ index: 0, routes: [{ name: "Home" }] });
+      }, 300);
     } catch (error) {
       console.error("Login Error:", error);
       setError("Invalid email or password");
@@ -129,220 +118,192 @@ const Login = () => {
     }
   };
 
-  const navigateTo = (screenName) => {
-    navigation.navigate(screenName);
-  };
+  const navigateTo = (screenName) => navigation.navigate(screenName);
 
   return (
-    <ImageBackground source={backgroundImage} style={styles.backgroundImage}>
-      <View style={styles.container}>
-        <View style={styles.totalHeader}>
-          <View style={styles.logoContainer}>
-            <Image source={logoImage} style={styles.logo} />
-          </View>
-          <View style={styles.headerImageContainer}>
-            <Image source={headerImage} style={styles.headerImage} />
-          </View>
-        </View>
-        <View style={styles.contentContainer}>
-          <KeyboardAvoidingView
-            style={styles.keyboardAvoidingContainer}
-            behavior="padding"
+    <ImageBackground source={backgroundImage} style={styles.bg}>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.select({ ios: "padding", android: "height" })}
+        keyboardVerticalOffset={Platform.select({ ios: 60, android: 0 })}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <ScrollView
+            contentContainerStyle={styles.scrollContent}
+            keyboardShouldPersistTaps="handled"
           >
-            <View style={styles.inputContainer}>
+            {/* Header (centered) */}
+            <View style={styles.header}>
+              <Image source={logoImage} style={styles.logo} />
+              <Image source={headerImage} style={styles.headerImage} />
+            </View>
+
+            {/* Big Card */}
+            <View style={styles.card}>
               <View style={styles.inputWrapper}>
-                <Icon
-                  name="envelope"
-                  size={14}
-                  color="#000"
-                  style={styles.inputIcon}
-                />
+                <Icon name="envelope" size={14} color="#000" style={styles.inputIcon} />
                 <TextInput
                   placeholder="Email"
                   value={email}
-                  onChangeText={(text) => setEmail(text)}
+                  onChangeText={setEmail}
                   style={styles.input}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
+                  returnKeyType="next"
                 />
               </View>
+
               <View style={styles.inputWrapper}>
-                <Icon
-                  name="lock"
-                  size={20}
-                  marginLeft={1}
-                  color="#000"
-                  style={styles.inputIcon}
-                />
+                <Icon name="lock" size={18} color="#000" style={styles.inputIcon} />
                 <TextInput
                   placeholder="Password"
                   value={password}
-                  onChangeText={(text) => setPassword(text)}
+                  onChangeText={setPassword}
                   style={styles.input}
                   secureTextEntry
+                  returnKeyType="done"
+                  onSubmitEditing={handleSubmit}
                 />
               </View>
-              <Text
-                style={{
-                  color: "red",
-                  textAlign: "center",
-                  marginTop: 10,
-                }}
-              >
-                {error && error}
-              </Text>
+
+              {!!error && <Text style={styles.error}>{error}</Text>}
+
               <Text
                 onPress={() => navigateTo("PasswordReset")}
                 style={styles.forgotPasswordText}
               >
                 Forgot Password?
               </Text>
-            </View>
-            <View style={styles.buttonContainer}>
-              <Pressable onPress={handleSubmit} style={styles.button}>
-                <Text style={styles.buttonText}>Log in</Text>
+
+              <Pressable onPress={handleSubmit} style={styles.primaryBtn}>
+                <Text style={styles.primaryBtnText}>Log in</Text>
               </Pressable>
 
               <Pressable
                 disabled={!request}
                 onPress={signInWithGoogle}
-                style={[styles.button, styles.googleButton]}
+                style={styles.googleBtn}
               >
-                <Icon
-                  name="google"
-                  size={20}
-                  color="white"
-                  style={styles.googleIcon}
-                />
-                <Text style={styles.buttonText}>Sign in with Google</Text>
+                <Icon name="google" size={18} color="#fff" style={styles.googleIcon} />
+                <Text style={styles.googleText}>Sign in with Google</Text>
               </Pressable>
 
               <Pressable
                 onPress={() => navigateTo("RequestOtp")}
-                style={[styles.button, styles.buttonOutline]}
+                style={styles.textOnlyBtn}
               >
-                <Text style={styles.buttonOutlineText}>Sign Up</Text>
+                <Text style={styles.textOnlyText}>Sign Up</Text>
               </Pressable>
             </View>
-          </KeyboardAvoidingView>
-        </View>
-      </View>
+          </ScrollView>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
     </ImageBackground>
   );
 };
 
-export default Login;
 
+
+/* ===== Styles ===== */
 const styles = StyleSheet.create({
-  backgroundImage: {
-    flex: 1,
-    resizeMode: "cover",
-    justifyContent: "center",
+  flex: { flex: 1 },
+  bg: { flex: 1, resizeMode: "cover" },
+
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",   // vertical center
+    alignItems: "center",        // horizontal center
+    paddingHorizontal: 24,
+    paddingVertical: 16,
   },
-  container: {
-    flex: 1,
-    justifyContent: "flex-start",
+
+  // Header stack
+  header: {
     alignItems: "center",
-    paddingTop: 0,
+    gap: 8,
+    marginBottom: 12,
   },
-  totalHeader: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+  logo: { width: 72, height: 72, resizeMode: "contain" },
+  headerImage: { width: 220, height: 56, resizeMode: "contain" },
+
+  // Card container
+  card: {
+    backgroundColor: "rgba(255,255,255,0.92)",
+    borderRadius: 16,
+    padding: 20,
     width: "100%",
-  },
-  logoContainer: {
-    justifyContent: "center",
+    maxWidth: 420,
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 8 },
+    shadowRadius: 16,
+    elevation: 4,
     alignItems: "center",
-    marginTop: 20,
   },
-  logo: {
-    width: 70,
-    height: 70,
-    resizeMode: "contain",
-  },
-  headerImageContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-    marginLeft: 12,
-  },
-  headerImage: {
-    width: 200,
-    height: 50,
-    resizeMode: "contain",
-  },
-  contentContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-  },
-  keyboardAvoidingContainer: {
-    width: "80%",
-  },
-  inputContainer: {
-    width: "100%",
-    marginTop: -200, // Adjust this value to bring inputs higher up
-  },
+
+  // Inputs
   inputWrapper: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#C6C7DE",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderRadius: 20,
-    marginTop: 15,
+    backgroundColor: "#F1F2F8",
+    borderColor: "#C6C7DE",
+    borderWidth: 1.5,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    height: 52,
+    width: "100%",
+    marginTop: 12,
   },
-  inputIcon: {
-    marginRight: 10,
-  },
+  inputIcon: { marginRight: 10 },
   input: {
     flex: 1,
-    height: 40,
+    fontSize: 16,
+  },
+
+  // Error + links
+  error: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 10,
+    alignSelf: "stretch",
   },
   forgotPasswordText: {
     textAlign: "center",
     marginTop: 10,
-    marginRight: 10,
     color: "#3C3D52",
     textDecorationLine: "underline",
   },
-  buttonContainer: {
-    width: "100%",
-    justifyContent: "center",
+
+  // Buttons
+  primaryBtn: {
+    backgroundColor: "#1E2A3A",
+    borderRadius: 12,
+    paddingVertical: 14,
     alignItems: "center",
-    marginTop: 50, // Adjust this value to bring buttons higher up
-  },
-  button: {
-    backgroundColor: "blue",
+    marginTop: 16,
     width: "100%",
-    padding: 11,
-    borderRadius: 20,
-    marginTop: 10,
   },
-  buttonText: {
-    textAlign: "center",
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 15,
-  },
-  buttonOutline: {
-    backgroundColor: "transparent",
-    marginTop: 10,
-  },
-  buttonOutlineText: {
-    color: "black",
-    fontWeight: "bold",
-    fontSize: 15,
-    textAlign: "center",
-  },
-  googleButton: {
+  primaryBtnText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+
+  googleBtn: {
     backgroundColor: "#DB4437",
+    borderRadius: 12,
+    paddingVertical: 12,
+    alignItems: "center",
     marginTop: 10,
+    width: "100%",
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center",
   },
-  googleIcon: {
-    marginRight: 10,
+  googleIcon: { marginRight: 8 },
+  googleText: { color: "#fff", fontSize: 15, fontWeight: "700" },
+
+  textOnlyBtn: { marginTop: 10 },
+  textOnlyText: {
+    color: "#1E2A3A",
+    fontWeight: "700",
+    textDecorationLine: "underline",
   },
 });
+
+export default Login;
