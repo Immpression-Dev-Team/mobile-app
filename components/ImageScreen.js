@@ -31,7 +31,7 @@ const enlargeIcon = require("../assets/icons/enlarge.png");
 
 const { width, height } = Dimensions.get("window");
 const H_PADDING = 16;
-const IMAGE_HEIGHT = Math.min(360, Math.max(260, height * 0.45)); // compact hero
+const IMAGE_HEIGHT = Math.min(360, Math.max(260, height * 0.45));
 
 const ImageScreen = ({ route, navigation }) => {
   const { images = [], initialIndex = 0 } = route.params || {};
@@ -46,11 +46,9 @@ const ImageScreen = ({ route, navigation }) => {
   const [hasLiked, setHasLiked] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
 
-  // scroll hint anim
   const scrollHintOpacity = useRef(new Animated.Value(1)).current;
   const [shownScrollHint, setShownScrollHint] = useState(true);
 
-  // Load artist profile picture for current item
   useEffect(() => {
     const userId = images[currentIndex]?.userId;
     if (!userId || !token) return;
@@ -59,7 +57,6 @@ const ImageScreen = ({ route, navigation }) => {
       .catch(() => setProfilePicture(null));
   }, [currentIndex, token, images]);
 
-  // Fetch like data & increment views on index change
   useEffect(() => {
     const id = images[currentIndex]?._id;
     if (!id || !token) return;
@@ -74,9 +71,7 @@ const ImageScreen = ({ route, navigation }) => {
       const data = await fetchLikeData(imageId, token);
       setLikes(Number(data?.likesCount || 0));
       setHasLiked(!!data?.hasLiked);
-    } catch {
-      /* noop */
-    }
+    } catch { }
   };
 
   const handleToggleLike = async () => {
@@ -84,9 +79,7 @@ const ImageScreen = ({ route, navigation }) => {
       const data = await toggleLike(images[currentIndex]?._id, token);
       setLikes(Number(data?.likesCount || 0));
       setHasLiked(!!data?.hasLiked);
-    } catch {
-      /* noop */
-    }
+    } catch { }
   };
 
   const handleViewIncrement = async (index) => {
@@ -94,9 +87,7 @@ const ImageScreen = ({ route, navigation }) => {
     if (!img?._id || !token) return;
     try {
       await incrementImageViews(img._id, token);
-    } catch {
-      /* noop */
-    }
+    } catch { }
   };
 
   const onMomentumScrollEnd = (e) => {
@@ -146,6 +137,21 @@ const ImageScreen = ({ route, navigation }) => {
   const priceDisplay =
     typeof item?.price === "number" ? `$${item.price.toFixed(2)}` : "N/A";
 
+  // ---- formatted details ----
+  const dims = item?.dimensions || null;
+  const dimsText =
+    dims && (dims.height || dims.width || dims.length)
+      ? `H: ${dims.height ?? "—"} x W: ${dims.width ?? "—"} x L: ${dims.length ?? "—"} in`
+      : "Not specified";
+
+
+  const weightText =
+    typeof item?.weight === "number"
+      ? `${item.weight} lb`
+      : item?.weight
+        ? String(item.weight)
+        : "Not specified";
+
   const showLeft = currentIndex > 0;
   const showRight = currentIndex < images.length - 1;
 
@@ -190,18 +196,18 @@ const ImageScreen = ({ route, navigation }) => {
             </View>
           </View>
 
-          {/* Image carousel + swipe indicators */}
+          {/* Image carousel */}
           <View style={styles.carouselWrap}>
             <FlatList
               ref={flatListRef}
               data={images}
-              keyExtractor={(it, idx) => (it?._id || String(idx))}
+              keyExtractor={(it, idx) => it?._id || String(idx)}
               horizontal
               pagingEnabled
               nestedScrollEnabled
               showsHorizontalScrollIndicator={false}
               initialScrollIndex={initialIndex || 0}
-              getItemLayout={(data, index) => ({
+              getItemLayout={(_, index) => ({
                 length: width,
                 offset: width * index,
                 index,
@@ -234,7 +240,6 @@ const ImageScreen = ({ route, navigation }) => {
               )}
             />
 
-            {/* Left/Right swipe overlays (thin, non-blocking) */}
             {showLeft && (
               <View style={styles.swipeLeft} pointerEvents="box-none">
                 <LinearGradient
@@ -296,7 +301,7 @@ const ImageScreen = ({ route, navigation }) => {
             </View>
           </View>
 
-          {/* Purchase card (price + Buy Now) */}
+          {/* Purchase card */}
           <View style={styles.purchaseCard}>
             <View style={styles.pricePill}>
               <Text style={styles.priceText}>{priceDisplay}</Text>
@@ -326,9 +331,13 @@ const ImageScreen = ({ route, navigation }) => {
 
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Dimensions</Text>
-              <Text style={styles.detailValue}>
-                {item?.dimensions || "Not specified"}
-              </Text>
+              <Text style={styles.detailValue}>{dimsText}</Text>
+            </View>
+
+
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Weight</Text>
+              <Text style={styles.detailValue}>{weightText}</Text>
             </View>
 
             <View style={styles.detailRow}>
@@ -342,7 +351,6 @@ const ImageScreen = ({ route, navigation }) => {
             </View>
           </View>
 
-          {/* Subtle “scroll” hint (fades after user scrolls) */}
           {shownScrollHint && (
             <Animated.View style={[styles.scrollHint, { opacity: scrollHintOpacity }]}>
               <Text style={styles.scrollHintText}>Scroll</Text>
@@ -351,7 +359,7 @@ const ImageScreen = ({ route, navigation }) => {
           )}
         </ScrollView>
 
-        {/* Enlarged image modal (tap backdrop OR ✕ to close) */}
+        {/* Enlarged image modal */}
         <Modal
           visible={enlarged}
           transparent
@@ -371,7 +379,6 @@ const ImageScreen = ({ route, navigation }) => {
               pointerEvents="none"
             />
 
-            {/* Big hit area for close button so it's easy to tap */}
             <TouchableOpacity
               onPress={() => setEnlarged(false)}
               style={styles.enlargeCloseHit}
@@ -390,12 +397,8 @@ const ImageScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: "#F7F7FA",
-  },
+  screen: { flex: 1, backgroundColor: "#F7F7FA" },
 
-  // ===== Header card =====
   cardHeader: {
     marginHorizontal: H_PADDING - 4,
     marginTop: 8,
@@ -407,7 +410,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-
     shadowColor: "#000",
     shadowOpacity: 0.08,
     shadowRadius: 10,
@@ -422,11 +424,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#E5E7EB",
   },
-  artistName: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#111827",
-  },
+  artistName: { fontSize: 14, fontWeight: "700", color: "#111827" },
   artistCategory: {
     marginTop: 4,
     alignSelf: "flex-start",
@@ -450,15 +448,8 @@ const styles = StyleSheet.create({
   statEmoji: { marginRight: 6 },
   statText: { fontSize: 12, fontWeight: "700", color: "#111827" },
 
-  // ===== Carousel =====
-  carouselWrap: {
-    marginHorizontal: 8,
-    marginBottom: 8,
-  },
-  imageSlide: {
-    width,
-    alignItems: "center",
-  },
+  carouselWrap: { marginHorizontal: 8, marginBottom: 8 },
+  imageSlide: { width, alignItems: "center" },
   image: {
     width: width - 16,
     height: IMAGE_HEIGHT,
@@ -473,7 +464,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     elevation: 3,
   },
-  // Enlarge FAB sits above swipe indicators
   fabEnlarge: {
     position: "absolute",
     right: 20,
@@ -486,7 +476,6 @@ const styles = StyleSheet.create({
   },
   fabEnlargeIcon: { width: 20, height: 20, tintColor: "#fff" },
 
-  // Swipe indicators (gradients don't consume touches; only chevron is pressable)
   swipeLeft: {
     position: "absolute",
     left: 0,
@@ -508,12 +497,7 @@ const styles = StyleSheet.create({
     zIndex: 5,
     elevation: 5,
   },
-  swipeGrad: {
-    position: "absolute",
-    top: 0,
-    bottom: 0,
-    width: 48,
-  },
+  swipeGrad: { position: "absolute", top: 0, bottom: 0, width: 48 },
   swipeTapLeft: {
     width: 44,
     height: 120,
@@ -528,14 +512,8 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
     paddingRight: 6,
   },
-  swipeChevron: {
-    fontSize: 32,
-    color: "#fff",
-    fontWeight: "700",
-    marginHorizontal: 8,
-  },
+  swipeChevron: { fontSize: 32, color: "#fff", fontWeight: "700", marginHorizontal: 8 },
 
-  // ===== Title / desc / like =====
   cardFooter: {
     marginTop: 6,
     marginHorizontal: H_PADDING - 4,
@@ -544,7 +522,6 @@ const styles = StyleSheet.create({
     padding: 12,
     flexDirection: "row",
     alignItems: "flex-start",
-
     shadowColor: "#000",
     shadowOpacity: 0.08,
     shadowRadius: 10,
@@ -559,13 +536,8 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6,
     marginBottom: 6,
   },
-  description: {
-    fontSize: 13,
-    lineHeight: 18,
-    color: "#374151",
-  },
+  description: { fontSize: 13, lineHeight: 18, color: "#374151" },
   sideActions: { alignItems: "center" },
-
   primaryPill: {
     flexDirection: "row",
     alignItems: "center",
@@ -585,7 +557,6 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6,
   },
 
-  // ===== Purchase card =====
   purchaseCard: {
     marginTop: 12,
     marginHorizontal: H_PADDING - 4,
@@ -595,11 +566,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderWidth: 1,
     borderColor: "#E5E7EB",
-
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-
     shadowColor: "#000",
     shadowOpacity: 0.06,
     shadowRadius: 10,
@@ -614,12 +583,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     borderRadius: 999,
   },
-  priceText: {
-    color: "#4338CA",
-    fontWeight: "800",
-    fontSize: 16,
-    letterSpacing: 0.4,
-  },
+  priceText: { color: "#4338CA", fontWeight: "800", fontSize: 16, letterSpacing: 0.4 },
   buyNowButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -627,7 +591,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 999,
-
     shadowColor: "#000",
     shadowOpacity: 0.18,
     shadowRadius: 12,
@@ -637,7 +600,6 @@ const styles = StyleSheet.create({
   buyNowIcon: { width: 18, height: 18, tintColor: "#fff", marginRight: 8 },
   buyNowText: { color: "#fff", fontWeight: "800", letterSpacing: 0.6, fontSize: 14 },
 
-  // ===== Details section =====
   detailsCard: {
     marginTop: 12,
     marginHorizontal: H_PADDING - 4,
@@ -646,7 +608,6 @@ const styles = StyleSheet.create({
     padding: 14,
     borderWidth: 1,
     borderColor: "#E5E7EB",
-
     shadowColor: "#000",
     shadowOpacity: 0.06,
     shadowRadius: 10,
@@ -662,20 +623,11 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     textAlign: "center",
   },
-  detailRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 6,
-  },
+  detailRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 6 },
   detailLabel: { fontSize: 14, color: "#6B7280", fontWeight: "600" },
   detailValue: { fontSize: 14, color: "#111827", fontWeight: "600" },
 
-  // ===== “scroll” hint =====
-  scrollHint: {
-    alignSelf: "center",
-    marginTop: 10,
-    alignItems: "center",
-  },
+  scrollHint: { alignSelf: "center", marginTop: 10, alignItems: "center" },
   scrollHintText: {
     color: "#6B7280",
     fontSize: 12,
@@ -683,36 +635,17 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6,
     textTransform: "uppercase",
   },
-  scrollHintChevron: {
-    color: "#6B7280",
-    fontSize: 20,
-    marginTop: -2,
-  },
+  scrollHintChevron: { color: "#6B7280", fontSize: 20, marginTop: -2 },
 
-  // ===== Enlarge modal =====
   enlargeModal: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.92)",
     justifyContent: "center",
     alignItems: "center",
   },
-  enlargeTopFade: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: 120,
-  },
-  enlargeBottomFade: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    width: "100%",
-    height: 140,
-  },
+  enlargeTopFade: { position: "absolute", top: 0, left: 0, width: "100%", height: 120 },
+  enlargeBottomFade: { position: "absolute", bottom: 0, left: 0, width: "100%", height: 140 },
   enlargedImage: { width: "100%", height: "100%", resizeMode: "contain" },
-
-  // Big, always-on-top close hit area
   enlargeCloseHit: {
     position: "absolute",
     top: 50,
