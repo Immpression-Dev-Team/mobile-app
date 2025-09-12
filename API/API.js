@@ -856,6 +856,46 @@ async function updateShippingZip(zipcode, token) {
   }
 }
 
+// Quote UPS label cost (server calls UPS Rating)
+async function getUpsRates({ artistUserId, shipFromZip, shipTo, parcel, serviceCodes }, token) {
+  try {
+    const res = await axios.post(
+      `${API_URL}/shipping/ups-rates`,
+      { artistUserId, shipFromZip, shipTo, parcel, serviceCodes },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,   // keep auth consistent with your API
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return res.data; // { success, rates, picks }
+  } catch (error) {
+    const msg =
+      error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      error?.message ||
+      "Failed to fetch UPS rates";
+    console.error("UPS rates error:", msg, error?.response?.data);
+    return { success: false, error: msg };
+  }
+}
+
+// Quote shipping for an order (server looks up seller ZIP + delivery ZIP and calls UPS)
+async function getOrderShippingQuote(orderId, token) {
+  try {
+    const res = await axios.get(`${API_URL}/order/${orderId}/shipping-quote`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    return res.data; // { success, pick, rates, parcelDefaultsUsed }
+  } catch (error) {
+    const msg = error?.response?.data?.error || error.message || "Failed to get shipping quote";
+    console.error("getOrderShippingQuote:", msg);
+    return { success: false, error: msg };
+  }
+}
+
+
 export {
   requestOtp,
   verifyOtp,
@@ -905,4 +945,6 @@ export {
   createStripeAccount,
   checkStripeStatus,
   updateShippingZip,
+  getUpsRates,
+  getOrderShippingQuote,
 };

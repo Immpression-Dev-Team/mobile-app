@@ -7,9 +7,15 @@ import {
   FlatList,
   Dimensions,
   TouchableOpacity,
-  TextInput
+  Pressable,
+  Modal,
+  StatusBar,
+  Platform,
+  ScrollView,
+  Animated,
 } from "react-native";
-import { LinearGradient } from 'expo-linear-gradient';
+import { LinearGradient } from "expo-linear-gradient";
+import ScreenTemplate from "../screens/Template/ScreenTemplate";
 import { useAuth } from "../state/AuthProvider";
 import {
   toggleLike,
@@ -17,762 +23,640 @@ import {
   incrementImageViews,
   fetchUserProfilePicture,
 } from "../API/API";
-import ScreenTemplate from "../screens/Template/ScreenTemplate";
 
-const share = require("../assets/icons/share-button.jpg");
 const like = require("../assets/icons/like-button.jpg");
 const likedIcon = require("../assets/icons/like-button.jpg");
-const likesIcon = require("../assets/icons/likes_icon.png");
-const viewsIcon = require("../assets/icons/views_icon.jpg");
+const cartIcon = require("../assets/icons/shopping-cart.png");
+const enlargeIcon = require("../assets/icons/enlarge.png");
 
 const { width, height } = Dimensions.get("window");
+const H_PADDING = 16;
+const IMAGE_HEIGHT = Math.min(360, Math.max(260, height * 0.45));
 
 const ImageScreen = ({ route, navigation }) => {
-  const { images, initialIndex } = route.params;
+  const { images = [], initialIndex = 0 } = route.params || {};
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [enlarged, setEnlarged] = useState(false);
+
+  const scrollRef = useRef(null);
   const flatListRef = useRef(null);
+
   const { token } = useAuth();
   const [likes, setLikes] = useState(0);
   const [hasLiked, setHasLiked] = useState(false);
   const [profilePicture, setProfilePicture] = useState(null);
-  const [showMoreInfo, setShowMoreInfo] = useState(false);
-  const [enlarged, setEnlarged] = useState(false);
+
+  const scrollHintOpacity = useRef(new Animated.Value(1)).current;
+  const [shownScrollHint, setShownScrollHint] = useState(true);
 
   useEffect(() => {
-    if (images[currentIndex]?.userId) {
-      fetchUserProfilePicture(images[currentIndex].userId, token)
-        .then(setProfilePicture)
-        .catch(console.error);
-    }
-  }, [currentIndex]);
+    const userId = images[currentIndex]?.userId;
+    if (!userId || !token) return;
+    fetchUserProfilePicture(userId, token)
+      .then(setProfilePicture)
+      .catch(() => setProfilePicture(null));
+  }, [currentIndex, token, images]);
 
   useEffect(() => {
-    if (images[currentIndex]?._id) {
-      handleFetchLikeData(images[currentIndex]._id);
-      handleViewIncrement(currentIndex);
-    }
-  }, [currentIndex]);
+    const id = images[currentIndex]?._id;
+    if (!id || !token) return;
+    (async () => {
+      await handleFetchLikeData(id);
+      await handleViewIncrement(currentIndex);
+    })();
+  }, [currentIndex, token, images]);
 
   const handleFetchLikeData = async (imageId) => {
     try {
       const data = await fetchLikeData(imageId, token);
-      setLikes(data.likesCount);
-      setHasLiked(data.hasLiked);
-    } catch (error) {
-      console.error("Error fetching like data:", error);
-    }
+      setLikes(Number(data?.likesCount || 0));
+      setHasLiked(!!data?.hasLiked);
+    } catch { }
   };
 
   const handleToggleLike = async () => {
     try {
-      const data = await toggleLike(images[currentIndex]._id, token);
-      setLikes(data.likesCount);
-      setHasLiked(data.hasLiked);
-    } catch (error) {
-      console.error("Error liking/unliking image:", error);
-    }
+      const data = await toggleLike(images[currentIndex]?._id, token);
+      setLikes(Number(data?.likesCount || 0));
+      setHasLiked(!!data?.hasLiked);
+    } catch { }
   };
 
   const handleViewIncrement = async (index) => {
-    const currentImage = images[index];
-    if (currentImage && currentImage._id) {
-      try {
-        await incrementImageViews(currentImage._id, token);
-      } catch (error) {
-        console.error("Error incrementing image views:", error);
-      }
+    const img = images[index];
+    if (!img?._id || !token) return;
+    try {
+      await incrementImageViews(img._id, token);
+    } catch { }
+  };
+
+  const onMomentumScrollEnd = (e) => {
+    const offsetX = e.nativeEvent.contentOffset.x;
+    const idx = Math.round(offsetX / width);
+    if (idx !== currentIndex) setCurrentIndex(idx);
+  };
+
+  const onScrollToIndexFailed = (info) => {
+    const offset = Math.max(0, info.index * (info.averageItemLength || width));
+    flatListRef.current?.scrollToOffset({ offset, animated: false });
+    setTimeout(() => {
+      flatListRef.current?.scrollToIndex({ index: info.index, animated: true });
+    }, 50);
+  };
+
+  const goPrev = () => {
+    if (currentIndex > 0 && flatListRef.current) {
+      const idx = currentIndex - 1;
+      flatListRef.current.scrollToIndex({ index: idx, animated: true });
+      setCurrentIndex(idx);
     }
   };
 
+  const goNext = () => {
+    if (currentIndex < images.length - 1 && flatListRef.current) {
+      const idx = currentIndex + 1;
+      flatListRef.current.scrollToIndex({ index: idx, animated: true });
+      setCurrentIndex(idx);
+    }
+  };
+
+  const handleVerticalScroll = (e) => {
+    if (!shownScrollHint) return;
+    const y = e.nativeEvent.contentOffset.y;
+    if (y > 10) {
+      setShownScrollHint(false);
+      Animated.timing(scrollHintOpacity, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }).start();
+    }
+  };
+
+  const item = images[currentIndex] || {};
+  const priceDisplay =
+    typeof item?.price === "number" ? `$${item.price.toFixed(2)}` : "N/A";
+
+  // ---- formatted details ----
+  const dims = item?.dimensions || null;
+  const dimsText =
+    dims && (dims.height || dims.width || dims.length)
+      ? `H: ${dims.height ?? "—"} x W: ${dims.width ?? "—"} x L: ${dims.length ?? "—"} in`
+      : "Not specified";
+
+
+  const weightText =
+    typeof item?.weight === "number"
+      ? `${item.weight} lb`
+      : item?.weight
+        ? String(item.weight)
+        : "Not specified";
+
+  const showLeft = currentIndex > 0;
+  const showRight = currentIndex < images.length - 1;
 
   return (
     <ScreenTemplate>
-      <View style={styles.container}>
-        {/* Header */}
-        <View style={styles.artistCard}>
-          <View style={styles.artistCardLeft}>
-            {profilePicture && (
-              <Image
-                source={{ uri: profilePicture }}
-                style={styles.artistProfilePicture}
-              />
-            )}
-            <View style={{ marginLeft: 10 }}>
-              <Text style={styles.artistName}>
-                {images[currentIndex]?.artistName || "Unknown Artist"}
-              </Text>
-              <Text style={styles.artistCategory}>
-                {images[currentIndex]?.category || "No Category"}
-              </Text>
-            </View>
-          </View>
-          <View style={styles.statsRow}>
-            <View style={styles.statPill}>
-              <Text style={styles.statIcon}>👁</Text>
-              <Text style={styles.statText}>{images[currentIndex]?.views || 0}</Text>
-            </View>
-            <View style={styles.statPill}>
-              <Text style={styles.statIcon}>❤️</Text>
-              <Text style={styles.statText}>{images[currentIndex]?.likes?.length || 0}</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Image Gallery */}
-        <FlatList
-          ref={flatListRef}
-          data={images}
-          horizontal
-          pagingEnabled
-          keyExtractor={(item, index) => index.toString()}
-          showsHorizontalScrollIndicator={false}
-          initialScrollIndex={initialIndex}
-          getItemLayout={(data, index) => ({
-            length: width,
-            offset: width * index,
-            index,
-          })}
-          onMomentumScrollEnd={(event) => {
-            const index = Math.round(
-              event.nativeEvent.contentOffset.x / width
-            );
-            if (index !== currentIndex) {
-              setCurrentIndex(index);
-              handleFetchLikeData(images[index]._id);
-              handleViewIncrement(index);
-              setShowMoreInfo(false);
-            }
-          }}
-          renderItem={({ item }) => (
-            <View style={styles.imageContainer} key={item._id}>
-              {item.imageLink ? (
-                <>
-                  <TouchableOpacity
-                    onPress={() => setEnlarged(true)}
-                    activeOpacity={0.9}
-                  >
-                    <Image
-                      source={{ uri: item.imageLink }}
-                      style={styles.fullImage}
-                    />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    style={styles.enlargeIcon}
-                    onPress={() => setEnlarged(true)}
-                  >
-                    <Image
-                      source={require("../assets/icons/enlarge.png")}
-                      style={styles.enlargeIconImage}
-                    />
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <Text style={{ color: "red" }}>Image not available</Text>
+      <StatusBar barStyle="dark-content" />
+      <View style={styles.screen}>
+        <ScrollView
+          ref={scrollRef}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          showsVerticalScrollIndicator
+          onScroll={handleVerticalScroll}
+          scrollEventThrottle={16}
+        >
+          {/* Header: Artist card */}
+          <View style={styles.cardHeader}>
+            <View style={styles.artistLeft}>
+              {!!profilePicture && (
+                <Image source={{ uri: profilePicture }} style={styles.artistAvatar} />
               )}
+              <View style={{ marginLeft: 10 }}>
+                <Text style={styles.artistName}>
+                  {item?.artistName || "Unknown Artist"}
+                </Text>
+                <Text style={styles.artistCategory}>
+                  {item?.category || "No Category"}
+                </Text>
+              </View>
             </View>
+
+            <View style={styles.statsRow}>
+              <View style={styles.statPill}>
+                <Text style={styles.statEmoji}>👁</Text>
+                <Text style={styles.statText}>{item?.views || 0}</Text>
+              </View>
+              <View style={styles.statPill}>
+                <Text style={styles.statEmoji}>❤️</Text>
+                <Text style={styles.statText}>
+                  {Array.isArray(item?.likes) ? item.likes.length : likes}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Image carousel */}
+          <View style={styles.carouselWrap}>
+            <FlatList
+              ref={flatListRef}
+              data={images}
+              keyExtractor={(it, idx) => it?._id || String(idx)}
+              horizontal
+              pagingEnabled
+              nestedScrollEnabled
+              showsHorizontalScrollIndicator={false}
+              initialScrollIndex={initialIndex || 0}
+              getItemLayout={(_, index) => ({
+                length: width,
+                offset: width * index,
+                index,
+              })}
+              decelerationRate={Platform.OS === "ios" ? "fast" : 0.9}
+              bounces={false}
+              overScrollMode="never"
+              onMomentumScrollEnd={onMomentumScrollEnd}
+              onScrollToIndexFailed={onScrollToIndexFailed}
+              renderItem={({ item: it }) => (
+                <View style={styles.imageSlide}>
+                  {it?.imageLink ? (
+                    <>
+                      <Pressable onPress={() => setEnlarged(true)}>
+                        <Image source={{ uri: it.imageLink }} style={styles.image} />
+                      </Pressable>
+
+                      <TouchableOpacity
+                        style={styles.fabEnlarge}
+                        onPress={() => setEnlarged(true)}
+                        activeOpacity={0.85}
+                      >
+                        <Image source={enlargeIcon} style={styles.fabEnlargeIcon} />
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <Text style={{ color: "#c00" }}>Image not available</Text>
+                  )}
+                </View>
+              )}
+            />
+
+            {showLeft && (
+              <View style={styles.swipeLeft} pointerEvents="box-none">
+                <LinearGradient
+                  colors={["rgba(0,0,0,0.35)", "rgba(0,0,0,0.0)"]}
+                  start={{ x: 0, y: 0.5 }}
+                  end={{ x: 1, y: 0.5 }}
+                  style={styles.swipeGrad}
+                  pointerEvents="none"
+                />
+                <TouchableOpacity
+                  style={styles.swipeTapLeft}
+                  onPress={goPrev}
+                  activeOpacity={0.85}
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                >
+                  <Text style={styles.swipeChevron}>‹</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+            {showRight && (
+              <View style={styles.swipeRight} pointerEvents="box-none">
+                <LinearGradient
+                  colors={["rgba(0,0,0,0.0)", "rgba(0,0,0,0.35)"]}
+                  start={{ x: 0, y: 0.5 }}
+                  end={{ x: 1, y: 0.5 }}
+                  style={styles.swipeGrad}
+                  pointerEvents="none"
+                />
+                <TouchableOpacity
+                  style={styles.swipeTapRight}
+                  onPress={goNext}
+                  activeOpacity={0.85}
+                  hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                >
+                  <Text style={styles.swipeChevron}>›</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+          </View>
+
+          {/* Title / description / like */}
+          <View style={styles.cardFooter}>
+            <View style={{ flex: 1, marginRight: 12 }}>
+              <Text style={styles.artTitle}>{item?.name || "Untitled"}</Text>
+              <Text style={styles.description} numberOfLines={5} ellipsizeMode="tail">
+                {item?.description || "No description available."}
+              </Text>
+            </View>
+
+            <View style={styles.sideActions}>
+              <TouchableOpacity
+                style={[styles.primaryPill, hasLiked && styles.primaryPillActive]}
+                onPress={handleToggleLike}
+                activeOpacity={0.9}
+              >
+                <Image source={hasLiked ? likedIcon : like} style={styles.pillIcon} />
+                <Text style={styles.pillText}>{hasLiked ? "Unlike" : "Like"}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Purchase card */}
+          <View style={styles.purchaseCard}>
+            <View style={styles.pricePill}>
+              <Text style={styles.priceText}>{priceDisplay}</Text>
+            </View>
+
+            <TouchableOpacity
+              style={styles.buyNowButton}
+              onPress={() =>
+                navigation.navigate("DeliveryDetails", {
+                  imageId: item?._id,
+                  artName: item?.name,
+                  imageLink: item?.imageLink,
+                  artistName: item?.artistName,
+                  price: item?.price,
+                })
+              }
+              activeOpacity={0.9}
+            >
+              <Image source={cartIcon} style={styles.buyNowIcon} />
+              <Text style={styles.buyNowText}>Buy Now</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Details section */}
+          <View style={styles.detailsCard}>
+            <Text style={styles.detailsTitle}>Artwork Details</Text>
+
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Dimensions</Text>
+              <Text style={styles.detailValue}>{dimsText}</Text>
+            </View>
+
+
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Weight</Text>
+              <Text style={styles.detailValue}>{weightText}</Text>
+            </View>
+
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Signed</Text>
+              <Text style={styles.detailValue}>{item?.isSigned ? "Yes" : "No"}</Text>
+            </View>
+
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Framed</Text>
+              <Text style={styles.detailValue}>{item?.isFramed ? "Yes" : "No"}</Text>
+            </View>
+          </View>
+
+          {shownScrollHint && (
+            <Animated.View style={[styles.scrollHint, { opacity: scrollHintOpacity }]}>
+              <Text style={styles.scrollHintText}>Scroll</Text>
+              <Text style={styles.scrollHintChevron}>⌄</Text>
+            </Animated.View>
           )}
+        </ScrollView>
 
-        />
-
-        {/* Enlarged Overlay */}
-        {enlarged && (
-          <View style={styles.enlargedOverlay}>
-            {/* Top Fade */}
+        {/* Enlarged image modal */}
+        <Modal
+          visible={enlarged}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setEnlarged(false)}
+        >
+          <Pressable style={styles.enlargeModal} onPress={() => setEnlarged(false)}>
+            <StatusBar hidden />
             <LinearGradient
-              colors={["rgba(0,0,0,0.6)", "transparent"]}
-              style={styles.topFade}
+              colors={["rgba(0,0,0,0.7)", "transparent"]}
+              style={styles.enlargeTopFade}
+              pointerEvents="none"
+            />
+            <LinearGradient
+              colors={["transparent", "rgba(0,0,0,0.7)"]}
+              style={styles.enlargeBottomFade}
               pointerEvents="none"
             />
 
-            {/* Bottom Fade */}
-            <LinearGradient
-              colors={["transparent", "rgba(0,0,0,0.6)"]}
-              style={styles.bottomFade}
-              pointerEvents="none"
-            />
-
-            {/* Close Button */}
             <TouchableOpacity
               onPress={() => setEnlarged(false)}
-              style={styles.closeOverlay}
-            >
-              <Text style={styles.closeText}>✕</Text>
-            </TouchableOpacity>
-
-            {/* Centered Image */}
-            <Image
-              source={{ uri: images[currentIndex]?.imageLink }}
-              style={styles.enlargedImage}
-            />
-          </View>
-        )}
-
-        {/* Description + Like */}
-        <View style={styles.descriptionContainer}>
-          <View style={{ flex: 1, maxWidth: "72%" }}>
-            <Text style={styles.artTitle}>
-              {images[currentIndex]?.name || "Untitled"}
-            </Text>
-            <Text
-              style={styles.descriptionText}
-              numberOfLines={6}
-              ellipsizeMode="tail"
-            >
-              {images[currentIndex]?.description || "No Description Available"}
-            </Text>
-          </View>
-
-          <View>
-            <TouchableOpacity
-              style={styles.likeButtonNew}
-              onPress={handleToggleLike}
-            >
-              <Image
-                source={hasLiked ? likedIcon : like}
-                style={styles.likeIconNew}
-              />
-              <Text style={styles.likeButtonTextNew}>
-                {hasLiked ? "Unlike" : "Like"}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.moreInfoButton}
-              onPress={() => setShowMoreInfo(true)}
+              style={styles.enlargeCloseHit}
+              hitSlop={{ top: 14, bottom: 14, left: 14, right: 14 }}
               activeOpacity={0.8}
             >
-              <Text style={styles.moreInfoText}>ⓘ More Info</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* More Info Card */}
-        {showMoreInfo && (
-          <View style={styles.infoCard}>
-            <TouchableOpacity
-              onPress={() => setShowMoreInfo(false)}
-              style={styles.closeX}
-            >
-              <Text style={styles.closeXText}>✕</Text>
+              <Text style={styles.enlargeCloseText}>✕</Text>
             </TouchableOpacity>
 
-            <Text style={styles.infoTitle}>Artwork Details</Text>
-
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Dimensions:</Text>
-              <Text style={styles.infoValue}>
-                {images[currentIndex]?.dimensions || "Not specified"}
-              </Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Signed:</Text>
-              <Text style={styles.infoValue}>
-                {images[currentIndex]?.isSigned ? "Yes" : "No"}
-              </Text>
-            </View>
-
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Framed:</Text>
-              <Text style={styles.infoValue}>
-                {images[currentIndex]?.isFramed ? "Yes" : "No"}
-              </Text>
-            </View>
-
-          </View>
-        )}
-
-        {/* Price + Buy Now */}
-        <View style={styles.purchaseRow}>
-          <View style={styles.pricePill}>
-            <Text style={styles.priceText}>
-              ${images[currentIndex]?.price?.toFixed(2) || "N/A"}
-            </Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.buyNowButton}
-            onPress={() =>
-              navigation.navigate("DeliveryDetails", {
-                imageId: images[currentIndex]?._id,
-                artName: images[currentIndex]?.name,
-                imageLink: images[currentIndex]?.imageLink,
-                artistName: images[currentIndex]?.artistName,
-                price: images[currentIndex]?.price,
-              })
-            }
-            activeOpacity={0.85}
-          >
-            <Image
-              source={require("../assets/icons/shopping-cart.png")}
-              style={styles.buyNowIcon}
-            />
-            <Text style={styles.buyNowText}>Buy Now</Text>
-          </TouchableOpacity>
-        </View>
+            <Image source={{ uri: item?.imageLink }} style={styles.enlargedImage} />
+          </Pressable>
+        </Modal>
       </View>
     </ScreenTemplate>
   );
-
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1 },
-  headerContainer: {
+  screen: { flex: 1, backgroundColor: "#F7F7FA" },
+
+  cardHeader: {
+    marginHorizontal: H_PADDING - 4,
+    marginTop: 8,
+    marginBottom: 10,
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    paddingVertical: 12,
+    paddingHorizontal: 12,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    backgroundColor: "#fff",
-    // borderBottomWidth: 0.5,
-    // borderColor: "#ddd",
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
   },
-  artistInfoLeft: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  profilePictureSquare: {
-    width: 50,
-    height: 50,
-    borderRadius: 5,
+  artistLeft: { flexDirection: "row", alignItems: "center" },
+  artistAvatar: {
+    width: 46,
+    height: 46,
+    borderRadius: 8,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: "#E5E7EB",
   },
-  artistNameLeft: {
-    fontSize: 15,
-    fontWeight: "bold",
-    color: "#111",
-    textTransform: "uppercase",
+  artistName: { fontSize: 14, fontWeight: "700", color: "#111827" },
+  artistCategory: {
+    marginTop: 4,
+    alignSelf: "flex-start",
+    fontSize: 11,
+    color: "#4F46E5",
+    backgroundColor: "#EEF2FF",
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 999,
+    letterSpacing: 0.3,
   },
-  categoryLabel: {
-    fontSize: 12,
-    color: "#777",
-    textTransform: "uppercase",
-    marginTop: 2,
-  },
-  statsRowRight: {
-    flexDirection: "row",
-    gap: 10,
-    alignItems: "center",
-  },
-  statPillRight: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#f5f5f5",
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 20,
-  },
-  statIconRight: {
-    width: 14,
-    height: 14,
-    marginRight: 4,
-    tintColor: "#444",
-  },
-  statTextRight: {
-    fontSize: 13,
-    fontWeight: "600",
-    color: "#333",
-  },
-
-  statsRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-  },
-
+  statsRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   statPill: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#F1F1F1",
+    backgroundColor: "#F3F4F6",
     paddingHorizontal: 10,
     paddingVertical: 6,
-    borderRadius: 20,
+    borderRadius: 999,
   },
+  statEmoji: { marginRight: 6 },
+  statText: { fontSize: 12, fontWeight: "700", color: "#111827" },
 
-  statIcon: {
-    marginRight: 6,
-  },
-
-  statText: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: "black",
-  },
-
-  imageContainer: {
-    width,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  fullImage: {
-    width: width - 10, // subtract horizontal margins (5 left + 5 right)
-    height: height * 0.5,
-    resizeMode: 'cover',
-    borderRadius: 8, // optional: match corner rounding
-  },
-  descriptionContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    backgroundColor: "#fff",
-    marginHorizontal: 5,
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 3,
-    zIndex: 1,
-  },
-
-  artTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#111",
-    textTransform: "uppercase",
-    marginBottom: 10,
-  },
-  descriptionLabel: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#666",
-    marginBottom: 2,
-    textTransform: "uppercase",
-  },
-  descriptionText: {
-    fontSize: 13,
-    color: "#333",
-    lineHeight: 18,
-    maxHeight: 95,
-    overflow: "hidden",
-    flexShrink: 1,
-  },
-  likeButtonNew: {
-    flexDirection: "row",
-    justifyContent: "center", // <--- centers the icon + text as a group
-    alignItems: "center",
-    backgroundColor: "#007AFF",
-    paddingVertical: 8,
-    paddingHorizontal: 30,
-    borderRadius: 25,
-    marginBottom: 6,
-    alignSelf: "center", // <--- optional: centers the button in its container
-  },
-
-  likeIconNew: {
-    width: 16,
-    height: 16,
-    marginRight: 6,
-    tintColor: "#fff",
-  },
-  likeButtonTextNew: {
-    color: "#fff",
-    fontSize: 13,
-    fontWeight: "600",
-    textTransform: "uppercase",
-  },
-  moreInfoButton: {
-    alignSelf: "flex-start",
-    backgroundColor: "#f2f2f2",
-    paddingVertical: 6,
-    paddingHorizontal: 14,
-    borderRadius: 20,
+  carouselWrap: { marginHorizontal: 8, marginBottom: 8 },
+  imageSlide: { width, alignItems: "center" },
+  image: {
+    width: width - 16,
+    height: IMAGE_HEIGHT,
+    borderRadius: 14,
+    resizeMode: "cover",
+    backgroundColor: "#F3F4F6",
     borderWidth: 1,
-    borderColor: "#ccc",
-    marginTop: 6,
+    borderColor: "#E5E7EB",
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
     elevation: 3,
   },
-  moreInfoText: {
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#333",
-    letterSpacing: 0.5,
-    textTransform: "uppercase",
-  },
-  infoCard: {
+  fabEnlarge: {
     position: "absolute",
-    bottom: 90,
-    left: width * 0.05,
-    width: width * 0.9,
-    backgroundColor: "rgba(255, 255, 255, 0.95)",
-    borderRadius: 15,
-    padding: 20,
-    elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    zIndex: 2,
+    right: 20,
+    bottom: 14,
+    backgroundColor: "rgba(0,0,0,0.55)",
+    padding: 10,
+    borderRadius: 22,
+    zIndex: 20,
+    elevation: 20,
   },
-  closeX: {
-    position: "absolute",
-    top: 10,
-    right: 14,
-    zIndex: 1,
-  },
-  closeXText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  infoTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    marginBottom: 16,
-    color: "#222",
-    textAlign: "center",
-    textTransform: "uppercase",
-    letterSpacing: 1.2,
-  },
-  infoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginVertical: 6,
-  },
-  infoLabel: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#555",
-  },
-  infoValue: {
-    fontSize: 14,
-    fontWeight: "500",
-    color: "#222",
-  },
-  priceButtonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 14,
-    backgroundColor: "#fff",
-    // borderTopWidth: 1,
-    // borderColor: "#e0e0e0",
-  },
-  priceBadge: {
-    backgroundColor: "#f0f0f0",
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 20,
-  },
-  priceText: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  buyNowButton: {
-    backgroundColor: "#007AFF",
-    paddingVertical: 10,
-    paddingHorizontal: 24,
-    borderRadius: 25,
-    elevation: 4,
-  },
-  buyNowText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-    textTransform: "uppercase",
-  },
-  artistCard: {
-    backgroundColor: '#fff',
-    marginHorizontal: 5,
-    padding: 12,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  fabEnlargeIcon: { width: 20, height: 20, tintColor: "#fff" },
 
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  artistCardLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  artistProfilePicture: {
+  swipeLeft: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
     width: 48,
-    height: 48,
-    borderRadius: 6,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    justifyContent: "center",
+    zIndex: 5,
+    elevation: 5,
   },
-  artistName: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#222',
+  swipeRight: {
+    position: "absolute",
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 48,
+    justifyContent: "center",
+    alignItems: "flex-end",
+    zIndex: 5,
+    elevation: 5,
   },
-  artistCategory: {
-    fontSize: 12,
-    color: '#635BFF',
-    backgroundColor: '#EAEAFF',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 12,
-    marginTop: 4,
-    alignSelf: 'flex-start',
+  swipeGrad: { position: "absolute", top: 0, bottom: 0, width: 48 },
+  swipeTapLeft: {
+    width: 44,
+    height: 120,
+    justifyContent: "center",
+    alignItems: "flex-start",
+    paddingLeft: 6,
   },
-  statsContainer: {
-    alignItems: 'flex-end',
-    gap: 4,
+  swipeTapRight: {
+    width: 44,
+    height: 120,
+    justifyContent: "center",
+    alignItems: "flex-end",
+    paddingRight: 6,
   },
-  statText: {
-    fontSize: 12,
-    color: '#666',
-  },
-  likeButton: {
-    width: 22,
-    height: 22,
-    marginTop: 4,
-  },
-  purchaseRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginHorizontal: 20,
-    marginTop: 20,
-  },
+  swipeChevron: { fontSize: 32, color: "#fff", fontWeight: "700", marginHorizontal: 8 },
 
-  pricePill: {
-    backgroundColor: "#EAEAFF",
-    borderColor: "#635BFF",
-    borderWidth: 1,
-    borderRadius: 30,
-    paddingVertical: 10,
-    paddingHorizontal: 22,
-    shadowColor: "#635BFF",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
+  cardFooter: {
+    marginTop: 6,
+    marginHorizontal: H_PADDING - 4,
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    padding: 12,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    shadowColor: "#000",
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
     elevation: 2,
   },
-
-  priceText: {
-    color: "#635BFF",
-    fontWeight: "bold",
-    fontSize: 17,
-    letterSpacing: 0.4,
+  artTitle: {
+    fontSize: 18,
+    fontWeight: "800",
+    color: "#0F172A",
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    marginBottom: 6,
   },
-
-  buyNowButton: {
+  description: { fontSize: 13, lineHeight: 18, color: "#374151" },
+  sideActions: { alignItems: "center" },
+  primaryPill: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#111",
-    paddingVertical: 12,
-    paddingHorizontal: 28,
-    borderRadius: 30,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 4,
+    backgroundColor: "#111827",
+    paddingVertical: 9,
+    paddingHorizontal: 18,
+    borderRadius: 999,
+    marginLeft: 6,
   },
-
-  buyNowIcon: {
-    width: 18,
-    height: 18,
-    tintColor: "#fff",
-    marginRight: 8,
-  },
-
-  buyNowText: {
+  primaryPillActive: { backgroundColor: "#2563EB" },
+  pillIcon: { width: 16, height: 16, tintColor: "#fff", marginRight: 8 },
+  pillText: {
     color: "#fff",
-    fontSize: 15,
+    fontSize: 12,
     fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0.6,
   },
-  enlargedOverlay: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
+
+  purchaseCard: {
+    marginTop: 12,
+    marginHorizontal: H_PADDING - 4,
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
+  },
+  pricePill: {
+    backgroundColor: "#EEF2FF",
+    borderWidth: 1,
+    borderColor: "#C7D2FE",
+    paddingVertical: 10,
+    paddingHorizontal: 18,
+    borderRadius: 999,
+  },
+  priceText: { color: "#4338CA", fontWeight: "800", fontSize: 16, letterSpacing: 0.4 },
+  buyNowButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#111827",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 999,
+    shadowColor: "#000",
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 4,
+  },
+  buyNowIcon: { width: 18, height: 18, tintColor: "#fff", marginRight: 8 },
+  buyNowText: { color: "#fff", fontWeight: "800", letterSpacing: 0.6, fontSize: 14 },
+
+  detailsCard: {
+    marginTop: 12,
+    marginHorizontal: H_PADDING - 4,
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    shadowColor: "#000",
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
+  },
+  detailsTitle: {
+    fontSize: 15,
+    fontWeight: "800",
+    color: "#0F172A",
+    textTransform: "uppercase",
+    letterSpacing: 0.6,
+    marginBottom: 8,
+    textAlign: "center",
+  },
+  detailRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 6 },
+  detailLabel: { fontSize: 14, color: "#6B7280", fontWeight: "600" },
+  detailValue: { fontSize: 14, color: "#111827", fontWeight: "600" },
+
+  scrollHint: { alignSelf: "center", marginTop: 10, alignItems: "center" },
+  scrollHintText: {
+    color: "#6B7280",
+    fontSize: 12,
+    fontWeight: "700",
+    letterSpacing: 0.6,
+    textTransform: "uppercase",
+  },
+  scrollHintChevron: { color: "#6B7280", fontSize: 20, marginTop: -2 },
+
+  enlargeModal: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.92)",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 999,
   },
-  
-  enlargedImage: {
-    width: "100%",
-    height: "100%",
-    resizeMode: "contain",
-  },
-  
-  topFade: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: 100,
-    zIndex: 998,
-  },
-  
-  bottomFade: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    width: "100%",
-    height: 100,
-    zIndex: 998,
-  },
-  
-  closeOverlay: {
-    position: "absolute",
-    top: 40,
-    right: 20,
-    zIndex: 1000,
-  },
-  
-  closeText: {
-    fontSize: 24,
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  
-  closeOverlay: {
+  enlargeTopFade: { position: "absolute", top: 0, left: 0, width: "100%", height: 120 },
+  enlargeBottomFade: { position: "absolute", bottom: 0, left: 0, width: "100%", height: 140 },
+  enlargedImage: { width: "100%", height: "100%", resizeMode: "contain" },
+  enlargeCloseHit: {
     position: "absolute",
     top: 50,
-    right: 30,
+    right: 24,
     zIndex: 1000,
+    backgroundColor: "rgba(0,0,0,0.35)",
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderRadius: 16,
   },
-
-  closeText: {
-    fontSize: 30,
-    color: "#fff",
-  },
-  enlargeIcon: {
-    position: "absolute",
-    bottom: 10,
-    right: 10,
-    backgroundColor: "rgba(0,0,0,0.6)",
-    padding: 8,
-    borderRadius: 20,
-    zIndex: 5,
-  },
-  enlargeIconImage: {
-    width: 20,
-    height: 20,
-    tintColor: "#fff",
-  },
-
-
+  enlargeCloseText: { color: "#fff", fontSize: 22, fontWeight: "800" },
 });
 
 export default ImageScreen;

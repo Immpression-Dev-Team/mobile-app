@@ -1,7 +1,7 @@
 // components/Navbar.js
 import React, { useState, useRef, useEffect } from "react";
 import { View, Image, Pressable, StyleSheet, Animated, Text } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import { MaterialIcons as Icon } from "@expo/vector-icons";
 import logoImg from "../assets/Logo_T.png";
 import { useNavigation, StackActions } from "@react-navigation/native";
 import LongSearchBar from "./LongSearchBar";
