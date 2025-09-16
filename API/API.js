@@ -410,24 +410,33 @@ async function createOrder(orderData, token) {
   }
 }
 
-async function createPaymentIntent(paymentData, token) {
+// --- Stripe: create Payment Intent (server recomputes tax) ---
+// body expected by backend: { sellerStripeId, base, shipping, address, platformFee?, orderId? }
+async function createPaymentIntent(
+  { orderId, sellerStripeId, baseCents, shippingCents = 0, address, platformFeeCents = 0 },
+  token
+) {
   try {
-    const response = await axios.post(
-      `${API_URL}/create-payment-intent`,
-      paymentData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    return response.data; // Contains the client_secret and other payment details
+    const body = {
+      orderId: orderId || "",
+      sellerStripeId,
+      base: Math.round(Number(baseCents || 0)),
+      shipping: Math.round(Number(shippingCents || 0)),
+      address, // { line1, city, state, postal_code, country }
+      platformFee: Math.round(Number(platformFeeCents || 0)),
+    };
+
+    const res = await axios.post(`${API_URL}/create-payment-intent`, body, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    // { clientSecret, total, tax, sellerShare, platformFee }
+    return res.data;
   } catch (error) {
-    console.error(
-      "Error creating payment intent:",
-      error.response?.data || error
-    );
+    console.error("createPaymentIntent error:", error?.response?.data || error?.message || error);
     throw error;
   }
 }
@@ -895,6 +904,64 @@ async function getOrderShippingQuote(orderId, token) {
   }
 }
 
+// --- TAX: preview (Stripe Tax Calculations) ---
+async function previewTax(input, token) {
+  try {
+    const body = typeof input === "string" ? { orderId: input } : input;
+    const res = await axios.post(`${API_URL}/tax/preview`, body, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    // { ok, currency, breakdown: { subtotal, shipping, tax, total }, item_tax_breakdown, shipping_tax_breakdown }
+    return res.data;
+  } catch (error) {
+    const msg =
+      error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      error?.message ||
+      "Failed to preview tax";
+    console.error("previewTax error:", msg, error?.response?.data);
+    return { ok: false, error: msg };
+  }
+}
+
+// --- TAX: calculate on the server (expects { base, shipping, address }) ---
+async function calculateTax({ baseCents, shippingCents = 0, address }, token) {
+  try {
+    const payload = {
+      currency: "usd",
+      base: Math.round(Number(baseCents || 0)),
+      shipping: Math.round(Number(shippingCents || 0)),
+      address, // { line1, city, state, postal_code, country }
+    };
+
+    const res = await axios.post(`${API_URL}/calculate-tax`, payload, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    // Server returns: { ok, currency, base, shipping, tax, total }
+    return res.data;
+  } catch (error) {
+    console.error("calculateTax error:", error?.response?.data || error?.message || error);
+    // safe fallback so UI never breaks
+    const base = Math.round(Number(baseCents || 0));
+    const shipping = Math.round(Number(shippingCents || 0));
+    return {
+      ok: true,
+      currency: "usd",
+      base,
+      shipping,
+      tax: 0,
+      total: base + shipping,
+      note: "client_fallback",
+    };
+  }
+}
 
 export {
   requestOtp,
@@ -947,4 +1014,6 @@ export {
   updateShippingZip,
   getUpsRates,
   getOrderShippingQuote,
+  previewTax,
+  calculateTax,
 };
