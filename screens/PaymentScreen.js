@@ -90,7 +90,11 @@ const PaymentScreen = ({ navigation, route }) => {
 
       setTaxing(true);
       try {
-        const res = await calculateTax({ baseCents, shippingCents, address }, token);
+        const res = await calculateTax({
+          baseCents, shippingCents, address,
+          sellerStripeId: order.artistStripeId
+        }, token);
+
         if (!cancelled) {
           setTaxCents(Math.round(Number(res?.tax || 0)));
         }
@@ -231,8 +235,8 @@ const PaymentScreen = ({ navigation, route }) => {
                   {quoting
                     ? "Calculating…"
                     : shippingAmount != null
-                    ? `$${shippingAmount.toFixed(2)}`
-                    : "—"}
+                      ? `$${shippingAmount.toFixed(2)}`
+                      : "—"}
                 </Text>
               </View>
 
@@ -283,7 +287,7 @@ const PaymentScreen = ({ navigation, route }) => {
                   fetchingOrder ||
                   taxing ||
                   shippingAmount == null) &&
-                  styles.buttonDisabled,
+                styles.buttonDisabled,
               ]}
               onPress={handlePayment}
               disabled={

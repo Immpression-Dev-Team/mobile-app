@@ -928,40 +928,29 @@ async function previewTax(input, token) {
 }
 
 // --- TAX: calculate on the server (expects { base, shipping, address }) ---
-async function calculateTax({ baseCents, shippingCents = 0, address }, token) {
+
+async function calculateTax({ baseCents, shippingCents = 0, address, sellerStripeId }, token) {
   try {
     const payload = {
       currency: "usd",
       base: Math.round(Number(baseCents || 0)),
       shipping: Math.round(Number(shippingCents || 0)),
       address, // { line1, city, state, postal_code, country }
+      ...(sellerStripeId ? { sellerStripeId } : {}), // 👈 pass it through
     };
 
     const res = await axios.post(`${API_URL}/calculate-tax`, payload, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     });
-
-    // Server returns: { ok, currency, base, shipping, tax, total }
     return res.data;
   } catch (error) {
-    console.error("calculateTax error:", error?.response?.data || error?.message || error);
-    // safe fallback so UI never breaks
+    // fallback unchanged
     const base = Math.round(Number(baseCents || 0));
     const shipping = Math.round(Number(shippingCents || 0));
-    return {
-      ok: true,
-      currency: "usd",
-      base,
-      shipping,
-      tax: 0,
-      total: base + shipping,
-      note: "client_fallback",
-    };
+    return { ok: true, currency: "usd", base, shipping, tax: 0, total: base + shipping, note: "client_fallback" };
   }
 }
+
 
 export {
   requestOtp,
