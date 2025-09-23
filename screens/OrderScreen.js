@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import ScreenTemplate from "./Template/ScreenTemplate";
 import { useAuth } from "../state/AuthProvider";
-import { getMyOrders, getMySales } from "../API/API";
+import { getMyOrders, getMySales, refreshTrackingForOrder } from "../API/API";
 
 export default function OrderScreen({ navigation }) {
   const { token } = useAuth();
@@ -21,6 +21,7 @@ export default function OrderScreen({ navigation }) {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [refreshingMap, setRefreshingMap] = useState({}); // orderId -> boolean
 
   // ---- helpers ----
   const fmtMoney = (n) => {
@@ -143,7 +144,7 @@ export default function OrderScreen({ navigation }) {
       const sellerList = Array.isArray(sellerRes?.data) ? sellerRes.data : [];
       const sellers = sellerList.map((o) => {
         const tracking = o?.tracking || {};
-        
+
         return {
           id: o._id || o.id,
           title: o.artName || o.artworkTitle || "Artwork",
@@ -169,6 +170,20 @@ export default function OrderScreen({ navigation }) {
       setSellerOrders([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // manual tracking refresh (buyer or seller)
+  const onRefreshTracking = async (orderId) => {
+    if (!orderId || !token) return;
+    try {
+      setRefreshingMap((m) => ({ ...m, [orderId]: true }));
+      await refreshTrackingForOrder(token, orderId); // calls /tracking/refresh-user/:id
+      await fetchOrders(); // re-pull with updated status/events
+    } catch (e) {
+      setError(e?.message || "Failed to refresh tracking");
+    } finally {
+      setRefreshingMap((m) => ({ ...m, [orderId]: false }));
     }
   };
 
@@ -223,7 +238,7 @@ export default function OrderScreen({ navigation }) {
             </View>
           </View>
         </View>
-        
+
         <View style={styles.divider} />
 
         {/* Shipping state */}
@@ -272,7 +287,7 @@ export default function OrderScreen({ navigation }) {
 
   const SellerOrderCard = ({ order }) => {
     const hasTracking = !!order.tracking;
-    
+
     return (
       <View style={styles.card} key={order.id}>
         <View style={styles.cardHeader}>
@@ -309,7 +324,7 @@ export default function OrderScreen({ navigation }) {
             </View>
           </View>
         </View>
-        
+
         <View style={styles.divider} />
 
         {/* Shipping Action */}
@@ -351,6 +366,17 @@ export default function OrderScreen({ navigation }) {
                 <Text style={styles.shippingText}>
                   {order.shipmentStatus || "Shipped"}
                 </Text>
+                <View style={{ marginTop: 6, flexDirection: "row", justifyContent: "flex-end" }}>
+                  <TouchableOpacity
+                    onPress={() => onRefreshTracking(order.id)}
+                    disabled={!!refreshingMap[order.id]}
+                    style={[styles.refreshBtn, refreshingMap[order.id] && { opacity: 0.6 }]}
+                  >
+                    <Text style={styles.refreshBtnText}>
+                      {refreshingMap[order.id] ? "Refreshing…" : "Refresh tracking"}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           )}
@@ -530,10 +556,10 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10,
   },
-  thumbnail: { 
-    width: 60, 
-    height: 60, 
-    borderRadius: 10, 
+  thumbnail: {
+    width: 60,
+    height: 60,
+    borderRadius: 10,
     resizeMode: "cover",
   },
   thumbPlaceholder: {
@@ -555,16 +581,16 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     marginBottom: 2,
   },
-  title: { 
-    fontSize: 15, 
-    fontWeight: "700", 
-    color: "#111827", 
+  title: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#111827",
     flex: 1,
     marginRight: 10,
   },
-  artistName: { 
-    fontSize: 12, 
-    color: "#6B7280", 
+  artistName: {
+    fontSize: 12,
+    color: "#6B7280",
     marginBottom: 6,
   },
   orderMeta: {
@@ -572,14 +598,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  orderDate: { 
-    fontSize: 12, 
+  orderDate: {
+    fontSize: 12,
     color: "#9CA3AF",
   },
-  price: { 
-    fontSize: 16, 
-    fontWeight: "800", 
-    color: "#635BFF" 
+  price: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#635BFF"
   },
 
   statusBadge: {
@@ -716,4 +742,19 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   retryText: { color: "#fff", fontWeight: "700" },
+
+  refreshBtn: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#93C5FD",
+    backgroundColor: "#EFF6FF",
+  },
+  refreshBtnText: {
+    fontSize: 11,
+    fontWeight: "700",
+    color: "#2563EB",
+  },
+
 });

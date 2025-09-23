@@ -951,6 +951,38 @@ async function calculateTax({ baseCents, shippingCents = 0, address, sellerStrip
   }
 }
 
+// Trigger server-side polling for all due shipments (requires cron key)
+async function runTrackingCron(cronKey) {
+  try {
+    const res = await axios.post(`${API_URL}/tracking/run`, {}, {
+      headers: { "x-cron-key": cronKey }
+    });
+    return res.data; // { ok, count, results }
+  } catch (error) {
+    const msg = error?.response?.data?.error || error?.message || "Failed to run tracking cron";
+    console.error("runTrackingCron error:", msg);
+    throw new Error(msg);
+  }
+}
+
+ // Manually refresh tracking for a single order (USER safe; uses bearer token)
+ async function refreshTrackingForOrder(token, orderId) {
+   try {
+     const res = await axios.post(
+       `${API_URL}/tracking/refresh-user/${orderId}`,
+       {},
+       { headers: { Authorization: `Bearer ${token}` } }
+     );
+     return res.data; // { ok, orderId, status, nextPollAt }
+   } catch (error) {
+     const msg =
+       error?.response?.data?.error || error?.message || "Failed to refresh tracking";
+     console.error("refreshTrackingForOrder error:", msg);
+     throw new Error(msg);
+   }
+}
+
+
 
 export {
   requestOtp,
@@ -1005,4 +1037,6 @@ export {
   getOrderShippingQuote,
   previewTax,
   calculateTax,
+  runTrackingCron,
+  refreshTrackingForOrder,
 };
