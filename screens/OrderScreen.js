@@ -1,3 +1,4 @@
+// OrderScreen.jsx (or OrderScreen.js)
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -37,6 +38,24 @@ export default function OrderScreen({ navigation }) {
       day: "numeric",
       year: "numeric",
     });
+  };
+
+  // "3m ago" / "2h ago" / "yesterday" / short date fallback
+  const fmtRelative = (d) => {
+    if (!d) return "—";
+    const t = new Date(d);
+    if (isNaN(t.getTime())) return "—";
+    const diff = Date.now() - t.getTime();
+
+    const s = Math.floor(diff / 1000);
+    if (s < 60) return `${s}s ago`;
+    const m = Math.floor(s / 60);
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    const days = Math.floor(h / 24);
+    if (days === 1) return "yesterday";
+    return t.toLocaleDateString("en-US", { month: "short", day: "numeric" });
   };
 
   const fmtDateTime = (d) => {
@@ -98,7 +117,7 @@ export default function OrderScreen({ navigation }) {
       // Fetch both buyer and seller orders in parallel
       const [buyerRes, sellerRes] = await Promise.all([
         getMyOrders(token, 1, 50),
-        getMySales(token, 1, 50).catch(() => ({ data: [] })) // Fallback if endpoint doesn't exist yet
+        getMySales(token, 1, 50).catch(() => ({ data: [] })), // Fallback if endpoint doesn't exist yet
       ]);
 
       // Process buyer orders
@@ -131,11 +150,15 @@ export default function OrderScreen({ navigation }) {
           shipmentStatus: shipping.shipmentStatus || null,
           latestEvent: latestEvent
             ? {
-              message: latestEvent.message || latestEvent.status || "",
-              when: latestEvent.datetime || null,
-              location: latestEvent.location || "",
-            }
+                message: latestEvent.message || latestEvent.status || "",
+                when: latestEvent.datetime || null,
+                location: latestEvent.location || "",
+              }
             : null,
+
+          // NEW: poll info
+          lastChecked: shipping.lastPolledAt || null,
+          nextCheck: shipping.nextPollAt || null,
         };
       });
 
@@ -143,7 +166,7 @@ export default function OrderScreen({ navigation }) {
       const sellerList = Array.isArray(sellerRes?.data) ? sellerRes.data : [];
       const sellers = sellerList.map((o) => {
         const tracking = o?.tracking || {};
-        
+
         return {
           id: o._id || o.id,
           title: o.artName || o.artworkTitle || "Artwork",
@@ -158,6 +181,10 @@ export default function OrderScreen({ navigation }) {
           shippedAt: tracking.shippedAt || null,
           deliveredAt: tracking.deliveredAt || null,
           trackingEvents: tracking.trackingEvents || [],
+
+          // NEW: poll info
+          lastChecked: tracking.lastPolledAt || null,
+          nextCheck: tracking.nextPollAt || null,
         };
       });
 
@@ -203,11 +230,21 @@ export default function OrderScreen({ navigation }) {
               <Text style={styles.title} numberOfLines={1}>
                 {order.title}
               </Text>
-              <View style={[
-                styles.statusBadge,
-                { backgroundColor: `${statusColor(derivedStatus)}15`, borderColor: statusColor(derivedStatus) }
-              ]}>
-                <Text style={[styles.statusText, { color: statusColor(derivedStatus) }]}>
+              <View
+                style={[
+                  styles.statusBadge,
+                  {
+                    backgroundColor: `${statusColor(derivedStatus)}15`,
+                    borderColor: statusColor(derivedStatus),
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.statusText,
+                    { color: statusColor(derivedStatus) },
+                  ]}
+                >
                   {derivedStatus}
                 </Text>
               </View>
@@ -223,7 +260,7 @@ export default function OrderScreen({ navigation }) {
             </View>
           </View>
         </View>
-        
+
         <View style={styles.divider} />
 
         {/* Shipping state */}
@@ -236,7 +273,8 @@ export default function OrderScreen({ navigation }) {
               <View style={styles.shippingContent}>
                 <Text style={styles.shippingTitle}>Awaiting Shipment</Text>
                 <Text style={styles.shippingText}>
-                  The seller will add tracking information once your order ships.
+                  The seller will add tracking information once your order
+                  ships.
                 </Text>
               </View>
             </View>
@@ -254,14 +292,24 @@ export default function OrderScreen({ navigation }) {
                 {order.latestEvent ? (
                   <Text style={styles.shippingText} numberOfLines={2}>
                     {order.latestEvent.message || "Package in transit"}
-                    {order.latestEvent.when && ` • ${fmtDateTime(order.latestEvent.when)}`}
-                    {order.latestEvent.location && ` • ${order.latestEvent.location}`}
+                    {order.latestEvent.when &&
+                      ` • ${fmtDateTime(order.latestEvent.when)}`}
+                    {order.latestEvent.location &&
+                      ` • ${order.latestEvent.location}`}
                   </Text>
                 ) : (
                   <Text style={styles.shippingText}>
                     Tracking label created — awaiting pickup scan
                   </Text>
                 )}
+
+                {/* NEW info line */}
+                <Text style={[styles.shippingText, { marginTop: 2 }]}>
+                  Last checked {fmtRelative(order.lastChecked)}
+                  {order.nextCheck
+                    ? ` • Next check ${fmtDateTime(order.nextCheck)} UTC`
+                    : ""}
+                </Text>
               </View>
             </View>
           </View>
@@ -272,7 +320,7 @@ export default function OrderScreen({ navigation }) {
 
   const SellerOrderCard = ({ order }) => {
     const hasTracking = !!order.tracking;
-    
+
     return (
       <View style={styles.card} key={order.id}>
         <View style={styles.cardHeader}>
@@ -289,11 +337,23 @@ export default function OrderScreen({ navigation }) {
               <Text style={styles.title} numberOfLines={1}>
                 {order.title}
               </Text>
-              <View style={[
-                styles.statusBadge,
-                { backgroundColor: `${statusColor(order.shipmentStatus || "processing")}15`, borderColor: statusColor(order.shipmentStatus || "processing") }
-              ]}>
-                <Text style={[styles.statusText, { color: statusColor(order.shipmentStatus || "processing") }]}>
+              <View
+                style={[
+                  styles.statusBadge,
+                  {
+                    backgroundColor: `${statusColor(
+                      order.shipmentStatus || "processing"
+                    )}15`,
+                    borderColor: statusColor(order.shipmentStatus || "processing"),
+                  },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.statusText,
+                    { color: statusColor(order.shipmentStatus || "processing") },
+                  ]}
+                >
                   {order.shipmentStatus || "Processing"}
                 </Text>
               </View>
@@ -309,7 +369,7 @@ export default function OrderScreen({ navigation }) {
             </View>
           </View>
         </View>
-        
+
         <View style={styles.divider} />
 
         {/* Shipping Action */}
@@ -334,8 +394,12 @@ export default function OrderScreen({ navigation }) {
                   <Text style={styles.trackingButtonEmoji}>📦</Text>
                 </View>
                 <View style={styles.trackingButtonText}>
-                  <Text style={styles.trackingButtonTitle}>Add Tracking Number</Text>
-                  <Text style={styles.trackingButtonSubtext}>Ship this order to the customer</Text>
+                  <Text style={styles.trackingButtonTitle}>
+                    Add Tracking Number
+                  </Text>
+                  <Text style={styles.trackingButtonSubtext}>
+                    Ship this order to the customer
+                  </Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -350,6 +414,14 @@ export default function OrderScreen({ navigation }) {
                 </Text>
                 <Text style={styles.shippingText}>
                   {order.shipmentStatus || "Shipped"}
+                </Text>
+
+                {/* NEW info line */}
+                <Text style={[styles.shippingText, { marginTop: 2 }]}>
+                  Last checked {fmtRelative(order.lastChecked)}
+                  {order.nextCheck
+                    ? ` • Next check ${fmtDateTime(order.nextCheck)} UTC`
+                    : ""}
                 </Text>
               </View>
             </View>
@@ -530,10 +602,10 @@ const styles = StyleSheet.create({
     flex: 1,
     marginLeft: 10,
   },
-  thumbnail: { 
-    width: 60, 
-    height: 60, 
-    borderRadius: 10, 
+  thumbnail: {
+    width: 60,
+    height: 60,
+    borderRadius: 10,
     resizeMode: "cover",
   },
   thumbPlaceholder: {
@@ -555,16 +627,16 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     marginBottom: 2,
   },
-  title: { 
-    fontSize: 15, 
-    fontWeight: "700", 
-    color: "#111827", 
+  title: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#111827",
     flex: 1,
     marginRight: 10,
   },
-  artistName: { 
-    fontSize: 12, 
-    color: "#6B7280", 
+  artistName: {
+    fontSize: 12,
+    color: "#6B7280",
     marginBottom: 6,
   },
   orderMeta: {
@@ -572,14 +644,14 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  orderDate: { 
-    fontSize: 12, 
+  orderDate: {
+    fontSize: 12,
     color: "#9CA3AF",
   },
-  price: { 
-    fontSize: 16, 
-    fontWeight: "800", 
-    color: "#635BFF" 
+  price: {
+    fontSize: 16,
+    fontWeight: "800",
+    color: "#635BFF",
   },
 
   statusBadge: {
@@ -683,26 +755,6 @@ const styles = StyleSheet.create({
   trackingButtonSubtext: {
     fontSize: 11,
     color: "rgba(255,255,255,0.8)",
-  },
-
-  // Status Row for shipped orders
-  statusRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginTop: 2,
-  },
-  orderStatusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-    borderWidth: 1,
-  },
-  orderStatusText: {
-    fontSize: 10,
-    fontWeight: "700",
-    textTransform: "uppercase",
-    letterSpacing: 0.3,
   },
 
   centerPad: { alignItems: "center", paddingVertical: 28, gap: 8 },
