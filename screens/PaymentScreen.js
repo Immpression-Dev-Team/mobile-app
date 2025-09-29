@@ -22,7 +22,7 @@ import { API_URL } from "../API_URL";
 import { useAuth } from "../state/AuthProvider";
 import ScreenTemplate from "./Template/ScreenTemplate";
 
-const PLATFORM_FEE_RATE = 0.10; // <- adjust your policy here (10% of item price)
+const PLATFORM_FEE_RATE = 0.10; // 10% of item price (adjust to your policy)
 
 const PaymentScreen = ({ navigation, route }) => {
   const { orderId, price } = route.params; // price = item subtotal in USD (number)
@@ -90,14 +90,11 @@ const PaymentScreen = ({ navigation, route }) => {
 
       setTaxing(true);
       try {
-        const res = await calculateTax({
-          baseCents, shippingCents, address,
-          sellerStripeId: order.artistStripeId
-        }, token);
-
-        if (!cancelled) {
-          setTaxCents(Math.round(Number(res?.tax || 0)));
-        }
+        const res = await calculateTax(
+          { baseCents, shippingCents, address, sellerStripeId: order.artistStripeId },
+          token
+        );
+        if (!cancelled) setTaxCents(Math.round(Number(res?.tax || 0)));
       } catch (e) {
         console.error("calculateTax failed:", e?.response?.data || e);
         if (!cancelled) setTaxCents(0);
@@ -198,7 +195,18 @@ const PaymentScreen = ({ navigation, route }) => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       if (status === "paid") {
-        navigation.replace("ReviewScreen", { orderId });
+        const subtotalNum = Number(subtotal ?? 0);
+        const shippingNum = Number(shippingAmount ?? 0);
+        const taxNum = Number(taxAmount ?? 0);
+        navigation.replace("ReviewScreen", {
+          orderId,
+          amounts: {
+            subtotal: subtotalNum,
+            shipping: shippingNum,
+            tax: taxNum,
+            total: subtotalNum + shippingNum + taxNum,
+          },
+        });
       }
     } catch (e) {
       console.error("Failed to update order:", e);
@@ -282,17 +290,11 @@ const PaymentScreen = ({ navigation, route }) => {
             <TouchableOpacity
               style={[
                 styles.button,
-                (loading ||
-                  quoting ||
-                  fetchingOrder ||
-                  taxing ||
-                  shippingAmount == null) &&
-                styles.buttonDisabled,
+                (loading || quoting || fetchingOrder || taxing || shippingAmount == null) &&
+                  styles.buttonDisabled,
               ]}
               onPress={handlePayment}
-              disabled={
-                loading || quoting || fetchingOrder || taxing || shippingAmount == null
-              }
+              disabled={loading || quoting || fetchingOrder || taxing || shippingAmount == null}
               activeOpacity={0.85}
             >
               {loading ? (

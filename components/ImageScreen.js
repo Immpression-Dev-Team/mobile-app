@@ -71,7 +71,7 @@ const ImageScreen = ({ route, navigation }) => {
       const data = await fetchLikeData(imageId, token);
       setLikes(Number(data?.likesCount || 0));
       setHasLiked(!!data?.hasLiked);
-    } catch { }
+    } catch {}
   };
 
   const handleToggleLike = async () => {
@@ -79,7 +79,7 @@ const ImageScreen = ({ route, navigation }) => {
       const data = await toggleLike(images[currentIndex]?._id, token);
       setLikes(Number(data?.likesCount || 0));
       setHasLiked(!!data?.hasLiked);
-    } catch { }
+    } catch {}
   };
 
   const handleViewIncrement = async (index) => {
@@ -87,7 +87,7 @@ const ImageScreen = ({ route, navigation }) => {
     if (!img?._id || !token) return;
     try {
       await incrementImageViews(img._id, token);
-    } catch { }
+    } catch {}
   };
 
   const onMomentumScrollEnd = (e) => {
@@ -137,6 +137,9 @@ const ImageScreen = ({ route, navigation }) => {
   const priceDisplay =
     typeof item?.price === "number" ? `$${item.price.toFixed(2)}` : "N/A";
 
+  // Use the backend flag as the single source of truth
+  const isSold = !!item?.isSold;
+
   // ---- formatted details ----
   const dims = item?.dimensions || null;
   const dimsText =
@@ -144,13 +147,12 @@ const ImageScreen = ({ route, navigation }) => {
       ? `H: ${dims.height ?? "—"} x W: ${dims.width ?? "—"} x L: ${dims.length ?? "—"} in`
       : "Not specified";
 
-
   const weightText =
     typeof item?.weight === "number"
       ? `${item.weight} lb`
       : item?.weight
-        ? String(item.weight)
-        : "Not specified";
+      ? String(item.weight)
+      : "Not specified";
 
   const showLeft = currentIndex > 0;
   const showRight = currentIndex < images.length - 1;
@@ -307,22 +309,29 @@ const ImageScreen = ({ route, navigation }) => {
               <Text style={styles.priceText}>{priceDisplay}</Text>
             </View>
 
-            <TouchableOpacity
-              style={styles.buyNowButton}
-              onPress={() =>
-                navigation.navigate("DeliveryDetails", {
-                  imageId: item?._id,
-                  artName: item?.name,
-                  imageLink: item?.imageLink,
-                  artistName: item?.artistName,
-                  price: item?.price,
-                })
-              }
-              activeOpacity={0.9}
-            >
-              <Image source={cartIcon} style={styles.buyNowIcon} />
-              <Text style={styles.buyNowText}>Buy Now</Text>
-            </TouchableOpacity>
+            {isSold ? (
+              <View style={[styles.buyNowButton, styles.soldButton]} pointerEvents="none">
+                <Text style={styles.soldText}>SOLD</Text>
+              </View>
+            ) : (
+              <TouchableOpacity
+                style={styles.buyNowButton}
+                onPress={() => {
+                  if (isSold) return; // safety guard in case item flipped to sold
+                  navigation.navigate("DeliveryDetails", {
+                    imageId: item?._id,
+                    artName: item?.name,
+                    imageLink: item?.imageLink,
+                    artistName: item?.artistName,
+                    price: item?.price,
+                  });
+                }}
+                activeOpacity={0.9}
+              >
+                <Image source={cartIcon} style={styles.buyNowIcon} />
+                <Text style={styles.buyNowText}>Buy Now</Text>
+              </TouchableOpacity>
+            )}
           </View>
 
           {/* Details section */}
@@ -333,7 +342,6 @@ const ImageScreen = ({ route, navigation }) => {
               <Text style={styles.detailLabel}>Dimensions</Text>
               <Text style={styles.detailValue}>{dimsText}</Text>
             </View>
-
 
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Weight</Text>
@@ -599,6 +607,20 @@ const styles = StyleSheet.create({
   },
   buyNowIcon: { width: 18, height: 18, tintColor: "#fff", marginRight: 8 },
   buyNowText: { color: "#fff", fontWeight: "800", letterSpacing: 0.6, fontSize: 14 },
+
+  // SOLD variant
+  soldButton: {
+    backgroundColor: "#B91C1C",
+    borderColor: "#7F1D1D",
+    borderWidth: 1,
+  },
+  soldText: {
+    color: "#fff",
+    fontWeight: "900",
+    letterSpacing: 1,
+    fontSize: 14,
+    textTransform: "uppercase",
+  },
 
   detailsCard: {
     marginTop: 12,
