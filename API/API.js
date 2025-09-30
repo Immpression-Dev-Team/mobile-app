@@ -411,35 +411,57 @@ async function createOrder(orderData, token) {
 }
 
 // --- Stripe: create Payment Intent (server recomputes tax) ---
-// body expected by backend: { sellerStripeId, base, shipping, address, platformFee?, orderId? }
+// Expects: { orderId, sellerStripeId, baseCents, shippingCents?, address, platformFeeCents? }
 async function createPaymentIntent(
-  { orderId, sellerStripeId, baseCents, shippingCents = 0, address, platformFeeCents = 0 },
+  { orderId, sellerStripeId, baseCents, shippingCents = 0, address = {}, platformFeeCents = 0 },
   token
 ) {
-  try {
-    const body = {
-      orderId: orderId || "",
-      sellerStripeId,
-      base: Math.round(Number(baseCents || 0)),
-      shipping: Math.round(Number(shippingCents || 0)),
-      address, // { line1, city, state, postal_code, country }
-      platformFee: Math.round(Number(platformFeeCents || 0)),
-    };
+  // fail fast if critical fields are missing
+  if (!orderId) throw new Error("createPaymentIntent: missing orderId (webhook needs this to update your order)");
+  if (!sellerStripeId) throw new Error("createPaymentIntent: missing sellerStripeId");
 
+  const toInt = (v, name) => {
+    const n = Math.round(Number(v || 0));
+    if (!Number.isFinite(n) || n < 0) throw new Error(`createPaymentIntent: invalid ${name}`);
+    return n;
+  };
+
+  // normalize address to backend's expected keys
+  const normAddr = (a = {}) => ({
+    line1: a.line1 || a.address || "",
+    city: a.city || "",
+    state: a.state || a.stateCode || "",
+    postal_code: a.postal_code || a.zipCode || a.zip || "",
+    country: a.country || "US",
+  });
+  const addr = normAddr(address);
+  if (!addr.postal_code) throw new Error("createPaymentIntent: destination postal_code required");
+
+  const body = {
+    orderId: String(orderId),
+    sellerStripeId: String(sellerStripeId),
+    base: toInt(baseCents, "baseCents"),
+    shipping: toInt(shippingCents, "shippingCents"),
+    platformFee: toInt(platformFeeCents, "platformFeeCents"),
+    address: addr,
+  };
+
+  try {
     const res = await axios.post(`${API_URL}/create-payment-intent`, body, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
-
     // { clientSecret, total, tax, sellerShare, platformFee }
     return res.data;
   } catch (error) {
-    console.error("createPaymentIntent error:", error?.response?.data || error?.message || error);
-    throw error;
+    const msg = error?.response?.data?.error || error?.message || "Failed to create payment intent";
+    console.error("createPaymentIntent error:", error?.response?.data || error);
+    throw new Error(msg);
   }
 }
+
 
 async function confirmPayment(paymentIntentId, token) {
   try {
@@ -951,6 +973,21 @@ async function calculateTax({ baseCents, shippingCents = 0, address, sellerStrip
   }
 }
 
+async function finalizePayment({ paymentIntentId, orderId }, token) {
+  try {
+    const res = await axios.post(
+      `${API_URL}/finalize-payment`,
+      { paymentIntentId, orderId },
+      { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+    );
+    return res.data; // { success, data: { orderId } }
+  } catch (error) {
+    const msg = error?.response?.data?.error || error.message || "Failed to finalize payment";
+    throw new Error(msg);
+  }
+}
+
+
 
 export {
   requestOtp,
@@ -1005,4 +1042,5 @@ export {
   getOrderShippingQuote,
   previewTax,
   calculateTax,
+  finalizePayment,
 };

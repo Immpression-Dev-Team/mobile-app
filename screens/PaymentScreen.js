@@ -1,3 +1,4 @@
+// PaymentScreen.jsx
 import { CardField, useStripe } from "@stripe/stripe-react-native";
 import React, { useEffect, useMemo, useState } from "react";
 import {
@@ -10,22 +11,21 @@ import {
   View,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import axios from "axios";
 
 import {
   createPaymentIntent,
   getOrderShippingQuote,
   getOrderDetails,
   calculateTax,
+  finalizePayment, // 👈 NEW
 } from "../API/API";
-import { API_URL } from "../API_URL";
 import { useAuth } from "../state/AuthProvider";
 import ScreenTemplate from "./Template/ScreenTemplate";
 
-const PLATFORM_FEE_RATE = 0.10; // 10% of item price (adjust to your policy)
+const PLATFORM_FEE_RATE = 0.10; // 10%
 
 const PaymentScreen = ({ navigation, route }) => {
-  const { orderId, price } = route.params; // price = item subtotal in USD (number)
+  const { orderId, price } = route.params; // price = item subtotal (USD number)
   const { confirmPayment } = useStripe();
   const { userData } = useAuth();
   const token = userData?.token;
@@ -38,9 +38,12 @@ const PaymentScreen = ({ navigation, route }) => {
   const [quoting, setQuoting] = useState(true);
   const [shipping, setShipping] = useState(null); // { amount, serviceName, ... }
 
-  // tax (for UI display; server will still recompute)
+  // tax (UI estimate; server recomputes definitively)
   const [taxing, setTaxing] = useState(false);
   const [taxCents, setTaxCents] = useState(0);
+
+  // card UI state
+  const [cardComplete, setCardComplete] = useState(false);
 
   // pay
   const [loading, setLoading] = useState(false);
@@ -55,6 +58,7 @@ const PaymentScreen = ({ navigation, route }) => {
         if (!cancelled && res?.success) setOrder(res.data);
       } catch (e) {
         console.error("getOrderDetails failed:", e?.message || e);
+        if (!cancelled) Alert.alert("Error", "Unable to load order details.");
       } finally {
         if (!cancelled) setFetchingOrder(false);
       }
@@ -67,11 +71,16 @@ const PaymentScreen = ({ navigation, route }) => {
     let cancelled = false;
     (async () => {
       setQuoting(true);
-      const quote = await getOrderShippingQuote(orderId, token);
-      if (!cancelled) {
-        const cheapest = quote?.picks?.cheapest ?? quote?.pick ?? null;
-        setShipping(quote?.success ? cheapest : null);
-        setQuoting(false);
+      try {
+        const quote = await getOrderShippingQuote(orderId, token);
+        if (!cancelled) {
+          const cheapest = quote?.picks?.cheapest ?? quote?.pick ?? null;
+          setShipping(quote?.success ? cheapest : null);
+        }
+      } catch (e) {
+        console.error("getOrderShippingQuote failed:", e?.message || e);
+      } finally {
+        if (!cancelled) setQuoting(false);
       }
     })();
     return () => { cancelled = true; };
@@ -120,20 +129,16 @@ const PaymentScreen = ({ navigation, route }) => {
       ? "Calculating…"
       : `$${(Number.isFinite(taxAmount) ? taxAmount : 0).toFixed(2)}`;
 
+  const isPaid = (order?.status || "").toLowerCase() === "paid";
+
   async function handlePayment() {
     try {
-      if (!order?.deliveryDetails) {
-        Alert.alert("Missing address", "We couldn't load your delivery address.");
-        return;
-      }
-      if (!order?.artistStripeId) {
-        Alert.alert("Seller not ready", "Artist is not connected to Stripe.");
-        return;
-      }
-      if (shipping?.amount == null) {
-        Alert.alert("Shipping unavailable", "We couldn't get a shipping quote.");
-        return;
-      }
+      if (!token) return Alert.alert("Sign in required", "Please sign in to continue.");
+      if (isPaid) return Alert.alert("Already paid", "This order has already been paid.");
+      if (!order?.deliveryDetails) return Alert.alert("Missing address", "We couldn't load your delivery address.");
+      if (!order?.artistStripeId) return Alert.alert("Seller not ready", "Artist is not connected to Stripe.");
+      if (shipping?.amount == null) return Alert.alert("Shipping unavailable", "We couldn't get a shipping quote.");
+      if (!cardComplete) return Alert.alert("Card incomplete", "Please complete your card details.");
 
       setLoading(true);
 
@@ -142,7 +147,7 @@ const PaymentScreen = ({ navigation, route }) => {
       const platformFeeCents = Math.round(baseCents * PLATFORM_FEE_RATE);
       const address = normalizeAddress(order.deliveryDetails);
 
-      // Create PI (server recomputes tax and sets the split automatically)
+      // Create PI (server recomputes tax and applies the split)
       const res = await createPaymentIntent(
         {
           orderId,
@@ -154,62 +159,52 @@ const PaymentScreen = ({ navigation, route }) => {
         },
         token
       );
-
-      if (!res?.clientSecret) {
-        throw new Error("No client secret returned from server");
-      }
+      if (!res?.clientSecret) throw new Error("No client secret returned from server");
 
       // Confirm on-device
       const { error, paymentIntent } = await confirmPayment(res.clientSecret, {
         paymentMethodType: "Card",
-        paymentMethodData: {
-          billingDetails: { name: userData?.name || "Customer" },
-        },
+        paymentMethodData: { billingDetails: { name: userData?.name || "Customer" } },
       });
 
       if (error) {
-        await updateOrder("failed");
         Alert.alert("Payment failed", error.message);
         return;
       }
 
-      if (paymentIntent) {
-        await updateOrder("paid");
+      const status = (paymentIntent?.status || "").toLowerCase();
+      const piId = paymentIntent?.id;
+
+      // 🔐 Finalize the order on the server (no webhook dependency)
+      try {
+        await finalizePayment({ paymentIntentId: piId, orderId }, token);
+      } catch (e) {
+        // Not fatal for UX; the Review page will still load and can refetch
+        console.warn("finalizePayment error:", e?.message || e);
+      }
+
+      if (status === "succeeded") {
+        navigation.replace("ReviewScreen", {
+          orderId,
+          amounts: {
+            subtotal: Number(subtotal ?? 0),
+            shipping: Number(shippingAmount ?? 0),
+            tax: Number(taxAmount ?? 0), // UI estimate
+            total: Number(subtotal ?? 0) + Number(shippingAmount ?? 0) + Number(taxAmount ?? 0),
+          },
+        });
+      } else {
+        // processing / requires_* — server may 202; UI can refresh order state later
+        Alert.alert("Payment submitted", "Your payment is processing. We’ll update your order shortly.");
+        navigation.replace("ReviewScreen", { orderId });
       }
     } catch (err) {
-      await updateOrder("failed");
       Alert.alert(
         "Error",
         err?.response?.data?.error || err?.message || "An error occurred while processing payment."
       );
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function updateOrder(status) {
-    try {
-      await axios.put(
-        `${API_URL}/order/${orderId}`,
-        { status, transactionId: "pi-client" },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      if (status === "paid") {
-        const subtotalNum = Number(subtotal ?? 0);
-        const shippingNum = Number(shippingAmount ?? 0);
-        const taxNum = Number(taxAmount ?? 0);
-        navigation.replace("ReviewScreen", {
-          orderId,
-          amounts: {
-            subtotal: subtotalNum,
-            shipping: shippingNum,
-            tax: taxNum,
-            total: subtotalNum + shippingNum + taxNum,
-          },
-        });
-      }
-    } catch (e) {
-      console.error("Failed to update order:", e);
     }
   }
 
@@ -223,6 +218,14 @@ const PaymentScreen = ({ navigation, route }) => {
           >
             <Text style={styles.arrow}>←</Text>
           </TouchableOpacity>
+
+          {!!order?.status && (
+            <View style={[styles.statusPill, isPaid ? styles.statusPaid : styles.statusPending]}>
+              <Text style={styles.statusText}>
+                {String(order.status).toUpperCase()}
+              </Text>
+            </View>
+          )}
         </View>
 
         <View style={styles.formWrapper}>
@@ -235,7 +238,7 @@ const PaymentScreen = ({ navigation, route }) => {
                 <Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text>
               </View>
 
-              <View className="summaryRow" style={styles.summaryRow}>
+              <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>
                   Shipping{shipping?.serviceName ? ` (${shipping.serviceName})` : ""}
                 </Text>
@@ -283,6 +286,7 @@ const PaymentScreen = ({ navigation, route }) => {
                 placeholderColor: "#A9A9A9",
               }}
               style={styles.cardField}
+              onCardChange={(d) => setCardComplete(!!d?.complete)}
             />
           </View>
 
@@ -290,17 +294,34 @@ const PaymentScreen = ({ navigation, route }) => {
             <TouchableOpacity
               style={[
                 styles.button,
-                (loading || quoting || fetchingOrder || taxing || shippingAmount == null) &&
-                  styles.buttonDisabled,
+                (loading ||
+                  quoting ||
+                  fetchingOrder ||
+                  taxing ||
+                  shippingAmount == null ||
+                  !token ||
+                  !order ||
+                  !cardComplete ||
+                  isPaid) && styles.buttonDisabled,
               ]}
               onPress={handlePayment}
-              disabled={loading || quoting || fetchingOrder || taxing || shippingAmount == null}
+              disabled={
+                loading ||
+                quoting ||
+                fetchingOrder ||
+                taxing ||
+                shippingAmount == null ||
+                !token ||
+                !order ||
+                !cardComplete ||
+                isPaid
+              }
               activeOpacity={0.85}
             >
               {loading ? (
                 <ActivityIndicator color="#FFF" />
               ) : (
-                <Text style={styles.buttonText}>Pay Now</Text>
+                <Text style={styles.buttonText}>{isPaid ? "Already Paid" : "Pay Now"}</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -317,7 +338,7 @@ function toCents(n) {
 }
 
 function normalizeAddress(delivery) {
-  // Your backend normAddr looks for: { line1, city, state, postal_code, country }
+  // Backend expects: { line1, city, state, postal_code, country }
   return {
     line1: String(delivery?.address || "").slice(0, 200),
     city: delivery?.city || "",
@@ -347,6 +368,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 3,
     marginBottom: -20,
+    gap: 10,
   },
   goBackButton: {
     backgroundColor: "#f0f0f0",
@@ -354,6 +376,15 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   arrow: { fontSize: 18, color: "#333", fontWeight: "600" },
+
+  statusPill: {
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 999,
+  },
+  statusPending: { backgroundColor: "#f1f5f9" },
+  statusPaid: { backgroundColor: "#16a34a22" },
+  statusText: { fontSize: 12, color: "#111827", fontWeight: "700" },
 
   formWrapper: {
     width: "100%",
