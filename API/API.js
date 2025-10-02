@@ -395,12 +395,15 @@ async function getImageViews(imageId, token) {
     return error.response;
   }
 }
+
 async function createOrder(orderData, token) {
+  // EXPECTS: { imageId, artName, artistName, price, imageLink, deliveryDetails }
+  // NOTE: price is CENTS (base item price). Server seeds baseAmount/shippingAmount/taxAmount/totalAmount.
   try {
     const response = await axios.post(`${API_URL}/order`, orderData, {
       headers: {
-        Authorization: `Bearer ${token}`, // Add token to headers
-        "Content-Type": "application/json", // Ensure the content type is set correctly
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
     });
     return response.data;
@@ -410,40 +413,13 @@ async function createOrder(orderData, token) {
   }
 }
 
-// --- Stripe: create Payment Intent (server recomputes tax) ---
-// Expects: { orderId, sellerStripeId, baseCents, shippingCents?, address, platformFeeCents? }
-async function createPaymentIntent(
-  { orderId, sellerStripeId, baseCents, shippingCents = 0, address = {}, platformFeeCents = 0 },
-  token
-) {
-  // fail fast if critical fields are missing
-  if (!orderId) throw new Error("createPaymentIntent: missing orderId (webhook needs this to update your order)");
-  if (!sellerStripeId) throw new Error("createPaymentIntent: missing sellerStripeId");
-
-  const toInt = (v, name) => {
-    const n = Math.round(Number(v || 0));
-    if (!Number.isFinite(n) || n < 0) throw new Error(`createPaymentIntent: invalid ${name}`);
-    return n;
-  };
-
-  // normalize address to backend's expected keys
-  const normAddr = (a = {}) => ({
-    line1: a.line1 || a.address || "",
-    city: a.city || "",
-    state: a.state || a.stateCode || "",
-    postal_code: a.postal_code || a.zipCode || a.zip || "",
-    country: a.country || "US",
-  });
-  const addr = normAddr(address);
-  if (!addr.postal_code) throw new Error("createPaymentIntent: destination postal_code required");
+// --- Stripe: create Payment Intent (server recomputes & saves tax) ---
+async function createPaymentIntent({ orderId, platformFeeCents = 0 }, token) {
+  if (!orderId) throw new Error("createPaymentIntent: missing orderId");
 
   const body = {
     orderId: String(orderId),
-    sellerStripeId: String(sellerStripeId),
-    base: toInt(baseCents, "baseCents"),
-    shipping: toInt(shippingCents, "shippingCents"),
-    platformFee: toInt(platformFeeCents, "platformFeeCents"),
-    address: addr,
+    platformFee: Math.max(0, Math.round(Number(platformFeeCents || 0))),
   };
 
   try {
@@ -453,7 +429,7 @@ async function createPaymentIntent(
         "Content-Type": "application/json",
       },
     });
-    // { clientSecret, total, tax, sellerShare, platformFee }
+    // { clientSecret, total, tax, sellerShare, platformFee, orderId }
     return res.data;
   } catch (error) {
     const msg = error?.response?.data?.error || error?.message || "Failed to create payment intent";
@@ -951,27 +927,27 @@ async function previewTax(input, token) {
 
 // --- TAX: calculate on the server (expects { base, shipping, address }) ---
 
-async function calculateTax({ baseCents, shippingCents = 0, address, sellerStripeId }, token) {
+async function calculateTax({ baseCents, shippingCents = 0, address, orderId }, token) {
   try {
     const payload = {
       currency: "usd",
       base: Math.round(Number(baseCents || 0)),
       shipping: Math.round(Number(shippingCents || 0)),
-      address, // { line1, city, state, postal_code, country }
-      ...(sellerStripeId ? { sellerStripeId } : {}), // 👈 pass it through
+      address,              // { line1, city, state, postal_code, country }
+      ...(orderId ? { orderId } : {}),
     };
 
     const res = await axios.post(`${API_URL}/calculate-tax`, payload, {
       headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
     });
-    return res.data;
+    return res.data; // { ok, currency, base, shipping, tax, total }
   } catch (error) {
-    // fallback unchanged
     const base = Math.round(Number(baseCents || 0));
     const shipping = Math.round(Number(shippingCents || 0));
     return { ok: true, currency: "usd", base, shipping, tax: 0, total: base + shipping, note: "client_fallback" };
   }
 }
+
 
 async function finalizePayment({ paymentIntentId, orderId }, token) {
   try {
@@ -987,6 +963,23 @@ async function finalizePayment({ paymentIntentId, orderId }, token) {
   }
 }
 
+async function setOrderAmounts(orderId, { baseCents, shippingCents, taxCents }, token) {
+  try {
+    const payload = {};
+    if (Number.isFinite(baseCents)) payload.baseAmount = Math.max(0, Math.round(Number(baseCents)));
+    if (Number.isFinite(shippingCents)) payload.shippingAmount = Math.max(0, Math.round(Number(shippingCents)));
+    if (Number.isFinite(taxCents)) payload.taxAmount = Math.max(0, Math.round(Number(taxCents)));
+
+    const res = await axios.put(`${API_URL}/order/${orderId}`, payload, {
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+    });
+    return res.data; // { success, data: updatedOrder }
+  } catch (error) {
+    const msg = error?.response?.data?.error || error?.message || "Failed to update order amounts";
+    console.error("setOrderAmounts error:", error?.response?.data || error);
+    throw new Error(msg);
+  }
+}
 
 
 export {
@@ -1043,4 +1036,5 @@ export {
   previewTax,
   calculateTax,
   finalizePayment,
+  setOrderAmounts,
 };

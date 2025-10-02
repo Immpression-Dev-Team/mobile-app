@@ -17,7 +17,8 @@ import {
   getOrderShippingQuote,
   getOrderDetails,
   calculateTax,
-  finalizePayment, // 👈 NEW
+  setOrderAmounts,
+  finalizePayment, // ✅
 } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
 import ScreenTemplate from "./Template/ScreenTemplate";
@@ -25,7 +26,7 @@ import ScreenTemplate from "./Template/ScreenTemplate";
 const PLATFORM_FEE_RATE = 0.10; // 10%
 
 const PaymentScreen = ({ navigation, route }) => {
-  const { orderId, price } = route.params; // price = item subtotal (USD number)
+  const { orderId, price } = route.params; // price = item subtotal (USD number), fallback only
   const { confirmPayment } = useStripe();
   const { userData } = useAuth();
   const token = userData?.token;
@@ -38,7 +39,7 @@ const PaymentScreen = ({ navigation, route }) => {
   const [quoting, setQuoting] = useState(true);
   const [shipping, setShipping] = useState(null); // { amount, serviceName, ... }
 
-  // tax (UI estimate; server recomputes definitively)
+  // tax (UI estimate; server persists definitive)
   const [taxing, setTaxing] = useState(false);
   const [taxCents, setTaxCents] = useState(0);
 
@@ -76,6 +77,12 @@ const PaymentScreen = ({ navigation, route }) => {
         if (!cancelled) {
           const cheapest = quote?.picks?.cheapest ?? quote?.pick ?? null;
           setShipping(quote?.success ? cheapest : null);
+
+          // ✅ persist chosen shipping on the order (cents)
+          if (quote?.success && cheapest?.amount != null) {
+            const shippingCents = toCents(cheapest.amount);
+            await setOrderAmounts(orderId, { shippingCents }, token);
+          }
         }
       } catch (e) {
         console.error("getOrderShippingQuote failed:", e?.message || e);
@@ -86,7 +93,7 @@ const PaymentScreen = ({ navigation, route }) => {
     return () => { cancelled = true; };
   }, [orderId, token]);
 
-  // ---------- 3) Calculate tax for UI (server will recompute anyway) ----------
+  // ---------- 3) Calculate tax for UI + persist on server ----------
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -94,13 +101,20 @@ const PaymentScreen = ({ navigation, route }) => {
       if (shipping?.amount == null) return;
 
       const address = normalizeAddress(order.deliveryDetails);
-      const baseCents = toCents(price);
+
+      // Prefer server-sourced cents from the order; fallback to route param
+      const baseCents =
+        Number.isFinite(order?.baseAmount) ? Number(order.baseAmount)
+        : Number.isFinite(order?.price)     ? Number(order.price)
+        : toCents(price);
+
       const shippingCents = toCents(shipping.amount);
 
       setTaxing(true);
       try {
+        // ✅ Pass orderId so backend persists taxAmount & totalAmount
         const res = await calculateTax(
-          { baseCents, shippingCents, address, sellerStripeId: order.artistStripeId },
+          { baseCents, shippingCents, address, orderId },
           token
         );
         if (!cancelled) setTaxCents(Math.round(Number(res?.tax || 0)));
@@ -112,9 +126,15 @@ const PaymentScreen = ({ navigation, route }) => {
       }
     })();
     return () => { cancelled = true; };
-  }, [order, shipping, price, token]);
+  }, [order, shipping, price, token, orderId]);
 
-  const subtotal = Number(price) || 0;
+  // Prefer amounts coming from the order (cents → USD) and fall back to route param
+  const subtotal = useMemo(() => {
+    if (Number.isFinite(order?.baseAmount)) return Number(order.baseAmount) / 100;
+    if (Number.isFinite(order?.price)) return Number(order.price) / 100;
+    return Number(price) || 0;
+  }, [order, price]);
+
   const shippingAmount = shipping?.amount != null ? Number(shipping.amount) : null;
   const taxAmount = taxCents / 100;
 
@@ -142,23 +162,15 @@ const PaymentScreen = ({ navigation, route }) => {
 
       setLoading(true);
 
-      const baseCents = toCents(subtotal);
+      // ensure shipping persisted (if user waited long and state changed)
       const shippingCents = toCents(shipping.amount);
-      const platformFeeCents = Math.round(baseCents * PLATFORM_FEE_RATE);
-      const address = normalizeAddress(order.deliveryDetails);
+      await setOrderAmounts(orderId, { shippingCents }, token);
 
-      // Create PI (server recomputes tax and applies the split)
-      const res = await createPaymentIntent(
-        {
-          orderId,
-          sellerStripeId: order.artistStripeId,
-          baseCents,
-          shippingCents,
-          address,
-          platformFeeCents,
-        },
-        token
-      );
+      // compute platform fee from subtotal (item price only)
+      const platformFeeCents = Math.round(toCents(subtotal) * PLATFORM_FEE_RATE);
+
+      // ✅ Create PI — backend recomputes tax, saves all amounts to order, splits transfer
+      const res = await createPaymentIntent({ orderId, platformFeeCents }, token);
       if (!res?.clientSecret) throw new Error("No client secret returned from server");
 
       // Confirm on-device
@@ -173,28 +185,16 @@ const PaymentScreen = ({ navigation, route }) => {
       }
 
       const status = (paymentIntent?.status || "").toLowerCase();
-      const piId = paymentIntent?.id;
-
-      // 🔐 Finalize the order on the server (no webhook dependency)
-      try {
-        await finalizePayment({ paymentIntentId: piId, orderId }, token);
-      } catch (e) {
-        // Not fatal for UX; the Review page will still load and can refetch
-        console.warn("finalizePayment error:", e?.message || e);
-      }
 
       if (status === "succeeded") {
-        navigation.replace("ReviewScreen", {
-          orderId,
-          amounts: {
-            subtotal: Number(subtotal ?? 0),
-            shipping: Number(shippingAmount ?? 0),
-            tax: Number(taxAmount ?? 0), // UI estimate
-            total: Number(subtotal ?? 0) + Number(shippingAmount ?? 0) + Number(taxAmount ?? 0),
-          },
-        });
+        // ✅ finalize on-device (webhook is still a fallback)
+        try {
+          await finalizePayment({ paymentIntentId: paymentIntent.id, orderId }, token);
+        } catch (e) {
+          console.warn("finalizePayment failed (will rely on webhook):", e?.message || e);
+        }
+        navigation.replace("ReviewScreen", { orderId });
       } else {
-        // processing / requires_* — server may 202; UI can refresh order state later
         Alert.alert("Payment submitted", "Your payment is processing. We’ll update your order shortly.");
         navigation.replace("ReviewScreen", { orderId });
       }

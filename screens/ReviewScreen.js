@@ -28,7 +28,7 @@ const ReviewScreen = ({ route }) => {
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // fetch order (details + fallback numbers)
+  // fetch order (definitive numbers now live on order.*Amount)
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -71,26 +71,23 @@ const ReviewScreen = ({ route }) => {
   const delivery = order?.deliveryDetails || {};
   const createdAt = order?.createdAt ? new Date(order.createdAt) : null;
 
-  // Prefer route params; fallback to order fields (either dollars or *Cents)
+  // Prefer route params (if provided for quick display), but the authoritative values are on the order:
   const subtotal =
     amounts?.subtotal ??
-    order?.price ??
-    centsToDollars(order?.priceCents);
+    centsToDollars(order?.baseAmount) ??
+    order?.price; // legacy fallback (dollars)
 
   const shipping =
     amounts?.shipping ??
-    order?.shippingAmount ??
-    centsToDollars(order?.shippingCents);
+    centsToDollars(order?.shippingAmount);
 
   const tax =
     amounts?.tax ??
-    order?.tax ??
-    centsToDollars(order?.taxCents);
+    centsToDollars(order?.taxAmount);
 
   const total =
     amounts?.total ??
-    order?.total ??
-    centsToDollars(order?.totalCents) ??
+    centsToDollars(order?.totalAmount) ??
     (Number(subtotal || 0) + Number(shipping || 0) + Number(tax || 0));
 
   const statusLabel = (() => {
@@ -112,6 +109,12 @@ const ReviewScreen = ({ route }) => {
     if (s === "failed") return { bg: "#FDECEC", fg: "#B3261E" };
     return { bg: "#EEE", fg: "#555" };
   })();
+
+  // shipping (nested) tracking info
+  const ship = order?.shipping || {};
+  const trackingNumber = ship?.trackingNumber;
+  const carrier = ship?.carrier;
+  const hasTracking = !!trackingNumber;
 
   return (
     <ScreenTemplate>
@@ -185,7 +188,7 @@ const ReviewScreen = ({ route }) => {
             <View style={styles.kvRow}>
               <Text style={styles.kvKey}>Zip Code</Text>
               <Text style={styles.kvVal}>{delivery?.zipCode || "—"}</Text>
-            </View>
+            </View> 
             <View style={styles.kvRow}>
               <Text style={styles.kvKey}>Country</Text>
               <Text style={styles.kvVal}>{delivery?.country || "—"}</Text>
@@ -227,11 +230,11 @@ const ReviewScreen = ({ route }) => {
 
           {/* Tracking badge */}
           <View style={styles.actionRow}>
-            {order?.trackingNumber ? (
+            {hasTracking ? (
               <View style={[styles.trackBadge, { borderColor: "#E0E0E0" }]}>
                 <Ionicons name="cube-outline" size={16} color="#555" />
                 <Text style={styles.trackText} numberOfLines={1}>
-                  Tracking: {order.trackingNumber}
+                  {carrier ? `${carrier} ` : ""}Tracking: {trackingNumber}
                 </Text>
               </View>
             ) : (
