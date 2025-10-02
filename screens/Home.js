@@ -5,71 +5,43 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import ArtForYouSection from "../components/home_sections/ArtForYou/ArtForYouSection";
 import FeaturedArtistsSection from "../components/home_sections/FeaturedArtists/FeaturedArtistsSection";
-import CategoryNavSection from "../components/home_sections/Explore/CategoryNavSection";
-
-import SectionBanner from "../components/home_sections/SectionTemplate/SectionBanner";
 import ScreenTemplate from "./Template/ScreenTemplate";
 
+// background assets (still here if you want banners later)
 import navBgHeader from "../assets/foryou_assets/background_top.png";
-import discoverBgHeader from "../assets/discover_assets/background_top.png";
 import discoverBgFooter from "../assets/discover_assets/background_bottom.png";
-
-// import ArtOfTheDay from "../components/home_sections/ArtOfTheDay";
-// import InviteFriends from "../components/home_sections/InviteFriends";
-// import Categories from "../components/home_sections/Categories";
-// import ArtistsPick from "../components/home_sections/ArtistsPick";
 
 export default function HomeScreen() {
   const name = useAuth();
   const navigation = useNavigation();
-  // console.log("username: ", name.userData.user.user.name);
-  console.log("useAuth response: ", name);
 
   const handleOrdersPress = () => {
     navigation.navigate('OrderScreen');
   };
 
-  const handleUpdatesPress = () => {
-    navigation.navigate('GalleryView', {type: 'updates'});
-  };
-
   return (
     <ScreenTemplate>
       <View style={styles.container}>
-        {/* <CategoryNavSection /> */}
-        
+        {/* Top Orders Button */}
         <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.halfButtonWrapper} onPress={handleOrdersPress}>
+          <TouchableOpacity style={styles.fullButtonWrapper} onPress={handleOrdersPress}>
             <LinearGradient
               colors={['#635BFF', '#7C3AED', '#8B5CF6']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={styles.halfButton}
+              style={styles.fullButton}
             >
-              <Text style={styles.halfButtonText}>📋 Orders</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.halfButtonWrapper} onPress={handleUpdatesPress}>
-            <LinearGradient
-              colors={['#F59E0B', '#D97706', '#B45309']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.halfButton}
-            >
-              <Text style={styles.halfButtonText}>📢 Updates</Text>
+              <Text style={styles.fullButtonText}>📋 Orders</Text>
             </LinearGradient>
           </TouchableOpacity>
         </View>
-        
-        {/* <SectionBanner imgLink={navBgHeader} bannerHeight={3} /> */}
 
+        {/* Main Sections */}
         <ArtForYouSection />
-        
+
         <View style={styles.divider} />
-        
+
         <FeaturedArtistsSection />
-        {/* <SectionBanner imgLink={discoverBgFooter} bannerHeight={3.5} /> */}
       </View>
     </ScreenTemplate>
   );
@@ -86,9 +58,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginVertical: 10,
     width: "90%",
-    gap: 12,
   },
-  halfButtonWrapper: {
+  fullButtonWrapper: {
     flex: 1,
     borderRadius: 16,
     shadowColor: "#000",
@@ -97,19 +68,19 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
   },
-  halfButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+  fullButton: {
+    paddingVertical: 14,
     borderRadius: 16,
     alignItems: "center",
+    justifyContent: "center",
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
-  halfButtonText: {
+  fullButtonText: {
     color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "600",
-    letterSpacing: 0.5,
+    fontSize: 16,
+    fontWeight: "700",
+    letterSpacing: 0.6,
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
