@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,9 @@ import {
   Image,
   ScrollView,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Keyboard,
 } from "react-native";
 import { useAuth } from "../state/AuthProvider";
 import { updateTrackingNumber } from "../API/API";
@@ -17,36 +20,33 @@ import ScreenTemplate from "./Template/ScreenTemplate";
 // Normalize: remove spaces, uppercase
 const normalizeTN = (s = "") => s.replace(/\s+/g, "").toUpperCase();
 
-// Carriers
-const CARRIERS = ["UPS", "USPS", "FEDEX"];
+// Carriers — USPS removed per request
+const CARRIERS = ["UPS", "FEDEX"];
 
 /** Brand tokens: used for borders/labels when selected */
 const BRAND = {
   UPS: { border: "#5E3B17" },
-  USPS: { border: "#0071CE" },
   FEDEX: { border: "#4D148C" },
 };
 
 // Local logo assets (update paths if needed)
 const LOGOS = {
   UPS: require("../assets/shipping/ups.png"),
-  USPS: require("../assets/shipping/usps.png"),
   FEDEX: require("../assets/shipping/fedex.png"),
 };
 
 // Per-carrier validators (first-pass only; we don't hard-block on these)
 const isUPS = (s) => /^1Z[0-9A-Z]{16}$/.test(s);
-const isUSPS = (s) => /^(\d{20,22}|\d{26})$/.test(s);
 const isFedEx = (s) => /^(\d{12}|\d{15}|\d{20}|\d{22})$/.test(s);
-const validators = { UPS: isUPS, USPS: isUSPS, FEDEX: isFedEx };
+const validators = { UPS: isUPS, FEDEX: isFedEx };
 
 // Lightweight carrier guess (for hint/auto-select)
 const guessCarrier = (code) => {
   const s = String(code || "").replace(/\s/g, "");
   if (/^1Z[0-9A-Z]{16}$/i.test(s)) return "UPS";
-  if (/^\d{12}$/.test(s) || /^\d{15}$/.test(s)) return "FEDEX";
-  if (/^\d{20,22}$/.test(s)) return "USPS";
-  if (/^9\d{21,25}$/i.test(s)) return "USPS";
+  if (/^\d{12}$/.test(s) || /^\d{15}$/.test(s) || /^\d{20}$/.test(s) || /^\d{22}$/.test(s)) {
+    return "FEDEX";
+  }
   return null;
 };
 
@@ -94,7 +94,29 @@ const SubmitTrackingNumber = ({ navigation, route }) => {
   const [trackingNumber, setTrackingNumber] = useState(prefill?.trackingNumber || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorText, setErrorText] = useState("");
+  const [focused, setFocused] = useState(false);
+
+  // --- Keyboard handling (single scroll strategy to avoid "double jump") ---
+  const scrollRef = useRef(null);
   const submitLock = useRef(false);
+  const [kbPadding, setKbPadding] = useState(24);
+  const KEYBOARD_VERTICAL_OFFSET = 80; // adjust if your header height differs
+  const lastScrollTsRef = useRef(0);
+
+  useEffect(() => {
+    const showSub = Keyboard.addListener("keyboardDidShow", (e) => {
+      const h = e.endCoordinates?.height ?? 0;
+      setKbPadding(h + 24);
+      // IMPORTANT: no scrollToEnd here — we only scroll on focus to prevent double jump
+    });
+    const hideSub = Keyboard.addListener("keyboardDidHide", () => {
+      setKbPadding(24);
+    });
+    return () => {
+      showSub.remove();
+      hideSub.remove();
+    };
+  }, []);
 
   const tnNormalized = useMemo(() => normalizeTN(trackingNumber), [trackingNumber]);
   const carrierHint = useMemo(() => guessCarrier(tnNormalized), [tnNormalized]);
@@ -114,10 +136,8 @@ const SubmitTrackingNumber = ({ navigation, route }) => {
   const placeholderByCarrier =
     selectedCarrier === "UPS"
       ? "1Zxxxxxxxxxxxxxxxx"
-      : selectedCarrier === "USPS"
-      ? "20–26 digits"
       : selectedCarrier === "FEDEX"
-      ? "12/15/20/22 digits"
+      ? "12 / 15 / 20 / 22 digits"
       : "Select a carrier or start typing";
 
   const handleSubmit = async () => {
@@ -130,10 +150,8 @@ const SubmitTrackingNumber = ({ navigation, route }) => {
       return;
     }
 
-    // Prefer explicit selection, else use guess; let backend be the authority.
     const chosenCarrier = (selectedCarrier || carrierHint || "").toLowerCase() || undefined;
 
-    // Soft validation (do not block)
     if (!validByCarrier) {
       setErrorText(
         "Format looks unusual for the selected carrier. You can still submit — we’ll verify with the carrier."
@@ -145,7 +163,6 @@ const SubmitTrackingNumber = ({ navigation, route }) => {
     submitLock.current = true;
     setIsSubmitting(true);
     try {
-      // IMPORTANT: no forceMock flag here
       const res = await updateTrackingNumber(
         orderData.orderId,
         tnNormalized,
@@ -165,136 +182,198 @@ const SubmitTrackingNumber = ({ navigation, route }) => {
     }
   };
 
+  // Dynamic border color on input based on carrier
+  const inputBrandColor = selectedCarrier ? BRAND[selectedCarrier]?.border : "#1E2A3A";
+  const showFloating = focused || trackingNumber.length > 0;
+
+  const scrollOnceToBottom = () => {
+    const now = Date.now();
+    if (now - lastScrollTsRef.current < 400) return; // debounce to avoid double scrolls
+    lastScrollTsRef.current = now;
+    requestAnimationFrame(() =>
+      scrollRef.current?.scrollToEnd({ animated: true })
+    );
+  };
+
   return (
     <ScreenTemplate>
-      <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
-        {/* Header */}
-        <View style={styles.headerContainer}>
-          <TouchableOpacity style={styles.goBackButton} onPress={() => navigation.goBack()}>
-            <Text style={styles.arrow}>←</Text>
-          </TouchableOpacity>
-          <Text style={styles.header}>Submit Tracking Number</Text>
-        </View>
-
-        <View style={styles.content}>
-          <View style={styles.spacingBelowHeader} />
-          <Text style={styles.sectionTitle}>Order Details</Text>
-
-          {orderData && (
-            <View style={styles.orderCard}>
-              {orderData.imageLink ? (
-                <Image
-                  source={{ uri: orderData.imageLink }}
-                  style={styles.artworkImage}
-                  resizeMode="cover"
-                />
-              ) : null}
-              <View style={styles.orderInfo}>
-                <Text style={styles.artworkTitle}>{orderData.artName || "Artwork"}</Text>
-                {!!orderData.artistName && (
-                  <Text style={styles.artistName}>By: {orderData.artistName}</Text>
-                )}
-                {typeof orderData.price === "number" && (
-                  <Text style={styles.price}>${orderData.price.toFixed(2)}</Text>
-                )}
-                <Text style={styles.orderDate}>
-                  Order placed: {new Date().toLocaleDateString()}
-                </Text>
-              </View>
-            </View>
-          )}
-
-          {/* Carrier Selection */}
-          <Text style={[styles.sectionTitle, { marginBottom: 10 }]}>Select Carrier</Text>
-          <View style={styles.carrierRow}>
-            {CARRIERS.map((c) => (
-              <CarrierButton
-                key={c}
-                carrier={c}
-                selected={selectedCarrier === c}
-                onPress={() => onSelectCarrier(c)}
-              />
-            ))}
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={KEYBOARD_VERTICAL_OFFSET}
+        style={{ flex: 1 }}
+      >
+        <ScrollView
+          ref={scrollRef}
+          style={styles.container}
+          keyboardShouldPersistTaps="always"
+          keyboardDismissMode="interactive"
+          contentContainerStyle={{ paddingBottom: kbPadding }}
+          // iOS 15+ automatically adjusts for keyboard; harmless on others
+          automaticallyAdjustKeyboardInsets
+        >
+          {/* Header */}
+          <View style={styles.headerContainer}>
+            <TouchableOpacity style={styles.goBackButton} onPress={() => navigation.goBack()}>
+              <Text style={styles.arrow}>←</Text>
+            </TouchableOpacity>
+            <Text style={styles.header}>Submit Tracking Number</Text>
           </View>
 
-          {/* Tracking input */}
-          <View style={{ marginTop: 6 }}>
-            <Text style={[styles.sectionTitle, { marginTop: 10 }]}>Tracking Number</Text>
-            <Text style={styles.instruction}>
-              Enter the tracking number{selectedCarrier ? ` for ${selectedCarrier}` : ""}.
-            </Text>
+          <View style={styles.content}>
+            <View style={styles.spacingBelowHeader} />
+            <Text style={styles.sectionTitle}>Order Details</Text>
 
-            <TextInput
-              style={styles.input}
-              placeholder={placeholderByCarrier}
-              value={trackingNumber}
-              onChangeText={(t) => {
-                const cleaned = t.replace(/[^0-9a-zA-Z- ]/g, "");
-                setTrackingNumber(cleaned);
-                if (errorText) setErrorText("");
-                // Auto-select guessed carrier if none chosen yet
-                const g = guessCarrier(cleaned);
-                if (!selectedCarrier && g) setSelectedCarrier(g);
-              }}
-              autoCapitalize="characters"
-              autoCorrect={false}
-              editable={!isSubmitting}
-              maxLength={35}
-              inputMode="text"
-              returnKeyType="done"
-              onSubmitEditing={handleSubmit}
-            />
-
-            {/* Validity + hint */}
-            <View style={styles.hintsRow}>
-              <View style={{ flexDirection: "row" }}>
-                <View
-                  style={[
-                    styles.validPill,
-                    tnNormalized
-                      ? validByCarrier
-                        ? styles.validOk
-                        : styles.validSoft
-                      : styles.validNeutral,
-                  ]}
-                >
-                  <Text style={styles.validPillText}>
-                    {tnNormalized
-                      ? validByCarrier
-                        ? "Looks valid"
-                        : "Unusual format (ok to submit)"
-                      : "Awaiting number"}
+            {orderData && (
+              <View style={styles.orderCard}>
+                {orderData.imageLink ? (
+                  <Image
+                    source={{ uri: orderData.imageLink }}
+                    style={styles.artworkImage}
+                    resizeMode="cover"
+                  />
+                ) : null}
+                <View style={styles.orderInfo}>
+                  <Text style={styles.artworkTitle}>{orderData.artName || "Artwork"}</Text>
+                  {!!orderData.artistName && (
+                    <Text style={styles.artistName}>By: {orderData.artistName}</Text>
+                  )}
+                  {typeof orderData.price === "number" && (
+                    <Text style={styles.price}>${orderData.price.toFixed(2)}</Text>
+                  )}
+                  <Text style={styles.orderDate}>
+                    Order placed: {new Date().toLocaleDateString()}
                   </Text>
                 </View>
-
-                {!!carrierHint && carrierHint !== selectedCarrier && tnNormalized.length > 0 && (
-                  <View style={styles.hintChip}>
-                    <Text style={styles.hintChipText}>Guessed: {carrierHint}</Text>
-                  </View>
-                )}
               </View>
+            )}
+
+            {/* Carrier Selection */}
+            <Text style={[styles.sectionTitle, { marginBottom: 10 }]}>Select Carrier</Text>
+            <View style={styles.carrierRow}>
+              {CARRIERS.map((c) => (
+                <CarrierButton
+                  key={c}
+                  carrier={c}
+                  selected={selectedCarrier === c}
+                  onPress={() => onSelectCarrier(c)}
+                />
+              ))}
             </View>
 
-            {!!errorText && <Text style={styles.errorText}>{errorText}</Text>}
+            {/* Tracking input with floating label */}
+            <View style={{ marginTop: 6 }}>
+              <Text style={[styles.sectionTitle, { marginTop: 10 }]}>Tracking Number</Text>
+              <Text style={styles.instruction}>
+                Enter the tracking number{selectedCarrier ? ` for ${selectedCarrier}` : ""}.
+              </Text>
 
-            <TouchableOpacity
-              style={[
-                styles.submitButton,
-                (!tnNormalized || isSubmitting) && styles.submitButtonDisabled,
-              ]}
-              onPress={handleSubmit}
-              disabled={!tnNormalized || isSubmitting}
-              activeOpacity={0.85}
-            >
-              {isSubmitting ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={styles.submitButtonText}>Submit</Text>
-              )}
-            </TouchableOpacity>
+              <View
+                style={[
+                  styles.inputWrap,
+                  { borderColor: focused ? inputBrandColor : "#D1D5DB" },
+                ]}
+              >
+                {/* Floating label */}
+                <Text
+                  style={[
+                    styles.floatingLabel,
+                    showFloating ? styles.floatingLabelRaised : null,
+                    { color: focused ? inputBrandColor : "#6B7280" },
+                  ]}
+                >
+                  {placeholderByCarrier}
+                </Text>
+
+                <TextInput
+                  style={styles.input}
+                  value={trackingNumber}
+                  onChangeText={(t) => {
+                    const cleaned = t.replace(/[^0-9a-zA-Z- ]/g, "");
+                    setTrackingNumber(cleaned);
+                    if (errorText) setErrorText("");
+                    const g = guessCarrier(cleaned);
+                    if (!selectedCarrier && g) setSelectedCarrier(g);
+                  }}
+                  autoCapitalize="characters"
+                  autoCorrect={false}
+                  editable={!isSubmitting}
+                  maxLength={35}
+                  inputMode="text"
+                  returnKeyType="done"
+                  onSubmitEditing={handleSubmit}
+                  onFocus={() => {
+                    setFocused(true);
+                    // Single, debounced scroll to keep input visible
+                    setTimeout(scrollOnceToBottom, 50);
+                  }}
+                  onBlur={() => setFocused(false)}
+                  selectionColor={inputBrandColor}
+                  placeholderTextColor="transparent"
+                />
+
+                {/* Clear button */}
+                {trackingNumber.length > 0 && !isSubmitting && (
+                  <TouchableOpacity
+                    onPress={() => setTrackingNumber("")}
+                    style={styles.clearBtn}
+                    hitSlop={{ top: 8, left: 8, right: 8, bottom: 8 }}
+                  >
+                    <Text style={styles.clearBtnText}>×</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
+
+              {/* Validity + hint */}
+              <View style={styles.hintsRow}>
+                <View style={{ flexDirection: "row" }}>
+                  <View
+                    style={[
+                      styles.validPill,
+                      tnNormalized
+                        ? validByCarrier
+                          ? styles.validOk
+                          : styles.validSoft
+                        : styles.validNeutral,
+                    ]}
+                  >
+                    <Text style={styles.validPillText}>
+                      {tnNormalized
+                        ? validByCarrier
+                          ? "Looks valid"
+                          : "Unusual format (ok to submit)"
+                        : "Awaiting number"}
+                    </Text>
+                  </View>
+
+                  {!!carrierHint && carrierHint !== selectedCarrier && tnNormalized.length > 0 && (
+                    <View style={styles.hintChip}>
+                      <Text style={styles.hintChipText}>Guessed: {carrierHint}</Text>
+                    </View>
+                  )}
+                </View>
+              </View>
+
+              {!!errorText && <Text style={styles.errorText}>{errorText}</Text>}
+
+              <TouchableOpacity
+                style={[
+                  styles.submitButton,
+                  (!tnNormalized || isSubmitting) && styles.submitButtonDisabled,
+                ]}
+                onPress={handleSubmit}
+                disabled={!tnNormalized || isSubmitting}
+                activeOpacity={0.85}
+              >
+                {isSubmitting ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <Text style={styles.submitButtonText}>Submit</Text>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </ScreenTemplate>
   );
 };
@@ -371,32 +450,40 @@ const styles = StyleSheet.create({
   logoSmall: { width: 28, height: 28, marginRight: 8 },
   carrierLabel: { fontSize: 14, fontWeight: "800", letterSpacing: 0.2 },
 
-  // Tracking input
-  instruction: { fontSize: 14, color: "#666", marginBottom: 10, lineHeight: 20 },
-  input: {
+  // Floating input wrapper
+  inputWrap: {
+    position: "relative",
     backgroundColor: "#F9FAFB",
-    borderColor: "#D1D5DB",
     borderWidth: 1,
     borderRadius: 10,
-    marginTop: -20,
-    paddingVertical: 15,
-    paddingHorizontal: 16,
+    marginTop: 0, // no overlap
+  },
+  floatingLabel: {
+    position: "absolute",
+    left: 14,
+    top: 16,
     fontSize: 16,
-    marginBottom: 8,
+    zIndex: 1,
+  },
+  floatingLabelRaised: {
+    top: 6,
+    fontSize: 12,
+    opacity: 0.9,
+  },
+  input: {
+    paddingTop: 24, // extra for label
+    paddingBottom: 14,
+    paddingHorizontal: 14,
+    fontSize: 16,
     color: "#1E2A3A",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
   },
 
   // Hints / validation
-  hintsRow: { minHeight: 28, marginBottom: 4, flexDirection: "row", alignItems: "center" },
+  hintsRow: { minHeight: 28, marginTop: 6, marginBottom: 4, flexDirection: "row", alignItems: "center" },
   validPill: { paddingVertical: 6, paddingHorizontal: 10, borderRadius: 999, marginRight: 8 },
   validNeutral: { backgroundColor: "#E5E7EB" },
   validOk: { backgroundColor: "#D1FAE5" },
-  validSoft: { backgroundColor: "#FEF3C7" }, // warning (not blocking)
+  validSoft: { backgroundColor: "#FEF3C7" },
   validPillText: { fontSize: 11, fontWeight: "700", color: "#111827" },
   hintChip: {
     backgroundColor: "#E9EEF5",
@@ -423,6 +510,18 @@ const styles = StyleSheet.create({
   },
   submitButtonDisabled: { backgroundColor: "#A7B0B9" },
   submitButtonText: { color: "white", fontSize: 16, fontWeight: "600", letterSpacing: 0.5 },
+
+  clearBtn: {
+    position: "absolute",
+    right: 10,
+    top: 10,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  clearBtnText: { fontSize: 22, lineHeight: 22, color: "#9CA3AF" },
 });
 
 export default SubmitTrackingNumber;
