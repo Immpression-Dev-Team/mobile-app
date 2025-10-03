@@ -24,6 +24,18 @@ export default function OrderScreen({ navigation }) {
   const [error, setError] = useState("");
 
   // ---- helpers ----
+  // BACKEND RETURNS CENTS → convert to dollars for display
+  const fromCents = (c) =>
+    typeof c === "number" && Number.isFinite(c) ? c / 100 : 0;
+
+  // Prefer canonical baseAmount (cents), fall back to legacy price (cents)
+  const getDisplayBaseUSD = (o) => {
+    if (typeof o?.baseAmount === "number") return fromCents(o.baseAmount);
+    if (typeof o?.price === "number") return fromCents(o.price);
+    // some responses might nest amounts; add more fallbacks here if needed
+    return 0;
+  };
+
   const fmtMoney = (n) => {
     const num = Number(n || 0);
     return `$${num.toFixed(2)}`;
@@ -139,7 +151,8 @@ export default function OrderScreen({ navigation }) {
           id: o._id || o.id,
           title: o.artName || o.artworkTitle || "Artwork",
           artistName: o.artistName || "Unknown",
-          price: o.price || 0,
+          // 🔑 display dollars derived from cents:
+          price: getDisplayBaseUSD(o),
           date: o.createdAt || o.orderDate,
           orderStatus: highStatus, // high-level
           image: o.imageLink || o.imageUrl || null,
@@ -156,7 +169,7 @@ export default function OrderScreen({ navigation }) {
               }
             : null,
 
-          // NEW: poll info
+          // poll info
           lastChecked: shipping.lastPolledAt || null,
           nextCheck: shipping.nextPollAt || null,
         };
@@ -171,7 +184,8 @@ export default function OrderScreen({ navigation }) {
           id: o._id || o.id,
           title: o.artName || o.artworkTitle || "Artwork",
           artistName: o.buyerName || "Customer", // For seller view, show buyer name
-          price: o.price || 0,
+          // 🔑 display dollars derived from cents:
+          price: getDisplayBaseUSD(o),
           date: o.createdAt || o.orderDate,
           orderStatus: mapHighLevelStatus(tracking.shipmentStatus || o.status), // Use shipmentStatus from tracking
           image: o.imageLink || o.imageUrl || null,
@@ -182,7 +196,7 @@ export default function OrderScreen({ navigation }) {
           deliveredAt: tracking.deliveredAt || null,
           trackingEvents: tracking.trackingEvents || [],
 
-          // NEW: poll info
+          // poll info
           lastChecked: tracking.lastPolledAt || null,
           nextCheck: tracking.nextPollAt || null,
         };
@@ -383,7 +397,7 @@ export default function OrderScreen({ navigation }) {
                     orderId: order.id,
                     artName: order.title,
                     artistName: order.artistName,
-                    price: order.price,
+                    price: order.price, // dollars for that screen
                     imageLink: order.image,
                   },
                 })
