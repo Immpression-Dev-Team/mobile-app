@@ -2,7 +2,10 @@
   "expo": {
     "name": "Immpression",
     "slug": "Immpression",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/Logo_T.png",
@@ -29,7 +32,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.immpression.artapp",
-      "versionCode": 18,
+      "versionCode": 20,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4"
