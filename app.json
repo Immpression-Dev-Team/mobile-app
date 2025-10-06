@@ -32,7 +32,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.immpression.artapp",
-      "versionCode": 20,
+      "versionCode": 21,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4"

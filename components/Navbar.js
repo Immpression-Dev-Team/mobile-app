@@ -15,7 +15,7 @@ import { useNotifications } from "../utils/useNotifications";
 import { useAuth } from "../state/AuthProvider";
 
 export default function Navbar() {
-  console.log("NAVBAR RENDERING"); // Basic test to see if component renders
+  console.log("NAVBAR RENDERING");
   const navigation = useNavigation();
   const [showSearch, setShowSearch] = useState(false);
   const [showNavItems, setShowNavItems] = useState(false);
@@ -38,11 +38,11 @@ export default function Navbar() {
     refreshing,
     loadingMore,
   } = useNotifications(token);
-  
+
   console.log("🔔 Navbar notifications state:", {
     count: notifications.length,
     unreadCount,
-    token: token ? "Present" : "Missing"
+    token: token ? "Present" : "Missing",
   });
 
   // When opening the dropdown, refresh latest
@@ -111,7 +111,6 @@ export default function Navbar() {
           navigation.navigate("OrderDetails", { orderId: n.orderId });
           break;
         default:
-          // Generic notifications can be handled here if you have a screen
           break;
       }
     } finally {
@@ -154,9 +153,7 @@ export default function Navbar() {
             <Icon name="notifications" size={26} color="black" />
             {unreadCount > 0 && (
               <View style={styles.badge}>
-                <Text style={styles.badgeText}>
-                  {unreadCount > 9 ? "9+" : unreadCount}
-                </Text>
+                <Text style={styles.badgeText}>{unreadCount > 9 ? "9+" : unreadCount}</Text>
               </View>
             )}
           </Pressable>
@@ -183,12 +180,14 @@ export default function Navbar() {
           },
         ]}
       >
+        {/*
         <Pressable onPress={() => navigation.navigate("Statistics")} style={styles.navItem}>
           <Icon name="equalizer" size={24} color="black" />
         </Pressable>
         <Pressable onPress={handleOpenSearch} style={styles.navItem}>
           <Icon name="search" size={24} color="black" />
         </Pressable>
+        */}
         <Pressable onPress={() => navigation.navigate("Settings")} style={styles.navItem}>
           <Icon name="settings" size={24} color="black" />
         </Pressable>

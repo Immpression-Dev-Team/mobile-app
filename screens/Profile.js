@@ -1,3 +1,4 @@
+// screens/Profile.jsx
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -17,7 +18,6 @@ import {
   fetchLikedImages,
   getBio,
   getArtistType,
-  // ⬇️ new authenticated helpers you added in API.js
   createStripeAccount,
   checkStripeStatus as checkStripeStatusApi,
 } from "../API/API";
@@ -57,8 +57,13 @@ const Profile = () => {
       try {
         if (isOwnProfile) {
           const profile = await getUserProfile(token);
-          setProfileName(profile?.user?.name || "");
-          setViewsCount(profile?.user?.views || 0);
+          const u = profile?.user || {};
+          setProfileName(u?.name || "");
+          setViewsCount(u?.views || 0);
+          // include own profile picture if provided by backend
+          if (u?.profilePictureLink) {
+            setProfilePicture(u.profilePictureLink);
+          }
 
           const [bioRes, artistRes] = await Promise.all([
             getBio(token),
@@ -95,7 +100,7 @@ const Profile = () => {
         const likedImgsRes = await fetchLikedImages(token);
         setLikedImages(likedImgsRes?.images || []);
 
-        setBoughtImages([]); // hook up real logic if needed
+        setBoughtImages([]); // hook real logic if needed
       } catch (err) {
         console.error("Error loading images:", err);
       }
@@ -125,16 +130,10 @@ const Profile = () => {
         userName: profileName,
         userEmail: userData?.user?.user?.email,
       };
-
-      // Authenticated helper (sends Authorization header)
       const res = await createStripeAccount(payload, token);
-
-      // backend returns { success, data: accountLink, user, message }
       const url = res?.data?.url;
       if (url) {
         await WebBrowser.openBrowserAsync(url);
-        // You may choose to poll here or let the user tap a button later
-        // to re-check their onboarding status.
       }
     } catch (error) {
       console.error("Error creating Stripe account:", error?.response?.data || error);
@@ -225,12 +224,15 @@ const Profile = () => {
             <Text style={styles.artistType}>{artistType}</Text>
           </View>
 
-          <View style={styles.profilePicWrapper}>
+          {/* Block touches when not own profile + pass editable flag */}
+          <View
+            style={styles.profilePicWrapper}
+            pointerEvents={isOwnProfile ? "auto" : "none"}
+          >
             <ProfilePic
-              source={
-                !isOwnProfile && profilePicture ? { uri: profilePicture } : null
-              }
+              source={profilePicture ? { uri: profilePicture } : null}
               name={profileName}
+              editable={isOwnProfile}     // ← only owner can change it
             />
           </View>
 
@@ -370,12 +372,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  sectionHeader: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: 12,
-  },
   folderRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -459,10 +455,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
     maxWidth: 180,
-  },
-  stripeLinkedIcon: {
-    fontSize: 16,
-    marginRight: 6,
   },
   stripeLinkedText: {
     color: "#FFFFFF",
