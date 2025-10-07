@@ -25,74 +25,96 @@ const screenWidth = Dimensions.get("window").width;
 
 const filterTypes = [
   { label: "Selling", value: "selling" },
-  { label: "Sold", value: "sold" },
-  { label: "Bought", value: "bought" },
   { label: "Liked", value: "liked" },
 ];
 
+// small helpers (UI-only)
+const withOverlayFields = (raw, { fallbackArtist }) => {
+  const img = raw.image || raw.imageDoc || raw;
+  return {
+    ...raw, // keep everything for ImageScreen
+    title: raw.title || img.title || raw.name || img.name || "Untitled",
+    artistName:
+      raw.artistName ||
+      img.artistName ||
+      raw?.artist?.name ||
+      img?.artist?.name ||
+      raw.sellerName ||
+      raw?.user?.name ||
+      fallbackArtist ||
+      "Unknown Artist",
+  };
+};
+
 const GalleryView = ({ route }) => {
-  const initialType = route.params.type;
+  const initialType = route?.params?.type === "liked" ? "liked" : "selling";
   const { userData } = useAuth();
   const token = userData?.token;
   const navigation = useNavigation();
-  const currentUserId = userData?.user?.user?._id;
+  const currentUserName = userData?.user?.user?.name;
 
   const [images, setImages] = useState([]);
   const [activeType, setActiveType] = useState(initialType);
 
-  useEffect(() => {
-    const fetchImages = async () => {
-      if (!token) return;
-
-      try {
-        if (activeType === "liked") {
-          const likedImgsRes = await fetchLikedImages(token);
-          setImages(likedImgsRes?.images || []);
-        } else {
-          const res = await getUserImages(token);
-          setImages(
-            res.images.filter((img) => {
-              if (activeType === "selling") return img.stage === "approved";
-              if (activeType === "sold") return img.stage === "sold";
-              if (activeType === "bought") return false; // Update later when logic exists
-            })
-          );
-        }
-      } catch (err) {
-        console.error("Error fetching gallery images:", err);
-      }
-    };
-
-    fetchImages();
-    if (activeType === "bought") fetchBoughtImages();
-  }, [activeType, token]);
-
-  const fetchBoughtImages = async () => {
+  // detail fetch for selling enrichment
+  const fetchImageById = async (id) => {
     try {
-      const res = await axios.get(`${API_URL}/orders`);
-      setImages(
-        res.data.data.filter((order) => order.userId === currentUserId)
-      );
-    } catch (error) {
-      console.error("Error fetching bought images:", error);
+      const res = await axios.get(`${API_URL}/image/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // backend returns { ...fields } (not wrapped); standardize:
+      return res.data?.image ? res.data.image : res.data;
+    } catch (e) {
+      console.warn("fetchImageById failed for", id, e?.response?.data || e?.message);
+      return null;
     }
   };
 
+  useEffect(() => {
+    if (!token) return;
+
+    (async () => {
+      try {
+        if (activeType === "liked") {
+          const liked = await fetchLikedImages(token);
+          const list = Array.isArray(liked?.images) ? liked.images : [];
+          const enriched = list.map((it) =>
+            withOverlayFields(it, { fallbackArtist: undefined })
+          );
+          setImages(enriched);
+        } else {
+          // SELLING: minimal -> enrich each with /image/:id
+          const res = await getUserImages(token);
+          const mine = Array.isArray(res?.images) ? res.images : [];
+          const selling = mine.filter((img) => img.stage === "approved");
+
+          const enriched = await Promise.all(
+            selling.map(async (s) => {
+              const detail = await fetchImageById(s._id);
+              // merge minimal + detail (detail wins), then add overlay fields
+              const merged = { ...s, ...(detail || {}) };
+              return withOverlayFields(merged, { fallbackArtist: currentUserName });
+            })
+          );
+
+          setImages(enriched.filter(Boolean));
+        }
+      } catch (err) {
+        console.error("Error fetching gallery images:", err?.message || err);
+        setImages([]);
+      }
+    })();
+  }, [activeType, token, currentUserName]);
+
   const handleImagePress = async (image, index) => {
     try {
-      await incrementImageViews(image._id, token);
+      if (image?._id) await incrementImageViews(image._id, token);
     } catch (err) {
       console.error("Error incrementing image views:", err);
     } finally {
-      const normalizedImages = images.map((img) => ({
-        ...img,
-        artist: {
-          name: img?.artist?.name || img?.artistName || "Unknown Artist",
-        },
-      }));
-
+      // 🚫 do NOT remap/strip fields — pass them through completely
       navigation.navigate("ImageScreen", {
-        images: normalizedImages,
+        images,                // full enriched objects
         initialIndex: index,
       });
     }
@@ -103,8 +125,8 @@ const GalleryView = ({ route }) => {
 
     const handlePressIn = () => {
       Animated.spring(scaleAnim, {
-        toValue: 0.95,
-        friction: 5,
+        toValue: 0.97,
+        friction: 6,
         useNativeDriver: true,
       }).start();
     };
@@ -112,10 +134,15 @@ const GalleryView = ({ route }) => {
     const handlePressOut = () => {
       Animated.spring(scaleAnim, {
         toValue: 1,
-        friction: 5,
+        friction: 6,
         useNativeDriver: true,
       }).start();
     };
+
+    const isSold =
+      String(item?.soldStatus || "").toLowerCase() === "sold" ||
+      item?.stage === "sold" ||
+      item?.isSold;
 
     return (
       <TouchableOpacity
@@ -127,17 +154,24 @@ const GalleryView = ({ route }) => {
         <Animated.View
           style={[styles.cardContainer, { transform: [{ scale: scaleAnim }] }]}
         >
+          {isSold && (
+            <View style={styles.ribbon}>
+              <Text style={styles.ribbonText}>SOLD</Text>
+            </View>
+          )}
+
           <Image
             source={{ uri: item.imageLink }}
             style={styles.cardImage}
             resizeMode="cover"
           />
-          <View style={styles.cardInfo}>
+
+          <View style={styles.cardInfoOverlay}>
             <Text style={styles.artTitle} numberOfLines={1}>
               {item.title}
             </Text>
             <Text style={styles.artArtist} numberOfLines={1}>
-              {item.artist?.name || item.artistName || "Unknown Artist"}
+              {item.artistName}
             </Text>
           </View>
         </Animated.View>
@@ -149,40 +183,34 @@ const GalleryView = ({ route }) => {
     <ScreenTemplate>
       <View style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}
-          >
-            <Ionicons name="arrow-back" size={24} color="black" />
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <Ionicons name="arrow-back" size={22} color="#111" />
           </TouchableOpacity>
           <View>
             <Text style={styles.title}>
               {filterTypes.find((f) => f.value === activeType).label}
             </Text>
-            <Text style={styles.count}>{images.length} images</Text>
+            <Text style={styles.count}>
+              {images.length} {images.length === 1 ? "image" : "images"}
+            </Text>
           </View>
         </View>
 
         <View style={styles.filterContainer}>
-          {filterTypes.map((filter) => (
-            <TouchableOpacity
-              key={filter.value}
-              style={[
-                styles.filterButton,
-                activeType === filter.value && styles.filterButtonActive,
-              ]}
-              onPress={() => setActiveType(filter.value)}
-            >
-              <Text
-                style={[
-                  styles.filterText,
-                  activeType === filter.value && styles.filterTextActive,
-                ]}
+          {filterTypes.map((filter) => {
+            const active = activeType === filter.value;
+            return (
+              <TouchableOpacity
+                key={filter.value}
+                style={[styles.filterButton, active && styles.filterButtonActive]}
+                onPress={() => setActiveType(filter.value)}
               >
-                {filter.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text style={[styles.filterText, active && styles.filterTextActive]}>
+                  {filter.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </View>
 
         {images.length === 0 ? (
@@ -190,10 +218,11 @@ const GalleryView = ({ route }) => {
         ) : (
           <FlatList
             data={images}
-            keyExtractor={(item) => item._id}
+            keyExtractor={(item, i) => String(item._id || item.imageLink || i)}
             numColumns={2}
             contentContainerStyle={styles.gallery}
             renderItem={RenderItem}
+            showsVerticalScrollIndicator={false}
           />
         )}
       </View>
@@ -202,127 +231,70 @@ const GalleryView = ({ route }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 20,
-    paddingHorizontal: 5,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    marginBottom: 1,
-  },
+  container: { flex: 1, paddingTop: 20, paddingHorizontal: 8 },
+  header: { flexDirection: "row", alignItems: "center", marginBottom: 8 },
   backButton: {
-    padding: 5,
+    padding: 6,
+    borderRadius: 10,
+    backgroundColor: "#F2F2F2",
+    marginRight: 8,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#333",
-    marginLeft: 10,
-  },
-  count: {
-    fontSize: 14,
-    color: "#777",
-    marginLeft: 10,
-  },
+  title: { fontSize: 20, fontWeight: "700", color: "#222" },
+  count: { fontSize: 12, color: "#777", marginTop: 2 },
   filterContainer: {
     flexDirection: "row",
-    alignSelf: "stretch", // Stretch horizontally
-    marginTop: 15,
-    marginHorizontal: 12,
-    borderRadius: 2,
+    alignSelf: "stretch",
+    marginTop: 12,
+    marginHorizontal: 6,
+    borderRadius: 12,
+    backgroundColor: "#F7F7F8",
     overflow: "hidden",
-    backgroundColor: "#f1f3f5",
-  },
-
-  filterButton: {
-    flex: 1, // Make buttons evenly stretch across the container
-    paddingVertical: 8,
-    alignItems: "center",
-    justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#ddd",
+    borderColor: "#E8E8EA",
   },
-
-  filterButtonActive: {
-    backgroundColor: "#333",
-    borderColor: "#333",
-    shadowColor: "#000",
-    shadowOffset: { width: 1, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 3,
-    elevation: 3, // Android shadow
-  },
-
-  filterText: {
-    color: "#333",
-    fontSize: 13,
-  },
-  filterTextActive: {
-    color: "white",
-    fontWeight: "bold",
-  },
-  gallery: {
-    alignItems: "center",
-    paddingBottom: 50,
-  },
-  imageWrapper: {
-    width: screenWidth / 2 - 20,
-    height: 200,
-    marginHorizontal: 3,
-    marginTop: 5,
-    backgroundColor: "#eee",
-    shadowColor: "#000",
-    shadowOffset: { width: 2, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  image: {
-    width: "100%",
-    height: "100%",
-  },
-  emptyText: {
-    textAlign: "center",
-    marginTop: 40,
-    color: "#888",
-    fontSize: 16,
-  },
+  filterButton: { flex: 1, paddingVertical: 10, alignItems: "center", justifyContent: "center" },
+  filterButtonActive: { backgroundColor: "#333" },
+  filterText: { color: "#444", fontSize: 12, letterSpacing: 0.2, fontWeight: "600" },
+  filterTextActive: { color: "#fff" },
+  gallery: { paddingBottom: 50 },
   cardContainer: {
-    width: screenWidth / 2 - 20,
+    width: screenWidth / 2 - 16,
     backgroundColor: "#fff",
-    marginHorizontal: 5,
+    marginHorizontal: 4,
     marginVertical: 10,
-    borderRadius: 6,
+    borderRadius: 12,
+    overflow: "hidden",
+    borderWidth: 1,
+    borderColor: "#EEE",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 6,
+    shadowOpacity: 0.12,
+    shadowRadius: 5,
+    elevation: 4,
   },
-
-  cardImage: {
-    width: "100%",
-    height: 150,
-  },
-
-  cardInfo: {
-    paddingVertical: 5,
+  cardImage: { width: "100%", height: 180 },
+  cardInfoOverlay: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    paddingVertical: 8,
     paddingHorizontal: 8,
+    backgroundColor: "rgba(0,0,0,0.28)",
   },
-
-  artTitle: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#333",
+  artTitle: { fontSize: 13, fontWeight: "700", color: "#fff" },
+  artArtist: { fontSize: 11, color: "#EDEDED", marginTop: 2 },
+  ribbon: {
+    position: "absolute",
+    top: 8,
+    left: 8,
+    zIndex: 2,
+    backgroundColor: "#FF5A5F",
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 6,
   },
-
-  artArtist: {
-    fontSize: 12,
-    color: "#777",
-  },
+  ribbonText: { color: "#fff", fontSize: 10, fontWeight: "800", letterSpacing: 0.5 },
 });
 
 export default GalleryView;

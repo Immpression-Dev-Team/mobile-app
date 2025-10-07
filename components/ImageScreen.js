@@ -33,6 +33,77 @@ const { width, height } = Dimensions.get("window");
 const H_PADDING = 16;
 const IMAGE_HEIGHT = Math.min(360, Math.max(260, height * 0.45));
 
+/** Normalize any incoming shape (liked, selling, order-mapped, etc.) into a consistent object */
+const resolveItem = (raw = {}) => {
+  const nest = raw.image || raw.imageDoc || {};
+  const imageLink = raw.imageLink || nest.imageLink || raw.uri;
+
+  const name =
+    raw.name ||
+    raw.title ||
+    nest.name ||
+    nest.title ||
+    "Untitled";
+
+  const artistName =
+    raw.artistName ||
+    raw?.artist?.name ||
+    nest.artistName ||
+    nest?.artist?.name ||
+    raw.sellerName ||
+    raw?.user?.name ||
+    "Unknown Artist";
+
+  const price =
+    typeof raw.price === "number"
+      ? raw.price
+      : typeof nest.price === "number"
+      ? nest.price
+      : undefined;
+
+  const category = raw.category || nest.category;
+  const views =
+    typeof raw.views === "number"
+      ? raw.views
+      : typeof nest.views === "number"
+      ? nest.views
+      : 0;
+
+  const userId = raw.userId || nest.userId || raw?.user?._id;
+
+  const dimensions = raw.dimensions || nest.dimensions || null;
+  const weight =
+    typeof raw.weight === "number"
+      ? raw.weight
+      : typeof nest.weight === "number"
+      ? nest.weight
+      : undefined;
+
+  const soldStatus = raw.soldStatus || nest.soldStatus;
+  const stage = raw.stage || nest.stage;
+  const isSold =
+    !!raw.isSold ||
+    String(soldStatus || "").toLowerCase() === "sold" ||
+    stage === "sold";
+
+  const id = raw._id || nest._id;
+
+  return {
+    _id: id,
+    imageLink,
+    name,
+    artistName,
+    price,
+    category,
+    views,
+    userId,
+    dimensions,
+    weight,
+    isSold,
+    likes: raw.likes, // keep if present
+  };
+};
+
 const ImageScreen = ({ route, navigation }) => {
   const { images = [], initialIndex = 0 } = route.params || {};
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
@@ -49,22 +120,25 @@ const ImageScreen = ({ route, navigation }) => {
   const scrollHintOpacity = useRef(new Animated.Value(1)).current;
   const [shownScrollHint, setShownScrollHint] = useState(true);
 
-  useEffect(() => {
-    const userId = images[currentIndex]?.userId;
-    if (!userId || !token) return;
-    fetchUserProfilePicture(userId, token)
-      .then(setProfilePicture)
-      .catch(() => setProfilePicture(null));
-  }, [currentIndex, token, images]);
+  // Resolve the currently visible item into a consistent shape
+  const active = resolveItem(images[currentIndex] || {});
 
   useEffect(() => {
-    const id = images[currentIndex]?._id;
-    if (!id || !token) return;
+    if (!active.userId || !token) return;
+    fetchUserProfilePicture(active.userId, token)
+      .then(setProfilePicture)
+      .catch(() => setProfilePicture(null));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active.userId, token, currentIndex]);
+
+  useEffect(() => {
+    if (!active._id || !token) return;
     (async () => {
-      await handleFetchLikeData(id);
+      await handleFetchLikeData(active._id);
       await handleViewIncrement(currentIndex);
     })();
-  }, [currentIndex, token, images]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [active._id, token, currentIndex]);
 
   const handleFetchLikeData = async (imageId) => {
     try {
@@ -76,17 +150,18 @@ const ImageScreen = ({ route, navigation }) => {
 
   const handleToggleLike = async () => {
     try {
-      const data = await toggleLike(images[currentIndex]?._id, token);
+      if (!active._id) return;
+      const data = await toggleLike(active._id, token);
       setLikes(Number(data?.likesCount || 0));
       setHasLiked(!!data?.hasLiked);
     } catch {}
   };
 
   const handleViewIncrement = async (index) => {
-    const img = images[index];
-    if (!img?._id || !token) return;
+    const target = resolveItem(images[index] || {});
+    if (!target._id || !token) return;
     try {
-      await incrementImageViews(img._id, token);
+      await incrementImageViews(target._id, token);
     } catch {}
   };
 
@@ -133,25 +208,20 @@ const ImageScreen = ({ route, navigation }) => {
     }
   };
 
-  const item = images[currentIndex] || {};
   const priceDisplay =
-    typeof item?.price === "number" ? `$${item.price.toFixed(2)}` : "N/A";
+    typeof active.price === "number" ? `$${active.price.toFixed(2)}` : "N/A";
 
-  // Use the backend flag as the single source of truth
-  const isSold = !!item?.isSold;
-
-  // ---- formatted details ----
-  const dims = item?.dimensions || null;
+  // dims/weight text
+  const dims = active.dimensions || null;
   const dimsText =
     dims && (dims.height || dims.width || dims.length)
       ? `H: ${dims.height ?? "—"} x W: ${dims.width ?? "—"} x L: ${dims.length ?? "—"} in`
       : "Not specified";
-
   const weightText =
-    typeof item?.weight === "number"
-      ? `${item.weight} lb`
-      : item?.weight
-      ? String(item.weight)
+    typeof active.weight === "number"
+      ? `${active.weight} lb`
+      : active.weight
+      ? String(active.weight)
       : "Not specified";
 
   const showLeft = currentIndex > 0;
@@ -176,10 +246,10 @@ const ImageScreen = ({ route, navigation }) => {
               )}
               <View style={{ marginLeft: 10 }}>
                 <Text style={styles.artistName}>
-                  {item?.artistName || "Unknown Artist"}
+                  {active.artistName || "Unknown Artist"}
                 </Text>
                 <Text style={styles.artistCategory}>
-                  {item?.category || "No Category"}
+                  {active.category || "No Category"}
                 </Text>
               </View>
             </View>
@@ -187,12 +257,12 @@ const ImageScreen = ({ route, navigation }) => {
             <View style={styles.statsRow}>
               <View style={styles.statPill}>
                 <Text style={styles.statEmoji}>👁</Text>
-                <Text style={styles.statText}>{item?.views || 0}</Text>
+                <Text style={styles.statText}>{active.views || 0}</Text>
               </View>
               <View style={styles.statPill}>
                 <Text style={styles.statEmoji}>❤️</Text>
                 <Text style={styles.statText}>
-                  {Array.isArray(item?.likes) ? item.likes.length : likes}
+                  {Array.isArray(active.likes) ? active.likes.length : likes}
                 </Text>
               </View>
             </View>
@@ -203,7 +273,7 @@ const ImageScreen = ({ route, navigation }) => {
             <FlatList
               ref={flatListRef}
               data={images}
-              keyExtractor={(it, idx) => it?._id || String(idx)}
+              keyExtractor={(it, idx) => resolveItem(it)?._id || String(idx)}
               horizontal
               pagingEnabled
               nestedScrollEnabled
@@ -219,27 +289,30 @@ const ImageScreen = ({ route, navigation }) => {
               overScrollMode="never"
               onMomentumScrollEnd={onMomentumScrollEnd}
               onScrollToIndexFailed={onScrollToIndexFailed}
-              renderItem={({ item: it }) => (
-                <View style={styles.imageSlide}>
-                  {it?.imageLink ? (
-                    <>
-                      <Pressable onPress={() => setEnlarged(true)}>
-                        <Image source={{ uri: it.imageLink }} style={styles.image} />
-                      </Pressable>
+              renderItem={({ item: it }) => {
+                const r = resolveItem(it);
+                return (
+                  <View style={styles.imageSlide}>
+                    {r.imageLink ? (
+                      <>
+                        <Pressable onPress={() => setEnlarged(true)}>
+                          <Image source={{ uri: r.imageLink }} style={styles.image} />
+                        </Pressable>
 
-                      <TouchableOpacity
-                        style={styles.fabEnlarge}
-                        onPress={() => setEnlarged(true)}
-                        activeOpacity={0.85}
-                      >
-                        <Image source={enlargeIcon} style={styles.fabEnlargeIcon} />
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <Text style={{ color: "#c00" }}>Image not available</Text>
-                  )}
-                </View>
-              )}
+                        <TouchableOpacity
+                          style={styles.fabEnlarge}
+                          onPress={() => setEnlarged(true)}
+                          activeOpacity={0.85}
+                        >
+                          <Image source={enlargeIcon} style={styles.fabEnlargeIcon} />
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <Text style={{ color: "#c00" }}>Image not available</Text>
+                    )}
+                  </View>
+                );
+              }}
             />
 
             {showLeft && (
@@ -285,9 +358,11 @@ const ImageScreen = ({ route, navigation }) => {
           {/* Title / description / like */}
           <View style={styles.cardFooter}>
             <View style={{ flex: 1, marginRight: 12 }}>
-              <Text style={styles.artTitle}>{item?.name || "Untitled"}</Text>
+              <Text style={styles.artTitle}>{active.name}</Text>
               <Text style={styles.description} numberOfLines={5} ellipsizeMode="tail">
-                {item?.description || "No description available."}
+                {images[currentIndex]?.description ||
+                  images[currentIndex]?.image?.description ||
+                  "No description available."}
               </Text>
             </View>
 
@@ -309,7 +384,7 @@ const ImageScreen = ({ route, navigation }) => {
               <Text style={styles.priceText}>{priceDisplay}</Text>
             </View>
 
-            {isSold ? (
+            {active.isSold ? (
               <View style={[styles.buyNowButton, styles.soldButton]} pointerEvents="none">
                 <Text style={styles.soldText}>SOLD</Text>
               </View>
@@ -317,13 +392,13 @@ const ImageScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 style={styles.buyNowButton}
                 onPress={() => {
-                  if (isSold) return; // safety guard in case item flipped to sold
+                  if (active.isSold) return;
                   navigation.navigate("DeliveryDetails", {
-                    imageId: item?._id,
-                    artName: item?.name,
-                    imageLink: item?.imageLink,
-                    artistName: item?.artistName,
-                    price: item?.price,
+                    imageId: active._id,
+                    artName: active.name,
+                    imageLink: active.imageLink,
+                    artistName: active.artistName,
+                    price: active.price,
                   });
                 }}
                 activeOpacity={0.9}
@@ -334,7 +409,7 @@ const ImageScreen = ({ route, navigation }) => {
             )}
           </View>
 
-          {/* Details section */}
+          {/* Details */}
           <View style={styles.detailsCard}>
             <Text style={styles.detailsTitle}>Artwork Details</Text>
 
@@ -350,12 +425,16 @@ const ImageScreen = ({ route, navigation }) => {
 
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Signed</Text>
-              <Text style={styles.detailValue}>{item?.isSigned ? "Yes" : "No"}</Text>
+              <Text style={styles.detailValue}>
+                {images[currentIndex]?.isSigned ?? images[currentIndex]?.image?.isSigned ? "Yes" : "No"}
+              </Text>
             </View>
 
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Framed</Text>
-              <Text style={styles.detailValue}>{item?.isFramed ? "Yes" : "No"}</Text>
+              <Text style={styles.detailValue}>
+                {images[currentIndex]?.isFramed ?? images[currentIndex]?.image?.isFramed ? "Yes" : "No"}
+              </Text>
             </View>
           </View>
 
@@ -396,7 +475,9 @@ const ImageScreen = ({ route, navigation }) => {
               <Text style={styles.enlargeCloseText}>✕</Text>
             </TouchableOpacity>
 
-            <Image source={{ uri: item?.imageLink }} style={styles.enlargedImage} />
+            {!!active.imageLink && (
+              <Image source={{ uri: active.imageLink }} style={styles.enlargedImage} />
+            )}
           </Pressable>
         </Modal>
       </View>
@@ -406,7 +487,6 @@ const ImageScreen = ({ route, navigation }) => {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: "#F7F7FA" },
-
   cardHeader: {
     marginHorizontal: H_PADDING - 4,
     marginTop: 8,
@@ -455,7 +535,6 @@ const styles = StyleSheet.create({
   },
   statEmoji: { marginRight: 6 },
   statText: { fontSize: 12, fontWeight: "700", color: "#111827" },
-
   carouselWrap: { marginHorizontal: 8, marginBottom: 8 },
   imageSlide: { width, alignItems: "center" },
   image: {
@@ -483,7 +562,6 @@ const styles = StyleSheet.create({
     elevation: 20,
   },
   fabEnlargeIcon: { width: 20, height: 20, tintColor: "#fff" },
-
   swipeLeft: {
     position: "absolute",
     left: 0,
@@ -521,7 +599,6 @@ const styles = StyleSheet.create({
     paddingRight: 6,
   },
   swipeChevron: { fontSize: 32, color: "#fff", fontWeight: "700", marginHorizontal: 8 },
-
   cardFooter: {
     marginTop: 6,
     marginHorizontal: H_PADDING - 4,
@@ -564,7 +641,6 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.6,
   },
-
   purchaseCard: {
     marginTop: 12,
     marginHorizontal: H_PADDING - 4,
@@ -607,13 +683,7 @@ const styles = StyleSheet.create({
   },
   buyNowIcon: { width: 18, height: 18, tintColor: "#fff", marginRight: 8 },
   buyNowText: { color: "#fff", fontWeight: "800", letterSpacing: 0.6, fontSize: 14 },
-
-  // SOLD variant
-  soldButton: {
-    backgroundColor: "#B91C1C",
-    borderColor: "#7F1D1D",
-    borderWidth: 1,
-  },
+  soldButton: { backgroundColor: "#B91C1C", borderColor: "#7F1D1D", borderWidth: 1 },
   soldText: {
     color: "#fff",
     fontWeight: "900",
@@ -621,7 +691,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     textTransform: "uppercase",
   },
-
   detailsCard: {
     marginTop: 12,
     marginHorizontal: H_PADDING - 4,
@@ -648,7 +717,6 @@ const styles = StyleSheet.create({
   detailRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 6 },
   detailLabel: { fontSize: 14, color: "#6B7280", fontWeight: "600" },
   detailValue: { fontSize: 14, color: "#111827", fontWeight: "600" },
-
   scrollHint: { alignSelf: "center", marginTop: 10, alignItems: "center" },
   scrollHintText: {
     color: "#6B7280",
@@ -658,7 +726,6 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
   },
   scrollHintChevron: { color: "#6B7280", fontSize: 20, marginTop: -2 },
-
   enlargeModal: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.92)",
