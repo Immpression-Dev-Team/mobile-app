@@ -275,6 +275,20 @@ const deleteProfilePicture = async (publicId) => {
   }
 };
 
+// Delete one of *my* images
+async function deleteImage(imageId, token) {
+  try {
+    const { data } = await axios.delete(`${API_URL}/image/${encodeURIComponent(imageId)}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return { success: true, ...data };
+  } catch (error) {
+    const err = error?.response?.data || { error: error.message };
+    return { success: false, ...err };
+  }
+}
+
+
 async function getAllProfilePictures(token) {
   try {
     console.log("Fetching all profile pictures from API...", API_URL);
@@ -305,19 +319,19 @@ const getUserProfile = async (token) => {
   }
 };
 
-async function getUserImages(token) {
+async function getUserImages(token, stage) {
   try {
     const response = await axios.get(`${API_URL}/images`, {
-      headers: {
-        Authorization: `Bearer ${token}`, // Add token to headers
-      },
+      headers: { Authorization: `Bearer ${token}` },
+      params: stage ? { stage } : undefined,
     });
     return response.data;
   } catch (error) {
     console.error("Error fetching user's images:", error);
-    return error;
+    return error?.response?.data || error;
   }
 }
+
 
 // Function to increment views for a specific user by ID
 async function incrementViews(userId, token) {
@@ -682,7 +696,7 @@ async function updateTrackingNumber(orderId, trackingNumber, token, carrier, { f
       error?.response?.data?.error ||
       error?.message ||
       "Failed to update tracking number";
-    console.error("Error updating tracking number:", msg); 
+    console.error("Error updating tracking number:", msg);
     throw new Error(msg);
   }
 }
@@ -991,6 +1005,7 @@ export {
   fetchProfilePicture,
   updateProfilePicture,
   deleteProfilePicture,
+  deleteImage,
   getAllProfilePictures,
   updateBio,
   updateArtistType,
