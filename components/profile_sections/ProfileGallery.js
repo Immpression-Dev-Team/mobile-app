@@ -1,5 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Image, StyleSheet, ScrollView, Pressable, Text } from 'react-native';
+import {
+  View,
+  Image,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  Text,
+} from 'react-native';
 import { useAuth } from '../../state/AuthProvider';
 import { getUserImages, incrementImageViews } from '../../API/API'; // Import incrementImageViews
 import { useNavigation } from '@react-navigation/native';
@@ -34,18 +41,11 @@ const ProfileGallery = () => {
     fetchImages();
   }, [token]);
 
-  // Function to increment view count when an image is tapped
   const handleImagePress = async (index) => {
     const selectedImage = images[index];
     if (selectedImage && selectedImage._id) {
-      try {
-        await incrementImageViews(selectedImage._id, token); // Increment views
-        console.log(`Incremented views for image ID: ${selectedImage._id}`);
-      } catch (error) {
-        console.error('Error incrementing image views:', error);
-      }
+      navigation.navigate('ImageScreen', { images, initialIndex: index });
     }
-    navigation.navigate('ImageScreen', { images, initialIndex: index }); // Navigate to ImageScreen
   };
 
   // Infinite scrolling: Extend images array by appending original images at the end
@@ -67,10 +67,7 @@ const ProfileGallery = () => {
         {images.length > 0 ? (
           images.map((image, index) => (
             <Pressable key={index} onPress={() => handleImagePress(index)}>
-              <Image
-                source={{ uri: image.imageLink }}
-                style={styles.image}
-              />
+              <Image source={{ uri: image.imageLink }} style={styles.image} />
             </Pressable>
           ))
         ) : (

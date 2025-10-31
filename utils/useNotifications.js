@@ -9,7 +9,7 @@ import {
 } from "../API/API"; // ✅ import from your API.js file
 
 const PAGE_LIMIT = 20;
-const POLL_MS = 30000; // 30s
+const POLL_MS = 600000; // 10 minutes
 
 export function useNotifications(token) {
   console.log("🟢 useNotifications hook called with token:", token ? "Present" : "Missing");
