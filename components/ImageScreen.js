@@ -221,7 +221,7 @@ const ImageScreen = ({ route, navigation }) => {
         setHasLiked(!!data?.hasLiked);
       } catch {}
       try {
-        await incrementImageViews(active._id, token);
+        await incrementImageViews(authedUserId, active._id, token);
       } catch {}
     })();
   }, [active._id, token]);

@@ -15,7 +15,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import ScreenTemplate from "../screens/Template/ScreenTemplate";
 import { useAuth } from "../state/AuthProvider";
-import { incrementViews as incrementArtistViews } from "../API/API";
+import { incrementProfileViews } from "../API/API";
 
 const H_PADDING = 16;
 const AVATAR_SIZE = 46;
@@ -40,7 +40,7 @@ const ArtistScreen = ({ route }) => {
     const artist = galleryImages[currentIndex];
     if (!artist?._id) return;
     (async () => {
-      try { await incrementArtistViews(artist._id, token); } catch {}
+      try { await incrementProfileViews(artist._id, token); } catch {}
     })();
   }, [currentIndex, token, galleryImages]);
 

@@ -92,6 +92,8 @@ const ProfilePic = ({ source, name }) => {
 
       await uploadProfilePicture({ userId: userData.user.user._id, profilePictureLink: result.secure_url }, userData.token);
       Alert.alert('Success', 'Profile picture updated successfully!');
+    // might not need this but need to test it
+    //   await loadProfilePicture();
     } catch (error) {
       console.error('Upload Error:', error);
       Alert.alert('Error', error.message || 'Upload failed');

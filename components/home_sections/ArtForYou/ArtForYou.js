@@ -1,5 +1,11 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { StyleSheet, Animated, TouchableWithoutFeedback, View, Image } from 'react-native';
+import {
+  StyleSheet,
+  Animated,
+  TouchableWithoutFeedback,
+  View,
+  Image,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -9,7 +15,7 @@ import FontLoader from '../../../utils/FontLoader';
 import ArtForYouHeader from './ArtForYouHeader';
 import ArtForYouContent from './ArtForYouContent';
 import LoadingSection from '../SectionTemplate/LoadingSection';
-import { getAllImages, incrementImageViews } from '../../../API/API'; // Import incrementImageViews
+import { getAllImages } from '../../../API/API';
 
 const shuffleArray = (array) => {
   let shuffledArray = [...array];
@@ -105,7 +111,6 @@ export default function ArtForYou() {
     fadeOutOverlay();
   };
 
-
   const fetchArtData = async (token) => {
     try {
       const response = await getAllImages(token, 1, 50); // Always start from page 1
@@ -114,15 +119,17 @@ export default function ArtForYou() {
         return;
       }
       console.log('Fetched images length =', response.images.length);
-  
+
       // Filter out only approved artworks
-      const approvedArt = response.images.filter((image) => image.stage === 'approved');
+      const approvedArt = response.images.filter(
+        (image) => image.stage === 'approved',
+      );
       console.log('Approved images length =', approvedArt.length);
-  
+
       const shuffledData = shuffleArray(approvedArt);
       setOriginalArtData(shuffledData);
       setPage(1); // Reset to page 1
-      
+
       // Only has more if we got a full page (50 items)
       setHasMore(response.images.length === 50);
     } catch (error) {
@@ -132,31 +139,33 @@ export default function ArtForYou() {
       setIsLoading(false);
     }
   };
-  
+
   const fetchMoreArtData = async (token) => {
     if (isLoading) return; // Prevent multiple concurrent requests
-    
+
     try {
       setIsLoading(true);
       const nextPage = page + 1;
       const response = await getAllImages(token, nextPage, 50);
-      
+
       if (!response.success) {
         console.error('Error fetching more art data:', response.data);
         return;
       }
-  
+
       console.log('Fetched images length =', response.images.length);
-  
+
       if (response.images.length === 0) {
         setHasMore(false);
         return;
       }
-      
+
       // Filter out only approved artworks
-      const approvedArt = response.images.filter((image) => image.stage === 'approved');
+      const approvedArt = response.images.filter(
+        (image) => image.stage === 'approved',
+      );
       console.log('Approved images length =', approvedArt.length);
-      
+
       if (approvedArt.length === 0) {
         // If no approved art in this batch, try next page
         setPage(nextPage);
@@ -167,7 +176,7 @@ export default function ArtForYou() {
       const shuffledData = shuffleArray(approvedArt);
       setOriginalArtData((prevData) => [...prevData, ...shuffledData]);
       setPage(nextPage);
-      
+
       // Only set hasMore to true if we got a full page (50 items)
       setHasMore(response.images.length === 50);
     } catch (error) {
@@ -177,31 +186,15 @@ export default function ArtForYou() {
       setIsLoading(false);
     }
   };
-  
 
   const handleImagePress = async (imageIndex) => {
     const selectedImage = originalArtData[imageIndex];
 
     if (selectedImage && selectedImage._id) {
-      let updatedViewCount = selectedImage.views; // Default to existing count
-
-      try {
-        const updatedImage = await incrementImageViews(
-          selectedImage._id,
-          token
-        );
-        if (updatedImage.success) {
-          updatedViewCount = updatedImage.views;
-        }
-      } catch (error) {
-        console.error('Error incrementing image views:', error);
-      }
-
-      // Navigate even if update fails
       navigation.navigate('ImageScreen', {
         images: originalArtData,
         initialIndex: imageIndex,
-        views: updatedViewCount,
+        views: selectedImage.views,
       });
     }
   };
@@ -227,7 +220,7 @@ export default function ArtForYou() {
       fetchArtData(token);
       startAutoScrollOnce();
       resetInactivityTimer();
-      
+
       // Animate paint fade-in
       setTimeout(() => {
         Animated.timing(paintFadeAnim, {
@@ -302,7 +295,7 @@ const styles = StyleSheet.create({
     width: 550,
     height: 550,
     transform: [{ rotate: '180deg' }],
-    opacity: .7,
+    opacity: 0.7,
     zIndex: 0,
   },
   loadingContainer: {
