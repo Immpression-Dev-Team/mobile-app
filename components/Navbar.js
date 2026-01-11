@@ -188,9 +188,12 @@ export default function Navbar() {
           <Icon name="search" size={24} color="black" />
         </Pressable>
         */}
-        <Pressable onPress={() => navigation.navigate("Settings")} style={styles.navItem}>
-          <Icon name="settings" size={24} color="black" />
-        </Pressable>
+        {/* Only show Settings for authenticated users */}
+        {token && (
+          <Pressable onPress={() => navigation.navigate("Settings")} style={styles.navItem}>
+            <Icon name="settings" size={24} color="black" />
+          </Pressable>
+        )}
       </Animated.View>
 
       {showSearch && (

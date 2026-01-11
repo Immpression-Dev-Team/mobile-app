@@ -10,7 +10,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { useAuth } from "../../../state/AuthProvider";
 
-import { getAllProfilePictures } from "../../../API/API";
+import { getAllProfilePictures, incrementViews } from "../../../API/API";
 import FeaturedArtistsHeader from "./FeaturedArtistsHeader";
 import FeaturedArtistsContent from "./FeaturedArtistsContent";
 import LoadingSection from "../SectionTemplate/LoadingSection";
@@ -78,6 +78,10 @@ export default function FeaturedArtists() {
 
   const navigateToArtistScreen = async (artist, profilePic, type, initialIndex, userId) => {
     try {
+      // Only increment views if user is authenticated
+      if (token) {
+        await incrementViews(userId, token);
+      }
       navigation.navigate("ArtistScreens", {
         artist,
         profilePic,

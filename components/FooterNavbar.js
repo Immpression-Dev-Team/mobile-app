@@ -7,8 +7,7 @@ import { checkStripeStatus as checkStripeStatusApi } from "../API/API";
 
 const FooterNavbar = () => {
   const navigation = useNavigation();
-  const { userData } = useAuth();
-  const token = userData?.token;
+  const { userData, token } = useAuth();
   const [checkingStripe, setCheckingStripe] = useState(false);
 
   const go = (screen) => navigation.navigate(screen);
@@ -47,10 +46,18 @@ const FooterNavbar = () => {
         <Text style={styles.text}>{checkingStripe ? "Checking…" : "Sell"}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button} onPress={() => go("Profile")}>
-        <Icon name="person" size={24} color="#635BFF" style={styles.icon} />
-        <Text style={styles.text}>Profile</Text>
-      </TouchableOpacity>
+      {/* Show Login button for guests, Profile button for authenticated users */}
+      {token ? (
+        <TouchableOpacity style={styles.button} onPress={() => go("Profile")}>
+          <Icon name="person" size={24} color="#635BFF" style={styles.icon} />
+          <Text style={styles.text}>Profile</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity style={styles.button} onPress={() => go("Login")}>
+          <Icon name="login" size={24} color="#635BFF" style={styles.icon} />
+          <Text style={styles.text}>Login</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };

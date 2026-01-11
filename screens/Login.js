@@ -179,20 +179,28 @@ const Login = () => {
                 <Text style={styles.primaryBtnText}>Log in</Text>
               </Pressable>
 
-              <Pressable
+              {/* Temporarily commented out for App Store review - re-enable after adding Sign in with Apple */}
+              {/* <Pressable
                 disabled={!request}
                 onPress={signInWithGoogle}
                 style={styles.googleBtn}
               >
                 <Icon name="google" size={18} color="#fff" style={styles.googleIcon} />
                 <Text style={styles.googleText}>Sign in with Google</Text>
-              </Pressable>
+              </Pressable> */}
 
               <Pressable
                 onPress={() => navigateTo("RequestOtp")}
                 style={styles.textOnlyBtn}
               >
                 <Text style={styles.textOnlyText}>Sign Up</Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => navigateTo("Home")}
+                style={styles.guestBtn}
+              >
+                <Text style={styles.guestText}>Continue as Guest</Text>
               </Pressable>
             </View>
           </ScrollView>
@@ -303,6 +311,15 @@ const styles = StyleSheet.create({
     color: "#1E2A3A",
     fontWeight: "700",
     textDecorationLine: "underline",
+  },
+
+  guestBtn: { marginTop: 12 },
+  guestText: {
+    color: "#6B7280",
+    fontSize: 14,
+    fontWeight: "600",
+    textDecorationLine: "underline",
+    textAlign: "center",
   },
 });
 

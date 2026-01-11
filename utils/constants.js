@@ -63,6 +63,7 @@ export const UserNavigation = [
 ];
 
 export const GuestNavigation = [
+  // Auth screens (Login is first - initial screen for guests)
   { name: "Login", component: Login },
   { name: "RequestOtp", component: RequestOtp },
   { name: "VerifyOtp", component: VerifyOtp },
@@ -70,6 +71,14 @@ export const GuestNavigation = [
   { name: "PasswordReset", component: PasswordReset },
   { name: "AccountType", component: AccountTypeScreen },
   { name: "ZipCode", component: ZipCode },
+
+  // Browsing screens (available to guests after "Continue as Guest")
+  { name: "Home", component: HomeScreen },
+  { name: "ImageScreen", component: ImageScreen },
+  { name: "ArtistScreens", component: ArtistScreen },
+  { name: "Categories", component: CategoriesScreen },
+  { name: "Category", component: CategoryView },
+  { name: "GalleryView", component: GalleryView },
 ];
 
 export const ArtistTypes = [

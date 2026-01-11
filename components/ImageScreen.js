@@ -27,6 +27,7 @@ import {
   deleteImage,
   getUserProfile,
 } from "../API/API";
+import { promptLogin } from "../utils/loginPrompt";
 
 const like = require("../assets/icons/like-button.jpg");
 const likedIcon = require("../assets/icons/like-button.jpg");
@@ -203,26 +204,30 @@ const ImageScreen = ({ route, navigation }) => {
   const [shownScrollHint, setShownScrollHint] = useState(true);
 
   useEffect(() => {
-    if (!active.userId || !token) {
+    if (!active.userId) {
       setProfilePicture(null);
       return;
     }
+    // Fetch profile picture (works without token for public profiles)
     fetchUserProfilePicture(active.userId, token)
       .then(setProfilePicture)
       .catch(() => setProfilePicture(null));
   }, [active.userId, token]);
 
   useEffect(() => {
-    if (!active._id || !token) return;
+    if (!active._id) return;
     (async () => {
-      try {
-        const data = await fetchLikeData(active._id, token);
-        setLikes(Number(data?.likesCount || 0));
-        setHasLiked(!!data?.hasLiked);
-      } catch {}
-      try {
-        await incrementImageViews(authedUserId, active._id, token);
-      } catch {}
+      // Fetch like data if authenticated
+      if (token) {
+        try {
+          const data = await fetchLikeData(active._id, token);
+          setLikes(Number(data?.likesCount || 0));
+          setHasLiked(!!data?.hasLiked);
+        } catch {}
+        try {
+          await incrementImageViews(active._id, token);
+        } catch {}
+      }
     })();
   }, [active._id, token]);
 
@@ -443,6 +448,12 @@ const ImageScreen = ({ route, navigation }) => {
               <TouchableOpacity
                 style={[styles.primaryPill, hasLiked && styles.primaryPillActive]}
                 onPress={async () => {
+                  // Check if user is authenticated
+                  if (!token) {
+                    promptLogin(navigation, "like this artwork");
+                    return;
+                  }
+
                   try {
                     const data = await toggleLike(active._id, token);
                     setLikes(Number(data?.likesCount || 0));
@@ -472,6 +483,13 @@ const ImageScreen = ({ route, navigation }) => {
                 style={styles.buyNowButton}
                 onPress={() => {
                   if (active.isSold) return;
+
+                  // Check if user is authenticated
+                  if (!token) {
+                    promptLogin(navigation, "make a purchase");
+                    return;
+                  }
+
                   navigation.navigate("DeliveryDetails", {
                     imageId: active._id,
                     artName: active.name,

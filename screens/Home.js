@@ -12,7 +12,7 @@ import navBgHeader from "../assets/foryou_assets/background_top.png";
 import discoverBgFooter from "../assets/discover_assets/background_bottom.png";
 
 export default function HomeScreen() {
-  const name = useAuth();
+  const { token } = useAuth();
   const navigation = useNavigation();
 
   const handleOrdersPress = () => {
@@ -22,19 +22,21 @@ export default function HomeScreen() {
   return (
     <ScreenTemplate>
       <View style={styles.container}>
-        {/* Top Orders Button */}
-        <View style={styles.buttonRow}>
-          <TouchableOpacity style={styles.fullButtonWrapper} onPress={handleOrdersPress}>
-            <LinearGradient
-              colors={['#635BFF', '#7C3AED', '#8B5CF6']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.fullButton}
-            >
-              <Text style={styles.fullButtonText}>📋 Orders</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
+        {/* Top Orders Button - Only show for authenticated users */}
+        {token && (
+          <View style={styles.buttonRow}>
+            <TouchableOpacity style={styles.fullButtonWrapper} onPress={handleOrdersPress}>
+              <LinearGradient
+                colors={['#635BFF', '#7C3AED', '#8B5CF6']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.fullButton}
+              >
+                <Text style={styles.fullButtonText}>📋 Orders</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+        )}
 
         {/* Main Sections */}
         <ArtForYouSection />

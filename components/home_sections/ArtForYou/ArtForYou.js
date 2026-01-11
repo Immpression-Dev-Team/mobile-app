@@ -1,11 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import {
-  StyleSheet,
-  Animated,
-  TouchableWithoutFeedback,
-  View,
-  Image,
-} from 'react-native';
+import { StyleSheet, Animated, TouchableWithoutFeedback, View, Image, Text, Pressable } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 
@@ -15,7 +9,7 @@ import FontLoader from '../../../utils/FontLoader';
 import ArtForYouHeader from './ArtForYouHeader';
 import ArtForYouContent from './ArtForYouContent';
 import LoadingSection from '../SectionTemplate/LoadingSection';
-import { getAllImages } from '../../../API/API';
+import { getAllImages, incrementImageViews } from '../../../API/API';
 
 const shuffleArray = (array) => {
   let shuffledArray = [...array];
@@ -52,6 +46,7 @@ export default function ArtForYou() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isOverlayVisible, setOverlayVisible] = useState(false);
+  const [isGuest, setIsGuest] = useState(false); // track if user is guest with no data
 
   // auto scroll once when landing on pages
   const startAutoScrollOnce = () => {
@@ -114,8 +109,18 @@ export default function ArtForYou() {
   const fetchArtData = async (token) => {
     try {
       const response = await getAllImages(token, 1, 50); // Always start from page 1
+
+      // Check if response indicates auth error (guest user)
+      if (!response.success && response.error === "Authorization header missing or invalid") {
+        console.log('Guest user detected - showing limited content');
+        setIsGuest(true);
+        setIsLoading(false);
+        return;
+      }
+
       if (!response.success) {
         console.error('Error fetching art data:', response.data);
+        setIsGuest(true);
         return;
       }
       console.log('Fetched images length =', response.images.length);
@@ -134,6 +139,7 @@ export default function ArtForYou() {
       setHasMore(response.images.length === 50);
     } catch (error) {
       console.error('Error fetching art data:', error);
+      setIsGuest(true);
       setHasMore(false);
     } finally {
       setIsLoading(false);
@@ -191,22 +197,40 @@ export default function ArtForYou() {
     const selectedImage = originalArtData[imageIndex];
 
     if (selectedImage && selectedImage._id) {
+      let updatedViewCount = selectedImage.views; // Default to existing count
+
+      // Only increment views if user is authenticated
+      if (token) {
+        try {
+          const updatedImage = await incrementImageViews(
+            selectedImage._id,
+            token
+          );
+          if (updatedImage.success) {
+            updatedViewCount = updatedImage.views;
+          }
+        } catch (error) {
+          console.error('Error incrementing image views:', error);
+        }
+      }
+
+      // Navigate even if update fails or user is guest
       navigation.navigate('ImageScreen', {
         images: originalArtData,
         initialIndex: imageIndex,
-        views: selectedImage.views,
+        views: updatedViewCount,
       });
     }
   };
 
   const handleScrollEnd = async () => {
-    if (hasMore && !isLoading && token) {
+    if (hasMore && !isLoading) {
       await fetchMoreArtData(token);
     }
   };
 
   const handleRefresh = async () => {
-    if (!isLoading && token) {
+    if (!isLoading) {
       setIsLoading(true);
       await fetchArtData(token);
     }
@@ -216,20 +240,19 @@ export default function ArtForYou() {
   useEffect(() => {
     let isMounted = true;
 
-    if (token) {
-      fetchArtData(token);
-      startAutoScrollOnce();
-      resetInactivityTimer();
+    // Fetch data regardless of token (works for both guests and authenticated users)
+    fetchArtData(token);
+    startAutoScrollOnce();
+    resetInactivityTimer();
 
-      // Animate paint fade-in
-      setTimeout(() => {
-        Animated.timing(paintFadeAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: true,
-        }).start();
-      }, 500);
-    }
+    // Animate paint fade-in
+    setTimeout(() => {
+      Animated.timing(paintFadeAnim, {
+        toValue: 1,
+        duration: 2000,
+        useNativeDriver: true,
+      }).start();
+    }, 500);
 
     return () => {
       isMounted = false;
@@ -237,11 +260,33 @@ export default function ArtForYou() {
         clearTimeout(inactivityTimeoutRef.current);
       }
     };
-  }, [token, paintFadeAnim]);
+  }, [paintFadeAnim]);
 
   // render animation if still loading images
   if (isLoading) {
     return <LoadingSection loadingMsg="LOADING ART FOR YOU!" size="large" />;
+  }
+
+  // Show guest message if user is not authenticated
+  if (isGuest) {
+    return (
+      <View style={styles.container}>
+        <ArtForYouHeader />
+        <View style={styles.guestContainer}>
+          <Text style={styles.guestEmoji}>🎨</Text>
+          <Text style={styles.guestTitle}>Sign Up to Discover Personalized Art</Text>
+          <Text style={styles.guestSubtitle}>
+            Create an account to see artwork curated just for you
+          </Text>
+          <Pressable
+            style={styles.guestButton}
+            onPress={() => navigation.navigate('Login')}
+          >
+            <Text style={styles.guestButtonText}>Sign Up or Log In</Text>
+          </Pressable>
+        </View>
+      </View>
+    );
   }
 
   const imageChunks = chunkArray(originalArtData, 2);
@@ -308,5 +353,49 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     resizeMode: 'contain',
+  },
+  guestContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    marginTop: 16,
+  },
+  guestEmoji: {
+    fontSize: 48,
+    marginBottom: 16,
+  },
+  guestTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  guestSubtitle: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+    marginBottom: 24,
+    lineHeight: 20,
+  },
+  guestButton: {
+    backgroundColor: '#1E2A3A',
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 2,
+  },
+  guestButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '700',
+    letterSpacing: 0.5,
   },
 });
