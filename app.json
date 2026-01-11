@@ -24,7 +24,13 @@
       "supportsTablet": true,
       "config": {
         "googleMapsApiKey": "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4"
-      }
+      },
+      "bundleIdentifier": "com.immpression.artapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocationWhenInUseUsageDescription": "Immpression uses your location to help you discover local artists and art galleries near you."
+      },
+      "buildNumber": "2"
     },
     "android": {
       "adaptiveIcon": {
@@ -39,7 +45,8 @@
         }
       },
       "permissions": [
-        "android.permission.INTERNET"
+        "android.permission.INTERNET",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
