@@ -21,7 +21,15 @@
     ],
     "scheme": "com.immpression.artapp",
     "ios": {
+      "bundleIdentifier": "com.immpression.app",
+      "buildNumber": "2",
       "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "The app accesses your photos to let you share them with your friends.",
+        "NSCameraUsageDescription": "The app uses your camera to take photos to share.",
+        "NSLocationWhenInUseUsageDescription": "The app uses your location to show nearby art and artists.",
+        "ITSAppUsesNonExemptEncryption": false
+      },
       "config": {
         "googleMapsApiKey": "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4"
       }
@@ -39,7 +47,8 @@
         }
       },
       "permissions": [
-        "android.permission.INTERNET"
+        "android.permission.INTERNET",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
