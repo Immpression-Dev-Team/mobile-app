@@ -28,6 +28,7 @@ import SubmitTrackingNumber from "../screens/SubmitTrackingNumber";
 import OrderScreen from "../screens/OrderScreen";
 import ZipCode from "../screens/ZipCode";
 import StripeGate from "../screens/StripeGate"; // ⬅️ new import
+import BlockedUsers from "../screens/BlockedUsers"; // Apple Guideline 1.2 compliance
 
 export const UserNavigation = [
   { name: "Home", component: HomeScreen },
@@ -60,6 +61,9 @@ export const UserNavigation = [
 
   // ⬇️ New screen for Stripe onboarding gate
   { name: "StripeGate", component: StripeGate },
+
+  // Apple Guideline 1.2 compliance - Blocked users management
+  { name: "BlockedUsers", component: BlockedUsers },
 ];
 
 export const GuestNavigation = [

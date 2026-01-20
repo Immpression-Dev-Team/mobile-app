@@ -20,8 +20,11 @@ import {
   getArtistType,
   createStripeAccount,
   checkStripeStatus as checkStripeStatusApi,
+  blockUser,
+  checkBlockStatus,
 } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
+import ReportModal from "../components/ReportModal";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import ScreenTemplate from "./Template/ScreenTemplate";
 import FolderPreview from "../components/FolderPreview";
@@ -51,6 +54,9 @@ const Profile = () => {
   const [soldImages, setSoldImages] = useState([]);
   const [boughtImages, setBoughtImages] = useState([]);
   const [stripeOnboardingData, setStripeOnboardingData] = useState({});
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [isBlocking, setIsBlocking] = useState(false);
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -109,6 +115,15 @@ const Profile = () => {
     fetchProfileData();
     fetchImageData();
     fetchBoughtImages();
+
+    // Check block status for other users' profiles
+    if (!isOwnProfile && token && userId) {
+      checkBlockStatus(userId, token).then((result) => {
+        if (result.success) {
+          setIsBlocked(result.data.isBlocked);
+        }
+      });
+    }
   }, [token, userId, isOwnProfile]);
 
   const fetchBoughtImages = async () => {
@@ -173,6 +188,52 @@ const Profile = () => {
   useEffect(() => {
     if (token) checkStripeStatus();
   }, [token]);
+
+  // Handle blocking/unblocking a user
+  const handleBlockUser = async () => {
+    if (!token || !userId || isOwnProfile) return;
+
+    const actionText = isBlocked ? "unblock" : "block";
+    Alert.alert(
+      `${isBlocked ? "Unblock" : "Block"} ${profileName || "this user"}?`,
+      isBlocked
+        ? "They will be able to appear in your feed again."
+        : "They won't be able to see your content in their feed, and their content will be hidden from yours.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: isBlocked ? "Unblock" : "Block",
+          style: isBlocked ? "default" : "destructive",
+          onPress: async () => {
+            setIsBlocking(true);
+            try {
+              if (isBlocked) {
+                const { unblockUser } = require("../API/API");
+                const result = await unblockUser(userId, token);
+                if (result.success) {
+                  setIsBlocked(false);
+                } else {
+                  Alert.alert("Error", result.error || "Failed to unblock user");
+                }
+              } else {
+                const result = await blockUser(userId, null, token);
+                if (result.success) {
+                  setIsBlocked(true);
+                  Alert.alert("Blocked", `${profileName || "User"} has been blocked.`);
+                } else {
+                  Alert.alert("Error", result.error || "Failed to block user");
+                }
+              }
+            } catch (error) {
+              Alert.alert("Error", "An error occurred. Please try again.");
+            } finally {
+              setIsBlocking(false);
+            }
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <ScreenTemplate>
@@ -252,6 +313,27 @@ const Profile = () => {
           <View style={styles.bioContainer}>
             <Text style={styles.bioText}>{bio}</Text>
           </View>
+
+          {/* Block & Report buttons for other users' profiles */}
+          {!isOwnProfile && token && (
+            <View style={styles.profileActionsContainer}>
+              <TouchableOpacity
+                style={[styles.actionButton, isBlocked && styles.unblockButton]}
+                onPress={handleBlockUser}
+                disabled={isBlocking}
+              >
+                <Text style={[styles.actionButtonText, isBlocked && styles.unblockButtonText]}>
+                  {isBlocking ? "..." : isBlocked ? "Unblock" : "Block"}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.reportButton}
+                onPress={() => setShowReportModal(true)}
+              >
+                <Text style={styles.reportButtonText}>Report</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
 
         <View style={styles.separator} />
@@ -276,6 +358,15 @@ const Profile = () => {
             </View>
           </View>
         )}
+
+        {/* Report Modal */}
+        <ReportModal
+          visible={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          targetType="user"
+          targetId={userId}
+          targetName={profileName}
+        />
       </View>
     </ScreenTemplate>
   );
@@ -460,6 +551,46 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
     fontSize: 12,
     fontWeight: "600",
+  },
+  profileActionsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 16,
+    gap: 12,
+  },
+  actionButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: "#F3F4F6",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  actionButtonText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#374151",
+  },
+  unblockButton: {
+    backgroundColor: "#EEF2FF",
+    borderColor: "#C7D2FE",
+  },
+  unblockButtonText: {
+    color: "#4F46E5",
+  },
+  reportButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    backgroundColor: "#FEF2F2",
+    borderWidth: 1,
+    borderColor: "#FECACA",
+  },
+  reportButtonText: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#DC2626",
   },
 });
 

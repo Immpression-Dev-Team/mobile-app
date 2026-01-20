@@ -1005,6 +1005,136 @@ async function setOrderAmounts(orderId, { baseCents, shippingCents, taxCents }, 
   }
 }
 
+// ========= Reports (Apple Guideline 1.2 compliance) =========
+
+// Report an image
+async function reportImage(imageId, reason, description, token) {
+  try {
+    const res = await axios.post(
+      `${API_URL}/reports/image/${imageId}`,
+      { reason, description },
+      { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+    );
+    return res.data; // { success, message, data: { reportId, status } }
+  } catch (error) {
+    const msg = error?.response?.data?.error || error?.message || "Failed to submit report";
+    console.error("reportImage error:", msg);
+    return { success: false, error: msg };
+  }
+}
+
+// Report a user
+async function reportUser(userId, reason, description, token) {
+  try {
+    const res = await axios.post(
+      `${API_URL}/reports/user/${userId}`,
+      { reason, description },
+      { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+    );
+    return res.data; // { success, message, data: { reportId, status } }
+  } catch (error) {
+    const msg = error?.response?.data?.error || error?.message || "Failed to submit report";
+    console.error("reportUser error:", msg);
+    return { success: false, error: msg };
+  }
+}
+
+// Get list of report reasons
+async function getReportReasons() {
+  try {
+    const res = await axios.get(`${API_URL}/reports/reasons`);
+    return res.data; // { success, data: [{ key, value, label }] }
+  } catch (error) {
+    console.error("getReportReasons error:", error);
+    return { success: false, data: [] };
+  }
+}
+
+// Get user's submitted reports
+async function getMyReports(token, page = 1, limit = 20) {
+  try {
+    const res = await axios.get(`${API_URL}/reports/my-reports`, {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { page, limit },
+    });
+    return res.data; // { success, data: { reports, pagination } }
+  } catch (error) {
+    console.error("getMyReports error:", error);
+    return { success: false, data: { reports: [], pagination: {} } };
+  }
+}
+
+// ========= Blocks (Apple Guideline 1.2 compliance) =========
+
+// Block a user
+async function blockUser(userId, reason, token) {
+  try {
+    const res = await axios.post(
+      `${API_URL}/blocks/${userId}`,
+      { reason },
+      { headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" } }
+    );
+    return res.data; // { success, message, data: { blockId, blockedUserId } }
+  } catch (error) {
+    const msg = error?.response?.data?.error || error?.message || "Failed to block user";
+    console.error("blockUser error:", msg);
+    return { success: false, error: msg };
+  }
+}
+
+// Unblock a user
+async function unblockUser(userId, token) {
+  try {
+    const res = await axios.delete(`${API_URL}/blocks/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data; // { success, message, data: { unblockedUserId } }
+  } catch (error) {
+    const msg = error?.response?.data?.error || error?.message || "Failed to unblock user";
+    console.error("unblockUser error:", msg);
+    return { success: false, error: msg };
+  }
+}
+
+// Get blocked users list
+async function getBlockedUsers(token, page = 1, limit = 50) {
+  try {
+    const res = await axios.get(`${API_URL}/blocks`, {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { page, limit },
+    });
+    return res.data; // { success, data: { blockedUsers, pagination } }
+  } catch (error) {
+    console.error("getBlockedUsers error:", error);
+    return { success: false, data: { blockedUsers: [], pagination: {} } };
+  }
+}
+
+// Check if a user is blocked
+async function checkBlockStatus(userId, token) {
+  try {
+    const res = await axios.get(`${API_URL}/blocks/check/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data; // { success, data: { isBlocked, isBlockedBy, anyBlock } }
+  } catch (error) {
+    console.error("checkBlockStatus error:", error);
+    return { success: false, data: { isBlocked: false, isBlockedBy: false, anyBlock: false } };
+  }
+}
+
+// Get blocked user IDs (for feed filtering)
+async function getBlockedUserIds(token) {
+  try {
+    const res = await axios.get(`${API_URL}/blocks/ids`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data; // { success, data: [userIds] }
+  } catch (error) {
+    console.error("getBlockedUserIds error:", error);
+    return { success: false, data: [] };
+  }
+}
 
 export {
   requestOtp,
@@ -1062,4 +1192,15 @@ export {
   calculateTax,
   finalizePayment,
   setOrderAmounts,
+  // Reports (Apple Guideline 1.2)
+  reportImage,
+  reportUser,
+  getReportReasons,
+  getMyReports,
+  // Blocks (Apple Guideline 1.2)
+  blockUser,
+  unblockUser,
+  getBlockedUsers,
+  checkBlockStatus,
+  getBlockedUserIds,
 };

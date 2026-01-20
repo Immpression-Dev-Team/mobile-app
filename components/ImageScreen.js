@@ -28,6 +28,7 @@ import {
   getUserProfile,
 } from "../API/API";
 import { promptLogin } from "../utils/loginPrompt";
+import ReportModal from "./ReportModal";
 
 const like = require("../assets/icons/like-button.jpg");
 const likedIcon = require("../assets/icons/like-button.jpg");
@@ -147,6 +148,7 @@ const ImageScreen = ({ route, navigation }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [enlarged, setEnlarged] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
 
   const flatListRef = useRef(null);
   const scrollHintOpacity = useRef(new Animated.Value(1)).current;
@@ -338,7 +340,15 @@ const ImageScreen = ({ route, navigation }) => {
         >
           {/* Header */}
           <View style={styles.cardHeader}>
-            <View style={styles.artistLeft}>
+            <TouchableOpacity
+              style={styles.artistLeft}
+              onPress={() => {
+                if (active.userId) {
+                  navigation.navigate("Profile", { userId: active.userId });
+                }
+              }}
+              activeOpacity={0.7}
+            >
               {!!profilePicture && (
                 <Image source={{ uri: profilePicture }} style={styles.artistAvatar} />
               )}
@@ -346,7 +356,7 @@ const ImageScreen = ({ route, navigation }) => {
                 <Text style={styles.artistName}>{active.artistName || "Unknown Artist"}</Text>
                 <Text style={styles.artistCategory}>{active.category || "No Category"}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
 
             <View style={styles.statsRow}>
               <View style={styles.statPill}>
@@ -465,6 +475,17 @@ const ImageScreen = ({ route, navigation }) => {
                 <Image source={hasLiked ? likedIcon : like} style={styles.pillIcon} />
                 <Text style={styles.pillText}>{hasLiked ? "Unlike" : "Like"}</Text>
               </TouchableOpacity>
+
+              {/* Report button - only show for content user doesn't own */}
+              {!isOwner && token && (
+                <TouchableOpacity
+                  style={styles.reportPill}
+                  onPress={() => setShowReportModal(true)}
+                  activeOpacity={0.9}
+                >
+                  <Text style={styles.reportText}>Report</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
 
@@ -586,6 +607,15 @@ const ImageScreen = ({ route, navigation }) => {
             {!!active.imageLink && <Image source={{ uri: active.imageLink }} style={styles.enlargedImage} />}
           </Pressable>
         </Modal>
+
+        {/* Report Modal */}
+        <ReportModal
+          visible={showReportModal}
+          onClose={() => setShowReportModal(false)}
+          targetType="image"
+          targetId={active._id}
+          targetName={active.name}
+        />
       </View>
     </ScreenTemplate>
   );
@@ -732,6 +762,24 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0.6,
+  },
+  reportPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#F3F4F6",
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 999,
+    marginLeft: 6,
+    marginTop: 8,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  reportText: {
+    color: "#6B7280",
+    fontSize: 11,
+    fontWeight: "600",
+    letterSpacing: 0.4,
   },
 
   purchaseCard: {

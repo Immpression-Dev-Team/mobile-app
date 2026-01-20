@@ -11,6 +11,7 @@ import ScreenTemplate from './Template/ScreenTemplate';
 import userIcon from '../assets/user.png';
 import logoutIcon from '../assets/logout.png';
 import deleteIcon from '../assets/icons/delete_icon.png';
+import blockedIcon from '../assets/user.png'; // Using user icon for blocked users
 
 const SettingsScreen = () => {
   const navigation = useNavigation();
@@ -46,6 +47,11 @@ const SettingsScreen = () => {
       label: 'Account Details',
       iconUrl: userIcon,
       onPress: () => navigation.navigate('AccountDetails'),
+    },
+    {
+      label: 'Blocked Users',
+      iconUrl: blockedIcon,
+      onPress: () => navigation.navigate('BlockedUsers'),
     },
     {
       label: 'Log Out',
