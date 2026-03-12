@@ -29,6 +29,7 @@ import OrderScreen from "../screens/OrderScreen";
 import ZipCode from "../screens/ZipCode";
 import StripeGate from "../screens/StripeGate"; // ⬅️ new import
 import BlockedUsers from "../screens/BlockedUsers"; // Apple Guideline 1.2 compliance
+import TermsOfService from "../screens/TermsOfService"; // Apple Guideline 1.2 - EULA requirement
 
 export const UserNavigation = [
   { name: "Home", component: HomeScreen },
@@ -64,6 +65,9 @@ export const UserNavigation = [
 
   // Apple Guideline 1.2 compliance - Blocked users management
   { name: "BlockedUsers", component: BlockedUsers },
+
+  // Apple Guideline 1.2 compliance - EULA / Terms of Service
+  { name: "TermsOfService", component: TermsOfService },
 ];
 
 export const GuestNavigation = [
@@ -75,6 +79,7 @@ export const GuestNavigation = [
   { name: "PasswordReset", component: PasswordReset },
   { name: "AccountType", component: AccountTypeScreen },
   { name: "ZipCode", component: ZipCode },
+  { name: "TermsOfService", component: TermsOfService }, // Apple Guideline 1.2 - EULA
 
   // Browsing screens (available to guests after "Continue as Guest")
   { name: "Home", component: HomeScreen },

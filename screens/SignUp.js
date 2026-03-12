@@ -30,6 +30,7 @@ const SignUp = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [ellipsis, setEllipsis] = useState("");
   const [error, setError] = useState("");
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const route = useRoute();
   const { email, password } = route.params || { email: "", password: "" };
@@ -61,6 +62,10 @@ const SignUp = () => {
     }
     if (!isValidEmail(email)) {
       setError("Please enter a valid email address.");
+      return;
+    }
+    if (!termsAccepted) {
+      setError("Please accept the Terms of Service to continue.");
       return;
     }
 
@@ -141,6 +146,30 @@ const SignUp = () => {
                     returnKeyType="done"
                     onSubmitEditing={handleSubmit}
                   />
+                </View>
+
+                {/* Terms of Service Checkbox */}
+                <View style={styles.termsRow}>
+                  <Pressable
+                    onPress={() => setTermsAccepted(!termsAccepted)}
+                    style={[
+                      styles.checkbox,
+                      termsAccepted && styles.checkboxChecked,
+                    ]}
+                  >
+                    {termsAccepted && (
+                      <Icon name="check" size={12} color="#fff" />
+                    )}
+                  </Pressable>
+                  <Text style={styles.termsText}>
+                    I agree to the{" "}
+                    <Text
+                      style={styles.termsLink}
+                      onPress={() => navigation.navigate("TermsOfService")}
+                    >
+                      Terms of Service
+                    </Text>
+                  </Text>
                 </View>
 
                 {!!error && <Text style={styles.error}>{error}</Text>}
@@ -235,6 +264,36 @@ const styles = StyleSheet.create({
   inputIcon: { marginRight: 10 },
   input: { flex: 1, fontSize: 16 },
   inputDisabled: { color: "#6b7280" },
+
+  termsRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 16,
+    width: "100%",
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: "#1E2A3A",
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 10,
+  },
+  checkboxChecked: {
+    backgroundColor: "#1E2A3A",
+  },
+  termsText: {
+    fontSize: 13,
+    color: "#3C3D52",
+    flex: 1,
+  },
+  termsLink: {
+    color: "#1E2A3A",
+    fontWeight: "700",
+    textDecorationLine: "underline",
+  },
 
   error: {
     color: "red",

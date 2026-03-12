@@ -30,7 +30,7 @@
         "ITSAppUsesNonExemptEncryption": false,
         "NSLocationWhenInUseUsageDescription": "Immpression uses your location to help you discover local artists and art galleries near you."
       },
-      "buildNumber": "6"
+      "buildNumber": "10"
     },
     "android": {
       "adaptiveIcon": {
@@ -38,7 +38,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.immpression.artapp",
-      "versionCode": 23,
+      "versionCode": 24,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4"
