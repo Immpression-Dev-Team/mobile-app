@@ -1005,6 +1005,30 @@ async function setOrderAmounts(orderId, { baseCents, shippingCents, taxCents }, 
   }
 }
 
+// ========= Public Domain Art =========
+
+async function getPublicDomainFeatured() {
+  try {
+    const res = await axios.get(`${API_URL}/public-art/featured`);
+    return res.data; // { success, data: [...artworks] }
+  } catch (error) {
+    console.error("getPublicDomainFeatured error:", error?.message);
+    return { success: false, data: [] };
+  }
+}
+
+async function searchPublicDomainArt(query, source = "all", limit = 20) {
+  try {
+    const res = await axios.get(`${API_URL}/public-art/search`, {
+      params: { q: query, source, limit },
+    });
+    return res.data; // { success, data: [...artworks], count }
+  } catch (error) {
+    console.error("searchPublicDomainArt error:", error?.message);
+    return { success: false, data: [] };
+  }
+}
+
 // ========= Reports (Apple Guideline 1.2 compliance) =========
 
 // Report an image
@@ -1192,6 +1216,9 @@ export {
   calculateTax,
   finalizePayment,
   setOrderAmounts,
+  // Public Domain Art
+  getPublicDomainFeatured,
+  searchPublicDomainArt,
   // Reports (Apple Guideline 1.2)
   reportImage,
   reportUser,

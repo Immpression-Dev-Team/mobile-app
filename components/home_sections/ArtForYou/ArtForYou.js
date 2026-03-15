@@ -289,7 +289,7 @@ export default function ArtForYou() {
     );
   }
 
-  const imageChunks = chunkArray(originalArtData, 2);
+  const imageChunks = chunkArray(originalArtData, 1);
 
   return (
     <TouchableWithoutFeedback onPress={handleUserActivity}>
@@ -321,16 +321,13 @@ export default function ArtForYou() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    height: '100%',
     width: '100%',
-    padding: 16,
-    paddingTop: 0,
-    paddingBottom: 4,
+    paddingHorizontal: 12,
+    paddingTop: 4,
+    paddingBottom: 2,
     marginTop: 0,
   },
   contentWrapper: {
-    flex: 1,
     position: 'relative',
   },
   paintBehindPictures: {

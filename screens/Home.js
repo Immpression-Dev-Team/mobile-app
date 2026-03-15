@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 import ArtForYouSection from "../components/home_sections/ArtForYou/ArtForYouSection";
 import FeaturedArtistsSection from "../components/home_sections/FeaturedArtists/FeaturedArtistsSection";
+import PublicDomainArtSection from "../components/home_sections/PublicDomainArt/PublicDomainArtSection";
 import ScreenTemplate from "./Template/ScreenTemplate";
 
 // background assets (still here if you want banners later)
@@ -44,6 +45,10 @@ export default function HomeScreen() {
         <View style={styles.divider} />
 
         <FeaturedArtistsSection />
+
+        <View style={styles.divider} />
+
+        <PublicDomainArtSection />
       </View>
     </ScreenTemplate>
   );
@@ -53,12 +58,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "space-between",
+    justifyContent: "center",
   },
   buttonRow: {
     flexDirection: 'row',
     marginHorizontal: 20,
-    marginVertical: 10,
+    marginVertical: 4,
     width: "90%",
   },
   fullButtonWrapper: {
@@ -71,7 +76,7 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   fullButton: {
-    paddingVertical: 14,
+    paddingVertical: 12,
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
@@ -91,7 +96,7 @@ const styles = StyleSheet.create({
     width: '85%',
     height: 1,
     backgroundColor: '#E5E7EB',
-    marginVertical: 20,
+    marginVertical: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,

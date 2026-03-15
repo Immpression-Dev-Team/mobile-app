@@ -279,7 +279,7 @@ export default function ArtForYouContent({
 const styles = StyleSheet.create({
   imageContainer: {
     width: '100%',
-    height: Platform.OS === 'web' ? 400 : 280,
+    height: Platform.OS === 'web' ? 220 : 105,
     padding: 0,
   },
   scrollView: {
@@ -287,13 +287,13 @@ const styles = StyleSheet.create({
   },
   column: {
     flexDirection: 'column',
-    width: Platform.OS === 'web' ? 180 : 120,
-    marginRight: Platform.OS === 'web' ? 16 : 8,
-    gap: Platform.OS === 'web' ? 16 : 8,
+    width: Platform.OS === 'web' ? 180 : 100,
+    marginRight: Platform.OS === 'web' ? 16 : 6,
+    gap: Platform.OS === 'web' ? 16 : 6,
   },
   imgContainer: {
-    width: Platform.OS === 'web' ? 180 : 120,
-    height: Platform.OS === 'web' ? 180 : 120,
+    width: Platform.OS === 'web' ? 180 : 100,
+    height: Platform.OS === 'web' ? 180 : 100,
   },
   image: {
     width: '100%',

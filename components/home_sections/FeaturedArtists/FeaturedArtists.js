@@ -149,7 +149,8 @@ const styles = StyleSheet.create({
   outerWrapper: {
     position: 'relative',
     marginHorizontal: 16,
-    marginVertical: 8,
+    marginTop: 46,
+    marginBottom: 4,
   },
   paintBehindEntireContainer: {
     position: 'absolute',
@@ -192,12 +193,12 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   container: {
-    flex: 1,
     width: "100%",
-    padding: 12,
+    paddingHorizontal: 12,
+    paddingTop: 20,
+    paddingBottom: 2,
   },
   contentWrapper: {
-    flex: 1,
     position: 'relative',
   },
   paintBehindArtOnCard: {

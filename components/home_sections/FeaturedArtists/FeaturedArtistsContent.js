@@ -42,8 +42,8 @@ export default function FeaturedArtistsContent({ artists = [], navigate }) { // 
                     ) : (
                         <Text style={styles.noImage}>No Image</Text>
                     )}
-                    <Text style={styles.artistName}>
-                        {item?.name?.length > maxLen ? item.name.substring(0, maxLen) + "..." : item.name}
+                    <Text style={styles.artistName} numberOfLines={1} ellipsizeMode="tail">
+                        {item?.name}
                     </Text>
                     <Text style={styles.artistType}>
                         {item?.artistType || "artistType"}
@@ -67,22 +67,22 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
     scrollView: {
-        height: Platform.OS === "web" ? 300 : 240,
+        height: Platform.OS === "web" ? 200 : 88,
         flexDirection: "row",
         paddingHorizontal: 0,
     },
     artistContainer: {
         flexDirection: "column",
         alignItems: "center",
-        width: Platform.OS === "web" ? 160 : 90,
+        width: Platform.OS === "web" ? 120 : 72,
         marginRight: Platform.OS === "web" ? 16 : 0,
-        paddingBottom: 20,
+        paddingBottom: 2,
     },
     image: {
-        width: Platform.OS === "web" ? 140 : 75,
-        height: Platform.OS === "web" ? 140 : 75,
-        marginBottom: 8,
-        borderRadius: 8,
+        width: Platform.OS === "web" ? 100 : 58,
+        height: Platform.OS === "web" ? 100 : 58,
+        marginBottom: 4,
+        borderRadius: 0,
         resizeMode: "cover",
         borderColor: "#E5E7EB",
         borderWidth: 1,
@@ -98,6 +98,7 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         textAlign: "center",
         marginBottom: 2,
+        width: "100%",
     },
     artistType: {
         fontSize: 8,

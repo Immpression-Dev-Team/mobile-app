@@ -30,6 +30,7 @@ import ZipCode from "../screens/ZipCode";
 import StripeGate from "../screens/StripeGate"; // ⬅️ new import
 import BlockedUsers from "../screens/BlockedUsers"; // Apple Guideline 1.2 compliance
 import TermsOfService from "../screens/TermsOfService"; // Apple Guideline 1.2 - EULA requirement
+import PublicDomainImageScreen from "../screens/PublicDomainImageScreen";
 
 export const UserNavigation = [
   { name: "Home", component: HomeScreen },
@@ -68,6 +69,9 @@ export const UserNavigation = [
 
   // Apple Guideline 1.2 compliance - EULA / Terms of Service
   { name: "TermsOfService", component: TermsOfService },
+
+  // Public Domain Art
+  { name: "PublicDomainImageScreen", component: PublicDomainImageScreen },
 ];
 
 export const GuestNavigation = [
@@ -80,6 +84,7 @@ export const GuestNavigation = [
   { name: "AccountType", component: AccountTypeScreen },
   { name: "ZipCode", component: ZipCode },
   { name: "TermsOfService", component: TermsOfService }, // Apple Guideline 1.2 - EULA
+  { name: "PublicDomainImageScreen", component: PublicDomainImageScreen },
 
   // Browsing screens (available to guests after "Continue as Guest")
   { name: "Home", component: HomeScreen },
