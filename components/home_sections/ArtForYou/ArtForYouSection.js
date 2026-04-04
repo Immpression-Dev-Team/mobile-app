@@ -3,6 +3,6 @@ import ArtForYou from "./ArtForYou";
 
 export default function CategoryNavSection(){
     return(
-        <SectionTemplate renderSection={<ArtForYou/>} />
+        <SectionTemplate renderSection={<ArtForYou />} />
     )
 }

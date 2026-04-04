@@ -4,7 +4,6 @@ import {
     StyleSheet,
     Image,
 } from "react-native";
-import DiscoverButton from "../../DiscoverButton";
 
 export default function ArtForYouHeader(){
     return(
@@ -24,7 +23,6 @@ export default function ArtForYouHeader(){
                     Curated artwork just for you
                 </Text>
             </View>
-            <DiscoverButton/>
         </View>
     )
 }

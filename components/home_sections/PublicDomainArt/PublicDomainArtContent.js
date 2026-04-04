@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
   View,
   Text,
@@ -11,14 +11,23 @@ import {
 import { Image } from "expo-image";
 
 export default function PublicDomainArtContent({ artworks = [], onPress, onScrollEnd, isFetchingMore }) {
+  const triggered = useRef(false);
+
   if (!artworks.length) {
     return <Text style={styles.empty}>No artworks available.</Text>;
   }
 
-  const handleScrollEnd = (e) => {
+  const handleScroll = (e) => {
     const { contentOffset, contentSize, layoutMeasurement } = e.nativeEvent;
-    const nearEnd = contentOffset.x + layoutMeasurement.width >= contentSize.width - 100;
-    if (nearEnd) onScrollEnd?.();
+    const nearEnd = contentOffset.x + layoutMeasurement.width >= contentSize.width - 200;
+    if (nearEnd && !triggered.current) {
+      triggered.current = true;
+      onScrollEnd?.();
+    }
+  };
+
+  const handleScrollBeginDrag = () => {
+    triggered.current = false;
   };
 
   return (
@@ -26,8 +35,9 @@ export default function PublicDomainArtContent({ artworks = [], onPress, onScrol
       horizontal
       showsHorizontalScrollIndicator={false}
       style={styles.scrollView}
-      onMomentumScrollEnd={handleScrollEnd}
-      scrollEventThrottle={16}
+      onScroll={handleScroll}
+      onScrollBeginDrag={handleScrollBeginDrag}
+      scrollEventThrottle={100}
     >
       {artworks.map((item) => (
         <TouchableOpacity

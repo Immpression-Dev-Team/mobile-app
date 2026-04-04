@@ -2,9 +2,7 @@ import {
     View,
     Text,
     StyleSheet,
-    Image,
 } from "react-native";
-import DiscoverButton from "../../DiscoverButton";
 
 export default function FeaturedArtistsHeader(){
     return(
@@ -17,7 +15,6 @@ export default function FeaturedArtistsHeader(){
                     Explore talented creators in our community
                 </Text>
             </View>
-            <DiscoverButton/>
         </View>
     )
 }

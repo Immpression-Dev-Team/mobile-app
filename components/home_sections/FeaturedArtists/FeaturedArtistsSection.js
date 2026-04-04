@@ -3,6 +3,6 @@ import FeaturedArtists from "./FeaturedArtists";
 
 export default function FeaturedArtistsSection(){
     return(
-        <SectionTemplate renderSection={<FeaturedArtists/>} />
+        <SectionTemplate renderSection={<FeaturedArtists />} />
     )
 }

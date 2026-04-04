@@ -1,4 +1,5 @@
-import { StyleSheet, View, TouchableOpacity, Text } from "react-native";
+import { StyleSheet, View, TouchableOpacity, Text, TextInput } from "react-native";
+import { useState } from "react";
 import { useAuth } from "../state/AuthProvider";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from 'expo-linear-gradient';
@@ -6,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import ArtForYouSection from "../components/home_sections/ArtForYou/ArtForYouSection";
 import FeaturedArtistsSection from "../components/home_sections/FeaturedArtists/FeaturedArtistsSection";
 import PublicDomainArtSection from "../components/home_sections/PublicDomainArt/PublicDomainArtSection";
+import HomeSearchResults from "../components/HomeSearchResults";
 import ScreenTemplate from "./Template/ScreenTemplate";
 
 // background assets (still here if you want banners later)
@@ -15,6 +17,7 @@ import discoverBgFooter from "../assets/discover_assets/background_bottom.png";
 export default function HomeScreen() {
   const { token } = useAuth();
   const navigation = useNavigation();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleOrdersPress = () => {
     navigation.navigate('OrderScreen');
@@ -23,32 +26,47 @@ export default function HomeScreen() {
   return (
     <ScreenTemplate>
       <View style={styles.container}>
-        {/* Top Orders Button - Only show for authenticated users */}
+        {/* Top Orders Button + Search - Only show for authenticated users */}
         {token && (
           <View style={styles.buttonRow}>
-            <TouchableOpacity style={styles.fullButtonWrapper} onPress={handleOrdersPress}>
+            <TouchableOpacity style={styles.ordersButtonWrapper} onPress={handleOrdersPress}>
               <LinearGradient
                 colors={['#635BFF', '#7C3AED', '#8B5CF6']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={styles.fullButton}
+                style={styles.ordersButton}
               >
-                <Text style={styles.fullButtonText}>📋 Orders</Text>
+                <Text style={styles.ordersButtonText}>📋 Orders</Text>
               </LinearGradient>
             </TouchableOpacity>
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search art, artists..."
+              placeholderTextColor="#9CA3AF"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              returnKeyType="search"
+              clearButtonMode="while-editing"
+            />
           </View>
         )}
 
-        {/* Main Sections */}
-        <ArtForYouSection />
+        {/* Main Content — sections or search results */}
+        {searchQuery.trim() ? (
+          <HomeSearchResults searchQuery={searchQuery} />
+        ) : (
+          <>
+            <ArtForYouSection />
 
-        <View style={styles.divider} />
+            <View style={styles.divider} />
 
-        <FeaturedArtistsSection />
+            <FeaturedArtistsSection />
 
-        <View style={styles.divider} />
+            <View style={styles.divider} />
 
-        <PublicDomainArtSection />
+            <PublicDomainArtSection />
+          </>
+        )}
       </View>
     </ScreenTemplate>
   );
@@ -57,17 +75,16 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    width: '100%',
   },
   buttonRow: {
     flexDirection: 'row',
-    marginHorizontal: 20,
-    marginVertical: 4,
-    width: "90%",
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginVertical: 6,
+    gap: 8,
   },
-  fullButtonWrapper: {
-    flex: 1,
+  ordersButtonWrapper: {
     borderRadius: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
@@ -75,22 +92,34 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
   },
-  fullButton: {
+  ordersButton: {
     paddingVertical: 12,
+    paddingHorizontal: 16,
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
-  fullButtonText: {
+  ordersButtonText: {
     color: "#FFFFFF",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "700",
     letterSpacing: 0.6,
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 1, height: 1 },
     textShadowRadius: 2,
+  },
+  searchInput: {
+    flex: 1,
+    height: 44,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 16,
+    paddingHorizontal: 14,
+    fontSize: 14,
+    color: '#1F2937',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   divider: {
     width: '85%',
