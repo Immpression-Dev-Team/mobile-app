@@ -25,7 +25,6 @@ function PasswordReset() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [sent, setSent] = useState(false);
 
   const navigation = useNavigation();
 
@@ -43,7 +42,7 @@ function PasswordReset() {
       if (!result?.success) {
         throw new Error(result?.message || "Something went wrong. Please try again.");
       }
-      setSent(true);
+      navigation.navigate("ResetPasswordConfirm", { email: email.trim() });
     } catch (err) {
       setError(err?.message || "An unexpected error occurred.");
     } finally {
@@ -68,63 +67,47 @@ function PasswordReset() {
               <Image source={headerImage} style={styles.headerImage} />
               <Text style={styles.title}>Reset Your Password</Text>
               <Text style={styles.subtitle}>
-                {sent
-                  ? "Check your email for a password reset link."
-                  : "Enter your email and we'll send you a reset link."}
+                Enter your email and we'll send you a reset code.
               </Text>
             </View>
 
             <View style={styles.card}>
-              {sent ? (
-                <>
-                  <Text style={styles.successText}>
-                    A reset link has been sent to{"\n"}
-                    <Text style={styles.emailBold}>{email}</Text>
+              <>
+                <View style={styles.inputWrapper}>
+                  <Icon name="envelope" size={14} color="#000" style={styles.inputIcon} />
+                  <TextInput
+                    placeholder="Email"
+                    value={email}
+                    onChangeText={setEmail}
+                    style={styles.input}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    returnKeyType="done"
+                    onSubmitEditing={handleSubmit}
+                  />
+                </View>
+
+                {!!error && <Text style={styles.error}>{error}</Text>}
+
+                <Pressable
+                  onPress={handleSubmit}
+                  style={({ pressed }) => [
+                    styles.primaryBtn,
+                    (pressed || isLoading) && styles.btnPressed,
+                  ]}
+                  disabled={isLoading}
+                >
+                  <Text style={styles.primaryBtnText}>
+                    {isLoading ? "Sending…" : "Send Reset Code"}
                   </Text>
-                  <Pressable
-                    onPress={() => navigation.navigate("Login")}
-                    style={styles.primaryBtn}
-                  >
-                    <Text style={styles.primaryBtnText}>Back to Login</Text>
-                  </Pressable>
-                </>
-              ) : (
-                <>
-                  <View style={styles.inputWrapper}>
-                    <Icon name="envelope" size={14} color="#000" style={styles.inputIcon} />
-                    <TextInput
-                      placeholder="Email"
-                      value={email}
-                      onChangeText={setEmail}
-                      style={styles.input}
-                      keyboardType="email-address"
-                      autoCapitalize="none"
-                      returnKeyType="done"
-                      onSubmitEditing={handleSubmit}
-                    />
-                  </View>
+                </Pressable>
 
-                  {!!error && <Text style={styles.error}>{error}</Text>}
-
-                  <Pressable
-                    onPress={handleSubmit}
-                    style={({ pressed }) => [
-                      styles.primaryBtn,
-                      (pressed || isLoading) && styles.btnPressed,
-                    ]}
-                    disabled={isLoading}
-                  >
-                    <Text style={styles.primaryBtnText}>
-                      {isLoading ? "Sending…" : "Send Reset Link"}
-                    </Text>
-                  </Pressable>
-
-                  <Pressable
-                    onPress={() => navigation.navigate("Login")}
-                    style={styles.textOnlyBtn}
-                  >
-                    <Text style={styles.textOnlyText}>Back to Login</Text>
-                  </Pressable>
+                <Pressable
+                  onPress={() => navigation.navigate("Login")}
+                  style={styles.textOnlyBtn}
+                >
+                  <Text style={styles.textOnlyText}>Back to Login</Text>
+                </Pressable>
                 </>
               )}
             </View>

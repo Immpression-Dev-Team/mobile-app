@@ -5,6 +5,7 @@ import Profile from "../screens/Profile";
 import SignUp from "../screens/SignUp";
 import ImageScreen from "../components/ImageScreen";
 import PasswordReset from "../screens/PasswordReset";
+import ResetPasswordConfirm from "../screens/ResetPasswordConfirm";
 import ArtistScreen from "../components/ArtistScreens";
 import Upload from "../screens/Upload";
 import Login from "../screens/Login";
@@ -81,6 +82,7 @@ export const GuestNavigation = [
   { name: "VerifyOtp", component: VerifyOtp },
   { name: "SignUp", component: SignUp },
   { name: "PasswordReset", component: PasswordReset },
+  { name: "ResetPasswordConfirm", component: ResetPasswordConfirm },
   { name: "AccountType", component: AccountTypeScreen },
   { name: "ZipCode", component: ZipCode },
   { name: "TermsOfService", component: TermsOfService }, // Apple Guideline 1.2 - EULA

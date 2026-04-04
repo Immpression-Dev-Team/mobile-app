@@ -1029,6 +1029,20 @@ async function searchPublicDomainArt(query, source = "all", limit = 20) {
   }
 }
 
+async function resetPassword(email, otp, newPassword) {
+  try {
+    const response = await axios.post(
+      `${API_URL}/reset-password`,
+      { email, otp, newPassword },
+      { headers: { "Content-Type": "application/json" } }
+    );
+    return response.data; // { success, message }
+  } catch (error) {
+    console.error("resetPassword error:", error?.response?.data || error?.message);
+    return { success: false, error: error?.response?.data?.error || "An error occurred. Please try again." };
+  }
+}
+
 async function forgotPassword(email) {
   try {
     const response = await axios.post(
@@ -1178,6 +1192,7 @@ export {
   requestOtp,
   verifyOtp,
   forgotPassword,
+  resetPassword,
   getAllImages,
   uploadImage,
   uploadProfilePicture,
