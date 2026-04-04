@@ -167,7 +167,7 @@ export default function ArtForYouContent({
             {chunk.map((art, index) => (
               <Pressable
                 key={`${art._id}-${reloadToken}`} // ensure subtree remount too
-                onPress={() => handleImagePress?.(chunkIndex * 2 + index)}
+                onPress={() => handleImagePress?.(chunkIndex + index)}
                 style={styles.imgContainer}
               >
                 <LazyImage art={art} style={styles.image} reloadToken={reloadToken} />
