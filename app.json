@@ -6,7 +6,7 @@
       "ios",
       "android"
     ],
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/Logo_T.png",
     "userInterfaceStyle": "light",
@@ -30,7 +30,7 @@
         "ITSAppUsesNonExemptEncryption": false,
         "NSLocationWhenInUseUsageDescription": "Immpression uses your location to help you discover local artists and art galleries near you."
       },
-      "buildNumber": "10"
+      "buildNumber": "11"
     },
     "android": {
       "adaptiveIcon": {
@@ -38,7 +38,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.immpression.artapp",
-      "versionCode": 24,
+      "versionCode": 26,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4"
