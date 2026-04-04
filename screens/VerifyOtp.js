@@ -31,7 +31,7 @@ export default function VerifyOtp() {
   const route = useRoute();
   const navigation = useNavigation();
 
-  const { email, password, mode } = route.params ?? { email: "", password: "", mode: "" };
+  const { email, password } = route.params ?? { email: "", password: "" };
 
   const handleChangeDigit = (text, idx) => {
     const value = text.replace(/[^0-9]/g, "");
@@ -68,11 +68,7 @@ export default function VerifyOtp() {
       const result = await verifyOtp(email, joined);
       if (!result?.success) throw new Error("Invalid OTP. Please try again.");
 
-      if (mode === "reset") {
-        navigation.navigate("Login");
-      } else {
-        navigation.navigate("SignUp", { email, password });
-      }
+      navigation.navigate("SignUp", { email, password });
     } catch (err) {
       setError(err?.message || "An unexpected error occurred");
     } finally {

@@ -1029,6 +1029,20 @@ async function searchPublicDomainArt(query, source = "all", limit = 20) {
   }
 }
 
+async function forgotPassword(email) {
+  try {
+    const response = await axios.post(
+      `${API_URL}/forgot-password`,
+      { email },
+      { headers: { "Content-Type": "application/json" } }
+    );
+    return response.data; // { success, message }
+  } catch (error) {
+    console.error("forgotPassword error:", error?.response?.data || error?.message);
+    return { success: false, message: "An error occurred. Please try again." };
+  }
+}
+
 // ========= Reports (Apple Guideline 1.2 compliance) =========
 
 // Report an image
@@ -1163,6 +1177,7 @@ async function getBlockedUserIds(token) {
 export {
   requestOtp,
   verifyOtp,
+  forgotPassword,
   getAllImages,
   uploadImage,
   uploadProfilePicture,
