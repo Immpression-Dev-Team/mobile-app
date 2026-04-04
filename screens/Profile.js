@@ -1,5 +1,5 @@
 // screens/Profile.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   View,
   Text,
@@ -25,7 +25,7 @@ import {
 } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
 import ReportModal from "../components/ReportModal";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { useNavigation, useRoute, useFocusEffect } from "@react-navigation/native";
 import ScreenTemplate from "./Template/ScreenTemplate";
 import FolderPreview from "../components/FolderPreview";
 import axios from "axios";
@@ -125,6 +125,27 @@ const Profile = () => {
       });
     }
   }, [token, userId, isOwnProfile]);
+
+  // Re-fetch view count whenever this screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      const refreshViews = async () => {
+        try {
+          if (isOwnProfile) {
+            const profile = await getUserProfile(token);
+            const u = profile?.user || {};
+            setViewsCount(u?.views || 0);
+          } else {
+            const res = await axios.get(`${API_URL}/profile/${userId}`);
+            setViewsCount(res.data?.user?.views || 0);
+          }
+        } catch (err) {
+          // silently ignore
+        }
+      };
+      refreshViews();
+    }, [token, userId, isOwnProfile])
+  );
 
   const fetchBoughtImages = async () => {
     try {

@@ -346,18 +346,18 @@ async function getUserImages(token, stage) {
 // Function to increment views for a specific user by ID
 async function incrementViews(userId, token) {
   try {
-    const response = await axios.patch(
-      `${API_URL}/increment-views/${userId}`,
+    const response = await axios.post(
+      `${API_URL}/profile/${userId}/unique-views`,
       {},
       {
         headers: {
-          Authorization: `Bearer ${token}`, // Add token to headers for authentication
+          Authorization: `Bearer ${token}`,
         },
       }
     );
     return response.data;
   } catch (error) {
-    console.error("Error incrementing views:", error);
+    console.error("Error incrementing profile views:", error);
     return error.response;
   }
 }
@@ -388,12 +388,12 @@ async function updateAccountType(accountType, token) {
 // Function to increment views for a specific image by ID
 async function incrementImageViews(imageId, token) {
   try {
-    const response = await axios.patch(
-      `${API_URL}/increment-image-views/${imageId}`,
+    const response = await axios.post(
+      `${API_URL}/image/${imageId}/unique-views`,
       {},
       {
         headers: {
-          Authorization: `Bearer ${token}`, // Add token to headers for authentication
+          Authorization: `Bearer ${token}`,
         },
       }
     );
