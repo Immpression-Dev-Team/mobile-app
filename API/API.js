@@ -387,9 +387,10 @@ async function updateAccountType(accountType, token) {
 
 // Function to increment views for a specific image by ID
 async function incrementImageViews(imageId, token) {
+  const url = `${API_URL}/image/${imageId}/unique-views`;
   try {
     const response = await axios.post(
-      `${API_URL}/image/${imageId}/unique-views`,
+      url,
       {},
       {
         headers: {
@@ -399,7 +400,10 @@ async function incrementImageViews(imageId, token) {
     );
     return response.data;
   } catch (error) {
-    console.error("Error incrementing image views:", error);
+    console.error(
+      `Error incrementing image views [${error?.response?.status ?? "network"}] → ${url}`,
+      error?.response?.data ?? error?.message
+    );
     return error.response;
   }
 }

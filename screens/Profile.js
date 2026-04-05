@@ -22,6 +22,7 @@ import {
   checkStripeStatus as checkStripeStatusApi,
   blockUser,
   checkBlockStatus,
+  incrementViews,
 } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
 import ReportModal from "../components/ReportModal";
@@ -126,7 +127,7 @@ const Profile = () => {
     }
   }, [token, userId, isOwnProfile]);
 
-  // Re-fetch view count whenever this screen comes into focus
+  // Re-fetch view count and increment profile views whenever this screen comes into focus
   useFocusEffect(
     useCallback(() => {
       const refreshViews = async () => {
@@ -136,6 +137,10 @@ const Profile = () => {
             const u = profile?.user || {};
             setViewsCount(u?.views || 0);
           } else {
+            // Record this visit as a unique profile view
+            if (token && userId) {
+              await incrementViews(userId, token);
+            }
             const res = await axios.get(`${API_URL}/profile/${userId}`);
             setViewsCount(res.data?.user?.views || 0);
           }
