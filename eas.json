@@ -16,7 +16,7 @@
       "credentialsSource": "remote"
     },
     "production": {
-      "autoIncrement": false,
+      "autoIncrement": true,
       "channel": "production",
       "credentialsSource": "remote",
       "env": {
