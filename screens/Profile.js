@@ -97,12 +97,16 @@ const Profile = () => {
       try {
         const userImgs = await getUserImages(token);
 
-        setSellingImages(
-          userImgs?.images?.filter((img) => img.stage === "approved") || []
+        const allImages = userImgs?.images || [];
+
+        setSellingImages(allImages.filter((img) => img.stage === "approved"));
+        setSoldImages(allImages.filter((img) => img.stage === "sold"));
+
+        const totalLikes = allImages.reduce(
+          (sum, img) => sum + (img.likes?.length || 0),
+          0
         );
-        setSoldImages(
-          userImgs?.images?.filter((img) => img.stage === "sold") || []
-        );
+        setLikesCount(totalLikes);
 
         const likedImgsRes = await fetchLikedImages(token);
         setLikedImages(likedImgsRes?.images || []);
@@ -369,14 +373,14 @@ const Profile = () => {
             <View style={styles.folderRow}>
               <FolderPreview
                 title="Favorited"
-                images={[likedImages.find((img) => img.imageLink)?.imageLink]}
+                images={likedImages.map((img) => img.imageLink).filter(Boolean)}
                 onPress={() =>
                   navigation.navigate("GalleryView", { type: "liked" })
                 }
               />
               <FolderPreview
                 title="Gallery / Selling"
-                images={[sellingImages.find((img) => img.imageLink)?.imageLink]}
+                images={sellingImages.map((img) => img.imageLink).filter(Boolean)}
                 onPress={() =>
                   navigation.navigate("GalleryView", { type: "selling" })
                 }
