@@ -1,29 +1,46 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
 
 const IOS_AD_UNIT_ID = 'ca-app-pub-8886964376457193/3931622326';
 const ANDROID_AD_UNIT_ID = 'ca-app-pub-8886964376457193/7403963475';
 
-const adUnitId = __DEV__
-  ? TestIds.BANNER
-  : Platform.OS === 'ios'
-  ? IOS_AD_UNIT_ID
-  : ANDROID_AD_UNIT_ID;
+// Safely check if the native AdMob module is available (not in Expo Go)
+let BannerAd = null;
+let BannerAdSize = null;
+let TestIds = null;
+let nativeAvailable = false;
+
+try {
+  const admob = require('react-native-google-mobile-ads');
+  BannerAd = admob.BannerAd;
+  BannerAdSize = admob.BannerAdSize;
+  TestIds = admob.TestIds;
+  nativeAvailable = true;
+} catch (_) {
+  nativeAvailable = false;
+}
 
 export default function HomeBannerAd() {
   const [adLoaded, setAdLoaded] = useState(false);
   const [adFailed, setAdFailed] = useState(false);
 
+  const adUnitId = nativeAvailable
+    ? __DEV__
+      ? TestIds.BANNER
+      : Platform.OS === 'ios'
+      ? IOS_AD_UNIT_ID
+      : ANDROID_AD_UNIT_ID
+    : null;
+
   return (
     <View style={styles.container}>
-      {/* Placeholder shown until ad loads or if it fails */}
-      {!adLoaded && (
+      {/* Placeholder shown until ad loads, if it fails, or in Expo Go */}
+      {(!adLoaded || !nativeAvailable) && (
         <View style={styles.placeholder}>
           <Text style={styles.placeholderText}>AD</Text>
         </View>
       )}
-      {!adFailed && (
+      {nativeAvailable && !adFailed && (
         <BannerAd
           unitId={adUnitId}
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
