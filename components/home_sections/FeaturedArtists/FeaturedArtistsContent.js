@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     image: {
         width: Platform.OS === "web" ? 64 : 54,
         height: Platform.OS === "web" ? 64 : 54,
-        borderRadius: 27,
+        borderRadius: 0,
         resizeMode: "cover",
         borderColor: "#E5E7EB",
         borderWidth: 1,
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     imageFallback: {
         width: Platform.OS === "web" ? 64 : 54,
         height: Platform.OS === "web" ? 64 : 54,
-        borderRadius: 27,
+        borderRadius: 0,
         backgroundColor: "#E5E7EB",
     },
 });
