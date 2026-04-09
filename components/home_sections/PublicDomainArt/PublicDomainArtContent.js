@@ -53,17 +53,6 @@ export default function PublicDomainArtContent({ artworks = [], onPress, onScrol
             transition={200}
             cachePolicy="memory-disk"
           />
-          <View style={styles.info}>
-            <Text style={styles.title} numberOfLines={1}>
-              {item.title}
-            </Text>
-            <Text style={styles.artist} numberOfLines={1}>
-              {item.artist}
-            </Text>
-            {item.year ? (
-              <Text style={styles.year}>{item.year}</Text>
-            ) : null}
-          </View>
         </TouchableOpacity>
       ))}
       {isFetchingMore && (
@@ -80,7 +69,7 @@ const IMG_H = Platform.OS === "web" ? 120 : 68;
 
 const styles = StyleSheet.create({
   scrollView: {
-    height: Platform.OS === "web" ? 210 : 120,
+    height: Platform.OS === "web" ? 140 : 80,
   },
   card: {
     width: CARD_W,
