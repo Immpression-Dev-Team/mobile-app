@@ -65,11 +65,11 @@ export default function PublicDomainArtContent({ artworks = [], onPress, onScrol
 }
 
 const CARD_W = Platform.OS === "web" ? 140 : 82;
-const IMG_H = Platform.OS === "web" ? 120 : 68;
+const IMG_H = Platform.OS === "web" ? 120 : 90;
 
 const styles = StyleSheet.create({
   scrollView: {
-    height: Platform.OS === "web" ? 140 : 80,
+    height: Platform.OS === "web" ? 140 : 100,
   },
   card: {
     width: CARD_W,
