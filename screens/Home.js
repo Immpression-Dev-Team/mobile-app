@@ -53,25 +53,26 @@ export default function HomeScreen() {
         )}
 
         {/* Main Content — sections or search results */}
-        {searchQuery.trim() ? (
-          <HomeSearchResults searchQuery={searchQuery} />
-        ) : (
-          <>
-            <ArtForYouSection />
+        <View style={styles.content}>
+          {searchQuery.trim() ? (
+            <HomeSearchResults searchQuery={searchQuery} />
+          ) : (
+            <>
+              <ArtForYouSection />
 
-            <HomeBannerAd />
+              <View style={styles.divider} />
 
-            <View style={styles.divider} />
+              <FeaturedArtistsSection />
 
-            <FeaturedArtistsSection />
+              <View style={styles.divider} />
 
-            <HomeBannerAd />
+              <PublicDomainArtSection />
+            </>
+          )}
+        </View>
 
-            <View style={styles.divider} />
-
-            <PublicDomainArtSection />
-          </>
-        )}
+        {/* Fixed banner ad pinned above footer — never affects section layout */}
+        <HomeBannerAd />
       </View>
     </ScreenTemplate>
   );
@@ -81,6 +82,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: '100%',
+    flexDirection: 'column',
+  },
+  content: {
+    flex: 1,
   },
   buttonRow: {
     flexDirection: 'row',
