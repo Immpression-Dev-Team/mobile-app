@@ -84,7 +84,14 @@
       [
         "@react-native-google-signin/google-signin"
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-8886964376457193~4595439488",
+          "iosAppId": "ca-app-pub-8886964376457193~3642915506"
+        }
+      ]
     ]
   }
 }

@@ -8,6 +8,7 @@ import ArtForYouSection from "../components/home_sections/ArtForYou/ArtForYouSec
 import FeaturedArtistsSection from "../components/home_sections/FeaturedArtists/FeaturedArtistsSection";
 import PublicDomainArtSection from "../components/home_sections/PublicDomainArt/PublicDomainArtSection";
 import HomeSearchResults from "../components/HomeSearchResults";
+import HomeBannerAd from "../components/HomeBannerAd";
 import ScreenTemplate from "./Template/ScreenTemplate";
 
 // background assets (still here if you want banners later)
@@ -58,9 +59,13 @@ export default function HomeScreen() {
           <>
             <ArtForYouSection />
 
+            <HomeBannerAd />
+
             <View style={styles.divider} />
 
             <FeaturedArtistsSection />
+
+            <HomeBannerAd />
 
             <View style={styles.divider} />
 
