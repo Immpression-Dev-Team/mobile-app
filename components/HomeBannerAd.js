@@ -56,11 +56,12 @@ export default function HomeBannerAd() {
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    marginVertical: 8,
+    width: '100%',
+    flex: 1,
   },
   placeholder: {
     width: '100%',
-    height: 60,
+    flex: 1,
     backgroundColor: '#F3F4F6',
     borderWidth: 1,
     borderColor: '#E5E7EB',

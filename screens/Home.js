@@ -91,10 +91,11 @@ const styles = StyleSheet.create({
   },
   adContainer: {
     width: '100%',
-    height: 60,
+    height: 80,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#fff',
+    paddingVertical: 8,
   },
   buttonRow: {
     flexDirection: 'row',
