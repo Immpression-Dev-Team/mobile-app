@@ -4,6 +4,7 @@ import {
     TouchableOpacity,
     Image,
     Text,
+    View,
     Platform,
 } from "react-native";
 
@@ -40,14 +41,8 @@ export default function FeaturedArtistsContent({ artists = [], navigate }) { // 
                             style={styles.image}
                         />
                     ) : (
-                        <Text style={styles.noImage}>No Image</Text>
+                        <View style={styles.imageFallback} />
                     )}
-                    <Text style={styles.artistName} numberOfLines={1} ellipsizeMode="tail">
-                        {item?.name}
-                    </Text>
-                    <Text style={styles.artistType}>
-                        {item?.artistType || "artistType"}
-                    </Text>
                 </TouchableOpacity>
             ))}
         </ScrollView>
@@ -67,22 +62,20 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
     scrollView: {
-        height: Platform.OS === "web" ? 200 : 88,
+        height: Platform.OS === "web" ? 120 : 68,
         flexDirection: "row",
         paddingHorizontal: 0,
     },
     artistContainer: {
         flexDirection: "column",
         alignItems: "center",
-        width: Platform.OS === "web" ? 120 : 72,
-        marginRight: Platform.OS === "web" ? 16 : 0,
-        paddingBottom: 2,
+        width: Platform.OS === "web" ? 80 : 64,
+        marginRight: Platform.OS === "web" ? 12 : 0,
     },
     image: {
-        width: Platform.OS === "web" ? 100 : 58,
-        height: Platform.OS === "web" ? 100 : 58,
-        marginBottom: 4,
-        borderRadius: 0,
+        width: Platform.OS === "web" ? 64 : 54,
+        height: Platform.OS === "web" ? 64 : 54,
+        borderRadius: 27,
         resizeMode: "cover",
         borderColor: "#E5E7EB",
         borderWidth: 1,
@@ -92,18 +85,10 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 6,
     },
-    artistName: {
-        fontSize: 10,
-        color: "#1F2937",
-        fontWeight: "700",
-        textAlign: "center",
-        marginBottom: 2,
-        width: "100%",
-    },
-    artistType: {
-        fontSize: 8,
-        color: "#6B7280",
-        fontWeight: "500",
-        textAlign: "center",
+    imageFallback: {
+        width: Platform.OS === "web" ? 64 : 54,
+        height: Platform.OS === "web" ? 64 : 54,
+        borderRadius: 27,
+        backgroundColor: "#E5E7EB",
     },
 });
