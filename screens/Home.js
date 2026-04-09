@@ -72,7 +72,9 @@ export default function HomeScreen() {
         </View>
 
         {/* Fixed banner ad pinned above footer — never affects section layout */}
-        <HomeBannerAd />
+        <View style={styles.adContainer}>
+          <HomeBannerAd />
+        </View>
       </View>
     </ScreenTemplate>
   );
@@ -86,6 +88,13 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
+  },
+  adContainer: {
+    width: '100%',
+    height: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#fff',
   },
   buttonRow: {
     flexDirection: 'row',
