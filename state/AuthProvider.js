@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { isTokenExpired } from "../utils/authUtils";
-import {IP} from "../API_URL";
+import { API_URL } from "../API_URL";
 
 const AuthContext = createContext();
 
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
 
   const refreshToken = async (oldToken) => {
     try {
-      const response = await fetch(`http://${IP}:4000/refresh-token`, {
+      const response = await fetch(`${API_URL}/refresh-token`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token: oldToken }),

@@ -266,6 +266,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
+    color: '#1F2937',
   },
 
   // Error + links

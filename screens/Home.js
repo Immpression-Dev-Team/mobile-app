@@ -8,7 +8,6 @@ import ArtForYouSection from "../components/home_sections/ArtForYou/ArtForYouSec
 import FeaturedArtistsSection from "../components/home_sections/FeaturedArtists/FeaturedArtistsSection";
 import PublicDomainArtSection from "../components/home_sections/PublicDomainArt/PublicDomainArtSection";
 import HomeSearchResults from "../components/HomeSearchResults";
-import HomeBannerAd from "../components/HomeBannerAd";
 import ScreenTemplate from "./Template/ScreenTemplate";
 
 // background assets (still here if you want banners later)
@@ -58,23 +57,25 @@ export default function HomeScreen() {
             <HomeSearchResults searchQuery={searchQuery} />
           ) : (
             <>
-              <ArtForYouSection />
+              <View style={styles.sectionZone}>
+                <ArtForYouSection />
+              </View>
 
               <View style={styles.divider} />
 
-              <FeaturedArtistsSection />
+              <View style={styles.sectionZoneSmall}>
+                <FeaturedArtistsSection />
+              </View>
 
               <View style={styles.divider} />
 
-              <PublicDomainArtSection />
+              <View style={styles.sectionZone}>
+                <PublicDomainArtSection />
+              </View>
             </>
           )}
         </View>
 
-        {/* Fixed banner ad pinned above footer — never affects section layout */}
-        <View style={styles.adContainer}>
-          <HomeBannerAd />
-        </View>
       </View>
     </ScreenTemplate>
   );
@@ -89,13 +90,13 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  adContainer: {
-    width: '100%',
-    height: 80,
-    alignItems: 'center',
+  sectionZone: {
+    flex: 3,
     justifyContent: 'center',
-    backgroundColor: '#fff',
-    paddingVertical: 8,
+  },
+  sectionZoneSmall: {
+    flex: 2,
+    justifyContent: 'center',
   },
   buttonRow: {
     flexDirection: 'row',

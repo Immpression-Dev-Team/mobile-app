@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Image as ExpoImage } from 'expo-image';
+import InlineAdCard from '../../InlineAdCard';
 
 const skeleton = require('../../../assets/skeleton.png');
 const loadingGif = require('../../../assets/loading-gif.gif');
@@ -163,17 +164,27 @@ export default function ArtForYouContent({
         }
       >
         {imageChunks.map((chunk, chunkIndex) => (
-          <View key={`chunk-${chunkIndex}`} style={styles.column}>
-            {chunk.map((art, index) => (
-              <Pressable
-                key={`${art._id}-${reloadToken}`} // ensure subtree remount too
-                onPress={() => handleImagePress?.(chunkIndex + index)}
-                style={styles.imgContainer}
-              >
-                <LazyImage art={art} style={styles.image} reloadToken={reloadToken} />
-              </Pressable>
-            ))}
-          </View>
+          <React.Fragment key={`chunk-${chunkIndex}`}>
+            <View style={styles.column}>
+              {chunk.map((art, index) => (
+                <Pressable
+                  key={`${art._id}-${reloadToken}`}
+                  onPress={() => handleImagePress?.(chunkIndex + index)}
+                  style={styles.imgContainer}
+                >
+                  <LazyImage art={art} style={styles.image} reloadToken={reloadToken} />
+                </Pressable>
+              ))}
+            </View>
+            {(chunkIndex + 1) % 2 === 0 && (
+              <View style={styles.column}>
+                <InlineAdCard
+                  width={Platform.OS === 'web' ? 180 : 100}
+                  height={Platform.OS === 'web' ? 180 : 100}
+                />
+              </View>
+            )}
+          </React.Fragment>
         ))}
       </ScrollView>
 

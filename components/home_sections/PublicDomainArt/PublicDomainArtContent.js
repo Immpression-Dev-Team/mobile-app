@@ -1,4 +1,5 @@
 import React, { useRef } from "react";
+import InlineAdCard from '../../InlineAdCard';
 import {
   View,
   Text,
@@ -39,21 +40,29 @@ export default function PublicDomainArtContent({ artworks = [], onPress, onScrol
       onScrollBeginDrag={handleScrollBeginDrag}
       scrollEventThrottle={100}
     >
-      {artworks.map((item) => (
-        <TouchableOpacity
-          key={item.id}
-          style={styles.card}
-          onPress={() => onPress?.(item)}
-          activeOpacity={0.85}
-        >
-          <Image
-            source={{ uri: item.thumbnailUrl || item.imageUrl }}
-            style={styles.image}
-            contentFit="cover"
-            transition={200}
-            cachePolicy="memory-disk"
-          />
-        </TouchableOpacity>
+      {artworks.map((item, index) => (
+        <React.Fragment key={item.id}>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => onPress?.(item)}
+            activeOpacity={0.85}
+          >
+            <Image
+              source={{ uri: item.thumbnailUrl || item.imageUrl }}
+              style={styles.image}
+              contentFit="cover"
+              transition={200}
+              cachePolicy="memory-disk"
+            />
+          </TouchableOpacity>
+          {(index + 1) % 2 === 0 && (
+            <InlineAdCard
+              width={CARD_W}
+              height={IMG_H}
+              containerStyle={styles.adCard}
+            />
+          )}
+        </React.Fragment>
       ))}
       {isFetchingMore && (
         <View style={styles.loader}>
@@ -102,6 +111,9 @@ const styles = StyleSheet.create({
   year: {
     fontSize: 9,
     color: "#9CA3AF",
+  },
+  adCard: {
+    marginRight: 10,
   },
   loader: {
     width: 60,

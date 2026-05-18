@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     marginTop: 12,
   },
   inputIcon: { marginRight: 10 },
-  input: { flex: 1, fontSize: 16 },
+  input: { flex: 1, fontSize: 16, color: '#1F2937' },
 
   error: {
     color: "red",

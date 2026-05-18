@@ -8,7 +8,7 @@ import {
     Platform,
 } from "react-native";
 
-export default function FeaturedArtistsContent({ artists = [], navigate }) { // Default to an empty array
+export default function FeaturedArtistsContent({ artists = [], navigate }) {
     const maxLen = 10;
 
     if (!artists || artists.length === 0) {
