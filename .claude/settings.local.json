@@ -7,7 +7,14 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\nchore\\(app.json\\): configure iOS bundle and permissions\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git commit --no-verify -m \"$\\(cat <<''EOF''\nchore\\(app.json\\): configure iOS bundle and permissions\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git push:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(git stash *)",
+      "Bash(git pull *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(docker info *)",
+      "Bash(git commit --no-verify -m ' *)",
+      "Bash(eas build *)"
     ],
     "deny": [],
     "ask": []
