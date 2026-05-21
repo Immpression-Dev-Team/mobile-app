@@ -56,11 +56,7 @@ export default function PublicDomainArtContent({ artworks = [], onPress, onScrol
             />
           </TouchableOpacity>
           {(index + 1) % 2 === 0 && (
-            <InlineAdCard
-              width={CARD_W}
-              height={IMG_H}
-              containerStyle={styles.adCard}
-            />
+            <InlineAdCard containerStyle={styles.adCard} />
           )}
         </React.Fragment>
       ))}
@@ -114,6 +110,7 @@ const styles = StyleSheet.create({
   },
   adCard: {
     marginRight: 10,
+    alignSelf: 'center',
   },
   loader: {
     width: 60,

@@ -4,18 +4,24 @@ import { View, Text, StyleSheet, Platform } from 'react-native';
 const IOS_AD_UNIT_ID = 'ca-app-pub-8886964376457193/3931622326';
 const ANDROID_AD_UNIT_ID = 'ca-app-pub-8886964376457193/7403963475';
 
+// 320x100 — standard Google Large Banner, high fill rate in production
+const AD_WIDTH = 320;
+const AD_HEIGHT = 100;
+
 let BannerAd = null;
+let BannerAdSize = null;
 let TestIds = null;
 let nativeAvailable = false;
 
 try {
   const admob = require('react-native-google-mobile-ads');
   BannerAd = admob.BannerAd;
+  BannerAdSize = admob.BannerAdSize;
   TestIds = admob.TestIds;
   nativeAvailable = true;
 } catch (_) {}
 
-export default function InlineAdCard({ width, height, containerStyle }) {
+export default function InlineAdCard({ containerStyle }) {
   const [adLoaded, setAdLoaded] = useState(false);
   const [adFailed, setAdFailed] = useState(false);
 
@@ -26,7 +32,7 @@ export default function InlineAdCard({ width, height, containerStyle }) {
     : null;
 
   return (
-    <View style={[styles.card, { width, height }, containerStyle]}>
+    <View style={[styles.card, containerStyle]}>
       {(!nativeAvailable || adFailed || !adLoaded) && (
         <View style={[StyleSheet.absoluteFill, styles.placeholder]}>
           <Text style={styles.adLabel}>Ad</Text>
@@ -35,7 +41,7 @@ export default function InlineAdCard({ width, height, containerStyle }) {
       {nativeAvailable && !adFailed && (
         <BannerAd
           unitId={adUnitId}
-          size={`${width}x${height}`}
+          size={BannerAdSize.LARGE_BANNER}
           requestOptions={{ requestNonPersonalizedAdsOnly: false }}
           onAdLoaded={() => setAdLoaded(true)}
           onAdFailedToLoad={() => setAdFailed(true)}
@@ -45,15 +51,15 @@ export default function InlineAdCard({ width, height, containerStyle }) {
   );
 }
 
+export { AD_WIDTH, AD_HEIGHT };
+
 const styles = StyleSheet.create({
   card: {
+    width: AD_WIDTH,
+    height: AD_HEIGHT,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: '#E5E7EB',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
     elevation: 6,
   },
   placeholder: {
