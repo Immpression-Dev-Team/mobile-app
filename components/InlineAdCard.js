@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, Platform } from 'react-native';
 
 // TODO: In AdMob console create two "Native" type ad units and paste the IDs here.
 // These are DIFFERENT from your banner ad units — banner IDs will not work for native ads.
-const IOS_NATIVE_AD_UNIT_ID = 'ca-app-pub-8886964376457193/XXXXXXXXXX';
-const ANDROID_NATIVE_AD_UNIT_ID = 'ca-app-pub-8886964376457193/XXXXXXXXXX';
+const IOS_NATIVE_AD_UNIT_ID = 'ca-app-pub-8886964376457193/8855235777';
+const ANDROID_NATIVE_AD_UNIT_ID = 'ca-app-pub-8886964376457193/5730756289';
 
 let NativeAd = null;
 let NativeAdView = null;
