@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Image as ExpoImage } from 'expo-image';
-import InlineAdCard, { AD_HEIGHT } from '../../InlineAdCard';
+import InlineAdCard from '../../InlineAdCard';
 
 const skeleton = require('../../../assets/skeleton.png');
 const loadingGif = require('../../../assets/loading-gif.gif');
@@ -177,7 +177,11 @@ export default function ArtForYouContent({
               ))}
             </View>
             {(chunkIndex + 1) % 2 === 0 && (
-              <InlineAdCard containerStyle={styles.adCard} />
+              <InlineAdCard
+                width={Platform.OS === 'web' ? 180 : 100}
+                height={Platform.OS === 'web' ? 180 : 100}
+                containerStyle={styles.adCard}
+              />
             )}
           </React.Fragment>
         ))}
@@ -285,7 +289,7 @@ export default function ArtForYouContent({
 const styles = StyleSheet.create({
   imageContainer: {
     width: '100%',
-    height: Platform.OS === 'web' ? 220 : 108,
+    height: Platform.OS === 'web' ? 220 : 105,
     padding: 0,
   },
   scrollView: {

@@ -56,7 +56,11 @@ export default function PublicDomainArtContent({ artworks = [], onPress, onScrol
             />
           </TouchableOpacity>
           {(index + 1) % 2 === 0 && (
-            <InlineAdCard containerStyle={styles.adCard} />
+            <InlineAdCard
+              width={CARD_W}
+              height={IMG_H}
+              containerStyle={styles.adCard}
+            />
           )}
         </React.Fragment>
       ))}
