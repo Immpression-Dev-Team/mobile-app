@@ -5,7 +5,7 @@ async function requestOtp(email, password) {
   try {
     const response = await axios.post(
       `${API_URL}/request-otp`,
-      { email, password },
+      { email, password, signupSource: 'mobile' },
       {
         headers: {
           "Content-Type": "application/json",
