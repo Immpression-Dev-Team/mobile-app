@@ -132,8 +132,9 @@ export default function OrderScreen({ navigation }) {
         getMySales(token, 1, 50).catch(() => ({ data: [] })), // Fallback if endpoint doesn't exist yet
       ]);
 
-      // Process buyer orders
-      const buyerList = Array.isArray(buyerRes?.data) ? buyerRes.data : [];
+      // Process buyer orders (exclude pending — payment not completed)
+      const buyerList = (Array.isArray(buyerRes?.data) ? buyerRes.data : [])
+        .filter((o) => (o.status || "").toLowerCase() !== "pending");
       const buyers = buyerList.map((o) => {
         const shipping = o?.shipping || {};
         const events = Array.isArray(shipping.trackingEvents)
@@ -175,8 +176,9 @@ export default function OrderScreen({ navigation }) {
         };
       });
 
-      // Process seller orders
-      const sellerList = Array.isArray(sellerRes?.data) ? sellerRes.data : [];
+      // Process seller orders (exclude pending — payment not completed)
+      const sellerList = (Array.isArray(sellerRes?.data) ? sellerRes.data : [])
+        .filter((o) => (o.status || "").toLowerCase() !== "pending");
       const sellers = sellerList.map((o) => {
         const tracking = o?.tracking || {};
 
