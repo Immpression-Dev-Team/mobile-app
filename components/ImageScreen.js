@@ -139,6 +139,8 @@ const resolveItem = (raw = {}) => {
     description: raw.description || nest.description || raw?.image?.description || null,
     isSigned: raw.isSigned ?? nest.isSigned,
     isFramed: raw.isFramed ?? nest.isFramed,
+    // originalImageLink is the untouched Cloudinary upload; imageLink may have a crop transformation
+    originalImageLink: raw.originalImageLink || nest.originalImageLink || null,
   };
 };
 
@@ -604,7 +606,12 @@ const ImageScreen = ({ route, navigation }) => {
             >
               <Text style={styles.enlargeCloseText}>✕</Text>
             </TouchableOpacity>
-            {!!active.imageLink && <Image source={{ uri: active.imageLink }} style={styles.enlargedImage} />}
+            {!!active.imageLink && (
+              <Image
+                source={{ uri: active.originalImageLink || active.imageLink }}
+                style={styles.enlargedImage}
+              />
+            )}
           </Pressable>
         </Modal>
 

@@ -4,11 +4,17 @@ import { useNavigation } from "@react-navigation/native";
 import { MaterialIcons as Icon } from "@expo/vector-icons";
 import { useAuth } from "../state/AuthProvider";
 import { checkStripeStatus as checkStripeStatusApi } from "../API/API";
+import StripeOptionalModal from "./StripeOptionalModal";
+
+// Module-level flag: once the user acknowledges the Stripe-optional prompt during
+// a session, subsequent Sell taps go straight to the listing flow.
+let stripePromptShownThisSession = false;
 
 const FooterNavbar = () => {
   const navigation = useNavigation();
-  const { userData, token } = useAuth();
+  const { token } = useAuth();
   const [checkingStripe, setCheckingStripe] = useState(false);
+  const [showStripeModal, setShowStripeModal] = useState(false);
 
   const go = (screen) => navigation.navigate(screen);
 
@@ -24,18 +30,44 @@ const FooterNavbar = () => {
       setCheckingStripe(true);
       const res = await checkStripeStatusApi(token);
       const isOnboarded = !!res?.data?.onboarding_completed;
-      if (isOnboarded) go("SellGuide");
-      else navigation.navigate("StripeGate", { next: "SellGuide" });
+      if (isOnboarded) {
+        go("SellGuide");
+      } else if (stripePromptShownThisSession) {
+        go("SellGuide");
+      } else {
+        setShowStripeModal(true);
+      }
     } catch (e) {
       console.error("Stripe status check failed:", e?.response?.data || e);
-      navigation.navigate("StripeGate", { next: "SellGuide" });
+      if (stripePromptShownThisSession) {
+        go("SellGuide");
+      } else {
+        setShowStripeModal(true);
+      }
     } finally {
       setCheckingStripe(false);
     }
   }, [token, navigation]);
 
+  const handleConnectStripe = useCallback(() => {
+    setShowStripeModal(false);
+    navigation.navigate("StripeGate", { next: "SellGuide" });
+  }, [navigation]);
+
+  const handleContinueWithoutStripe = useCallback(() => {
+    stripePromptShownThisSession = true;
+    setShowStripeModal(false);
+    go("SellGuide");
+  }, []);
+
   return (
     <View style={styles.container}>
+      <StripeOptionalModal
+        visible={showStripeModal}
+        onConnectStripe={handleConnectStripe}
+        onContinueWithout={handleContinueWithoutStripe}
+      />
+
       <TouchableOpacity style={styles.button} onPress={() => go("Home")}>
         <Icon name="home" size={24} color="#635BFF" style={styles.icon} />
         <Text style={styles.text}>Home</Text>
@@ -46,7 +78,6 @@ const FooterNavbar = () => {
         <Text style={styles.text}>{checkingStripe ? "Checking…" : "Sell"}</Text>
       </TouchableOpacity>
 
-      {/* Show Login button for guests, Profile button for authenticated users */}
       {token ? (
         <TouchableOpacity style={styles.button} onPress={() => go("Profile")}>
           <Icon name="person" size={24} color="#635BFF" style={styles.icon} />

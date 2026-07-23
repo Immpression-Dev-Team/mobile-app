@@ -872,6 +872,33 @@ async function checkStripeStatus(token) {
   return res.data; // { success, data: {...status...} }
 }
 
+// Fetch the public gallery (approved + sold artwork) for any user by ID.
+// No auth required — guests and profile visitors can view an artist's portfolio.
+async function getPublicUserImages(userId) {
+  try {
+    const res = await axios.get(`${API_URL}/profile/${userId}/images`);
+    return res.data; // { success, images: [...] }
+  } catch (error) {
+    console.error("getPublicUserImages error:", error?.response?.data || error);
+    return { success: false, images: [] };
+  }
+}
+
+// Fetch seller's available and pending balance.
+// Expected response: { success, available: number, pending: number, currency: string }
+// Values are in dollars (e.g. 12.50 = $12.50).
+// Returns a zero-balance fallback when the backend endpoint is not yet available.
+async function getSellerBalance(token) {
+  try {
+    const res = await axios.get(`${API_URL}/seller/balance`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return res.data;
+  } catch (error) {
+    return { success: false, available: 0, pending: 0, currency: "usd" };
+  }
+}
+
 async function updateShippingZip(zipcode, token) {
   try {
     const res = await axios.put(
@@ -1243,6 +1270,8 @@ export {
   fedexPing,
   createStripeAccount,
   checkStripeStatus,
+  getSellerBalance,
+  getPublicUserImages,
   updateShippingZip,
   getUpsRates,
   getOrderShippingQuote,

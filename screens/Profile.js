@@ -8,7 +8,13 @@ import {
   Image,
   Linking,
   Alert,
+  ActivityIndicator,
+  ScrollView,
+  Dimensions,
 } from "react-native";
+
+const SCREEN_W = Dimensions.get("window").width;
+const THUMB = (SCREEN_W - 4) / 3; // 3-column grid with 2px total gap
 import ProfilePic from "../components/profile_sections/ProfilePic";
 import ProfileViews from "../components/profile_sections/ProfileViews";
 import ProfileLikes from "../components/profile_sections/ProfileLikes";
@@ -23,6 +29,8 @@ import {
   blockUser,
   checkBlockStatus,
   incrementViews,
+  getSellerBalance,
+  getPublicUserImages,
 } from "../API/API";
 import { useAuth } from "../state/AuthProvider";
 import ReportModal from "../components/ReportModal";
@@ -32,6 +40,12 @@ import FolderPreview from "../components/FolderPreview";
 import axios from "axios";
 import { API_URL } from "../API_URL";
 import * as WebBrowser from "expo-web-browser";
+
+const formatCurrency = (amount) => {
+  const n = Number(amount);
+  if (isNaN(n)) return "$0.00";
+  return `$${n.toFixed(2)}`;
+};
 
 const Profile = () => {
   const navigation = useNavigation();
@@ -59,6 +73,16 @@ const Profile = () => {
   const [isBlocked, setIsBlocked] = useState(false);
   const [isBlocking, setIsBlocking] = useState(false);
 
+  // Public gallery state (other users' profiles)
+  const [publicImages, setPublicImages] = useState([]);
+  const [publicImagesLoading, setPublicImagesLoading] = useState(false);
+
+  // Seller balance state
+  const [balanceAvailable, setBalanceAvailable] = useState(null);
+  const [balancePending, setBalancePending] = useState(null);
+  const [balanceLoading, setBalanceLoading] = useState(false);
+  const [balanceError, setBalanceError] = useState(null);
+
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -67,7 +91,6 @@ const Profile = () => {
           const u = profile?.user || {};
           setProfileName(u?.name || "");
           setViewsCount(u?.views || 0);
-          // include own profile picture if provided by backend
           if (u?.profilePictureLink) {
             setProfilePicture(u.profilePictureLink);
           }
@@ -111,17 +134,30 @@ const Profile = () => {
         const likedImgsRes = await fetchLikedImages(token);
         setLikedImages(likedImgsRes?.images || []);
 
-        setBoughtImages([]); // hook real logic if needed
+        setBoughtImages([]);
       } catch (err) {
         console.error("Error loading images:", err);
+      }
+    };
+
+    const fetchPublicImages = async () => {
+      if (isOwnProfile || !userId) return;
+      setPublicImagesLoading(true);
+      try {
+        const res = await getPublicUserImages(userId);
+        setPublicImages(res?.images || []);
+      } catch {
+        setPublicImages([]);
+      } finally {
+        setPublicImagesLoading(false);
       }
     };
 
     fetchProfileData();
     fetchImageData();
     fetchBoughtImages();
+    fetchPublicImages();
 
-    // Check block status for other users' profiles
     if (!isOwnProfile && token && userId) {
       checkBlockStatus(userId, token).then((result) => {
         if (result.success) {
@@ -141,7 +177,6 @@ const Profile = () => {
             const u = profile?.user || {};
             setViewsCount(u?.views || 0);
           } else {
-            // Record this visit as a unique profile view
             if (token && userId) {
               await incrementViews(userId, token);
             }
@@ -219,11 +254,32 @@ const Profile = () => {
     if (token) checkStripeStatus();
   }, [token]);
 
+  // ========================= Seller balance =========================
+  const fetchBalance = useCallback(async () => {
+    if (!isOwnProfile || !token) return;
+    setBalanceLoading(true);
+    setBalanceError(null);
+    try {
+      const res = await getSellerBalance(token);
+      setBalanceAvailable(res?.available ?? 0);
+      setBalancePending(res?.pending ?? 0);
+    } catch (err) {
+      setBalanceError("Could not load balance.");
+      setBalanceAvailable(0);
+      setBalancePending(0);
+    } finally {
+      setBalanceLoading(false);
+    }
+  }, [isOwnProfile, token]);
+
+  useEffect(() => {
+    fetchBalance();
+  }, [fetchBalance]);
+
   // Handle blocking/unblocking a user
   const handleBlockUser = async () => {
     if (!token || !userId || isOwnProfile) return;
 
-    const actionText = isBlocked ? "unblock" : "block";
     Alert.alert(
       `${isBlocked ? "Unblock" : "Block"} ${profileName || "this user"}?`,
       isBlocked
@@ -265,9 +321,11 @@ const Profile = () => {
     );
   };
 
+  const isStripeConnected = !!stripeOnboardingData?.onboarding_completed;
+
   return (
     <ScreenTemplate>
-      <View style={styles.container}>
+      <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
         {isOwnProfile && (
           <View style={styles.editStripeRow}>
             <TouchableOpacity
@@ -277,7 +335,7 @@ const Profile = () => {
               <Text style={styles.editProfileModernText}>Edit Profile</Text>
             </TouchableOpacity>
 
-            {!stripeOnboardingData?.onboarding_completed ? (
+            {!isStripeConnected ? (
               <TouchableOpacity
                 style={styles.stripeButton}
                 onPress={handleCreateStripeAccount}
@@ -315,7 +373,6 @@ const Profile = () => {
             <Text style={styles.artistType}>{artistType}</Text>
           </View>
 
-          {/* Block touches when not own profile + pass editable flag */}
           <View
             style={styles.profilePicWrapper}
             pointerEvents={isOwnProfile ? "auto" : "none"}
@@ -323,7 +380,7 @@ const Profile = () => {
             <ProfilePic
               source={profilePicture ? { uri: profilePicture } : null}
               name={profileName}
-              editable={isOwnProfile}     // ← only owner can change it
+              editable={isOwnProfile}
             />
           </View>
 
@@ -344,7 +401,6 @@ const Profile = () => {
             <Text style={styles.bioText}>{bio}</Text>
           </View>
 
-          {/* Block & Report buttons for other users' profiles */}
           {!isOwnProfile && token && (
             <View style={styles.profileActionsContainer}>
               <TouchableOpacity
@@ -368,6 +424,54 @@ const Profile = () => {
 
         <View style={styles.separator} />
 
+        {/* Seller Balance — own profile only */}
+        {isOwnProfile && (
+          <View style={styles.balanceCard}>
+            <Text style={styles.balanceTitle}>Your Balance</Text>
+
+            {balanceLoading ? (
+              <ActivityIndicator size="small" color="#635BFF" style={styles.balanceLoader} />
+            ) : balanceError ? (
+              <Text style={styles.balanceErrorText}>{balanceError}</Text>
+            ) : (
+              <>
+                <View style={styles.balanceRow}>
+                  <View style={styles.balanceStat}>
+                    <Text style={styles.balanceLabel}>Available</Text>
+                    <Text style={styles.balanceAmount}>{formatCurrency(balanceAvailable)}</Text>
+                  </View>
+                  {balancePending !== null && balancePending > 0 && (
+                    <View style={styles.balanceStat}>
+                      <Text style={styles.balanceLabel}>Pending</Text>
+                      <Text style={[styles.balanceAmount, styles.balanceAmountPending]}>
+                        {formatCurrency(balancePending)}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+
+                {!isStripeConnected ? (
+                  <>
+                    <Text style={styles.balanceNote}>
+                      Connect Stripe to withdraw your earnings.
+                    </Text>
+                    <TouchableOpacity
+                      style={styles.balanceConnectButton}
+                      onPress={handleCreateStripeAccount}
+                    >
+                      <Text style={styles.balanceConnectText}>Connect Stripe</Text>
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <Text style={styles.balanceLinkedNote}>
+                    Your Stripe account is connected. Visit your Stripe dashboard to manage payouts.
+                  </Text>
+                )}
+              </>
+            )}
+          </View>
+        )}
+
         {isOwnProfile && (
           <View style={styles.folderGrid}>
             <View style={styles.folderRow}>
@@ -389,7 +493,60 @@ const Profile = () => {
           </View>
         )}
 
-        {/* Report Modal */}
+        {/* ── Public gallery (other users' profiles only) ─────────── */}
+        {!isOwnProfile && (
+          <View style={styles.publicGallerySection}>
+            <View style={styles.publicGalleryHeader}>
+              <Text style={styles.publicGalleryTitle}>
+                {publicImagesLoading
+                  ? "Gallery"
+                  : publicImages.length > 0
+                  ? `Gallery  ·  ${publicImages.length}`
+                  : "Gallery"}
+              </Text>
+            </View>
+
+            {publicImagesLoading ? (
+              <ActivityIndicator
+                size="small"
+                color="#635BFF"
+                style={{ marginVertical: 24 }}
+              />
+            ) : publicImages.length === 0 ? (
+              <Text style={styles.publicGalleryEmpty}>
+                No artwork listed for sale yet.
+              </Text>
+            ) : (
+              <View style={styles.publicGalleryGrid}>
+                {publicImages.map((img, index) => (
+                  <TouchableOpacity
+                    key={img._id}
+                    style={styles.publicGalleryItem}
+                    activeOpacity={0.85}
+                    onPress={() =>
+                      navigation.navigate("ImageScreen", {
+                        images: publicImages,
+                        initialIndex: index,
+                      })
+                    }
+                  >
+                    <Image
+                      source={{ uri: img.imageLink }}
+                      style={styles.publicGalleryThumb}
+                      resizeMode="cover"
+                    />
+                    {img.isSold && (
+                      <View style={styles.soldBadge}>
+                        <Text style={styles.soldBadgeText}>SOLD</Text>
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+          </View>
+        )}
+
         <ReportModal
           visible={showReportModal}
           onClose={() => setShowReportModal(false)}
@@ -397,7 +554,7 @@ const Profile = () => {
           targetId={userId}
           targetName={profileName}
         />
-      </View>
+      </ScrollView>
     </ScreenTemplate>
   );
 };
@@ -405,8 +562,10 @@ const Profile = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingBottom: 20,
     backgroundColor: "#FFF",
+  },
+  contentContainer: {
+    paddingBottom: 30,
   },
   profileContainer: {
     alignItems: "center",
@@ -488,6 +647,82 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginVertical: 10,
   },
+  // ── Seller Balance Card ──────────────────────────────
+  balanceCard: {
+    marginHorizontal: 16,
+    marginBottom: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    backgroundColor: "#FAFAFA",
+    borderWidth: 1,
+    borderColor: "#EBEBEB",
+  },
+  balanceTitle: {
+    fontSize: 11,
+    fontWeight: "600",
+    color: "#9CA3AF",
+    marginBottom: 6,
+    letterSpacing: 0.5,
+    textTransform: "uppercase",
+  },
+  balanceLoader: {
+    marginVertical: 4,
+    alignSelf: "flex-start",
+  },
+  balanceErrorText: {
+    fontSize: 12,
+    color: "#DC2626",
+  },
+  balanceRow: {
+    flexDirection: "row",
+    gap: 20,
+    marginBottom: 6,
+  },
+  balanceStat: {
+    alignItems: "flex-start",
+  },
+  balanceLabel: {
+    fontSize: 10,
+    fontWeight: "500",
+    color: "#9CA3AF",
+    textTransform: "uppercase",
+    letterSpacing: 0.4,
+    marginBottom: 1,
+  },
+  balanceAmount: {
+    fontSize: 17,
+    fontWeight: "600",
+    color: "#374151",
+  },
+  balanceAmountPending: {
+    color: "#D97706",
+  },
+  balanceNote: {
+    fontSize: 11,
+    color: "#9CA3AF",
+    marginBottom: 8,
+    lineHeight: 16,
+  },
+  balanceConnectButton: {
+    borderWidth: 1,
+    borderColor: "#635BFF",
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    alignSelf: "flex-start",
+  },
+  balanceConnectText: {
+    color: "#635BFF",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+  balanceLinkedNote: {
+    fontSize: 11,
+    color: "#6B7280",
+    lineHeight: 16,
+  },
+  // ────────────────────────────────────────────────────
   folderGrid: {
     marginTop: 20,
     alignItems: "center",
@@ -622,6 +857,62 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#DC2626",
   },
+
+  // ── Public gallery ──────────────────────────────────────
+  publicGallerySection: {
+    marginTop: 8,
+  },
+  publicGalleryHeader: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: "#F1F1F1",
+  },
+  publicGalleryTitle: {
+    fontSize: 13,
+    fontWeight: "700",
+    color: "#374151",
+    letterSpacing: 0.3,
+    textTransform: "uppercase",
+  },
+  publicGalleryEmpty: {
+    fontSize: 13,
+    color: "#9CA3AF",
+    textAlign: "center",
+    paddingVertical: 32,
+    paddingHorizontal: 24,
+  },
+  publicGalleryGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  publicGalleryItem: {
+    width: THUMB,
+    height: THUMB,
+    margin: 0.5,
+    position: "relative",
+    backgroundColor: "#F3F4F6",
+  },
+  publicGalleryThumb: {
+    width: "100%",
+    height: "100%",
+  },
+  soldBadge: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "rgba(0,0,0,0.52)",
+    paddingVertical: 3,
+    alignItems: "center",
+  },
+  soldBadgeText: {
+    color: "#fff",
+    fontSize: 9,
+    fontWeight: "900",
+    letterSpacing: 1,
+  },
+  // ────────────────────────────────────────────────────────
 });
 
 export default Profile;

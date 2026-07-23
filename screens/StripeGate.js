@@ -124,7 +124,7 @@ export default function StripeGate() {
           end={{ x: 1, y: 1 }}
         >
           <Text style={styles.title} numberOfLines={1} ellipsizeMode="clip">
-            Link Stripe to Sell on Immpression
+            Connect Stripe for Payouts
           </Text>
 
           {/* Visual panel with subtle shine */}
@@ -139,20 +139,20 @@ export default function StripeGate() {
             />
           </View>
 
-          <Text style={styles.instructions}>Before you upload your art for sale:</Text>
+          <Text style={styles.instructions}>Connect Stripe to withdraw your earnings:</Text>
 
           <View style={styles.bulletWrapper}>
             <View style={styles.bulletCard}>
               <Text style={styles.bulletIcon}>💸</Text>
-              <Text style={styles.bulletText}>Connect a Stripe account to receive payouts.</Text>
+              <Text style={styles.bulletText}>Stripe is required to withdraw your Immpression balance.</Text>
             </View>
             <View style={styles.bulletCard}>
               <Text style={styles.bulletIcon}>✅</Text>
-              <Text style={styles.bulletText}>Complete Stripe’s required verification.</Text>
+              <Text style={styles.bulletText}>Complete Stripe’s required identity verification.</Text>
             </View>
             <View style={styles.bulletCard}>
               <Text style={styles.bulletIcon}>🛡️</Text>
-              <Text style={styles.bulletText}>Protect buyers and sellers with secure processing.</Text>
+              <Text style={styles.bulletText}>Secure, fast payouts directly to your bank account.</Text>
             </View>
           </View>
 
@@ -164,7 +164,7 @@ export default function StripeGate() {
           >
             <LinearGradient colors={["#007bff", "#0056d2"]} style={styles.primaryButton}>
               <Text style={styles.primaryText}>
-                {linking ? "Opening Stripe…" : "Link Stripe Now"}
+                {linking ? "Opening Stripe…" : "Connect Stripe"}
               </Text>
             </LinearGradient>
           </TouchableOpacity>
