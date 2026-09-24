@@ -10,12 +10,6 @@
     "orientation": "portrait",
     "icon": "./assets/Logo_T.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/Logo_T.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -91,6 +85,14 @@
         {
           "androidAppId": "ca-app-pub-8886964376457193~4595439488",
           "iosAppId": "ca-app-pub-8886964376457193~3642915506"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/Logo_T.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
         }
       ]
     ]
