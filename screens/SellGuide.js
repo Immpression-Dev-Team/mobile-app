@@ -15,8 +15,9 @@ import { LinearGradient } from "expo-linear-gradient";
 
 const screenWidth = Dimensions.get('window').width;
 
-const SellGuide = () => {
+const SellGuide = ({ route }) => {
     const navigation = useNavigation();
+    const fulfillmentType = route?.params?.fulfillmentType;
     const shineAnim = useRef(new Animated.Value(-1)).current;
 
     useEffect(() => {
@@ -43,6 +44,10 @@ const SellGuide = () => {
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                 >
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                        <Text style={styles.backText}>← Back</Text>
+                    </TouchableOpacity>
+
                     <Text style={styles.title} numberOfLines={1} ellipsizeMode="clip">
                         How to Photograph Your Artwork
                     </Text>
@@ -83,7 +88,7 @@ const SellGuide = () => {
 
                     <TouchableOpacity
                         style={styles.continueButtonWrapper}
-                        onPress={() => navigation.navigate("Upload")}
+                        onPress={() => navigation.navigate("Upload", { fulfillmentType })}
                     >
                         <LinearGradient colors={["#007bff", "#0056d2"]} style={styles.continueButton}>
                             <Text style={styles.continueText}>Continue</Text>
@@ -97,35 +102,39 @@ const SellGuide = () => {
 
 const styles = StyleSheet.create({
     outerContainer: {
-        padding: 20,
+        flex: 1,
+        padding: 16,
         alignItems: "center",
-        justifyContent: "center",
     },
     innerContainer: {
         // borderRadius: 14,
-        padding: 20,
+        flex: 1,
+        padding: 16,
         width: "100%",
         alignItems: "center",
+        justifyContent: "space-between",
         elevation: 4,
         shadowColor: "#000",
         shadowOpacity: 0.1,
         shadowOffset: { width: 0, height: 2 },
         shadowRadius: 6,
     },
+    backButton: { alignSelf: "flex-start", marginBottom: 2 },
+    backText: { color: "#007bff", fontSize: 16, fontWeight: "500" },
     title: {
-        fontSize: 20,
+        fontSize: 19,
         fontWeight: "bold",
-        marginVertical: 10,
+        marginVertical: 6,
         color: "#1E2A3A",
         textAlign: "center",
         width: "100%",
     },
     imageContainer: {
         width: Dimensions.get("window").width * 0.8,
-        height: 220,
+        height: 170,
         // borderRadius: 10,
         overflow: "hidden",
-        marginVertical: 20,
+        marginVertical: 12,
         position: "relative",
     },
     guideImage: {
@@ -146,24 +155,24 @@ const styles = StyleSheet.create({
         zIndex: 2,
     },
     instructions: {
-        fontSize: 16,
+        fontSize: 15,
         fontWeight: "600",
         color: "#2C3E50",
-        marginBottom: 10,
+        marginBottom: 6,
         textAlign: "center",
     },
     bulletWrapper: {
         width: '100%',
-        gap: 8,
-        marginTop: 12,
-        marginBottom: 24,
+        gap: 6,
+        marginTop: 8,
+        marginBottom: 14,
       },
       bulletCard: {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: 'white',
         // borderRadius: 8,
-        paddingVertical: 6,
+        paddingVertical: 5,
         paddingHorizontal: 12,
         width: screenWidth * 0.80, // responsive width
         alignSelf: 'center',
@@ -192,7 +201,7 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     continueButton: {
-        paddingVertical: 14,
+        paddingVertical: 12,
         alignItems: "center",
     },
     continueText: {

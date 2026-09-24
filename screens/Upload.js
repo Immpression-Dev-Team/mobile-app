@@ -37,7 +37,7 @@ function buildCroppedUrl(originalUrl, cropData) {
   return originalUrl.replace("/upload/", `/upload/${t}/`);
 }
 
-const Upload = () => {
+const Upload = ({ route }) => {
   const { userData } = useAuth();
   const navigation = useNavigation();
   const [step, setStep] = useState(1);
@@ -69,6 +69,8 @@ const Upload = () => {
     { label: "Graffiti", value: "graffiti" },
     { label: "Stencil", value: "stencil" },
   ]);
+  // Chosen on the FulfillmentChoice screen before reaching this flow.
+  const [fulfillmentType] = useState(route?.params?.fulfillmentType || null);
   const [isLoading, setIsLoading] = useState(false);
   const [showMeasureHelp, setShowMeasureHelp] = useState(false);
 
@@ -137,16 +139,23 @@ const Upload = () => {
   };
 
   const handleSubmit = async () => {
+    const isPOD = fulfillmentType === "print_on_demand";
     const priceVal = parseFloat(price);
     const heightVal = parseFloat(height);
     const widthVal = parseFloat(width);
     const lengthVal = parseFloat(length);
     const weightVal = parseFloat(weight);
 
-    if (!image || !title || !description || !category || !priceVal || !heightVal || !widthVal || !lengthVal || !weightVal) {
+    if (!image || !title || !description || !category || !fulfillmentType || !priceVal) {
       return displayError("Please complete all fields");
     }
-    if (priceVal <= 0 || heightVal <= 0 || widthVal <= 0 || lengthVal <= 0 || weightVal <= 0) {
+    if (!isPOD && (!heightVal || !widthVal || !lengthVal || !weightVal)) {
+      return displayError("Please complete all fields");
+    }
+    if (priceVal <= 0) {
+      return displayError("Numeric fields must be positive values.");
+    }
+    if (!isPOD && (heightVal <= 0 || widthVal <= 0 || lengthVal <= 0 || weightVal <= 0)) {
       return displayError("Numeric fields must be positive values.");
     }
 
@@ -187,10 +196,22 @@ const Upload = () => {
         description,
         category,
         stage: "review",
-        dimensions: { height: heightVal, width: widthVal, length: lengthVal },
-        weight: weightVal,
-        isSigned,
-        isFramed,
+        fulfillmentType,
+        ...(!isPOD && {
+          dimensions: { height: heightVal, width: widthVal, length: lengthVal },
+          weight: weightVal,
+          isSigned,
+          isFramed,
+        }),
+        ...(isPOD && {
+          printSourceMeta: {
+            width: image.width,
+            height: image.height,
+            format: "jpeg", // always normalized to JPEG in selectImage()
+            imageUrl: displayUrl,
+            originalImageUrl: originalUrl,
+          },
+        }),
       };
 
       const dbRes = await uploadImage(payload, userData.token);
@@ -216,14 +237,17 @@ const Upload = () => {
       }
     } catch (e) {
       console.error("Error submitting:", e);
-      displayError("An error occurred.");
+      displayError("An error occurred: " + (e?.message || "Unknown error"));
     } finally {
       setIsLoading(false);
     }
   };
 
-  const isStepOneValid = image && title && description && category;
-  const isStepTwoValid = price && height && width && length && weight;
+  const isStepOneValid = image && title && description && category && fulfillmentType;
+  const isStepTwoValid =
+    fulfillmentType === "print_on_demand"
+      ? !!price
+      : !!(price && height && width && length && weight);
 
   return (
     <ScreenTemplate>
@@ -339,105 +363,132 @@ const Upload = () => {
 
                 {image && <Image source={{ uri: image.uri }} style={styles.imagePreviewTop} />}
 
-                <View style={styles.dimRow}>
-                  <View style={styles.dimItem}>
-                    <Text style={styles.dimLabel}>Height (in)</Text>
-                    <TextInput
-                      ref={heightRef}
-                      style={styles.dimInput}
-                      placeholder="e.g. 24"
-                      value={height}
-                      onChangeText={setHeight}
-                      keyboardType="numeric"
-                      returnKeyType="next"
-                      blurOnSubmit={false}
-                      onFocus={() => scrollIntoView(heightRef)}
-                      onSubmitEditing={() => widthRef.current?.focus()}
-                    />
-                  </View>
-                  <View style={styles.dimItem}>
-                    <Text style={styles.dimLabel}>Width (in)</Text>
-                    <TextInput
-                      ref={widthRef}
-                      style={styles.dimInput}
-                      placeholder="e.g. 36"
-                      value={width}
-                      onChangeText={setWidth}
-                      keyboardType="numeric"
-                      returnKeyType="next"
-                      blurOnSubmit={false}
-                      onFocus={() => scrollIntoView(widthRef)}
-                      onSubmitEditing={() => lengthRef.current?.focus()}
-                    />
-                  </View>
-                  <View style={styles.dimItem}>
-                    <Text style={styles.dimLabel}>Length (in)</Text>
-                    <TextInput
-                      ref={lengthRef}
-                      style={styles.dimInput}
-                      placeholder="e.g. 2"
-                      value={length}
-                      onChangeText={setLength}
-                      keyboardType="numeric"
-                      returnKeyType="next"
-                      blurOnSubmit={false}
-                      onFocus={() => scrollIntoView(lengthRef)}
-                      onSubmitEditing={() => weightRef.current?.focus()}
-                    />
-                  </View>
-                </View>
+                {fulfillmentType === "print_on_demand" ? (
+                  <>
+                    <Text style={styles.podNote}>
+                      Immpression will handle print sizing and packaging for this artwork — you just set the price.
+                    </Text>
+                    <View style={styles.col}>
+                      <Text style={styles.smallLabel}>Price ($)</Text>
+                      <TextInput
+                        ref={priceRef}
+                        style={styles.input}
+                        placeholder="e.g. 299.99"
+                        value={price}
+                        onChangeText={setPrice}
+                        keyboardType="numeric"
+                        returnKeyType="done"
+                        onFocus={() => scrollIntoView(priceRef)}
+                        onSubmitEditing={() => {
+                          if (isStepTwoValid) handleSubmit();
+                          Keyboard.dismiss();
+                        }}
+                      />
+                    </View>
+                  </>
+                ) : (
+                  <>
+                    <View style={styles.dimRow}>
+                      <View style={styles.dimItem}>
+                        <Text style={styles.dimLabel}>Height (in)</Text>
+                        <TextInput
+                          ref={heightRef}
+                          style={styles.dimInput}
+                          placeholder="e.g. 24"
+                          value={height}
+                          onChangeText={setHeight}
+                          keyboardType="numeric"
+                          returnKeyType="next"
+                          blurOnSubmit={false}
+                          onFocus={() => scrollIntoView(heightRef)}
+                          onSubmitEditing={() => widthRef.current?.focus()}
+                        />
+                      </View>
+                      <View style={styles.dimItem}>
+                        <Text style={styles.dimLabel}>Width (in)</Text>
+                        <TextInput
+                          ref={widthRef}
+                          style={styles.dimInput}
+                          placeholder="e.g. 36"
+                          value={width}
+                          onChangeText={setWidth}
+                          keyboardType="numeric"
+                          returnKeyType="next"
+                          blurOnSubmit={false}
+                          onFocus={() => scrollIntoView(widthRef)}
+                          onSubmitEditing={() => lengthRef.current?.focus()}
+                        />
+                      </View>
+                      <View style={styles.dimItem}>
+                        <Text style={styles.dimLabel}>Length (in)</Text>
+                        <TextInput
+                          ref={lengthRef}
+                          style={styles.dimInput}
+                          placeholder="e.g. 2"
+                          value={length}
+                          onChangeText={setLength}
+                          keyboardType="numeric"
+                          returnKeyType="next"
+                          blurOnSubmit={false}
+                          onFocus={() => scrollIntoView(lengthRef)}
+                          onSubmitEditing={() => weightRef.current?.focus()}
+                        />
+                      </View>
+                    </View>
 
-                <TouchableOpacity
-                  onPress={() => setShowMeasureHelp(true)}
-                  style={styles.measureLink}
-                  activeOpacity={0.8}
-                >
-                  <Text style={styles.measureLinkText}>📏 How to measure</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={() => setShowMeasureHelp(true)}
+                      style={styles.measureLink}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.measureLinkText}>📏 How to measure</Text>
+                    </TouchableOpacity>
 
-                <View style={styles.switchRow}>
-                  <Text>Signed:</Text>
-                  <Switch value={isSigned} onValueChange={setIsSigned} />
-                </View>
-                <View style={styles.switchRow}>
-                  <Text>Framed:</Text>
-                  <Switch value={isFramed} onValueChange={setIsFramed} />
-                </View>
+                    <View style={styles.switchRow}>
+                      <Text>Signed:</Text>
+                      <Switch value={isSigned} onValueChange={setIsSigned} />
+                    </View>
+                    <View style={styles.switchRow}>
+                      <Text>Framed:</Text>
+                      <Switch value={isFramed} onValueChange={setIsFramed} />
+                    </View>
 
-                <View style={styles.rowTwo}>
-                  <View style={styles.col}>
-                    <Text style={styles.smallLabel}>Weight (lb)</Text>
-                    <TextInput
-                      ref={weightRef}
-                      style={styles.input}
-                      placeholder="e.g. 12.5"
-                      value={weight}
-                      onChangeText={setWeight}
-                      keyboardType="numeric"
-                      returnKeyType="next"
-                      blurOnSubmit={false}
-                      onFocus={() => scrollIntoView(weightRef)}
-                      onSubmitEditing={() => priceRef.current?.focus()}
-                    />
-                  </View>
-                  <View style={styles.col}>
-                    <Text style={styles.smallLabel}>Price ($)</Text>
-                    <TextInput
-                      ref={priceRef}
-                      style={styles.input}
-                      placeholder="e.g. 299.99"
-                      value={price}
-                      onChangeText={setPrice}
-                      keyboardType="numeric"
-                      returnKeyType="done"
-                      onFocus={() => scrollIntoView(priceRef)}
-                      onSubmitEditing={() => {
-                        if (isStepTwoValid) handleSubmit();
-                        Keyboard.dismiss();
-                      }}
-                    />
-                  </View>
-                </View>
+                    <View style={styles.rowTwo}>
+                      <View style={styles.col}>
+                        <Text style={styles.smallLabel}>Weight (lb)</Text>
+                        <TextInput
+                          ref={weightRef}
+                          style={styles.input}
+                          placeholder="e.g. 12.5"
+                          value={weight}
+                          onChangeText={setWeight}
+                          keyboardType="numeric"
+                          returnKeyType="next"
+                          blurOnSubmit={false}
+                          onFocus={() => scrollIntoView(weightRef)}
+                          onSubmitEditing={() => priceRef.current?.focus()}
+                        />
+                      </View>
+                      <View style={styles.col}>
+                        <Text style={styles.smallLabel}>Price ($)</Text>
+                        <TextInput
+                          ref={priceRef}
+                          style={styles.input}
+                          placeholder="e.g. 299.99"
+                          value={price}
+                          onChangeText={setPrice}
+                          keyboardType="numeric"
+                          returnKeyType="done"
+                          onFocus={() => scrollIntoView(priceRef)}
+                          onSubmitEditing={() => {
+                            if (isStepTwoValid) handleSubmit();
+                            Keyboard.dismiss();
+                          }}
+                        />
+                      </View>
+                    </View>
+                  </>
+                )}
 
                 <TouchableOpacity
                   style={[styles.button, { marginTop: 16, opacity: isStepTwoValid ? 1 : 0.5 }]}
@@ -528,6 +579,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff", minHeight: 90, fontSize: 15,
   },
   dropdown: { borderColor: "#ccc", backgroundColor: "#fff", marginBottom: 12 },
+
+  podNote: {
+    fontSize: 13, color: "#4338CA", backgroundColor: "#EEF2FF",
+    borderRadius: 10, padding: 12, marginBottom: 16, lineHeight: 18,
+  },
 
   imageBox: {
     borderWidth: 2, borderColor: "#007bff", borderRadius: 10, padding: 10,

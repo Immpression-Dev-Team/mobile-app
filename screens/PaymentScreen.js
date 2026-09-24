@@ -238,18 +238,35 @@ const PaymentScreen = ({ navigation, route }) => {
                 <Text style={styles.summaryValue}>${subtotal.toFixed(2)}</Text>
               </View>
 
-              <View style={styles.summaryRow}>
-                <Text style={styles.summaryLabel}>
-                  Shipping{shipping?.serviceName ? ` (${shipping.serviceName})` : ""}
-                </Text>
-                <Text style={styles.summaryValue}>
-                  {quoting
-                    ? "Calculating…"
-                    : shippingAmount != null
-                      ? `$${shippingAmount.toFixed(2)}`
-                      : "—"}
-                </Text>
-              </View>
+              {shipping?.breakdown ? (
+                <>
+                  <View style={styles.summaryRow}>
+                    <Text style={styles.summaryLabel}>Print Production</Text>
+                    <Text style={styles.summaryValue}>
+                      {quoting ? "Calculating…" : `$${Number(shipping.breakdown.printCost).toFixed(2)}`}
+                    </Text>
+                  </View>
+                  <View style={styles.summaryRow}>
+                    <Text style={styles.summaryLabel}>Shipping</Text>
+                    <Text style={styles.summaryValue}>
+                      {quoting ? "Calculating…" : `$${Number(shipping.breakdown.shippingCost).toFixed(2)}`}
+                    </Text>
+                  </View>
+                </>
+              ) : (
+                <View style={styles.summaryRow}>
+                  <Text style={styles.summaryLabel}>
+                    Shipping{shipping?.serviceName ? ` (${shipping.serviceName})` : ""}
+                  </Text>
+                  <Text style={styles.summaryValue}>
+                    {quoting
+                      ? "Calculating…"
+                      : shippingAmount != null
+                        ? `$${shippingAmount.toFixed(2)}`
+                        : "—"}
+                  </Text>
+                </View>
+              )}
 
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Tax</Text>

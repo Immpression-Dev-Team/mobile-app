@@ -108,6 +108,7 @@ const resolveItem = (raw = {}) => {
         ? nest.price
         : undefined,
     category: raw.category || nest.category || null,
+    fulfillmentType: raw.fulfillmentType || nest.fulfillmentType || "seller",
     views:
       typeof raw.views === "number"
         ? raw.views
@@ -357,6 +358,9 @@ const ImageScreen = ({ route, navigation }) => {
               <View style={{ marginLeft: 10 }}>
                 <Text style={styles.artistName}>{active.artistName || "Unknown Artist"}</Text>
                 <Text style={styles.artistCategory}>{active.category || "No Category"}</Text>
+                {active.fulfillmentType === "print_on_demand" && (
+                  <Text style={styles.printOnDemandBadge}>Printed & shipped by Immpression</Text>
+                )}
               </View>
             </TouchableOpacity>
 
@@ -533,37 +537,59 @@ const ImageScreen = ({ route, navigation }) => {
           <View style={styles.detailsCard}>
             <Text style={styles.detailsTitle}>Artwork Details</Text>
 
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Dimensions</Text>
-              <Text style={styles.detailValue}>{dimsText}</Text>
-            </View>
+            {active.fulfillmentType === "print_on_demand" ? (
+              <>
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>Type</Text>
+                  <Text style={styles.detailValue}>Digital Art — Print on Demand</Text>
+                </View>
 
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Weight</Text>
-              <Text style={styles.detailValue}>{weightText}</Text>
-            </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>Print Size</Text>
+                  {/* Fixed for all Print on Demand artwork — keep in sync with
+                      PRODIGI_FIXED_SKU in backend/services/printFulfillmentService.js */}
+                  <Text style={styles.detailValue}>16 x 24 in</Text>
+                </View>
 
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Signed</Text>
-              <Text style={styles.detailValue}>
-                {(images[currentIndex]?.isSigned ??
-                  images[currentIndex]?.image?.isSigned ??
-                  active?.isSigned)
-                  ? "Yes"
-                  : "No"}
-              </Text>
-            </View>
+                <Text style={styles.podDetailNote}>
+                  This is a digital file. Immpression prints and ships it when purchased.
+                </Text>
+              </>
+            ) : (
+              <>
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>Dimensions</Text>
+                  <Text style={styles.detailValue}>{dimsText}</Text>
+                </View>
 
-            <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Framed</Text>
-              <Text style={styles.detailValue}>
-                {(images[currentIndex]?.isFramed ??
-                  images[currentIndex]?.image?.isFramed ??
-                  active?.isFramed)
-                  ? "Yes"
-                  : "No"}
-              </Text>
-            </View>
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>Weight</Text>
+                  <Text style={styles.detailValue}>{weightText}</Text>
+                </View>
+
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>Signed</Text>
+                  <Text style={styles.detailValue}>
+                    {(images[currentIndex]?.isSigned ??
+                      images[currentIndex]?.image?.isSigned ??
+                      active?.isSigned)
+                      ? "Yes"
+                      : "No"}
+                  </Text>
+                </View>
+
+                <View style={styles.detailRow}>
+                  <Text style={styles.detailLabel}>Framed</Text>
+                  <Text style={styles.detailValue}>
+                    {(images[currentIndex]?.isFramed ??
+                      images[currentIndex]?.image?.isFramed ??
+                      active?.isFramed)
+                      ? "Yes"
+                      : "No"}
+                  </Text>
+                </View>
+              </>
+            )}
           </View>
 
           {/* Owner Delete (below details, right-aligned) */}
@@ -680,6 +706,14 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
     borderRadius: 999,
     letterSpacing: 0.3,
+  },
+  printOnDemandBadge: {
+    marginTop: 4,
+    alignSelf: "flex-start",
+    fontSize: 10,
+    fontWeight: "600",
+    color: "#6B7280",
+    letterSpacing: 0.2,
   },
   statsRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   statPill: {
@@ -853,6 +887,7 @@ const styles = StyleSheet.create({
   detailRow: { flexDirection: "row", justifyContent: "space-between", paddingVertical: 6 },
   detailLabel: { fontSize: 14, color: "#6B7280", fontWeight: "600" },
   detailValue: { fontSize: 14, color: "#111827", fontWeight: "600" },
+  podDetailNote: { fontSize: 12, color: "#6B7280", marginTop: 8, lineHeight: 16 },
 
   // Owner delete card (mirrors purchaseCard but right-aligned)
   ownerDeleteCard: {

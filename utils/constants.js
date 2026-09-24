@@ -23,6 +23,7 @@ import EditProfile from "../screens/EditProfile";
 import RequestOtp from "../screens/RequestOtp";
 import VerifyOtp from "../screens/VerifyOtp";
 import SellGuide from "../screens/SellGuide";
+import FulfillmentChoice from "../screens/FulfillmentChoice";
 import GalleryView from "../components/GalleryView";
 import ReviewScreen from "../screens/ReviewScreen";
 import SubmitTrackingNumber from "../screens/SubmitTrackingNumber";
@@ -57,6 +58,7 @@ export const UserNavigation = [
   { name: "Login", component: Login },
   { name: "EditProfile", component: EditProfile },
   { name: "SellGuide", component: SellGuide },
+  { name: "FulfillmentChoice", component: FulfillmentChoice },
   { name: "GalleryView", component: GalleryView },
   { name: "SubmitTrackingNumber", component: SubmitTrackingNumber },
   { name: "OrderScreen", component: OrderScreen },

@@ -31,16 +31,16 @@ const FooterNavbar = () => {
       const res = await checkStripeStatusApi(token);
       const isOnboarded = !!res?.data?.onboarding_completed;
       if (isOnboarded) {
-        go("SellGuide");
+        go("FulfillmentChoice");
       } else if (stripePromptShownThisSession) {
-        go("SellGuide");
+        go("FulfillmentChoice");
       } else {
         setShowStripeModal(true);
       }
     } catch (e) {
       console.error("Stripe status check failed:", e?.response?.data || e);
       if (stripePromptShownThisSession) {
-        go("SellGuide");
+        go("FulfillmentChoice");
       } else {
         setShowStripeModal(true);
       }
@@ -51,13 +51,13 @@ const FooterNavbar = () => {
 
   const handleConnectStripe = useCallback(() => {
     setShowStripeModal(false);
-    navigation.navigate("StripeGate", { next: "SellGuide" });
+    navigation.navigate("StripeGate", { next: "FulfillmentChoice" });
   }, [navigation]);
 
   const handleContinueWithoutStripe = useCallback(() => {
     stripePromptShownThisSession = true;
     setShowStripeModal(false);
-    go("SellGuide");
+    go("FulfillmentChoice");
   }, []);
 
   return (

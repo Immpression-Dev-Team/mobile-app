@@ -23,7 +23,7 @@ export default function NoContent({size}){
             </Text>
             <TouchableOpacity
                 style={styles.button}
-                onPress={() => navigation.navigate('Upload')}
+                onPress={() => navigation.navigate('FulfillmentChoice')}
             >
                 <Text style={styles.buttonText}>UPLOAD NOW</Text>
             </TouchableOpacity>
@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
 //             <Text style={styles.warningMsg}>No images yet</Text>
 //             <TouchableOpacity
 //                 style={styles.button}
-//                 onPress={() => navigation.navigate('Upload')}
+//                 onPress={() => navigation.navigate('FulfillmentChoice')}
 //             >
 //                 <Text style={styles.buttonText}>UPLOAD NOW</Text>
 //             </TouchableOpacity>
