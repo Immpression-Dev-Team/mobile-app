@@ -16,15 +16,12 @@
     "scheme": "com.immpression.app",
     "ios": {
       "supportsTablet": true,
-      "config": {
-        "googleMapsApiKey": "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4"
-      },
       "bundleIdentifier": "com.immpression.app",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSLocationWhenInUseUsageDescription": "Immpression uses your location to help you discover local artists and art galleries near you."
       },
-      "buildNumber": "23"
+      "buildNumber": "25"
     },
     "android": {
       "adaptiveIcon": {
@@ -32,7 +29,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.immpression.artapp",
-      "versionCode": 36,
+      "versionCode": 37,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4"
