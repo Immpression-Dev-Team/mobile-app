@@ -29,7 +29,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.immpression.artapp",
-      "versionCode": 37,
+      "versionCode": 39,
       "config": {
         "googleMaps": {
           "apiKey": "AIzaSyDjV81pkoDixWpQlqDci4eobHzYaHMDFo4"
@@ -81,7 +81,8 @@
         "react-native-google-mobile-ads",
         {
           "androidAppId": "ca-app-pub-8886964376457193~4595439488",
-          "iosAppId": "ca-app-pub-8886964376457193~3642915506"
+          "iosAppId": "ca-app-pub-8886964376457193~3642915506",
+          "androidSdk": "classic"
         }
       ],
       [
