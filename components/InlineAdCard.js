@@ -39,7 +39,7 @@ export default function InlineAdCard({ width, height, containerStyle }) {
     let mounted = true;
     let loadedAd = null;
 
-    NativeAd.createForAdRequest(adUnitId, { requestNonPersonalizedAdsOnly: false })
+    NativeAd.createForAdRequest(adUnitId, { requestNonPersonalizedAdsOnly: true })
       .then((ad) => {
         if (mounted) {
           loadedAd = ad;

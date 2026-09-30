@@ -44,7 +44,7 @@ export default function HomeBannerAd() {
         <BannerAd
           unitId={adUnitId}
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-          requestOptions={{ requestNonPersonalizedAdsOnly: false }}
+          requestOptions={{ requestNonPersonalizedAdsOnly: true }}
           onAdLoaded={() => setAdLoaded(true)}
           onAdFailedToLoad={() => setAdFailed(true)}
         />
