@@ -92,6 +92,12 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
+      ],
+      [
+        "expo-tracking-transparency",
+        {
+          "userTrackingPermission": "Immpression uses this to show you more relevant ads and support free access to the app."
+        }
       ]
     ]
   }

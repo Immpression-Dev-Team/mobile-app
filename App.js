@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from "./state/AuthProvider";
 import { guestStackScreen, userStackScreen } from "./utils/helpers";
 import PaymentScreen from "./screens/PaymentScreen";
 import { StripeProvider } from "@stripe/stripe-react-native";
+import { ensureTrackingPermission } from "./utils/trackingPermission";
 import "react-native-get-random-values";
 
 const Stack = createStackNavigator();
@@ -30,6 +31,12 @@ const AppContent = () => {
 };
 
 export default function App() {
+  useEffect(() => {
+    // Fires the ATT prompt (iOS) as early as possible so its result is
+    // cached by the time any ad component tries to request an ad.
+    ensureTrackingPermission();
+  }, []);
+
   return (
     <AuthProvider>
       <NavigationContainer>

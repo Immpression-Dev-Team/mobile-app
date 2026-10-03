@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
+import { ensureTrackingPermission } from '../utils/trackingPermission';
 
 // TODO: In AdMob console create two "Native" type ad units and paste the IDs here.
 // These are DIFFERENT from your banner ad units — banner IDs will not work for native ads.
@@ -39,7 +40,10 @@ export default function InlineAdCard({ width, height, containerStyle }) {
     let mounted = true;
     let loadedAd = null;
 
-    NativeAd.createForAdRequest(adUnitId, { requestNonPersonalizedAdsOnly: true })
+    ensureTrackingPermission()
+      .then((canPersonalize) =>
+        NativeAd.createForAdRequest(adUnitId, { requestNonPersonalizedAdsOnly: !canPersonalize })
+      )
       .then((ad) => {
         if (mounted) {
           loadedAd = ad;

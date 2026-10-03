@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
+import { useCanRequestPersonalizedAds } from '../utils/trackingPermission';
 
 const IOS_AD_UNIT_ID = 'ca-app-pub-8886964376457193/3931622326';
 const ANDROID_AD_UNIT_ID = 'ca-app-pub-8886964376457193/7403963475';
@@ -23,6 +24,7 @@ try {
 export default function HomeBannerAd() {
   const [adLoaded, setAdLoaded] = useState(false);
   const [adFailed, setAdFailed] = useState(false);
+  const canPersonalize = useCanRequestPersonalizedAds();
 
   const adUnitId = nativeAvailable
     ? __DEV__
@@ -42,9 +44,10 @@ export default function HomeBannerAd() {
       )}
       {nativeAvailable && !adFailed && (
         <BannerAd
+          key={canPersonalize ? 'personalized' : 'non-personalized'}
           unitId={adUnitId}
           size={BannerAdSize.ANCHORED_ADAPTIVE_BANNER}
-          requestOptions={{ requestNonPersonalizedAdsOnly: true }}
+          requestOptions={{ requestNonPersonalizedAdsOnly: !canPersonalize }}
           onAdLoaded={() => setAdLoaded(true)}
           onAdFailedToLoad={() => setAdFailed(true)}
         />
