@@ -21,6 +21,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
+import * as FileSystem from "expo-file-system/legacy";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useAuth } from "../state/AuthProvider";
 import { uploadImage } from "../API/API";
@@ -162,21 +163,26 @@ const Upload = ({ route }) => {
     setIsLoading(true);
 
     try {
-      // 1) Upload the ORIGINAL image to Cloudinary (no crop, no resize)
-      const formData = new FormData();
-      formData.append("file", {
-        uri: image.uri,
-        name: `${title}.jpg`,
-        type: "image/jpeg",  // always JPEG — converted in selectImage
-      });
-      formData.append("upload_preset", "edevre");
-      formData.append("folder", "artwork");
-
-      const cloudRes = await fetch("https://api.cloudinary.com/v1_1/dttomxwev/image/upload", {
-        method: "POST",
-        body: formData,
-      });
-      const result = await cloudRes.json();
+      // 1) Upload the ORIGINAL image to Cloudinary (no crop, no resize).
+      // Uses expo-file-system's native uploadAsync instead of fetch+FormData:
+      // RN's newer fetch implementation (SDK 57+) doesn't accept the classic
+      // { uri, name, type } object shape for a FormData file field, so a
+      // plain fetch() upload fails/crashes. uploadAsync encodes the
+      // multipart body natively and isn't affected by that.
+      const cloudRes = await FileSystem.uploadAsync(
+        "https://api.cloudinary.com/v1_1/dttomxwev/image/upload",
+        image.uri,
+        {
+          uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+          fieldName: "file",
+          mimeType: "image/jpeg", // always JPEG — converted in selectImage
+          parameters: {
+            upload_preset: "edevre",
+            folder: "artwork",
+          },
+        }
+      );
+      const result = JSON.parse(cloudRes.body);
 
       if (!result.secure_url) return displayError("Image upload failed");
 

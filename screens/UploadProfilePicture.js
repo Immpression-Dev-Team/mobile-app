@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
+import * as FileSystem from "expo-file-system/legacy";
 import { useAuth } from "../state/AuthProvider"; // Assuming you have an AuthProvider to get userData
 import { uploadProfilePicture } from "../API/API"; // Your API function to update the user's profile picture on the backend
 import { Platform } from "react-native";
@@ -51,37 +52,47 @@ const UploadProfilePicture = () => {
       return;
     }
 
-    const data = new FormData();
-
     try {
+      let result;
+
       if (Platform.OS === "web") {
         // Web-specific logic: Convert base64 to Blob for web uploads
+        const data = new FormData();
         const base64String = image.uri.split(",")[1];
         const imageBlob = base64ToBlob(base64String, "image/jpeg");
         data.append("file", imageBlob, "profile_picture.jpg");
+        data.append("upload_preset", "edevre"); // Your Cloudinary unsigned upload preset
+        data.append("folder", "artists"); // Upload to the 'artists' folder in Cloudinary
+        data.append("public_id", `profile_picture_${userData.user.user._id}`);
+
+        const response = await fetch(
+          "https://api.cloudinary.com/v1_1/dttomxwev/image/upload",
+          {
+            method: "POST",
+            body: data,
+          }
+        );
+        result = await response.json();
       } else {
-        // Mobile-specific logic: Directly append image URI
-        data.append("file", {
-          uri: image.uri,
-          name: `profile_picture_${userData.user.user._id}.jpg`,
-          type: "image/jpeg",
-        });
+        // Native: expo-file-system's uploadAsync instead of fetch+FormData —
+        // RN's newer fetch implementation doesn't accept the classic
+        // { uri, name, type } object shape for a FormData file field.
+        const uploadRes = await FileSystem.uploadAsync(
+          "https://api.cloudinary.com/v1_1/dttomxwev/image/upload",
+          image.uri,
+          {
+            uploadType: FileSystem.FileSystemUploadType.MULTIPART,
+            fieldName: "file",
+            mimeType: "image/jpeg",
+            parameters: {
+              upload_preset: "edevre",
+              folder: "artists",
+              public_id: `profile_picture_${userData.user.user._id}`,
+            },
+          }
+        );
+        result = JSON.parse(uploadRes.body);
       }
-
-      // Append other necessary data for Cloudinary
-      data.append("upload_preset", "edevre"); // Your Cloudinary unsigned upload preset
-      data.append("folder", "artists"); // Upload to the 'artists' folder in Cloudinary
-      data.append("public_id", `profile_picture_${userData.user.user._id}`);
-
-      const response = await fetch(
-        "https://api.cloudinary.com/v1_1/dttomxwev/image/upload",
-        {
-          method: "POST",
-          body: data,
-        }
-      );
-
-      const result = await response.json();
 
       if (result.secure_url) {
         const deleteImage = async (publicId) => {
