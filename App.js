@@ -6,7 +6,7 @@ import { AuthProvider, useAuth } from "./state/AuthProvider";
 import { guestStackScreen, userStackScreen } from "./utils/helpers";
 import PaymentScreen from "./screens/PaymentScreen";
 import { StripeProvider } from "@stripe/stripe-react-native";
-import { ensureTrackingPermission } from "./utils/trackingPermission";
+import { ensureAdsInitialized } from "./utils/ads";
 import "react-native-get-random-values";
 
 const Stack = createStackNavigator();
@@ -32,9 +32,9 @@ const AppContent = () => {
 
 export default function App() {
   useEffect(() => {
-    // Fires the ATT prompt (iOS) as early as possible so its result is
-    // cached by the time any ad component tries to request an ad.
-    ensureTrackingPermission();
+    // Fires the ATT prompt (iOS) as early as possible, then initializes the
+    // AdMob SDK, so both are done by the time any ad component requests an ad.
+    ensureAdsInitialized();
   }, []);
 
   return (

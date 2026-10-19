@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Platform } from 'react-native';
-import { ensureTrackingPermission } from '../utils/trackingPermission';
+import { ensureAdsInitialized } from '../utils/ads';
 
 // TODO: In AdMob console create two "Native" type ad units and paste the IDs here.
 // These are DIFFERENT from your banner ad units — banner IDs will not work for native ads.
@@ -10,6 +10,8 @@ const ANDROID_NATIVE_AD_UNIT_ID = 'ca-app-pub-8886964376457193/5730756289';
 let NativeAd = null;
 let NativeAdView = null;
 let NativeMediaView = null;
+let NativeAsset = null;
+let NativeAssetType = null;
 let TestIds = null;
 let nativeAvailable = false;
 
@@ -18,9 +20,15 @@ try {
   NativeAd = admob.NativeAd;
   NativeAdView = admob.NativeAdView;
   NativeMediaView = admob.NativeMediaView;
+  NativeAsset = admob.NativeAsset;
+  NativeAssetType = admob.NativeAssetType;
   TestIds = admob.TestIds;
   nativeAvailable = true;
 } catch (_) {}
+
+// A failed request (often no-fill) is retried after these delays before the
+// card gives up and stays a placeholder.
+const RETRY_DELAYS_MS = [5000, 20000];
 
 export default function InlineAdCard({ width, height, containerStyle }) {
   const [nativeAd, setNativeAd] = useState(null);
@@ -39,25 +47,36 @@ export default function InlineAdCard({ width, height, containerStyle }) {
 
     let mounted = true;
     let loadedAd = null;
+    let retryTimer = null;
 
-    ensureTrackingPermission()
-      .then((canPersonalize) =>
-        NativeAd.createForAdRequest(adUnitId, { requestNonPersonalizedAdsOnly: !canPersonalize })
-      )
-      .then((ad) => {
-        if (mounted) {
-          loadedAd = ad;
-          setNativeAd(ad);
-        } else {
-          ad.destroy();
-        }
-      })
-      .catch(() => {
-        if (mounted) setAdFailed(true);
-      });
+    const load = (attempt) => {
+      ensureAdsInitialized()
+        .then((canPersonalize) =>
+          NativeAd.createForAdRequest(adUnitId, { requestNonPersonalizedAdsOnly: !canPersonalize })
+        )
+        .then((ad) => {
+          if (mounted) {
+            loadedAd = ad;
+            setNativeAd(ad);
+          } else {
+            ad.destroy();
+          }
+        })
+        .catch(() => {
+          if (!mounted) return;
+          if (attempt < RETRY_DELAYS_MS.length) {
+            retryTimer = setTimeout(() => load(attempt + 1), RETRY_DELAYS_MS[attempt]);
+          } else {
+            setAdFailed(true);
+          }
+        });
+    };
+
+    load(0);
 
     return () => {
       mounted = false;
+      clearTimeout(retryTimer);
       loadedAd?.destroy();
     };
   }, [adUnitId]);
@@ -73,6 +92,14 @@ export default function InlineAdCard({ width, height, containerStyle }) {
   return (
     <NativeAdView nativeAd={nativeAd} style={[styles.card, { width, height }, containerStyle]}>
       <NativeMediaView style={StyleSheet.absoluteFill} resizeMode="cover" />
+      {/* AdMob native policy requires the headline to be shown and registered */}
+      <View style={styles.headlineBar}>
+        <NativeAsset assetType={NativeAssetType.HEADLINE}>
+          <Text style={styles.headline} numberOfLines={1}>
+            {nativeAd.headline}
+          </Text>
+        </NativeAsset>
+      </View>
       <View style={styles.badge}>
         <Text style={styles.badgeText}>Ad</Text>
       </View>
@@ -100,9 +127,23 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
     letterSpacing: 1.5,
   },
+  headlineBar: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.55)',
+    paddingHorizontal: 4,
+    paddingVertical: 2,
+  },
+  headline: {
+    color: '#fff',
+    fontSize: 9,
+    fontWeight: '600',
+  },
   badge: {
     position: 'absolute',
-    bottom: 4,
+    top: 4,
     left: 4,
     backgroundColor: 'rgba(0,0,0,0.45)',
     borderRadius: 3,
